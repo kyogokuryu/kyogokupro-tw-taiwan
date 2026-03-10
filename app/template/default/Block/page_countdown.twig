@@ -1,0 +1,45 @@
+<div class="page_countdown_box">
+    <div class="header_salon">
+        <div class="box_active">
+            <p class="cd_title" style="font-size:0">
+                <span class="time-text">{{'只需停留'| trans}}</span>
+                <span id='page_countdown_time' class="time-p"></span>
+                <span class="time-text">{{'秒，輕鬆累積點數！'| trans}}</span>
+            </p>
+        </div>
+        {% if app.request.attributes.get('_route') == 'salon-suppliers' and app.session.get('IS_SUPPLIER') %}
+            {{ include('Block/bottom_header_supplier.twig') }}
+        {% endif %}
+    </div>
+</div>
+
+ <div class="ec-modal coundown-modal" style="display:none">
+    <input type="checkbox" id="ec-modal-countdown" class="checkbox">
+    <div class="ec-modal-overlay">
+        <label for="ec-modal-countdown" class="ec-modal-overlay-close"></label>
+        <div class="coundown-dialog">
+            <div  class="gift-box-close"></div>
+            <div class= "gift-box">
+                <p class="title-top">閲覧タスクを完了してポイントを獲得する1</p>
+                <p class="text-value" id="page_countdown_reward"></p>
+            </div>
+            <div id="page_countdown_times_on_day_modal" class="btn-get-gift" style="display:none;height:43px"></div>
+            <a id="page_countdown_login" href="{{ url('mypage_login') }}" class="btn-get-gift" style="display:none">登入</a>
+            <button id="page_countdown_not_show" style="display:none; width: fit-content;padding: 5px;position: absolute;left: 0;top: calc(100% + 10px);background: transparent;border: 1px solid #ccc; border-radius: 8px;">
+                <span style="color:#eeeeee;font-size: 12px;">今天不要再顯示此畫面</span>
+            </button>
+        </div>
+    </div>          
+</div>
+
+<script type="text/javascript" src="{{ asset('assets/js/pagejs/pageCountdown.js') }}"></script>
+<script>
+    PageCountdown.urlInfo = '{{ url('page_countdown_info')}}'
+    PageCountdown.urlReward  = '{{ url('page_countdown_reward')}}'
+    PageCountdown.isVersion405 =  '{{ is_kokokara_select_version405() }}'
+    PageCountdown.isUserRole = {{is_granted('ROLE_USER') }}
+    PageCountdown.user_id = '{{app.user.id ?? "abcd"}}'
+    PageCountdown.urlLogin = '{{url('mypage_login')}}'
+    
+    PageCountdown.getInstance();
+</script>

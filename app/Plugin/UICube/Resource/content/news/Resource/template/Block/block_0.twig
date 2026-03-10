@@ -1,0 +1,78 @@
+{% set NewsList = repository('Plugin\\[code]\\Entity\\[code]Config').getNewsList %}
+{% set Config = repository('Plugin\\[code]\\Entity\\[code]Config').get %}
+
+{% block stylesheet %}
+<style>
+    .uic-news.ec-role {
+        background: #fff;
+        margin-bottom: 40px;
+    }
+    .uic-news .uic-news__scroll {
+        padding: 30px;
+        border: 1px solid #eee;
+        max-height: 300px;
+        overflow-y: scroll;
+    }
+    .uic-news .uic-news__list {
+        list-style: none;
+        padding-left: 0;
+        margin: 0;
+    }
+    .uic-news .uic-news__item {
+        padding: 15px;
+        padding-right: 30px;
+        border-bottom: 1px solid #eee;
+        position: relative;
+    }
+    .uic-news .uic-news__item .uic-news__item-toggle {
+        color: #020202;
+        border-radius: 50%;
+        padding: 5px 5px 4px 5px;
+        vertical-align: top;
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    .uic-news .uic-news__item .collapse,
+    .uic-news .uic-news__item .collapsing {
+        margin-top: 15px;
+    }
+    .uic-news .uic-news__item-date {
+        margin-right: 20px;
+        font-size: 14px;
+    }
+</style>
+{% endblock %}
+
+<!-- [code] -->
+<div class="ec-role uic-news">
+    {% if Config.title %}
+        <div class="ec-secHeading">
+            <span class="ec-secHeading__en">{{ Config.title }}</span>
+        </div>
+    {% endif %}
+    {% if NewsList != null %}
+    <div class="ec-secBody">
+        <ul class="uic-news__list">
+            {% for news in NewsList %}
+            <li class="uic-news__item">
+                <span class="uic-news__item-date">{{ news.publish_date|date_day }}</span>
+                {% if news.url %}<a href="{{ news.url }}">{% endif %}
+                    <span class="uic-news__item-title">{{ news.title }}</span>
+                {% if news.url %}</a>{% endif %}
+                {% if news.description %}
+                    <a class="uic-news__item-toggle btn btn-link btn-sm" role="button" data-toggle="collapse" href="#uic-news__item-description-{{ loop.index }}">
+                        <i class="fa fa-chevron-down"></i>
+                    </a>
+                {% endif %}
+                <div class="collapse" id="uic-news__item-description-{{ loop.index }}">
+                    {{ news.description|raw|nl2br }}
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+</div>
+<!-- /[code] -->

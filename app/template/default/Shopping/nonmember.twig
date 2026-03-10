@@ -1,0 +1,171 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+
+{% set body_class = 'cart_page' %}
+
+{% form_theme form 'Form/form_div_layout.twig' %}
+
+{% block javascript %}
+<script src="//yubinbango.github.io/yubinbango/yubinbango.js" charset="UTF-8"></script>
+{% endblock javascript %}
+
+{% block main %}
+		<article id="regist">
+			<section>
+
+<div class="ec-customerRole">
+    <div class="ec-pageHeader">
+        <h1>{{ '客戶資訊輸入'|trans }}</h1>
+    </div>
+    <div class="ec-cartRole">
+        <div class="ec-cartRole__progress">
+            <ul class="ec-progress">
+                {% set step = 1 %}
+                <li class="ec-progress__item">
+                    <div class="ec-progress__number">{{ step }}{% set step = step + 1 %}
+                    </div>
+                    <div class="ec-progress__label">{{ '購物車商品'|trans }}
+                    </div>
+                </li>
+                {% if is_granted('ROLE_USER') == false %}
+                    <li class="ec-progress__item is-complete">
+                        <div class="ec-progress__number">{{ step }}{% set step = step + 1 %}
+                        </div>
+                        <div class="ec-progress__label">{{ '客戶資訊'|trans }}
+                        </div>
+                    </li>
+                {% endif %}
+                <li class="ec-progress__item">
+                    <div class="ec-progress__number">{{ step }}{% set step = step + 1 %}
+                    </div>
+                    <div class="ec-progress__label">{{ '訂購手續'|trans }}
+                    </div>
+                </li>
+                <li class="ec-progress__item">
+                    <div class="ec-progress__number">{{ step }}{% set step = step + 1 %}
+                    </div>
+                    <div class="ec-progress__label">{{ '訂單內容確認'|trans }}
+                    </div>
+                </li>
+                <li class="ec-progress__item">
+                    <div class="ec-progress__number">{{ step }}{% set step = step + 1 %}
+                    </div>
+                    <div class="ec-progress__label">{{ '完成'|trans }}
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="ec-off1Grid">
+        <div class="ec-off1Grid__cell">
+            <form method="post" action="{{ url('shopping_nonmember') }}" class="h-adr">
+            <span class="p-country-name" style="display:none;">Japan</span>
+            {{ form_widget(form._token) }}
+            <div class="ec-borderedDefs">
+                <dl>
+                    <dt>
+                        {{ form_label(form.name, '姓名', { 'label_attr': { 'class': 'ec-label' }}) }}
+                    </dt>
+                    <dd>
+                        <div class="ec-halfInput{{ has_errors(form.name.name01, form.name.name02) ? ' error'}}">
+                            {{ form_widget(form.name.name01, { 'attr': { 'placeholder': '姓' }}) }}
+                            {{ form_widget(form.name.name02, { 'attr': { 'placeholder': '名' }}) }}
+                            {{ form_errors(form.name.name01) }}
+                            {{ form_errors(form.name.name02) }}
+                        </div>
+                    </dd>
+                </dl>
+                <dl>
+                    <dt>
+                        {{ form_label(form.company_name, '公司名稱', { 'label_attr': { 'class': 'ec-label' }}) }}
+                    </dt>
+                    <dd>
+                        <div class="ec-halfInput{{ has_errors(form.company_name) ? ' error' }}">
+                            {{ form_widget(form.company_name) }}
+                            {{ form_errors(form.company_name) }}
+                        </div>
+                    </dd>
+                </dl>
+                <dl>
+                    <dt>
+                        {{ form_label(form.address, '地址', { 'label_attr': { 'class': 'ec-label' }}) }}
+                    </dt>
+                    <dd>
+                        <div class="ec-zipInput{{ has_errors(form.postal_code) ? ' error' }}"><span>{{ '郵遞區號'|trans }}</span>
+                            {{ form_widget(form.postal_code) }}
+                            <div class="ec-zipInputHelp">
+                                <div class="ec-zipInputHelp__icon">
+                                    <div class="ec-icon"><img
+                                                src="{{ asset('assets/icon/question-white.svg') }}" alt="">
+                                    </div>
+                            </div>
+                            {{ form_errors(form.postal_code) }}
+                        </div>
+
+                        <div class="ec-select{{ has_errors(form.address.pref) ? ' error' }}">
+                            {{ form_widget(form.address.pref) }}
+                            {{ form_errors(form.address.pref) }}
+                        </div>
+                        <div class="ec-input{{ has_errors(form.address.addr01) ? ' error' }}">
+                            {{ form_widget(form.address.addr01, { 'attr': { 'placeholder': '市區鄉鎮名稱(例：港區赤坂)' }}) }}
+                            {{ form_errors(form.address.addr01) }}
+                        </div>
+                        <div class="ec-input{{ has_errors(form.address.addr02) ? ' error' }}">
+                            {{ form_widget(form.address.addr02,  { 'attr': { 'placeholder': '地址・大樓名稱(例：2-14-1 赤坂山王會館8樓)' }}) }}
+                            {{ form_errors(form.address.addr02) }}
+                        </div>
+                    </dd>
+                </dl>
+                <dl>
+                    <dt>
+                        {{ form_label(form.phone_number, '電話號碼', { 'label_attr': { 'class': 'ec-label' }}) }}
+                    </dt>
+                    <dd>
+                        <div class="ec-telInput{{ has_errors(form.phone_number) ? ' error' }}">
+                            {{ form_widget(form.phone_number) }}
+                            {{ form_errors(form.phone_number) }}
+                        </div>
+                    </dd>
+                </dl>
+                <dl>
+                    <dt>
+                        {{ form_label(form.email, '電子郵件地址', { 'label_attr': { 'class': 'ec-label' }}) }}
+                    </dt>
+                    <dd>
+                        <div class="ec-input{{ has_errors(form.email.first) ? ' error' }}">
+                            {{ form_widget(form.email.first, { 'attr': { 'placeholder': '例：buzzdrop.co.jp@gmail.com' }}) }}
+                            {{ form_errors(form.email.first) }}
+                        </div>
+                        <div class="ec-input{{ has_errors(form.email.second) ? ' error' }}">
+                            {{ form_widget(form.email.second, { 'attr': { 'placeholder': '請再次輸入以確認' }}) }}
+                            {{ form_errors(form.email.second) }}
+                        </div>
+                    </dd>
+                </dl>
+            </div>
+            <div class="ec-RegisterRole__actions">
+                <div class="ec-off4Grid">
+                    <div class="ec-off4Grid__cell">
+                        <button type="submit" class="ec-blockBtn--action">{{ '下一步'|trans }}</button>
+                        <a class="ec-blockBtn--cancel" href="{{ url('cart') }}">{{ '返回'|trans }}</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+        </div>
+    </div>
+</div>
+
+			</section>
+		</article>
+{% endblock %}

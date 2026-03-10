@@ -1,0 +1,27 @@
+# 閃光訊息
+uc_banner_cbd02.admin.setting.save.complete: 設定已儲存。
+uc_banner_cbd02.admin.setting.delete.complete: 資料已刪除。
+
+# 設定
+uc_banner_cbd02.admin.config.title: UC橫幅 CBD02
+uc_banner_cbd02.admin.config.config_title: 外掛設定
+uc_banner_cbd02.admin.config.edit_title: 圖片編輯
+uc_banner_cbd02.admin.config.image_title: 圖片設定
+uc_banner_cbd02.admin.config.no_image: 尚未上傳圖片。
+uc_banner_cbd02.admin.config.conversion.save: 儲存
+uc_banner_cbd02.admin.config.conversion.add: 新增
+uc_banner_cbd02.admin.config.conversion.back: 返回外掛列表
+uc_banner_cbd02.admin.config.conversion.top: 圖片列表
+
+uc_banner_cbd02.admin.config.label_title: 標題
+uc_banner_cbd02.admin.config.label_display_title: 顯示標題
+uc_banner_cbd02.admin.config.label_display_description: 顯示描述
+uc_banner_cbd02.admin.config.label_img_url: 圖片網址（必填）
+uc_banner_cbd02.admin.config.label_img_alt: 圖片替代文字
+uc_banner_cbd02.admin.config.label_img_description: 圖片描述（可使用HTML）
+uc_banner_cbd02.admin.config.label_link_url: 圖片連結
+uc_banner_cbd02.admin.config.label_column_xs: 列數（手機）
+uc_banner_cbd02.admin.config.label_column_lg: 列數（電腦）
+
+## 訊息
+uc_banner_cbd02.admin.config.message_path: 使用者資料/~

@@ -1,0 +1,124 @@
+    <div class="ec-mypageRole mypage-history">
+        {% if pagination.totalItemCount > 0 %}
+            <div class="ec-rectHeading regular-header">
+                <h2>定期注文履歴</h1>
+            </div>
+            {% for RegularOrder in pagination %}
+                <div class="ec-historyRole">
+                    <div class="ec-historyRole__contents">
+                        {#}
+                        <div class="ec-historyRole__header">
+                            <div class="ec-historyListHeader">
+                                <p class="ec-historyListHeader__date">{{ RegularOrder.order_date|date_sec }}</p>
+                                <dl class="ec-definitions">
+                                    <dt>{{ 'front.mypage.order_no'|trans }}</dt>
+                                    <dd>{{ RegularOrder.order_no }}</dd>
+                                </dl>
+                                {% if (BaseInfo.option_mypage_order_status_display) %}
+                                    <dl class="ec-definitions">
+                                        <dt>{{ 'front.mypage.order_status'|trans }}</dt>
+                                        <dd>{{ RegularOrder.RegularStatus }}</dd>
+                                    </dl>
+                                {% endif %}
+                                <dl class="ec-definitions">
+                                    <dt>お届け予定日</dt>
+                                    <dd>{{ RegularOrder.RegularShippings[0].shippingDeliveryDate|date_day_with_weekday }}</dd>
+                                </dl>
+                                {% if RegularOrder.RegularShippings[0].nextDeliveryDate is not null %}
+                                <dl class="ec-definitions">
+                                    <dt>次回お届け予定日</dt>
+                                    <dd>{{ RegularOrder.RegularShippings[0].nextDeliveryDate|date_day_with_weekday }}</dd>
+                                </dl>
+                                {% endif %}
+                                <p class="ec-historyListHeader__action">
+                                  <a class="ec-inlineBtn"
+                                     href="{{ url('eccube_payment_lite4_mypage_regular_detail', {'id': RegularOrder.id}) }}">
+                                      {{ 'front.mypage.view_detail'|trans }}
+                                  </a>
+                                </p>
+                            </div>
+                        </div>
+                        #}
+                        <div class="ec-historyRole__detail mypage-regular">
+                            {% set count = 0 %}
+                            {% for RegularOrderItem in RegularOrder.MergedRegularProductOrderItems %}
+                                <div class="ec-imageGrid">
+                                        <div class="ec-imageGrid__img">
+                                            {% if RegularOrderItem.Product is null %}
+                                                <img src="{{ asset(''|no_image_product, 'save_image') }}"/>
+                                            {% else %}
+                                                <img src="{{ asset(RegularOrderItem.Product.MainListImage|no_image_product, 'save_image') }}">
+                                            {% endif %}
+                                        </div>
+                                        <div class="ec-imageGrid__content">
+                                            <p class="ec-historyRole__detailTitle">{{ RegularOrderItem.product_name }}</p>
+                                            {% if RegularOrderItem.class_category_name1 is not empty %}
+                                                {{ RegularOrderItem.class_category_name1 }}
+                                            {% endif %}
+                                            {% if RegularOrderItem.class_category_name1 is not empty %}
+                                                / {{ RegularOrderItem.class_category_name2 }}
+                                            {% endif %}
+                                            <p class="ec-historyRole__detailPrice">{{ RegularOrderItem.price_inc_tax|price }}
+                                                × {{ RegularOrderItem.quantity }}</p>
+
+                                            {% if count == 0 %}
+                                            <div class="regular-status">
+                                                <div class="row">
+                                                    <div class="col-xs-12 ec-historyListHeader__date">{{ RegularOrder.order_date|date_sec }}</div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-6 regular-ttl">订单号</div>
+                                                    <div class="col-xs-6">{{ RegularOrder.order_no }}</div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-6 regular-ttl">订单状态</div>
+                                                    <div class="col-xs-6">{{ RegularOrder.RegularStatus }}</div>
+                                                </div>
+                                                {% if (RegularOrder.RegularStatus == "継続") %}
+                                                    {% if(is_family_product(RegularOrder)) %}
+                                                    <div class="row">
+                                                        <div class="col-xs-6 regular-ttl">決済予定日</div>
+                                                        <div class="col-xs-6">{{ RegularOrder.RegularShippings[0].shippingDeliveryDate|date_modify("-5 day")|date_day_with_weekday }}</div>
+                                                    </div>
+                                                    {% else %}
+                                                    <div class="row">
+                                                        <div class="col-xs-6 regular-ttl">交货日期</div>
+                                                        <div class="col-xs-6">{{ RegularOrder.RegularShippings[0].shippingDeliveryDate|date_day_with_weekday }}</div>
+                                                    </div>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </div>
+
+                                            <div class="text-right m-xs-3">
+                                                <a class="ec-inlineBtn" href="{{ url('eccube_payment_lite4_mypage_regular_detail', {'id': RegularOrder.id}) }}">{{ '查看详情'|trans }}</a>
+                                            </div>
+
+                                                {% set count = 1 %}
+                                            {% endif %}
+                                        </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            <div class="ec-pagerRole">
+
+                <div class="ec-role row">
+                    <div class="col-xs-8">
+                        <a href="{{ url('eccube_payment_lite4_mypage_credit_card_index') }}" class="mypage-back mypage-back-none">{{ '定期カード情報編集'|trans }}</a>
+                    </div>
+                </div>
+
+            </div>
+        {% else %}
+            <p class="ec-para-normal">{{ 'front.mypage.history_not_found'|trans }}</p>
+        {% endif %}
+
+        <div class="ec-role row mt60">
+            <div class="col-xs-8">
+                <a href="{{ url('mypage') }}" class="mypage-back">{{ '我的帳號'|trans }}</a>
+            </div>
+        </div>
+
+    </div>

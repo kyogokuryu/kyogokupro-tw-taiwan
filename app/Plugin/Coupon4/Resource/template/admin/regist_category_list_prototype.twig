@@ -1,0 +1,39 @@
+{% filter escape %}
+    <div class="row item_box">
+        <input type="hidden" id="coupon_CouponDetails___name___id" name="coupon[CouponDetails][__name__][id]">
+        <input type="hidden" id="coupon_CouponDetails___name___Category" name="coupon[CouponDetails][__name__][Category]">
+        <input type="hidden" id="coupon_CouponDetails___name___coupon_type" name="coupon[CouponDetails][__name__][coupon_type]">
+        <div class="col-6 item_detail">
+            <div class="item_name_area">
+                <strong class="item_name">
+                    <div id="coupon_CouponDetails___name___category_name">
+                    </div>
+                </strong><br>
+            </div>
+        </div>
+
+        <div class="col-2 item_detail">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">割引率</span>
+                </div>
+                <input type="number" id="coupon_CouponDetails___name___detail_discount_rate" name="coupon[CouponDetails][__name__][detail_discount_rate]" class="form-control">
+            </div>
+        </div>
+
+        <div class="col-3 item_detail">
+            <div class="form-check form-check-inline">
+                <input type="radio" id="coupon_CouponDetails___name___delivery_free_flag_0" name="coupon[CouponDetails][__name__][delivery_free_flag]" required="required" class="form-check-input" value="0" checked="checked">
+                <label class="form-check-label required" for="coupon_CouponDetails___name___delivery_free_flag_0">送料あり</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input type="radio" id="coupon_CouponDetails___name___delivery_free_flag_1" name="coupon[CouponDetails][__name__][delivery_free_flag]" required="required" class="form-check-input" value="1">
+                <label class="form-check-label required" for="coupon_CouponDetails___name___delivery_free_flag_1">送料なし</label>
+            </div>
+        </div>
+
+        <div class="col-1 icon_edit">
+            <button class="btn btn-default btn-sm delete-item">削除</button>
+        </div>
+    </div><!-- /.item_box -->
+{% endfilter %}

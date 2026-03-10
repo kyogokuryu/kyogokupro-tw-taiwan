@@ -1,0 +1,515 @@
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['product', 'pinpoint_sale_common'] %}
+
+{% block title %}{{ 'pinpoint_sale.admin.pinpoint_sale_common.title'|trans }}{% endblock %}
+{% block sub_title %}{{ 'pinpoint_sale.admin.pinpoint_sale_common.sub_title'|trans }}{% endblock %}
+
+{% form_theme form '@admin/Form/bootstrap_4_horizontal_layout.html.twig' %}
+
+{% block stylesheet %}
+    <style type="text/css">
+        .list-group-item:hover {
+            z-index: inherit;
+        }
+
+        .pinpoint_width .form-control {
+            width: auto;
+        }
+    </style>
+{% endblock stylesheet %}
+
+{% block javascript %}
+    {{ include('@PinpointSale/admin/datetimepicker_asset.twig') }}
+    <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.core.min.js', 'admin') }}"></script>
+    <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.widget.min.js', 'admin') }}"></script>
+    <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.mouse.min.js', 'admin') }}"></script>
+    <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.sortable.min.js', 'admin') }}"></script>
+    <script>
+        // 初期表示時のsort noを保持.
+        var oldSortNos = [];
+        $('.sortable-item').each(function() {
+            oldSortNos.push(this.dataset.sortNo);
+        });
+        oldSortNos.sort(function(a, b) {
+            return a - b;
+        }).reverse();
+        // 並び替え後にsort noを更新
+        var updateSortNo = function() {
+            var newSortNos = {};
+            var i = 0;
+            $('.sortable-item').each(function() {
+                newSortNos[this.dataset.id] = oldSortNos[i];
+                i++;
+            });
+            $.ajax({
+                url: '{{ url('admin_pinpoint_sale_common_sort_no_move') }}',
+                type: 'POST',
+                data: newSortNos
+            }).always(function() {
+                $(".modal-backdrop").remove();
+            });
+        };
+        // 最初と最後の↑↓を再描画
+        var redrawDisableAllows = function() {
+            var items = $('.sortable-item');
+            items.find('a').removeClass('disabled');
+            items.first().find('a.action-up').addClass('disabled');
+            items.last().find('a.action-down').addClass('disabled');
+        };
+        // オーバレイ後, 表示順の更新を行う
+        var moveSortNo = function() {
+            $('body').append($('<div class="modal-backdrop show"></div>'));
+            updateSortNo();
+            redrawDisableAllows();
+        };
+        // Drag and Drop
+        $('.sortable-container').sortable({
+            items: '> .sortable-item',
+            cursor: 'move',
+            update: function(e, ui) {
+                moveSortNo();
+            }
+        });
+        // Up
+        $('.sortable-item').on('click', 'a.action-up', function(e) {
+            e.preventDefault();
+            var current = $(this).parents("li");
+            if (current.prev().hasClass('sortable-item')) {
+                current.prev().before(current);
+                moveSortNo();
+            }
+        });
+        // Down
+        $('.sortable-item').on('click', 'a.action-down', function(e) {
+            e.preventDefault();
+            var current = $(this).parents("li");
+            if (current.next().hasClass('sortable-item')) {
+                current.next().after(current);
+                moveSortNo();
+            }
+        });
+
+        // 編集
+        $('.point_ex_rate_item').on('click', 'a.action-edit', function(e) {
+            e.preventDefault();
+            var current = $(this).parents("li");
+            current.find('.mode-view').addClass('d-none');
+            current.find('.mode-edit').removeClass('d-none');
+        });
+
+        // 編集キャンセル
+        $('.point_ex_rate_item').on('click', 'button.action-edit-cancel', function(e) {
+            e.preventDefault();
+            var current = $(this).parents("li");
+            current.find('[data-origin-value]').each(function(e) {
+                $(this).val($(this).attr('data-origin-value'));
+            });
+            current.find('.mode-view').removeClass('d-none');
+            current.find('.mode-edit').addClass('d-none');
+        });
+
+        // 編集時, エラーがあれば入力欄を表示.
+        $('.point_ex_rate_item').find('.is-invalid').each(function(e) {
+            var current = $(this).parents("li");
+            current.find('.mode-view').addClass('d-none');
+            current.find('.mode-edit').removeClass('d-none');
+        });
+
+        // 削除モーダルのhrefとmessageの変更
+        $('#DeleteModal').on('shown.bs.modal', function(event) {
+            var target = $(event.relatedTarget);
+            // hrefの変更
+            $(this).find('[data-method="delete"]').attr('href', target.data('url'));
+
+            // messageの変更
+            $(this).find('p.modal-message').text(target.data('message'));
+        });
+
+        // 繰り返し設定切り替え
+        $(function () {
+
+            var REPEAT_OFF = "{{ constant('Plugin\\PinpointSale\\Entity\\PinpointRepeat::REPEAT_OFF') }}";
+            var REPEAT_ON = "{{ constant('Plugin\\PinpointSale\\Entity\\PinpointRepeat::REPEAT_ON') }}";
+
+            // 初期処理
+            $('.pinpoint_repeat_type_radio:checked').each(function() {
+                pinpointRepeatTypeRadioChange($(this));
+            });
+
+            $(document).on('change', '.pinpoint_repeat_type_radio', function () {
+                pinpointRepeatTypeRadioChange($(this));
+            });
+
+            function pinpointRepeatTypeRadioChange($checkObj) {
+                var key = $checkObj.parent().parent().data('key');
+
+                var repeat_group_id = 'pinpoint_repeat_new';
+                var prefix = "pinpoint_";
+                if (key > 0) {
+                    repeat_group_id = 'pinpoint_repeat_' + key;
+                    prefix = 'pinpoint_sale_common_' + key + "_";
+                }
+
+                if($checkObj.val() == REPEAT_OFF) {
+                    $('#' + repeat_group_id).addClass('d-none');
+
+                    $('#' + prefix + 'PinpointRepeat_start_time_hour').prop('disabled', true);
+                    $('#' + prefix + 'PinpointRepeat_start_time_minute').prop('disabled', true);
+                    $('#' + prefix + 'PinpointRepeat_end_time_hour').prop('disabled', true);
+                    $('#' + prefix + 'PinpointRepeat_end_time_minute').prop('disabled', true);
+
+                } else if($checkObj.val() == REPEAT_ON) {
+                    $('#' + repeat_group_id).removeClass('d-none');
+
+                    $('#' + prefix + 'PinpointRepeat_start_time_hour').prop('disabled', false);
+                    $('#' + prefix + 'PinpointRepeat_start_time_minute').prop('disabled', false);
+                    $('#' + prefix + 'PinpointRepeat_end_time_hour').prop('disabled', false);
+                    $('#' + prefix + 'PinpointRepeat_end_time_minute').prop('disabled', false);
+                }
+            }
+        });
+
+    </script>
+{% endblock %}
+
+{% block main %}
+    <div class="c-contentsArea__cols">
+        <div class="c-contentsArea__primaryCol">
+            <div class="c-primaryCol">
+
+                <div class="card rounded border-0 mb-4">
+                    <div class="card-header"><span>{{ 'pinpoint_sale.admin.pinpoint_sale_common.list_title'|trans }}</span></div>
+                    <div class="card-body p-0">
+                        <div class="card rounded border-0">
+                            <ul class="list-group list-group-flush sortable-container">
+                                <li class="list-group-item">
+                                    <form role="form" method="post" action="{{ url('admin_pinpoint_sale_common') }}">
+                                        {{ form_widget(form._token) }}
+                                        {{ form_widget(form.sale_type) }}
+                                        <div class="form-row mb-2">
+                                            <div class="col-2">
+                                                <div class="d-inline-block">
+                                                    <span>{{ form.name.vars.label|trans }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-3 align-items-center">
+                                                {{ form_widget(form.name) }}
+                                                {{ form_errors(form.name) }}
+                                            </div>
+                                        </div>
+                                        <div class="form-row mb-2">
+                                            <div class="col-2">
+                                                <div class="d-inline-block">
+                                                    <span>{{ form.saleRate.vars.label|trans }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="col align-items-center">
+                                                <div class="input-group">
+                                                    <div class="input-group col-2 pl-0">
+                                                        {{ form_widget(form.saleRate) }}
+                                                        <div class="input-group-append">
+                                                            <span class="input-group-text">%</span>
+                                                        </div>
+                                                    </div>
+                                                    {{ form_errors(form.saleRate) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-row mb-2 pinpoint_width">
+                                            <div class="col-2">
+                                                <div class="d-inline-block">
+                                                    <span>{{ form.start_time.vars.label|trans }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="form-inline col">
+                                                {{ form_widget(form.start_time.custom_date, {'attr' : {'data-target' : '#'~form.start_time.custom_date.vars.id}}) }}
+                                                <div class="ml-2">
+                                                    {{ form_widget(form.start_time.custom_time) }}
+                                                </div>
+                                                {{ form_errors(form.start_time.custom_date) }}
+                                                {{ form_errors(form.start_time.custom_time) }}
+                                            </div>
+                                        </div>
+                                        <div class="form-row mb-2 pinpoint_width">
+                                            <div class="col-2">
+                                                <div class="d-inline-block">
+                                                    <span>{{ form.end_time.vars.label|trans }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="form-inline col">
+                                                {{ form_widget(form.end_time.custom_date, {'attr' : {'data-target' : '#'~form.end_time.custom_date.vars.id}}) }}
+                                                <div class="ml-2">
+                                                    {{ form_widget(form.end_time.custom_time) }}
+                                                </div>
+                                                {{ form_errors(form.end_time.custom_date) }}
+                                                {{ form_errors(form.end_time.custom_time) }}
+                                            </div>
+                                        </div>
+                                        <div class="form-row mb-2">
+                                            <div class="col-2">
+                                                <div class="d-inline-block">
+                                                    <span>{{ form.repeat_status.vars.label|trans }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="col align-items-center">
+                                                {{ form_widget(form.repeat_status, {'label_attr': {'class': 'radio-inline'}, 'attr': {'data-key': 0}}) }}
+                                                {{ form_errors(form.repeat_status) }}
+                                            </div>
+                                        </div>
+                                        <div id="pinpoint_repeat_new" class="mt-2 d-none">
+                                            <div class="form-row mb-2 pinpoint_width">
+                                                <div class="col-2">
+                                                    <div class="d-inline-block">
+                                                        <span>{{ form.PinpointRepeat.start_time.vars.label|trans }}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-inline col align-items-center">
+                                                    {{ form_widget(form.PinpointRepeat.start_time) }}
+                                                    {{ form_errors(form.PinpointRepeat.start_time) }}
+                                                </div>
+                                            </div>
+                                            <div class="form-row mb-2 pinpoint_width">
+                                                <div class="col-2">
+                                                    <div class="d-inline-block">
+                                                        <span>{{ form.PinpointRepeat.end_time.vars.label|trans }}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-inline col align-items-center">
+                                                    {{ form_widget(form.PinpointRepeat.end_time) }}
+                                                    {{ form_errors(form.PinpointRepeat.end_time) }}
+                                                </div>
+                                            </div>
+                                            <div class="form-row mb-2">
+                                                <div class="col-2">
+                                                    <div class="d-inline-block">
+                                                        <span>{{ form.PinpointRepeat.week_check.vars.label|trans }}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col align-items-center">
+                                                    {{ form_widget(form.PinpointRepeat.week_check, {'label_attr': {'class': 'checkbox-inline'}}) }}
+                                                    {{ form_errors(form.PinpointRepeat.week_check) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-2"></div>
+                                            <div class="col-auto align-items-center">
+                                                <button class="btn btn-ec-regular" type="submit">
+                                                    {{ 'admin.common.create__new'|trans }}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </li>
+                                <li class="list-group-item">
+                                    <div class="row">
+                                        <div class="col-auto"><strong>&nbsp;</strong></div>
+                                        <div class="col-2"><strong>{{ 'pinpoint_sale.admin.pinpoint_sale_common.list.head1'|trans }}</strong></div>
+                                        <div class="col-1"><strong>{{ 'pinpoint_sale.admin.pinpoint_sale_common.list.head2'|trans }}</strong></div>
+                                        <div class="col-3"><strong>{{ 'pinpoint_sale.admin.pinpoint_sale_common.list.head3'|trans }}</strong></div>
+                                        <div class="col-1"><strong>{{ 'pinpoint_sale.admin.pinpoint_sale_common.list.head4'|trans }}</strong></div>
+                                        <div class="col"><strong>{{ 'pinpoint_sale.admin.pinpoint_sale_common.list.head5'|trans }}</strong></div>
+                                    </div>
+                                </li>
+                                {% for Pinpoint in pinpointSales %}
+                                    {% set PinpointRepeat = Pinpoint.PinpointRepeat %}
+                                    <li id="pinpoint_sale_common-{{ Pinpoint.id }}" class="list-group-item point_ex_rate_item sortable-item" data-id="{{ Pinpoint.id }}" data-sort-no="{{ Pinpoint.sortNo }}">
+                                        <div class="row justify-content-around mode-view">
+                                            <div class="col-auto d-flex align-items-center"><i class="fa fa-bars text-ec-gray"></i></div>
+                                            <div class="col-2 d-flex align-items-center">
+                                                {{ Pinpoint.name }}
+                                            </div>
+                                            <div class="col-1 d-flex align-items-center">
+                                                {{ Pinpoint.saleRate }}%
+                                            </div>
+                                            <div class="col-3 d-flex align-items-center">
+                                                {{ Pinpoint.start_time|date("Y/m/d H:i") }} ～ {{ Pinpoint.end_time|date("Y/m/d H:i") }}
+                                            </div>
+                                            <div class="col-1 d-flex align-items-center">
+                                                {% if PinpointRepeat is not null %}
+                                                    {{ PinpointRepeat.start_time|pinpoint_sale_time }} ～ {{ PinpointRepeat.end_time|pinpoint_sale_time }}
+                                                {% endif %}
+                                            </div>
+                                            <div class="col d-flex flex-wrap align-items-center">
+                                                {% if PinpointRepeat is not null %}
+                                                    {% set activeWeeks = pinpoint_repeat_week(PinpointRepeat) %}
+                                                    {% for week in activeWeeks %}
+                                                        <span class="rounded border pl-1 pr-1 ml-1 mr-1 mb-1">{{ week }}</span>
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </div>
+                                            <div class="col-auto text-right">
+                                                <a class="btn btn-ec-actionIcon mr-2 action-up{% if loop.first %} disabled{% endif %}" href="#" data-tooltip="true" data-placement="top" title="{{ 'admin.common.up'|trans }}">
+                                                    <i class="fa fa-arrow-up fa-lg text-secondary"></i>
+                                                </a>
+                                                <a class="btn btn-ec-actionIcon mr-2 action-down{% if loop.last %} disabled{% endif %}" href="#" data-tooltip="true" data-placement="top" title="{{ 'admin.common.down'|trans }}">
+                                                    <i class="fa fa-arrow-down fa-lg text-secondary"></i>
+                                                </a>
+                                                <a class="btn btn-ec-actionIcon mr-2 action-edit" data-tooltip="true" data-placement="top" title="{{ 'admin.common.edit'|trans }}">
+                                                    <i class="fa fa-pencil fa-lg text-secondary"></i>
+                                                </a>
+                                                <div class="d-inline-block mr-2" data-tooltip="true"
+                                                     data-placement="top" title="{{ 'admin.common.delete'|trans }}">
+                                                    <a class="btn btn-ec-actionIcon" data-toggle="modal" data-target="#DeleteModal"
+                                                       data-url="{{ url('admin_pinpoint_sale_common_delete', {'id' : Pinpoint.id}) }}"
+                                                       data-message="{{ 'admin.common.delete_modal__message'|trans({ "%name%" : Pinpoint.name }) }}">
+                                                        <i class="fa fa-close fa-lg text-secondary"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <form class="form-row d-none mode-edit" method="post" action="{{ url('admin_pinpoint_sale_common') }}">
+                                            {{ form_widget(forms[Pinpoint.id]._token) }}
+                                            {{ form_widget(forms[Pinpoint.id].sale_type) }}
+                                            <div class="form-row col-12">
+                                                <div class="col-2">
+                                                    <span>{{ forms[Pinpoint.id].name.vars.label|trans }}</span>
+                                                </div>
+                                                <div class="col-3 mb-2 align-items-center">
+                                                    {{ form_widget(forms[Pinpoint.id].name, {'attr': {'data-origin-value': forms[Pinpoint.id].name.vars.value }}) }}
+                                                    {{ form_errors(forms[Pinpoint.id].name) }}
+                                                </div>
+                                            </div>
+                                            <div class="form-row col-12">
+                                                <div class="col-2">
+                                                    <span>{{ forms[Pinpoint.id].saleRate.vars.label|trans }}</span>
+                                                </div>
+                                                <div class="col mb-2">
+                                                    <div class="input-group">
+                                                        <div class="input-group col-2 pl-0">
+                                                            {{ form_widget(forms[Pinpoint.id].saleRate) }}
+                                                            <div class="input-group-append">
+                                                                <span class="input-group-text">%</span>
+                                                            </div>
+                                                        </div>
+                                                        {{ form_errors(forms[Pinpoint.id].saleRate) }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-row col-12 mb-2">
+                                                <div class="col-2">
+                                                    <div class="d-inline-block">
+                                                        <span>{{ forms[Pinpoint.id].start_time.vars.label|trans }}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-inline col">
+                                                    {{ form_widget(forms[Pinpoint.id].start_time.custom_date, {'attr' : {'data-target' : '#'~forms[Pinpoint.id].start_time.custom_date.vars.id}}) }}
+                                                    <div class="ml-2">
+                                                        {{ form_widget(forms[Pinpoint.id].start_time.custom_time) }}
+                                                    </div>
+                                                    {{ form_errors(forms[Pinpoint.id].start_time.custom_date) }}
+                                                    {{ form_errors(forms[Pinpoint.id].start_time.custom_time) }}
+                                                </div>
+                                            </div>
+                                            <div class="form-row col-12 mb-2">
+                                                <div class="col-2">
+                                                    <div class="d-inline-block">
+                                                        <span>{{ forms[Pinpoint.id].end_time.vars.label|trans }}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-inline col">
+                                                    {{ form_widget(forms[Pinpoint.id].end_time.custom_date, {'attr' : {'data-target' : '#'~forms[Pinpoint.id].end_time.custom_date.vars.id}}) }}
+                                                    <div class="ml-2">
+                                                        {{ form_widget(forms[Pinpoint.id].end_time.custom_time) }}
+                                                    </div>
+                                                    {{ form_errors(forms[Pinpoint.id].end_time.custom_date) }}
+                                                    {{ form_errors(forms[Pinpoint.id].end_time.custom_time) }}
+                                                </div>
+                                            </div>
+                                            <div class="form-row col-12 mb-2">
+                                                <div class="col-2">
+                                                    <div class="d-inline-block">
+                                                        <span>{{ forms[Pinpoint.id].repeat_status.vars.label|trans }}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col align-items-center">
+                                                    {{ form_widget(forms[Pinpoint.id].repeat_status, {'label_attr': {'class': 'radio-inline'}, 'attr': {'data-key': Pinpoint.id}}) }}
+                                                    {{ form_errors(forms[Pinpoint.id].repeat_status) }}
+                                                </div>
+                                            </div>
+                                            <div class="col-12 mt-2 d-none" id="pinpoint_repeat_{{ Pinpoint.id }}">
+                                                <div class="form-row mb-2">
+                                                    <div class="col-2">
+                                                        <div class="d-inline-block">
+                                                            <span>{{ forms[Pinpoint.id].PinpointRepeat.start_time.vars.label|trans }}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-inline col align-items-center">
+                                                        {{ form_widget(forms[Pinpoint.id].PinpointRepeat.start_time) }}
+                                                        {{ form_errors(forms[Pinpoint.id].PinpointRepeat.start_time) }}
+                                                    </div>
+                                                </div>
+                                                <div class="form-row mb-2">
+                                                    <div class="col-2">
+                                                        <div class="d-inline-block">
+                                                            <span>{{ forms[Pinpoint.id].PinpointRepeat.end_time.vars.label|trans }}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-inline col align-items-center">
+                                                        {{ form_widget(forms[Pinpoint.id].PinpointRepeat.end_time) }}
+                                                        {{ form_errors(forms[Pinpoint.id].PinpointRepeat.end_time) }}
+                                                    </div>
+                                                </div>
+                                                <div class="form-row mb-2">
+                                                    <div class="col-2">
+                                                        <div class="d-inline-block">
+                                                            <span>{{ forms[Pinpoint.id].PinpointRepeat.week_check.vars.label|trans }}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col align-items-center">
+                                                        {{ form_widget(forms[Pinpoint.id].PinpointRepeat.week_check, {'label_attr': {'class': 'checkbox-inline'}}) }}
+                                                        {{ form_errors(forms[Pinpoint.id].PinpointRepeat.week_check) }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-row col-12 mb-2">
+                                                <div class="col-2">
+                                                </div>
+                                                <div class="col-auto align-items-center">
+                                                    <button class="btn btn-ec-conversion" type="submit">{{ 'admin.common.decision'|trans }}</button>
+                                                </div>
+                                                <div class="col-auto align-items-center">
+                                                    <button class="btn btn-ec-sub action-edit-cancel" type="button">{{ 'admin.common.cancel'|trans }}</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                            <!-- 削除モーダル -->
+                            <div class="modal fade" id="DeleteModal" tabindex="-1" role="dialog"
+                                 aria-labelledby="DeleteModal" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title font-weight-bold">
+                                                {{ 'admin.common.delete_modal__title'|trans }}
+                                            </h5>
+                                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">×</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body text-left">
+                                            <p class="text-left modal-message"><!-- jsでメッセージを挿入 --></p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button class="btn btn-ec-sub" type="button" data-dismiss="modal">
+                                                {{ 'admin.common.cancel'|trans }}
+                                            </button>
+                                            <a class="btn btn-ec-delete" href="#" {{ csrf_token_for_anchor() }}
+                                               data-method="delete" data-confirm="false">
+                                                {{ 'admin.common.delete'|trans }}
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

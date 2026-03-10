@@ -1,0 +1,189 @@
+{#
+/*
+ * Usage
+    <div>
+        {{ render(path('block_ranking')) }}
+    </div>
+ *
+ */
+#}
+{# {{ dump(RankingProducts) }} #}
+{# {{ dump(AutoPlay) }} #}
+
+{% block javascript %}
+<script>
+    $(function(){
+        // RANKING SLICK
+        $('#rankingProudcts').on('setPosition', function(event, slick){
+            let pHeight = $(this).find('IMG').height()
+            $(this).find('.number').each(function(){
+                $(this).css({height:pHeight/2.85, left:pHeight/16.15, top:pHeight/4.4*-1})
+            })
+        });
+        $('#rankingProudcts').slick({
+            infinite: true,
+            slidesToShow: 5,
+            slidesToScroll: 1,
+            initialSlide: 2,
+            centerMode: true,
+            adaptiveHeight:true,    // 
+            prevArrow: '<div class="slick-prev"></div>',
+            nextArrow: '<div class="slick-next"></div>',
+            responsive: [{
+                breakpoint: 768,
+                settings: {
+                    slidesToShow: 2.5,
+                }
+            }],
+            autoplay: {{AutoPlay ? 'true': 'false'}},
+        });
+        $('#rankingProudcts').slick("slickSetOption", "slidesToScroll", 1);
+    });
+</script>
+{% endblock %}
+
+{% if RankingProducts|length > 0 %}
+    <div id="rankingProudcts">
+        {% for RankingProduct in RankingProducts %}
+            <a href="{{ url('product_detail', {'id' : RankingProduct.Product.id}) }}" class="item">
+                <img src="{{ asset(RankingProduct.Product.main_list_image|no_image_product, 'save_image') }}">
+                <div class="name">{{ RankingProduct.Product.name }}</div>
+                <div class="price">
+                    {% if RankingProduct.Product.hasProductClass %}
+                        {% if RankingProduct.Product.getPrice02Min == RankingProduct.Product.getPrice02Max %}
+                            {{ RankingProduct.Product.getPrice02IncTaxMin|price }}
+                        {% else %}
+                            {{ RankingProduct.Product.getPrice02IncTaxMin|price }} ～ {{ RankingProduct.Product.getPrice02IncTaxMax|price }}
+                        {% endif %}
+                    {% else %}
+                        {{ RankingProduct.Product.getPrice02IncTaxMin|price }}
+                    {% endif %}
+                </div>
+                {# カラードットマーク #}
+                {% if RankingProduct.Product.ProductClasses is not empty and RankingProduct.Product.ProductClasses[0].color_code is defined %}
+                    <ul class="colorDot">
+                        {% set ColorCodeList = [] %}
+                        {% for ProductClass in RankingProduct.Product.ProductClasses %}
+                            {% if not (ProductClass.color_code in ColorCodeList) and ProductClass.visible and ProductClass.color_code is not null %}
+                                {% set ColorCodeList = ColorCodeList|merge([ProductClass.color_code]) %}
+                                <li style="background-color: {{ProductClass.color_code}};"></li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                <img src="{{ asset('Ranking/assets/img/number'~SliderDesign~'/'~loop.index~'.svg', 'plugin') }}" class="number">
+            </a>
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% block stylesheet %}
+<style type="text/css">
+    #rankingProudcts{
+        font-family: robot;
+    }
+    #rankingProudcts{
+        {# border: solid 1px red; #}
+    }
+    #rankingProudcts .item{
+        margin: 64px 6px 0;
+        position: relative;
+        color: #525263;
+        text-decoration: none;
+    }
+    #rankingProudcts .item .number{
+        position: absolute;
+        z-index: 1;
+        height: 0px;
+        width: auto;
+        top: 0;
+    }
+    #rankingProudcts IMG{
+        width: 100%;
+    }
+    #rankingProudcts .name{
+        margin: 6px 0 0 6px;
+    }
+    #rankingProudcts .price{
+        font-weight: 900;
+        margin: 6px 0 0 6px;
+    }
+    #rankingProudcts .colorDot{
+        list-style: none;
+        display: flex;
+        margin: 0;
+        padding: 0;
+        margin: 6px 0 0 6px;
+    }
+    #rankingProudcts .colorDot LI{
+        margin-right: 12px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: solid 1px #000;
+    }
+    {# arrow #}
+    #rankingProudcts .slick-arrow{
+        position: absolute;
+        top: 50%;
+        /* transform: translateY(-50%); */
+        width: 50px;
+        height: 50px;
+        /* background: #606060; */
+        background: rgba(0, 0, 0, .7);
+        z-index: 1;
+        opacity: 0.7;
+        cursor: pointer;
+    }
+    #rankingProudcts .slick-arrow::before{
+        position: absolute;
+        content: "";
+        top: 50%;
+        width: 26px;
+        height: 26px;
+        border: solid 1px #FFF;
+        top: 11px;
+        border-width: 1px 0px 0px 1px;
+    }
+    #rankingProudcts .slick-prev{
+        left: 25px;
+    }
+    #rankingProudcts .slick-next{
+        right: 25px;
+    }
+    #rankingProudcts .slick-prev::before{
+        transform: rotate(-45deg);
+        left: 21px;
+    }
+    #rankingProudcts .slick-next::before{
+        transform: rotate(130deg);
+        right: 21px;
+    }
+    @media only screen and (max-width: 767px){
+        #rankingProudcts .slick-track{
+            left: 10%;
+        }
+        #rankingProudcts .slick-arrow{
+            width: 30px;
+            height: 30px;
+        }
+        #rankingProudcts .slick-arrow::before{
+            top: 7px;
+            width: 16px;
+            height: 16px;
+        }
+        #rankingProudcts .slick-prev{
+            left: 0;
+        }
+        #rankingProudcts .slick-next{
+            right: 0;
+        }
+        #rankingProudcts .slick-prev::before{
+            left: 12px;
+        }
+        #rankingProudcts .slick-next::before{
+            right: 12px;
+        }
+    }
+</style>
+{% endblock %}

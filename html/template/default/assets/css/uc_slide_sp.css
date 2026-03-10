@@ -1,0 +1,10 @@
+.slider {
+    display: none;
+}
+.slider.slick-initialized {
+    display: block;
+}
+.slider-height .top-mv {
+    width: 100%;
+    aspect-ratio: 320 / 320;
+}

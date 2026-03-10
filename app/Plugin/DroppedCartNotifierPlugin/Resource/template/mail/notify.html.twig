@@ -1,0 +1,163 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style type="text/css">
+    table#cart_items {
+        border-collapse: collapse;
+    }
+    table#cart_items tr:not(:last-child) td {
+        border-bottom: solid 1px #ececec;
+    }
+    table#cart_items tr:nth-child(even) {
+        background-color: #fdfdfd;
+    }
+    table#cart_items td.prod-img {
+        text-align: center;
+    }
+    table#cart_items td.prod-img img {
+        margin: 10px;
+        max-width: 220px;
+    }
+    table#cart_items td.prod-desc {
+        text-decoration: none;
+        padding-left: 10px;
+    }
+    .prod-name {
+        font-size: 20px;
+        color: #000000;
+        text-decoration: none;
+    }
+    #check_cart {
+        display: block;
+        margin: 10px;
+        padding: 30px 10px 28px;
+        text-decoration: none;
+        text-align: center;
+        color: #000000;
+        font-size: 20px;
+        border: 1px solid #D0D0D0;
+        background-color: #F0F0F0;
+    }
+    #check_cart:hover {
+        background-color: #e7e7e7;
+    }
+</style>
+</head>
+
+<body bgcolor="#F0F0F0" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
+<br>
+<br>
+<div align="center"><a href="{{ url('homepage') }}" style="font-family:Helvetica, Arial, sans-serif;font-size:30px;color:#333333;text-decoration:none;">{{ baseInfo.shop_name }}</a></div>
+<!-- 100% background wrapper (grey background) -->
+<table border="0" width="100%" height="100%" cellpadding="0" cellspacing="0" bgcolor="#F0F0F0" style="border-spacing:0;mso-table-lspace:0pt;mso-table-rspace:0pt;">
+    <tr>
+        <td align="center" valign="top" bgcolor="#F0F0F0" style="background-color:#F0F0F0;border-collapse:collapse;">
+            <br>
+            <!-- 600px container (white background) -->
+            <table id="html-mail-table1" border="0" width="600px" cellpadding="10" cellspacing="0" class="container" style="border-spacing:0;mso-table-lspace:0pt;mso-table-rspace:0pt;">
+                <tr>
+                    <td class="container-padding content" align="left" style="border-collapse:collapse;padding-left:24px;padding-right:24px;padding-top:12px;padding-bottom:12px;background-color:#ffffff;">
+                        <div class="body-text" style="font-family:Helvetica, Arial, sans-serif;font-size:14px;line-height:20px;text-align:left;color:#333333;">
+                            {{ customer.name01 }} {{ customer.name02 }} 様<br/>
+                            <br/>
+                            {{ cartItemCount }}点の商品がカートの中に入ったままです。お買い忘れはありませんか？<br/>
+                            <br/>
+                            {# カート内商品の表示 #}
+                            <table id="cart_items" border="0" width="552" cellpadding="0" cellspacing="0" class="container" style="border-spacing:0;mso-table-lspace:0pt;mso-table-rspace:0pt;">
+                                {% for item in cartItems %}
+                                    {% set productClass = item.ProductClass %}
+                                    {% set product = productClass.Product %}
+                                    <tr>
+                                        <td class="prod-img" align="center" width="240">
+                                            <a target="_blank" href="{{ url('product_detail', {id : product.id} ) }}">
+                                                <img src="{{ absolute_url(asset(product.MainListImage|no_image_product, 'save_image')) }}" alt="{{ product.name }}"/><br/>
+                                            </a>
+                                        </td>
+                                        <td class="prod-desc" align="left" width="312">
+                                            <a target="_blank" href="{{ url('product_detail', {id : product.id} ) }}" style="text-decoration: none;">
+                                                <span class="prod-name">
+                                                    {{ product.name }}
+                                                </span>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                {% set omittedItemCount = cartItemCount - maxCartItem %}
+                                {% if omittedItemCount > 0 %}
+                                    <tr style="background-color: #ffffff">
+                                        <td colspan="2" style="padding: 10px;">
+                                            {{ omittedItemCount }}点の商品は省略されました。次のリンクから詳細をご確認ください
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </table>
+                            <a target="_blank" href="{{ url('cart_force_login') }}" id="check_cart">
+                                カートを確認する
+                            </a>
+                            <br/>
+                            {# おすすめ商品の表示 #}
+                            {% if recommendedItems|length > 0 %}
+                            <br/>
+                            他にも、次の商品がオススメです。
+                            <table id="cart_items" border="0" width="552" cellpadding="0" cellspacing="0" class="container" style="border-spacing:0;mso-table-lspace:0pt;mso-table-rspace:0pt;">
+                                {% for item in recommendedItems %}
+                                    {% set product = item.Product %}
+                                    <tr>
+                                        <td class="prod-img" align="center" width="240">
+                                            <a target="_blank" href="{{ url('product_detail', {id : product.id} ) }}">
+                                                <img src="{{ absolute_url(asset(product.MainListImage|no_image_product, 'save_image')) }}" alt="{{ product.name }}"/><br/>
+                                            </a>
+                                        </td>
+                                        <td class="prod-desc" align="left" width="312">
+                                            <a target="_blank" href="{{ url('product_detail', {id : product.id} ) }}" style="text-decoration: none;">
+                                                <span class="prod-name">
+                                                    {{ product.name }}
+                                                </span>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                            <br/>
+                            {% endif %}
+                            <hr style="border-top: 2px dotted #8c8b8b;">
+                            このメッセージはお客様へのお知らせ専用ですので、<br/>
+                            このメッセージへの返信としてご質問をお送りいただいても回答できません。<br/>
+                            ご了承ください。<br/>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <!--/600px container -->
+            <br>
+            <br>
+            <table id="html-mail-table2" border="0" width="600px" cellpadding="10" cellspacing="0" class="container" style="border-spacing:0;mso-table-lspace:0pt;mso-table-rspace:0pt;">
+                <tr>
+                    <td class="container-padding content footer-text" align="left" style="border-collapse:collapse;font-family:Helvetica, Arial, sans-serif;font-size:12px;line-height:16px;color:#aaaaaa;padding-left:24px;padding-right:24px;padding-top:12px;padding-bottom:12px;background-color:#ffffff;">
+                        本メールは、{{ baseInfo.shop_name }}より送信しております。<br/>
+                        もしお心当たりが無い場合は、その旨 <a href="mailto:{{ baseInfo.email02 }}" style="text-decoration:none;">{{ baseInfo.email02 }}</a> までご連絡いただければ幸いです。<br/>
+                        <br/>
+                        <div class="title" style="font-size:14px;font-family:Helvetica, Arial, sans-serif;font-weight:600;color:#374550;"><a href="{{ url('homepage') }}" style="color:#aaaaaa;text-decoration:none;">{{ baseInfo.shop_name }}</a></div>
+                        <div>copyright &copy; {{ baseInfo.shop_name }} all rights reserved.</div>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+<!--/100% background wrapper-->
+<br>
+<br>
+</body>
+
+</html>

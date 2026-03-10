@@ -1,0 +1,43 @@
+{% if is_sp() %}
+{% set Config = repository('Plugin\\uc_slide_cbd_sp\\Entity\\uc_slide_cbd_spConfig').get %}
+{% set Images = repository('Plugin\\uc_slide_cbd_sp\\Entity\\uc_slide_cbd_spData').getImages %}
+<style>
+.slider{
+  display: none;
+}
+.slider.slick-initialized{
+  display: block; /*slick-initializedが付与されたら表示*/
+}
+.slider-height .top-mv{
+    width:100%;
+    aspect-ratio: 320 / 320;
+}
+</style>
+<!-- uc_slide -->
+<div class="sp">
+    <div class="top-mv">
+        <div class="slideshow"><div class="inr">
+            <ul>
+            {% for image in Images %}
+                <li>
+                {% if image.link_url %}<a href="{{ image.link_url }}" class="slide__link">{% endif %}
+                <div class="slide-item"><img src="{{ url('homepage') }}html/user_data/{{ image.img_url }}" alt="{{ image.img_alt }}"></div>
+                {% if image.link_url %}</a>{% endif %}
+                </li>
+            {% endfor %}
+            </ul>
+        </div></div>
+    </div>
+</div>
+<!-- /uc_slide -->
+<script>
+$('.top-mv ul').slick({
+    fade: false,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    speed: 500,
+    arrows: false,
+    dots: true,
+});
+</script>
+{% endif %}

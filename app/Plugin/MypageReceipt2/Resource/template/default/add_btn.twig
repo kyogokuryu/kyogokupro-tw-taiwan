@@ -1,0 +1,4 @@
+{% set config = repository('Plugin\\MypageReceipt2\\Entity\\MypageReceipt2Config').get %}
+<script>
+	$('.ec-orderRole__summary').prepend("{% if config.mypage_receipt2_enable == 1 and Order.OrderStatus == config.OrderStatus %}<div><a class='btn btn-success btn-lg' href='{{ url("mypage_receipt2", {order_no: Order.order_no}) }}' target='_blank'>領収書／購入明細書<\/a><\/div><br>{% endif %}");
+</script>

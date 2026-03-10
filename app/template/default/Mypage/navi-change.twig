@@ -1,0 +1,85 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+<!-- 会員情報にサロン(親ユーザー)と紐づける項目追加 20220510 kikuzawa -->
+{% set member = repository('Eccube\\Entity\\Customer').findBy({'Salon_id' : app.user.id}) %}
+
+
+
+<div class="ec-navlistRole mypage-top-navi">
+    
+    <h1>{{ '帳號服務'|trans }}</h1>
+
+</div>
+
+<div class="ec-navlistRole mypage-top-navi-login">
+    <!-- login point -->
+
+    <!--
+    <div><a href=""></a></div>
+    -->
+
+    <ul id="navi-navlist" class="ec-navlistRole__navlist mypage-header-navlist row">
+        
+
+        <li class="ec-navlistRole__item static {% if mypageno|default('') == 'change' %}active{% endif %}">
+            <div class="mypage-link-btn"><a href="{{ url('mypage_change') }}">{{ '編輯會員訊息'|trans }}</a></div>
+        </li>
+        
+        <li class="ec-navlistRole__item static {% if mypageno|default('') == 'delivery' %}active{% endif %}">
+            <div class="mypage-link-btn"><a href="{{ url('mypage_delivery') }}">{{ '送貨地址清單'|trans }}</a></div>
+        </li>
+{#
+        <li class="ec-navlistRole__item static {% if mypageno|default('') == 'gmo_card_edit' %}active{% endif %}">
+            <div class="mypage-link-btn"><a href="{{ url('gmo_mypage_card_edit') }}">{{ '编辑卡信息'|trans }}</a></div>
+        </li>
+#}
+        <li class="ec-navlistRole__item  static {% if mypageno|default('') == 'review-list' %}active{% endif %}">
+            <div class="mypage-link-btn"><a href="{{ url('mypage_myreview_list') }}">{{ '歷史紀錄'|trans }}</a></div>
+        </li>
+{#
+        <li class="ec-navlistRole__item static {% if mypageno|default('') == 'logout' %}active{% endif %}">
+            <div class="mypage-link-btn"><a href="{{ url('logout') }}">{{ '登出'|trans }}</a></div>
+        </li>
+#}
+        <li class="ec-navlistRole__item static {% if mypageno|default('') == 'withdraw' %}active{% endif %}">
+            <div class="mypage-link-btn"><a href="{{ url('mypage_withdraw') }}">{{ '取消訂閱'|trans }}</a></div>
+        </li>
+
+    </ul>
+
+
+
+
+</div>
+
+
+
+
+<script>
+    window.addEventListener('load', function(){
+
+        $('#navi-logout').appendTo('#navi-navlist')
+
+    })
+
+    //紹介用URLボタンのコピー処理 20220809 kikuzawa
+    $('.copy').on('click', function(){
+        let url = $('.copy').data('url');
+        let $textarea = $('<textarea></textarea>');
+        $textarea.text(url);
+        $(this).append($textarea);
+        $textarea.select();
+        document.execCommand('copy');
+        $textarea.remove();
+        alert('コピーしました');
+    });
+</script>

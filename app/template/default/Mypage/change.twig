@@ -1,0 +1,327 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+
+{% set body_class = 'mypage' %}
+
+{% set mypageno = 'change' %}
+
+{% form_theme form 'Form/form_div_layout.twig' %}
+
+{% block javascript %}
+    {% include 'Block/zipcode_taiwan_javascrip.twig' %}
+    <script src="//yubinbango.github.io/yubinbango/yubinbango.js" charset="UTF-8"></script>
+    <script type="text/javascript">
+
+        //サロンIDに該当するユーザーの判定 20220510 kikuzawa
+        $('.check-salon').on('click',function(){
+            let salon_id = $('#entry_salon_id').val();
+            if(salon_id){
+                $.ajax({
+                    type: 'POST',
+                    url: $(location).attr('href'),
+                    data: { 'salon_id' : salon_id }
+                })
+                .done(function (data) {
+                    $('.select-salon').text(data.salon_name);
+                });
+            }
+        });
+        $('.account button').on('click',function(){
+            $('.account .inr').toggleClass('on');
+        });
+
+        var email = $('#entry_email').val()
+        if(email.match(/example\.com$/)){
+            $('#entry_email').val("")
+        }
+
+    </script>
+{% endblock javascript %}
+
+{% block main %}
+    
+
+    <div class="ec-layoutRole__main">
+        <div class="ec-mypageRole">
+
+            {% include 'Mypage/navi-change.twig' %}
+        
+        </div>
+
+        {% if(is_buy_ready) %}
+        {% else %}
+        <div class="alert alert-danger">要購買產品和使用積分,您必須填寫您的姓名、地址、電子信箱地址</div>
+        {% endif %}
+
+        <div class="ec-mypageRole">
+            <div class="ec-editRole">
+                <div class="ec-off1Grid">
+                    <div class="ec-off1Grid__cell">
+                        <form method="post" action="{{ url('mypage_change') }}" novalidate class="h-adr">
+                            <span class="p-country-name" style="display:none;">Japan</span>
+                            {{ form_widget(form._token) }}
+                            <div class="ec-borderedDefs">
+                                <dl>
+                                    <dt>
+                                        {{ form_label(form.name, '姓名', { 'label_attr': { 'class': 'ec-label' }}) }}
+                                    </dt>
+                                    <dd>
+                                        <div class="ec-halfInput{{ has_errors(form.name.name01, form.name.name02) ? ' error'}}">
+                                            {{ form_widget(form.name.name01, { 'attr': { 'placeholder': '姓' }}) }}
+                                            {{ form_widget(form.name.name02, { 'attr': { 'placeholder': '名' }}) }}
+                                            {{ form_errors(form.name.name01) }}
+                                            {{ form_errors(form.name.name02) }}
+                                        </div>
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dt>
+                                        {{ form_label(form.company_name, '公司名稱', { 'label_attr': { 'class': 'ec-label' }}) }}
+                                    </dt>
+                                    <dd>
+                                        <div class="ec-halfInput{{ has_errors(form.company_name) ? ' error' }}">
+                                            {{ form_widget(form.company_name) }}
+                                            {{ form_errors(form.company_name) }}
+                                        </div>
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dt>
+                                        {{ form_label(form.address, '地址', { 'label_attr': { 'class': 'ec-label' }}) }}
+                                    </dt>
+                                    <dd>
+                                        <div class="twzipcode">
+											<div class="ec-zipInput{{ has_errors(form.postal_code) ? ' error' }}">
+												<span>{{ '郵遞區號'|trans }}</span>
+												{{ form_widget(form.postal_code, { 'attr': { 'data-role': 'zipcode' } })}}
+												{{ form_errors(form.postal_code) }}
+											</div>
+											<div class="ec-select{{ has_errors(form.address.pref) ? ' error' }}">
+												{{ form_widget(form.address.pref, { 'attr': { 'data-role': 'county' } }) }}
+												{{ form_errors(form.address.pref) }}
+											</div>
+											<div class="ec-input{{ has_errors(form.address.addr01) ? ' error' }}">
+												{{ form_widget(form.address.addr01, { 'attr': { 'placeholder': 'admin.common.address_sample_01', 'data-role': 'district' }}) }}
+												{{ form_errors(form.address.addr01) }}
+											</div>
+											<div class="ec-input{{ has_errors(form.address.addr02) ? ' error' }}">
+												{{ form_widget(form.address.addr02,  { 'attr': { 'placeholder': '大樓名稱' }}) }}
+												{{ form_errors(form.address.addr02) }}
+											</div>
+										</div>
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dt>
+                                        {{ form_label(form.phone_number, '電話號碼', { 'label_attr': { 'class': 'ec-label' }}) }}
+                                    </dt>
+                                    <dd>
+                                        <div class="ec-telInput{{ has_errors(form.phone_number) ? ' error' }}">
+                                            {{ form_widget(form.phone_number) }}
+                                            {{ form_errors(form.phone_number) }}
+                                        </div>
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dt>
+                                        {{ form_label(form.email, '電子信箱地址', { 'label_attr': { 'class': 'ec-label' }}) }}
+                                    </dt>
+                                    <dd>
+                                        <div class="ec-input{{ has_errors(form.email) ? ' error' }}">
+                                            {{ form_widget(form.email, { 'attr': { 'placeholder': '例子：ec-cube@example.com' }}) }}
+                                            {{ form_errors(form.email) }}
+                                        </div>
+{#                                         <div class="ec-input{{ has_errors(form.email.second) ? ' error' }}">
+                                            {{ form_widget(form.email.second, { 'attr': { 'placeholder': '请再次输入确认' }}) }}
+                                            {{ form_errors(form.email.second) }}
+                                        </div> #}
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dt>
+                                        {{ form_label(form.password, '密碼', { 'label_attr': {'class': 'ec-label' }}) }}
+                                    </dt>
+                                    <dd>
+                                        <div class="ec-input{{ has_errors(form.password) ? ' error' }}">
+                                            {{ form_widget(form.password, {
+                                                'attr': { 'placeholder': '英文數字符號%min%〜%max%個'|trans({ '%min%': eccube_config.eccube_password_min_len, '%max%': eccube_config.eccube_password_max_len }) },
+                                                'type': 'password'
+                                            }) }}
+                                            {{ form_errors(form.password) }}
+                                        </div>
+{#                                         <div class="ec-input{{ has_errors(form.password.second) ? ' error' }}">
+                                            {{ form_widget(form.password.second, {
+                                                'attr': { 'placeholder': '请再次输入确认'|trans },
+                                                'type': 'password'
+                                            }) }}
+                                            {{ form_errors(form.password.second) }}
+                                        </div> #}
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dt>
+                                        {{ form_label(form.birth, '出生日期', { 'label_attr': {'class': 'ec-label' }}) }}
+                                    </dt>
+                                    <dd>
+                                        <div class="ec-birth{{ has_errors(form.birth) ? ' error'}}">
+                                            {{ form_widget(form.birth.year) }}<span>/</span>
+                                            {{ form_widget(form.birth.month) }}<span>/</span>
+                                            {{ form_widget(form.birth.day) }}
+                                            {{ form_errors(form.birth) }}
+                                        </div>
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dt>
+                                        {{ form_label(form.sex, '性别', { 'label_attr': { 'class': 'ec-label' }}) }}
+                                    </dt>
+                                    <dd>
+                                        <div class="ec-radio{{ has_errors(form.sex) ? ' error' }}">
+                                            {{ form_widget(form.sex) }}
+                                            {{ form_errors(form.sex) }}
+                                        </div>
+                                    </dd>
+                                </dl>
+                                {# <dl>
+                                    <dt>
+                                        {{ form_label(form.job, '职业', { 'label_attr': {'class': 'ec-label' }}) }}
+                                    </dt>
+                                    <dd>
+                                        <div class="ec-select{{ has_errors(form.job) ? ' error' }}">
+                                            {{ form_widget(form.job) }}
+                                            {{ form_errors(form.job) }}
+                                        </div>
+                                    </dd>
+                                </dl> #}
+
+                                {# エンティティ拡張の自動出力 #}
+                                {% for f in form if f.vars.eccube_form_options.auto_render %}
+                                    {% if f.vars.eccube_form_options.form_theme %}
+                                        {% form_theme f f.vars.eccube_form_options.form_theme %}
+                                        {{ form_row(f) }}
+                                    {% else %}
+                                        <dl>
+                                            <dt>
+                                                {{ form_label(f) }}
+                                            </dt>
+                                            <dd>
+                                                <div class="{{ f.vars.eccube_form_options.style_class }}{{ has_errors(f) ? ' error' }}">
+                                                    {{ form_widget(f) }}
+                                                    {{ form_errors(f) }}
+                                                </div>
+                                            </dd>
+                                        </dl>
+                                    {% endif %}
+                                {% endfor %}
+
+                                <!-- 会員情報にサロン(親ユーザー)と紐づける項目追加 20220510 kikuzawa -->
+                                {# <dl>
+                                    <dt>
+                                        {{ form_label(form.salon_id, '推荐福利 ID', { 'label_attr': { 'class': 'ec-label' }}) }}
+                                    </dt>
+                                    <dd>
+                                        {% if salon_selected_id %}
+                                            {{ form_widget(form.salon_id,{ type: 'hidden' }) }}
+                                            {{ salon_selected_id }}
+                                        {% else %}
+                                            <div class="ec-halfInput{{ has_errors(form.salon_id) ? ' error' }}">
+                                                {{ form_widget(form.salon_id) }}
+                                                {{ form_errors(form.salon_id) }}
+                                            </div>
+                                        {% endif %}
+                                        <div class="check-salon">沙龙确认</div>
+                                        <div class="select-salon"></div>
+                                    </dd>
+                                </dl> #}
+                                <div class="account">
+                                    <div class="inr">
+                                        <dl>
+                                            <dt>
+                                                {{ form_label(form.financial, '金融机构名称', { 'label_attr': { 'class': 'ec-label' }}) }}
+                                            </dt>
+                                            <dd>
+                                                <div class="ec-halfInput{{ has_errors(form.financial) ? ' error' }}">
+                                                    {{ form_widget(form.financial) }}
+                                                    {{ form_errors(form.financial) }}
+                                                </div>
+                                            </dd>
+                                        </dl>
+                                        <dl>
+                                            <dt>
+                                                {{ form_label(form.branch, '分店名称', { 'label_attr': { 'class': 'ec-label' }}) }}
+                                            </dt>
+                                            <dd>
+                                                <div class="ec-halfInput{{ has_errors(form.branch) ? ' error' }}">
+                                                    {{ form_widget(form.branch) }}
+                                                    {{ form_errors(form.branch) }}
+                                                </div>
+                                            </dd>
+                                        </dl>
+                                        <dl>
+                                            <dt>
+                                                {{ form_label(form.account_type, '帐户类型', { 'label_attr': { 'class': 'ec-label' }}) }}
+                                            </dt>
+                                            <dd>
+                                                <div class="ec-radio{{ has_errors(form.account_type) ? ' error' }}">
+                                                    {{ form_widget(form.account_type) }}
+                                                    {{ form_errors(form.account_type) }}
+                                                </div>
+                                            </dd>
+                                        </dl>
+                                        <dl>
+                                            <dt>
+                                                {{ form_label(form.account_number, '帐号', { 'label_attr': { 'class': 'ec-label' }}) }}
+                                            </dt>
+                                            <dd>
+                                                <div class="ec-halfInput{{ has_errors(form.account_number) ? ' error' }}">
+                                                    {{ form_widget(form.account_number) }}
+                                                    {{ form_errors(form.account_number) }}
+                                                </div>
+                                            </dd>
+                                        </dl>
+                                        <dl>
+                                            <dt>
+                                                {{ form_label(form.account_name, '账户持有人姓名（假名）', { 'label_attr': { 'class': 'ec-label' }}) }}
+                                            </dt>
+                                            <dd>
+                                                <div class="ec-halfInput{{ has_errors(form.account_name) ? ' error' }}">
+                                                    {{ form_widget(form.account_name) }}
+                                                    {{ form_errors(form.account_name) }}
+                                                </div>
+                                            </dd>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="ec-RegisterRole__actions">
+                                <div class="ec-off4Grid">
+                                    <div class="ec-off4Grid__cell">
+                                        <button type="submit"
+                                                class="ec-blockBtn--cancel">{{ '儲存'|trans }}</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ec-role row mt60">
+            <div class="col-xs-8">
+                <a href="{{ url('mypage') }}" class="mypage-back">{{ '我的帳號'|trans }}</a>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

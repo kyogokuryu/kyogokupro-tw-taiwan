@@ -1,0 +1,94 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+
+{% set body_class = 'cart_page' %}
+
+{% block main %}
+		<article id="cart" style="margin-top:-1.5em;margin-bottom:-70px">
+			<section>
+            
+<div class="ec-role">
+    <div class="ec-pageHeader complete">
+        <h1>{{ '訂單已完成'|trans }}</h1>
+    </div>
+</div>
+
+<div class="ec-cartCompleteRole complete">
+    <div class="ec-off3Grid ec-text-ac">
+        <div class="ec-off4Grid__cell orderendarea" style="margin:auto;">
+            <div class="ec-reportHeading complete">
+                <h2 style="color:red;">訂單已完成</h2>
+            </div>
+            <p class="ec-reportDescription complete">
+                {% if Order.id %}
+                    <strong>{{ '訂單編號'|trans }} : <span style="font-size:18px;">{{ Order.orderNo }}</span></strong><br>
+                {% endif %}
+
+
+            {% if Order.complete_message is not empty %}
+                {{ Order.complete_message|raw }}<br>
+            {% endif %}
+            如果有任何問題可以直接透過Line官方詢問客服。
+            </p>
+
+
+        </div>
+    </div>
+</div>
+<span id="a8sales"></span>
+<script src="https://static.appront.net/toridori_tracking_v2.js"></script>
+<script>
+    {% set totalPrice = 0 %}
+     {% for ProductOrderItem in Order.ProductOrderItems %}
+      {% set totalPrice = totalPrice + (ProductOrderItem.price * ProductOrderItem.quantity) %}
+    {% endfor %}
+    let map = {
+    'p':1825,
+    'oi': "{{ Order.id }}",
+    'sales_type': 'total',
+    'total_sales': {{ totalPrice }}
+    }
+    toridori_tracking_v2(map)
+    console.log(map)
+</script>
+<script src="//statics.a8.net/a8sales/a8sales.js"></script>
+<script>
+  {% set totalPrice = 0 %}
+  a8sales({
+    "pid": "s00000023337001",
+    "order_number": "{{ Order.order_no }}",
+    "currency": "{{ Order.currency_code }}",
+    "items": [
+    {% for ProductOrderItem in Order.ProductOrderItems %}
+      {% set totalPrice = totalPrice + (ProductOrderItem.price * ProductOrderItem.quantity) %}
+      {
+        "code": "{{ ProductOrderItem.product_code }}",
+        "price": {{ ProductOrderItem.price }},
+        "quantity": {{ ProductOrderItem.quantity }}
+      },
+    {% endfor %}
+    ],
+    "total_price": {{ totalPrice }}
+  });
+</script>
+
+{% if Order.id %}
+    {% set Items = [] %}
+    {% for OrderItem in Order.MergedProductOrderItems %}
+        {% set Items = Items|merge([OrderItem.product_code~"."~OrderItem.quantity~"."~OrderItem.price|round]) %}
+    {% endfor %}
+    <script type="text/javascript" src="https://js.felmat.net/fmcv.js?adid=T7503W&uqid={{ Order.orderNo }}&item={{ Items|join(':') }}"></script>
+{% endif %}
+
+			</section>
+		</article>
+{% endblock %}

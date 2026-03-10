@@ -1,0 +1,280 @@
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['store', 'plugin', 'plugin_list'] %}
+
+{% block title %}かご落ち通知メール{% endblock %}
+{% block sub_title %}設定確認{% endblock %}
+
+{% block javascript %}
+<script>
+    const clipButton = document.querySelector('#cron-path button');
+    clipButton.addEventListener('click', function (event) {
+        const copyTarget = document.querySelector("#cron-path input");
+        copyTarget.select();
+        document.execCommand("Copy");
+    });
+</script>
+{% endblock %}
+
+{% block main %}
+
+    {% if isConfigEmpty %}
+        <div class="c-contentsArea__cols">
+            <div class="c-contentsArea__primaryCol">
+                <div class="c-primaryCol">
+                    <p>
+                        かご落ちメールを自動送信するためには、次のボタンから初期設定を行ってください
+                    </p>
+                    <a class="btn btn-primary btn-block btn-lg" style="color: #fff" href="{{ url('dropped_cart_notifier_initialize') }}">
+                        初期設定を行う
+                    </a>
+
+                </div>
+            </div>
+        </div>
+
+    {% else %}
+        {% form_theme form '@admin/Form/bootstrap_4_horizontal_layout.html.twig' %}
+        <form method="post" action="{{ url('dropped_cart_notifier_plugin_admin_config') }}">
+            {{ form_widget(form._token) }}
+            <div class="c-contentsArea__cols">
+                <div class="c-contentsArea__primaryCol">
+                    <div class="c-primaryCol">
+                        <div class="card rounded border-0 mb-4">
+                            <div class="card-header">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <div class="d-inline-block" data-toggle="tooltip" data-placement="top"
+                                             title="Tooltip">
+                                            <span class="card-title">cron設定</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 text-right">
+                                        <a data-toggle="collapse" href="#send_config" aria-expanded="false"
+                                           aria-controls="send_config">
+                                            <i class="fa fa-angle-up fa-lg"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="collapse show ec-cardCollapse" id="send_config">
+                                <div class="card-body">
+                                    <div class="row mb-2">
+                                        <div class="col mb-0">
+                                            <p>
+                                                かご落ちメールを配信するためには、サーバにcronの設定をする必要があります。
+                                                設定方法はホスティング会社とサーバプランによって、サーバの管理画面から行う方法と直接コマンドで設定する方法があります。
+                                                詳細はREADMEをご確認ください。
+                                            </p>
+                                            <p>
+                                                設定時の実行ファイルパスは以下となります。
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-3">
+                                            <label>cronに設定する実行ファイルのパス</label>
+                                        </div>
+                                        <div class="col">
+                                            <div>
+                                                <div class="input-group" id="cron-path">
+                                                    <input type="text" readonly="readonly" class="form-control" value="{{ executePath }}">
+                                                    <div class="input-group-append">
+                                                        <button class="btn btn-outline-secondary" type="button" style="border-color: #9aa4ae;">
+                                                            <i class="fas fa-clipboard"></i> クリップボードにコピー
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col mb-0">
+                                            <p>
+                                                ※ cronの設定と配信設定が完了すると、かご落ちメールが送信できる状態となります。
+                                                メールは自動で送信されますので、ご注意ください。
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card rounded border-0 mb-4">
+                            <div class="card-header">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <div class="d-inline-block" data-toggle="tooltip" data-placement="top"
+                                             title="Tooltip">
+                                            <span class="card-title">配信設定</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 text-right">
+                                        <a data-toggle="collapse" href="#send_config" aria-expanded="false"
+                                           aria-controls="send_config">
+                                            <i class="fa fa-angle-up fa-lg"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="collapse show ec-cardCollapse" id="send_config">
+                                <div class="card-body">
+                                    <div class="row mb-2">
+                                        <p class="col mb-2">
+                                            ※ 配信設定については、二重送信や送信漏れの発生する可能性があるため、運用開始後の変更をおすすめしていません。
+                                            日数を変更したい場合は、<a href="{{ url('dropped_cart_notifier_initialize') }}">こちら</a>から再度変更することが可能です。
+                                        </p>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-3">
+                                            <label>最後にカートが更新されてからメールを送るまでの日数</label>
+                                        </div>
+                                        <div class="col">
+                                            {{ form_widget(form.past_day_to_notify, {'attr': {'readonly': ''}}) }}
+                                            {{ form_errors(form.past_day_to_notify) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card rounded border-0 mb-4">
+                            <div class="card-header">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <div class="d-inline-block" data-toggle="tooltip" data-placement="top"
+                                             title="Tooltip">
+                                            <span class="card-title">コンテンツ設定</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 text-right">
+                                        <a data-toggle="collapse" href="#contents_config" aria-expanded="false"
+                                           aria-controls="contents_config">
+                                            <i class="fa fa-angle-up fa-lg"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="collapse show ec-cardCollapse" id="contents_config">
+                                <div class="card-body">
+                                    <div class="row mb-2">
+                                        <div class="col-3">
+                                            <label>カート内商品の最大表示数 (1～10)</label>
+                                        </div>
+                                        <div class="col">
+                                            {{ form_widget(form.max_cart_item) }}
+                                            {{ form_errors(form.max_cart_item) }}
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-3">
+                                            <label>おすすめ商品の最大表示数 (0～10)</label>
+                                        </div>
+                                        <div class="col">
+                                            {{ form_widget(form.max_recommended_item) }}
+                                            {{ form_errors(form.max_recommended_item) }}
+                                            <p class="mt-1">
+                                                {% if isRecommendPluginInstalled %}
+                                                    <i class="fas fa-check-circle fa-lg" style="color: #20865a"></i>
+                                                    <a href="https://www.ec-cube.net/products/detail.php?product_id=1757" target="_blank">おすすめ商品管理プラグイン</a>がインストールされているため、おすすめ商品がメールに表示されます<br/>
+                                                {% else %}
+                                                    <i class="fas fa-exclamation-triangle fa-lg"></i>
+                                                    <a href="https://www.ec-cube.net/products/detail.php?product_id=1757" target="_blank">おすすめ商品管理プラグイン</a>がインストールされていないため、おすすめ商品はメールに表示されません<br/>
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-3">
+                                            <label>メールの件名</label>
+                                        </div>
+                                        <div class="col">
+                                            {{ form_widget(form.mail_subject) }}
+                                            {{ form_errors(form.mail_subject) }}
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-3">
+                                            <div class="d-inline-block" data-tooltip="true" data-placement="top" title="利用客がアクセスするトップページのURLをここに入力します。プラグインをインストールした後にドメイン変更などでTOPページのURLが変更となった場合は再設定をお願いします。"><label>トップページURL</label><i class="fa fa-question-circle fa-lg ml-1"></i></div>
+                                        </div>
+                                        <div class="col">
+                                            {{ form_widget(form.base_url) }}
+                                            {{ form_errors(form.base_url) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card rounded border-0 mb-4">
+                            <div class="card-header">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <div class="d-inline-block" data-toggle="tooltip" data-placement="top"
+                                             title="Tooltip">
+                                            <span class="card-title">動作確認</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 text-right">
+                                        <a data-toggle="collapse" href="#send_config" aria-expanded="false"
+                                           aria-controls="send_config">
+                                            <i class="fa fa-angle-up fa-lg"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="collapse show ec-cardCollapse" id="send_config">
+                                <div class="card-body">
+                                    <div class="row mb-2">
+                                        <div class="col-3">
+                                            <div class="d-inline-block" data-tooltip="true" data-placement="top" title="有効にすると、かご落ちメールの送信完了を管理者メールアドレスにお知らせします">
+                                                <label>管理者宛て完了メール</label><i class="fa fa-question-circle fa-lg ml-1"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            {{ form_widget(form.is_send_report_mail) }}
+                                            {{ form_errors(form.is_send_report_mail) }}
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-2">
+                                        <div class="col-3">
+                                            テストメール送信
+                                        </div>
+                                        <div class="col">
+                                            <a href="{{ url('dropped_cart_notifier_check_confirm') }}" class="btn btn-secondary btn-block">
+                                                テストメール送信画面へ
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="c-conversionArea">
+                <div class="c-conversionArea__container">
+                    <div class="row justify-content-between align-items-center">
+                        <div class="col-6">
+                            <div class="c-conversionArea__leftBlockItem"></div>
+                        </div>
+                        <div class="col-6">
+                            <div class="row align-items-center justify-content-end">
+                                <div class="col-auto">
+                                    <button class="btn btn-ec-conversion px-5" type="submit">設定を保存</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    {% endif %}
+{% endblock %}

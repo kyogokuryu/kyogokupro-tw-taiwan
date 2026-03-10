@@ -1,0 +1,340 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'home_frame.twig' %}
+
+{% import _self as stars %}
+
+{# 星テキスト生成用マクロ #}
+{% macro stars(positive, negative) %}
+    {% set positive_stars = ["", "★", "★★", "★★★", "★★★★", "★★★★★"] %}
+    {% set negative_stars = ["", "☆", "☆☆", "☆☆☆", "☆☆☆☆", "☆☆☆☆☆"] %}
+    {{ positive_stars[positive] }}{{ negative_stars[negative] }}
+{% endmacro %}
+
+{% set body_class = 'front_page' %}
+
+{% block main %}
+	{{ include('Block/banner.twig') }}
+
+	{# <div class="top-content01"><a href="{{ url('user_data', {'route': 'point'}) }}">
+		新規会員登録でポイントプレゼント中<br><span>￥1,000TWD分</span>プレゼント
+	</a></div> #}
+
+	{# <div class="top-news">{{ get_wp_news()|raw }}</div> #}
+
+	{# <div class="top-banner">{{ include('Block/uc_banner_block.twig') }}</div> #}
+
+	<!-- 診断　カラーシャンプー -->
+	{# <div class="banner mt20"><a href="/personalcolor_diagnosis/index.html"><img src="/html/template/default/assets/img/top/banner-color-sindan.png" loading="lazy"></a></div> #}
+
+	<!-- ranking -->
+	<div id="products_ranking"></div>
+
+	<!-- Gift card -->
+	{# <div class="gift_bana"><a href="{{ url('product_list', {'category_id': 39}) }}"><img loading="lazy"  src="/html/template/default/assets/img/top/banner-gift.png"></a></div> #}
+
+	<!-- family -->
+	{# <div class="family_bana"><a href="{{ url('product_detail', {'id': get_prime_product_id()}) }}"><img loading="lazy"  src="/html/template/default/assets/img/top/family_bana.png"></a></div> #}
+
+	<!-- time sale -->
+	{# <div class="top-sale">{{ include('Block/category_product01.twig') }}</div> #}
+
+	{# {{ include('Block/random_products.twig') }} #}
+
+	<!-- 診断 -->
+	{# <div class="mb40 text-center"><a href="https://kyogokucbd.com/k-shindan/" target="_blank"><img loading="lazy"  src="{{ asset('assets/img/top/sindanx3.png')}}"></a></div> #}
+
+	<!-- おすすめ -->
+	{# <div class="top-product mt40">{{ include('Block/recommend_product_block.twig',{'rec_type':0}) }}</div> #}
+
+	<!-- teiki card -->
+	{# <div class="teiki_bana mt30"><a href="{{ url('product_list', {'category_id': 38}) }}"><img loading="lazy"  src="/html/template/default/assets/img/top/banner-teiki.png"></a></div> #}
+
+	<!-- note -->
+	{# {{ include('Block/wp_feed_note_block.twig') }} #}
+
+	<!-- ラグジュアリーコンテンツ -->
+	{# <div class="mt20 text-center">
+		<a href="{{ url('product_list') }}?category_id=15"><img loading="lazy"  src="{{ asset('assets/img/top/btn509x3.png') }}"></a>
+	</div> #}
+
+	{# <div class="mt20 text-center">
+		<a href="{{ url('review_list') }}"><img loading="lazy"  src="{{ asset('assets/img/top/btn568x3.png') }}"></a>
+	</div> #}
+	
+	{# <div class="top-category mt20"> #}
+		{# <div class="box">
+			<a href="{{ url('product_list') }}?category_id=8">
+				<div class="image"><h2><img loading="lazy"  src="{{ asset('assets/img/top/category-img01.jpg','user_data') }}" alt="美容師がおすすめする市販のカラー剤"></h2></div>
+				<div class="title">ヘアカラー剤</div>
+			</a>
+		</div>
+		<div class="box">
+			<a href="{{ url('product_list') }}?category_id=9">
+				<div class="image"><h2><img loading="lazy"  src="{{ asset('assets/img/top/category-img02.jpg','user_data') }}" alt="美容師愛用おすすめの専用商品一覧"></h2></div>
+				<div class="title">ヘアカラー関連</div>
+			</a>
+		</div>
+		<div class="box">
+			<a href="{{ url('product_list') }}?category_id=12">
+				<div class="image"><h2><img loading="lazy"  src="{{ asset('assets/img/top/category-img03.jpg','user_data') }}" alt="美容師がおすすめするヘアケア"></h2></div>
+				<div class="title">ヘアケア</div>
+			</a>
+		</div> #}
+
+		{# <div class="mt20">
+			<a class="category_btn" href="/category">カテゴリ一覧を見る</a>
+		</div>
+	</div> #}
+
+	{# {{ include('Block/wp_feed_block.twig',{cate:'special/verification'} )}} #}
+
+	{# <div class="mt20 top-slide new">
+		{{ include('Block/uc_newitems_block.twig') }}
+	</div> #}
+
+	<div class="top-slide best" style="margin-top: 30px;">
+		<div>
+			<div class="ul-category" aria-label="Horizontal menu" role="navigation">
+				<a href="{{ path('homepage') }}" class="{{ CurrentCategory is empty ? 'active' : '' }}">熱門嚴選</a>
+				{% for Category in Categories %}
+					<a href="{{ path('homepage', {'category_id': Category.id}) }}"
+						class="{{ CurrentCategory == Category.id ? 'active' : '' }}">
+					{{ Category.name }}
+					</a>
+				{% endfor %}
+			</div>
+			<div class="calendar">
+				<img src="{{asset('assets/img/icon/calendar.svg', 'user_data')}}" alt="Calendar">
+				<a href="/mypage">每天簽到</a>
+				<a href="/mypage">點數獲得</a>
+			</div>
+			<div class="selection-popular">
+				{% if CurrentCategory is empty %}
+					熱門嚴選
+				{% else %}
+					{% set selectedCategory = Categories|filter(c => c.id == CurrentCategory)|first %}
+					{{ selectedCategory ? selectedCategory.name : '熱門嚴選' }}
+				{% endif %}
+			</div>
+		</div>
+		{# <p class="title">ベストセラー</p> #}
+		{# <ul> #}
+		<div style="display:flex; flex-wrap: wrap; justify-content: space-evenly; margin-top: 30px;">
+		{% for Product in Products %}
+			<div style="width:40%; margin-right: 10px; margin-left:10px; margin-bottom: 15px;">
+				<a href="{{ url('product_detail', {'id': Product.id}) }}">
+					<div class="image">
+					{% for ProductImage in Product.ProductImage %}
+						{% if ProductImage.category == 0 and ProductImage.sort_no == 1 %}
+							<div class="slide-item" data-index="{{ loop.index0 }}"><img loading="lazy"  src="{{ asset(ProductImage, 'save_image') }}"></div>
+						{% endif %}
+					{% else %}
+						<div class="slide-item" data-index="{{ loop.index0 }}"><img loading="lazy"  src="{{ asset(''|no_image_product, 'save_image') }}"/></div>
+					{% endfor %}
+					</div>
+					<div class="info ec-shelfGrid__item">
+						<h2 class="name">{{ Product.name }}</h2>
+
+						<p class="review">
+							{% set positive_star = ReviewAveList[Product.id] %}
+							{% set nagative_star = 5 - positive_star %}
+							<span class="star">{{ stars.stars(positive_star, nagative_star) }}</span>
+							<span style="margin-left: 5px;color: #379fff;">({{ ReviewCntList[Product.id] }})</span>
+						</p>
+						<p class="review">
+							<span style="font-weight: bold;">累計已購買超過{{ get_product_sell_count(Product.id) }}件</span>
+						</p>
+						{# {{ include('Block/point_block.twig',{'price':Product.getPrice02IncTaxMin}) }} #}
+					</div>
+				</a>
+				<div class="sell-flex">
+					<a href="{{ url('product_detail', {'id': Product.id}) }}">
+						<p class="price02-default">
+						{% if Product.hasProductClass %}
+							{% if Product.getPrice02Min == Product.getPrice02Max %}
+								{{ Product.getPrice02IncTaxMin|price }}
+							{% else %}
+								{{ Product.getPrice02IncTaxMin }} ～ {{ Product.getPrice02IncTaxMax|price }}
+							{% endif %}
+						{% else %}
+							{{ Product.getPrice02IncTaxMin|price }}
+						{% endif %}
+						</p>
+					</a>
+
+					{# {% set sc = get_product_sell_count(Product.id) %}
+					{% if sc %}
+					<div class="sell_product_page sell_count_wrap">
+						<span class="sell_count">{{ sc }}</span><span class="sell_count_unit">個</span><br><span class="sell_count_label"> 累計販売数</span>
+					</div>
+					{% endif %} #}
+				</div>
+				<div class="list-tag" style="display: flex; gap: 10px; flex-wrap: nowrap; justify-content: space-between; align-items: center;">
+					<div style="display: flex; gap: 10px; flex-wrap: wrap;">
+						{% for Tag in Product.Tags %}
+							<span class="tag" style="font-size: 10px;
+								font-weight: 700;
+								background: #FF9000;
+								color: #fff;
+								display: flex;
+								align-items: center;
+								justify-content: center;
+								padding: 2px 5px;
+								border-bottom-right-radius: 5px;
+								border-top-left-radius: 5px;">
+								{{ Tag }}
+							</span>
+						{% endfor %}
+					</div>
+					<div class="right block-add-cart">
+						{{ include('Block/add_cart_button.twig',{'product':Product}) }}
+					</div>
+				</div>
+
+					
+			</div>
+			{% if loop.index == 8 %}
+				<a href="/personalcolor_diagnosis" class="banner">
+					<img src="/images/personal-banner.svg">
+				</a>
+			{% endif %}
+		{% else %}
+    		<p class="no-data">沒有商品。</p>
+		{% endfor %}
+		</div>
+		{# </ul> #}
+	</div>
+
+
+	<div class="top-navi">
+		{# <div class="upper">
+			<ul>
+				<li><a href="{{ url('homepage') }}/note/special/">特集一覧</a></li>
+				<li><a href="{{ url('homepage') }}/note/recipe/">カラーレシピ</a></li>
+			</ul>
+		</div> #}
+		{# <div class="middle">
+			<ul>
+				<li><a href="https://lin.ee/28rac17" target="_blank">
+					<span><b>今すぐ友達追加</b>便利でお得な情報をゲット</span>
+				</a></li>
+			</ul>
+		</div> #}
+		{# <div class="bottom">
+			<ul>
+				<li><a href="https://kyogokusalon.com/" target="_blank"><img loading="lazy"  src="/html/template/default/assets/img/top/bn-salon.png" alt="FLAGSHIP PARTNER"></a></li>
+				<li><a href="https://kyogokupro.com/academy/"><img loading="lazy"  style="margin-left: -10px;margin-bottom: -15px;" src="/html/template/default/assets/img/top/bn-academy.png" alt="KYOGOKU ACADEMY"></a></li>
+			</ul>
+		</div> #}
+	</div>
+
+
+	{# <div class="mt50 new">
+	{{ include('Block/wp_feed_block.twig',{cate:'special/kg'} )}}
+	</div> #}
+
+	{# <div class="mt50"><a href="/products/detail/125"><img loading="lazy"  src="/html/template/default/assets/img/banner_bd.png"></a></div> #}
+	
+	{# <div class="top-product mt30">{{ include('Block/recommend_product_block.twig',{'rec_type':1}) }}</div>
+
+	<div>{{ include('Block/faq_block.twig') }}</div> #}
+
+	<style>
+	.ec-layoutRole__mainWithColumn {
+		overflow:visible !important;
+	}
+	.btn-tag {
+		height: 28px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 5px 10px;
+		background: #FF9000;
+		border-radius: 8px 0 8px 0;
+		color: #fff;
+		font-size: 12px;
+		font-weight: 600;
+		cursor: pointer;
+		text-decoration: none;
+	}
+	.ul-category{
+		height: 40px;
+		display: flex;
+		gap: 20px;
+		overflow-x: auto;
+		overflow-y: hidden;
+		white-space: nowrap;
+		padding: 8px 10px;
+		scroll-behavior: smooth;
+	}
+	.ul-category::-webkit-scrollbar{ height: 0; }
+	.ul-category{ scrollbar-width: none; }
+
+	.ul-category a{
+		text-decoration: none;
+		font: 700 18px/1.2 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+		color: #9B9B9B;
+		position: relative;
+		padding-bottom: 4px;
+	}
+
+	.ul-category a.active{
+		color: #000;
+		font-weight: 900;
+		
+	}
+
+	.ul-category a.active::after{
+		content: "";
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		height: 4px;
+		width: 100%;
+		background: #000;
+		border-radius: 2px;
+	}
+	
+	.calendar{
+		background: #FCF5E5;
+		height: 30px;
+	}
+
+	.calendar img{
+		padding: 5px;
+	}
+
+	.calendar a{
+		font-size: 12px;
+		line-height: 30px
+	}
+
+	.selection-popular{
+		height: 40px;
+		line-height: 40px;
+		background: #000000;
+		color: #fff;
+		font-size: 18px;
+		font-weight: 700;
+		text-align: center;
+		align-items: center;
+	}
+	.banner img{
+		padding: 15px;
+	}
+	.bloc-title{
+		margin: 0px;
+	}
+	</style>
+    {% include "Block/add_cart_javascript.twig" %}
+	{% include "Block/toast_add_to_cart_success.twig" %}
+{% endblock %}

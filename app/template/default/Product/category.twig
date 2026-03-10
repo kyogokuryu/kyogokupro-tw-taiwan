@@ -1,0 +1,45 @@
+    <div class="category-list">
+        <p class="title">ジャンル</p>
+        <div class="inr">
+            <ul>
+                <a href="{{ url('product_list') }}?category_id=1">
+                    <li class="l1" style="display:flex;">
+                        <img loading="lazy" src="{{ asset('assets/img/icon-cosmetics.svg','user_data') }}">
+                        ギフト
+                    </li>
+                </a>
+                {# <li class="c43"><a href="{{ url('product_list') }}?category_id=43">スキンケア</a></li>
+                <li class="c39"><a href="{{ url('product_list') }}?category_id=39">ギフト</a></li>
+                <li class="c01"><a href="{{ url('product_list') }}?category_id=7">カラーシャンプー<br>カラートリートメント</a></li>
+                <li class="c02"><a href="{{ url('product_list') }}?category_id=18">ヒト幹細胞ケア</a></li>
+                <li class="c03"><a href="{{ url('product_list') }}?category_id=8">カラー剤<br>ブリーチ剤</a></li>
+                <li class="c04"><a href="{{ url('product_list') }}?category_id=12"> トリートメント<br>(インバス)</a></li>
+                <li class="c05"><a href="{{ url('product_list') }}?category_id=17">トリートメント<br>(アウトバス)</a></li>
+                <li class="c06"><a href="{{ url('product_list') }}?category_id=11">ヘアケア</a></li>
+                <li class="c07"><a href="{{ url('product_list') }}?category_id=9">ヘアカラー関連</a></li>
+                <li class="c08"><a href="{{ url('product_list') }}?category_id=19">サロン関連</a></li>
+                <li class="c09"><a href="{{ url('product_list') }}?category_id=15">ラグジュアリー<br>コンテンツ</a></li>
+                <li class="c10"><a href="{{ url('product_list') }}?category_id=16">公式通販限定</a></li>
+                <li class="c11"><a href="{{ url('product_list') }}?category_id=20">タイムセール</a></li>
+                <li class="c12"><a href="{{ url('product_list') }}?category_id=21">コーム</a></li> #}
+                {# <li class="c13"><a href="{{ url('product_list') }}?category_id=10">書籍</a></li> #}
+                {# <li class="c14"><a href="{{ url('product_list') }}?category_id=22">CBD</a></li> #}
+            </ul>
+        </div>
+    </div>
+
+    {{ include('Block/random_products.twig') }}
+
+    {# <div class="mt30"><a href="/products/detail/451"><img src="/html/template/default/assets/img/banner_sg.png"></a></div> #}
+
+	<!-- Gift card -->
+	{# <div class="gift_bana mt30"><a href="{{ url('product_list', {'category_id': 39}) }}"><img loading="lazy"  src="/html/template/default/assets/img/top/banner-gift.png"></a></div> #}
+
+    <!-- teiki card -->
+	{# <div class="teiki_bana mt30"><a href="{{ url('product_list', {'category_id': 38}) }}"><img loading="lazy"  src="/html/template/default/assets/img/top/banner-teiki.png"></a></div> #}
+
+    <!-- Banner -->
+
+        {# <div class="mt30">
+            <a href="https://cjsym1ka.autosns.app/cp/TgX3hHUPAZ/qyRFZk95qI" target="_blank"><img src="/html/template/default/assets/img/230625FV_banner.jpg"></a>
+        </div> #}

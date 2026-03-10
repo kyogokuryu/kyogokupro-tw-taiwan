@@ -1,0 +1,210 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends '@admin/default_frame.twig' %}
+
+{% block title %}{{ 'admin.customer.customer_list'|trans }}{% endblock %}
+{% block sub_title %}{{ 'admin.customer.customer_management'|trans }}{% endblock %}
+
+{% block stylesheet %}
+    <style type="text/css">
+        .status{
+            display: inline-block;
+            padding: 3px;
+            border: #fff 3px solid;
+            cursor: pointer;
+        }
+        .selected.status{
+            border: green 3px solid;
+            border-radius: 5px;
+        }
+        .selected.paid .off,
+        .selected.unpaid .on,
+        .paid .on,
+        .unpaid .off{
+            font-weight: bold;
+            font-size: 16px;
+            opacity: 1;
+        }
+        .selected.paid .on,
+        .selected.unpaid .off,
+        .paid .off,
+        .unpaid .on{
+            font-weight: normal;
+            font-size: 14px;
+            opacity: 0.5;
+        }
+        tr.month td{
+            border-top-width: 3px;
+        }
+        tr.order{
+            display: none;
+        }
+        tr.order.show{
+            display: table-row;
+        }
+        tr.order td{
+            border-color: #eee;
+        }
+        td .detail{
+            display: inline-block;
+            margin-right: 10px;
+            padding: 3px;
+            font-weight: bold;
+            font-size: 20px;
+            background: #ddd;
+            border-radius: 100%;
+            cursor: pointer;
+        }
+    </style>
+{% endblock stylesheet %}
+
+{% block javascript %}
+    <script>
+        $('.status').on('click',function(){
+            $(this).toggleClass('selected');
+        });
+
+        $('#salonaf').on('submit',function(){
+            $('.status').each(function(){
+                if($(this).hasClass('selected')){
+                    let m = $(this).data('month');
+                    let p = ($(this).hasClass('unpaid')) ? 1 : 0;
+                    let input = '<input type="hidden" name="month['+m+']" value="'+p+'">';
+                    $('#salonaf').prepend(input);
+                }
+            });
+        });
+
+        $('td .detail').on('click',function(){
+            let month = $(this).data('month');
+            if(month){
+                $('tr.order[data-month = "'+month+'"]').toggleClass('show');
+            }
+        });
+    </script>
+{% endblock javascript %}
+
+{% block main %}
+    <div class="c-contentsArea__cols">
+        <div class="c-contentsArea__primaryCol">
+
+            <div class="customer">
+                <p>id: {{ Customer.id }} / {{ Customer.name01 }}&nbsp;{{ Customer.name02 }}</p>
+                <div class="account">
+                    {% set Account_type = '' %}
+                    {% if Customer.Account_type is not empty %}
+                        {% if Customer.Account_type == 1 %}
+                            {% set Account_type = '普通' %}
+                        {% elseif(Customer.Account_type == 2) %}
+                            {% set Account_type = '当座' %}
+                        {% endif %}
+                    {% endif %}
+                    <p><strong>振込先情報</strong></p>
+                    <dl>
+                        <dt>金融機関名</dt><dd>{{ Customer.Financial }}</dd>
+                        <dt>支店名</dt><dd>{{ Customer.Branch }}</dd>
+                        <dt>口座種別</dt><dd>{{ Account_type }}</dd>
+                        <dt>口座番号</dt><dd>{{ Customer.Account_number }}</dd>
+                        <dt>口座名義人名(カナ)</dt><dd>{{ Customer.Account_name }}</dd>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="c-primaryCol">
+            {% if monthlyAmount is not null %}
+                <div class="card rounded border-0 mb-4 d-block">
+                    <div class="card-body p-0">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th class="border-top-0 pt-2 pb-3">月</th>
+                                <th class="border-top-0 pt-2 pb-3">売上 / 報酬</th>
+                                <th class="border-top-0 pt-2 pb-3">ステータス</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for month, amount in monthlyAmount %}
+                                <tr class="month" data-month="{{ month }}">
+                                    <td class="align-middle">
+                                        <span class="detail" data-month="{{ month }}">+</span>{{ month|replace({'-':'年'}) }}月
+                                    </td>
+                                    <td class="align-middle">{{ amount.sales|price }} / {{ amount.reward|price }} </td>
+                                    <td class="align-middle">
+                                        {% if month in paidMonth %}
+                                            {% set paid_flg = 'paid' %}
+                                        {% else %}
+                                            {% set paid_flg = 'unpaid' %}
+                                        {% endif %}
+                                        <span class="status {{ paid_flg }}" data-month="{{ month }}">
+                                            <span class="off">未払い</span> / <span class="on">済</span>
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% if memberOrder is not empty %}
+                                    <tr class="order" data-month="{{ month }}">
+                                        <th>発生日</th>
+                                        <th>売上</th>
+                                        <th>受注詳細</th>
+                                    </tr>
+                                    {% for d, date in memberOrder[month] %}
+                                        {% for o, order in date %}
+                                        <tr class="order" data-month="{{ month }}">
+                                            <td>{% if o < 1 %}{{ d|slice(5)|replace({'-':'月'}) }}日{% endif %}</td>
+                                            <td>{% if o < 1 %}{{ monthlyAmount[month][d].sales|price }}{% endif %}</td>
+                                            <td>
+                                            {% for item in order.OrderItems %}
+                                                {% if item.Product is not empty %}
+                                                    <p>id:{{ order.id }}  {{ item.product_name }} / {{ item.quantity }}</p>
+                                                {% endif %}
+                                            {% endfor %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% endif %}
+            </div>
+
+        </div>
+    </div>
+
+    <form method="post" action="{{ url('admin_salonaf_detail', { 'id': Customer.id}) }}" id="salonaf">
+        <input type="hidden" name="mode" value="edit">
+        <div class="c-conversionArea">
+            <div class="c-conversionArea__container">
+                <div class="row justify-content-between align-items-center">
+                    <div class="col-6">
+                        <div class="c-conversionArea__leftBlockItem">
+                            <a class="c-baseLink"
+                               href="{{ url('admin_salonaf') }}">
+                                <i class="fa fa-backward" aria-hidden="true"></i>
+                                <span>{{ 'admin.customer.customer_list'|trans }}</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div id="ex-conversion-action" class="row align-items-center justify-content-end">
+                            <div class="col-auto"></div>
+                            <div class="col-auto">
+                                <button class="btn btn-ec-conversion px-5" type="submit">登録</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+{% endblock %}

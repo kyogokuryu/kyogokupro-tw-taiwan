@@ -1,0 +1,408 @@
+{# コンテンツ管理 - 特集管理 #}
+
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['content', 'collection'] %}
+
+{% block title %}{{ 'collection.admin.collection.title'|trans }}{% endblock %}
+{% block sub_title %}{{ 'collection.admin.collection.sub_title'|trans }}{% endblock %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" href="{{ asset('assets/css/tempusdominus-bootstrap-4.min.css', 'admin') }}">
+    <style type="text/css">
+        .datepicker-days th.dow:first-child,
+        .datepicker-days td:first-child {
+            color: #f00;
+        }
+
+        .datepicker-days th.dow:last-child,
+        .datepicker-days td:last-child {
+            color: #00f;
+        }
+    </style>
+{% endblock stylesheet %}
+
+{% block javascript %}
+    <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.core.min.js', 'admin') }}"></script>
+    <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.widget.min.js', 'admin') }}"></script>
+    <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.mouse.min.js', 'admin') }}"></script>
+    <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.sortable.min.js', 'admin') }}"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            var update = function () {
+                // update allow's disabled attribute
+                var items = $('.sortable-item');
+                items.find('a.up').removeClass('disabled');
+                items.find('a.down').removeClass('disabled');
+                items.first().find('a.up').addClass('disabled');
+                items.last().find('a.down').addClass('disabled');
+
+                // take overlay
+                $(".modal-backdrop").remove();
+            };
+
+            // 初期表示時のsort noを保持.
+            var oldSortNos = [];
+            $('.sortable-item').each(function () {
+                oldSortNos.push(this.dataset.sortNo);
+            });
+
+            oldSortNos.sort(function (a, b) {
+                return a - b;
+            }).reverse();
+
+            // 並び替え後にsort noを更新
+            var updateSortNo = function () {
+                var newSortNos = {};
+                var i = 0;
+                $('.sortable-item').each(function () {
+                    newSortNos[this.dataset.collectionId] = oldSortNos[i];
+                    i++;
+                });
+
+                // put overlay
+                $('body').append($('<div class="modal-backdrop show"></div>'));
+
+                $.ajax({
+                    url: '{{ url('admin_collection_move_sort_no') }}',
+                    type: 'POST',
+                    data: newSortNos
+                }).always(function () {
+                    update();
+                });
+            };
+
+            // Drag and Drop
+            $(".sortable-container").sortable({
+                items: '> .sortable-item',
+                cursor: 'move',
+                update: function (e, ui) {
+                    updateSortNo();
+                }
+            });
+
+            // sort up
+            $('.sortable-item a.up').click(function(e) {
+                e.preventDefault();
+                var current = $(this).parents('.list-group-item');
+                current.prev().before(current);
+                updateSortNo();
+            });
+
+            // sort down
+            $('.sortable-item a.down').click(function(e) {
+                e.preventDefault();
+                var current = $(this).parents('.list-group-item');
+                current.next().after(current);
+                updateSortNo();
+            });
+
+            if ($('[type="date"]').prop('type') != 'date') {
+                // input type属性でdateが利用できるかどうか(カレンダー表示できないブラウザ対応)
+                $.when(
+                    $.getScript("{{ asset('assets/js/vendor/moment.min.js', 'admin') }}"),
+                    $.getScript("{{ asset('assets/js/vendor/moment-with-locales.min.js', 'admin') }}"),
+                    $.getScript("{{ asset('assets/js/vendor/tempusdominus-bootstrap-4.min.js', 'admin') }}")
+                ).done(function() {
+                    $('input[id$=display_from]').datetimepicker({
+                        locale: '{{ eccube_config.locale }}',
+                        format: 'YYYY-MM-DD',
+                        useCurrent: false,
+                        buttons: {
+                            showToday: true,
+                            showClose: true
+                        }
+                    });
+
+                    $('input[id$=display_to]').datetimepicker({
+                        locale: '{{ eccube_config.locale }}',
+                        format: 'YYYY-MM-DD',
+                        useCurrent: false,
+                        buttons: {
+                            showToday: true,
+                            showClose: true
+                        }
+                    });
+                });
+            }
+
+            // 削除モーダルのhrefとmessageの変更
+            $('#DeleteModal').on('shown.bs.modal', function(event) {
+                var target = $(event.relatedTarget);
+                // hrefの変更
+                $(this).find('[data-method="delete"]').attr('href', target.data('url'));
+
+                // messageの変更
+                $(this).find('p.modal-message').text(target.data('message'));
+            });
+        })
+    </script>
+{% endblock javascript %}
+
+{% block main %}
+    <form name="search_form" id="search_form" method="POST" action="{{ url('admin_collection') }}">
+        {{ form_widget(searchForm._token) }}
+
+
+    <div class="c-contentsArea__cols">
+        <div class="c-contentsArea__primaryCol">
+            <div class="c-primaryCol" id="searchCollection">
+                <div class="row mb-2">
+                    <div class="col">
+                        <div class="form-row">
+                            <div class="col-12">
+                                <p class="col-form-label">{{ form_label(searchForm.code_name) }}</p>
+                                {{ form_widget(searchForm.code_name,  { 'label_attr': { 'class': 'checkbox-inline' }}) }}
+                                {{ form_errors(searchForm.code_name) }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col"></div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col">
+                        <div class="form-row">
+                            <div class="col-12">
+                                <p class="col-form-label">{{ form_label(searchForm.visible) }}</p>
+                                {{ form_widget(searchForm.visible,  { 'label_attr': { 'class': 'checkbox-inline' }}) }}
+                                {{ form_errors(searchForm.visible) }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col"></div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col">
+                        <div class="form-row">
+                            <div class="col-12">
+                                <label class="col-form-label">{{ 'collection.admin.collection.label.display_from_to'|trans }}</label>
+                                <div class="form-row align-items-center">
+                                    <div class="col">
+                                        {{ form_widget(searchForm.display_from) }}
+                                        {{ form_errors(searchForm.display_from) }}
+                                    </div>
+                                    <div class="col-auto text-center">{{ 'admin.common.separator__range'|trans }}</div>
+                                    <div class="col">
+                                        {{ form_widget(searchForm.display_to) }}
+                                        {{ form_errors(searchForm.display_to) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col"></div>
+                </div>
+
+                {# エンティティ拡張の自動出力 #}
+                {% for f in searchForm if f.vars.eccube_form_options.auto_render %}
+                    {# TODO 1項目1行になるのを改善 #}
+                    <div class="row mb-2">
+                        {% if f.vars.eccube_form_options.form_theme %}
+                            {% form_theme f f.vars.eccube_form_options.form_theme %}
+                            {{ form_row(f) }}
+                        {% else %}
+                            <div class="col">
+                                <div class="mb-3">
+                                    <label>{{ f.vars.label|trans }}</label>
+                                    {{ form_widget(f) }}
+                                    {{ form_errors(f) }}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="c-outsideBlock__contents">
+                <div class="row">
+                    <div class="mb-4">
+                        <div class="col-12">
+                            <button class="btn btn-ec-conversion px-5" type="submit" id="search_submit">{{ 'admin.common.search'|trans }}</button>
+                            {% if pagination %}
+                                <span class="font-weight-bold ml-2" id="search_total_count">{{ 'admin.common.search_result'|trans({"%count%":pagination.totalItemCount})|raw }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="c-outsideBlock__contents mb-5">
+                {# {{ include('@admin/search_items.twig', { 'form': searchForm }, ignore_missing = true) }} #}
+            </div>
+    </form>
+
+            <div class="c-primaryCol">
+                {% if pagination and pagination.totalItemCount %}
+
+                    {# collection list #}
+                    <form id="form_bulk" method="POST" action="">
+                        <input type="hidden" name="{{ constant('Eccube\\Common\\Constant::TOKEN_NAME') }}" value="{{ csrf_token(constant('Eccube\\Common\\Constant::TOKEN_NAME')) }}">
+                        <div class="row justify-content-between mb-2">
+                            <div class="col-7">
+                                <div class="row justify-content-between">
+                                    <div class="col-auto d-none btn-bulk-wrapper">
+                                        <label class="mr-2" data-tooltip="true" data-placement="top" title="{{ 'tooltip.order.bulk_actions'|trans }}">{{ 'admin.common.bulk_actions'|trans }}<i class="fa fa-question-circle fa-lg ml-1"></i></label>
+                                        <button id="bulkSendMail" type="button" class="btn btn-ec-regular mr-2" data-type="mail" data-bulk-update="true">
+                                            {{ 'admin.order.send_mail'|trans }}
+                                        </button>
+                                        <button type="button" id="bulkExportPdf" class="btn btn-ec-regular mr-2">{{ 'admin.order.output_delivery_note_short'|trans }}</button>
+                                    </div>
+                                    <div class="col d-none btn-bulk-wrapper">
+                                        <div class="d-inline-block mr-2">
+                                            <select class="custom-select" id="option_bulk_status">
+                                                <option value="" selected>{{ 'admin.order.change_status'|trans }}</option>
+                                            </select>
+                                        </div>
+                                        <button type="button" id="btn_bulk_status" class="btn btn-ec-regular mr-2 progressModal" data-type="status" data-bulk-update="true" data-submit="bulk">
+                                            {{ 'admin.common.decision'|trans }}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-5 text-right">
+                                <div class="d-inline-block">
+                                    <select class="custom-select" onchange="location = this.value;">
+                                        {% for pageMax in pageMaxis %}
+                                            <option {% if pageMax.name == page_count %} selected {% endif %}
+                                                    value="{{ path('admin_collection_page', {'page_no': 1, 'page_count': pageMax.name}) }}">
+                                                {{ 'admin.common.count'|trans({ '%count%': pageMax.name }) }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card rounded border-0 mb-4 d-block">
+                            <div class="card-body p-0">
+                                <ul class="list-group list-group-flush sortable-container">
+                                    <li class="list-group-item">
+                                        <div class="row">
+                                            <div class="" style="width: 42.25px;"><strong>&nbsp;</strong></div>
+                                            <div class="col-auto"><strong>{{ 'collection.admin.collection.label.id'|trans }}</strong></div>
+                                            <div class="col-1"><strong>{{ 'collection.admin.collection.label.code'|trans }}</strong></div>
+                                            <div class="col-1"><strong>{{ 'collection.admin.collection.label.name'|trans }}</strong></div>
+                                            <div class="col-1"><strong>{{ 'collection.admin.collection.label.image'|trans }}</strong></div>
+                                            <div class="col-1"><strong>{{ 'collection.admin.collection.label.quantity'|trans }}</strong></div>
+                                            <div class="col-1"><strong>{{ 'collection.admin.collection.label.update_date'|trans }}</strong></div>
+                                            <div class="col-1"><strong>{{ 'collection.admin.collection.label.display_from_to'|trans }}</strong></div>
+                                            <div class="col"><strong>{{ 'collection.admin.collection.label.url'|trans }}</strong></div>
+                                            <div class="col-2"><strong></strong></div>
+                                        </div>
+                                    </li>
+                                    {% for Collection in pagination %}
+                                        <li class="list-group-item sortable-item" data-collection-id="{{ Collection.id }}"  data-sort-no="{{ Collection.sortNo }}">
+                                            <div class="row justify-content-around mode-view">
+                                                <div class="col-auto d-flex align-items-center"><i class="fa fa-bars text-ec-gray"></i></div>
+                                                <div class="col-auto d-flex align-items-center">{{ Collection.id }}</div>
+                                                <div class="col-1 d-flex align-items-center"><a href="{{ url('admin_collection_edit', {'collection_id': Collection.id }) }}">{{ Collection.CollectionCode }}</a></div>
+                                                <div class="col-1 d-flex align-items-center">{{ Collection.name }}</div>
+                                                <div class="col-1 d-flex align-items-center"><img src="{{ asset(Collection.fileName|no_image_product, 'save_image') }}" style="max-width: 50px"></div>
+                                                <div class="col-1 d-flex align-items-center">{{ Collection.CollectionProducts|length }}{{ 'collection.admin.collection.label.count'|trans }}</div>
+                                                <div class="col-1 d-flex align-items-center">{{ Collection.UpdateDate|date('Y/n/j') }}</div>
+                                                <div class="col-1 d-flex align-items-center">
+                                                    {% if Collection.DisplayFrom is not empty %}
+                                                        {{ Collection.DisplayFrom|date('Y/n/j') }}
+                                                    {% endif %}
+                                                    {% if Collection.DisplayFrom is not empty
+                                                        or Collection.DisplayTo is not empty %}
+                                                        {{ 'admin.common.separator__range'|trans }}
+                                                    {% endif %}
+                                                    {% if Collection.DisplayTo is not empty %}
+                                                        {{ Collection.DisplayTo|date('Y/n/j') }}
+                                                    {% endif %}
+                                                </div>
+                                                <div class="col d-flex align-items-center">
+                                                    {% if Collection.CollectionProducts|length >= 1 %}
+                                                        <a href="{{ url('homepage') ~ 'products/list?collection=' ~ Collection.CollectionCode }}" target="_blank">{{ url('homepage') ~ 'products/list?collection=' ~ Collection.CollectionCode }}</a>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="col-2 text-right">
+                                                    <a class="btn btn-ec-actionIcon mr-2 up {% if loop.first %}disabled{% endif %}" href="" data-tooltip="true" data-placement="top" title="{{ 'admin.common.up'|trans }}">
+                                                        <i class="fa fa-arrow-up fa-lg text-secondary"></i>
+                                                    </a>
+                                                    <a class="btn btn-ec-actionIcon mr-2 down {% if loop.last %}disabled{% endif %}" href="" data-tooltip="true" data-placement="top" title="{{ 'admin.common.down'|trans }}">
+                                                        <i class="fa fa-arrow-down fa-lg text-secondary"></i>
+                                                    </a>
+                                                    <a class="btn btn-ec-actionIcon mr-2 action-visible" href="{{ url('admin_collection_reverse_visible', {'collection_id': Collection.id }) }}"
+                                                        data-tooltip="true" data-placement="top" title="{{ Collection.visible ? 'admin.common.to_hide'|trans : 'admin.common.to_show'|trans }}"
+                                                        data-confirm="false" data-method="put" {{ csrf_token_for_anchor() }} >
+                                                        <i class="fa fa-toggle-{{ Collection.visible ? 'on' : 'off' }} fa-lg text-secondary" aria-hidden="true"></i>
+                                                    </a>
+                                                    <div class="d-inline-block mr-2" data-tooltip="true"
+                                                        data-placement="top" title="{{ 'admin.common.delete'|trans }}">
+                                                        <a class="btn btn-ec-actionIcon"
+                                                            data-toggle="modal" data-target="#DeleteModal"
+                                                            data-url="{{ url('admin_collection_delete', {'collection_id' : Collection.id}) }}"
+                                                            data-message="{{ 'admin.common.delete_modal__message'|trans({ "%name%" : Collection.name }) }}">
+                                                            <i class="fa fa-close fa-lg text-secondary"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+
+                                {# delete modal #}
+                                <div class="modal fade" id="DeleteModal" tabindex="-1" role="dialog"
+                                    aria-labelledby="DeleteModal" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title font-weight-bold">
+                                                    {{ 'admin.common.delete_modal__title'|trans }}
+                                                </h5>
+                                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">×</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body text-left">
+                                                <p class="text-left modal-message">{# change on js #}</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button class="btn btn-ec-sub" type="button" data-dismiss="modal">
+                                                    {{ 'admin.common.cancel'|trans }}
+                                                </button>
+                                                <a class="btn btn-ec-delete" href="#" {{ csrf_token_for_anchor() }}
+                                                data-method="delete" data-confirm="false">
+                                                    {{ 'admin.common.delete'|trans }}
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row justify-content-md-center mb-4"></div>
+                            </div>
+                            <div class="row justify-content-md-center mb-4">
+                                {% if pagination.totalItemCount > 0 %}
+                                    {% include "@admin/pager.twig" with { 'pages' : pagination.paginationData, 'routes' : 'admin_collection_page' } %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </form>
+
+                {# criteria error #}
+                {% elseif has_errors %}
+                    <div class="card rounded border-0">
+                        <div class="card-body p-4">
+                            <div class="text-center text-muted mb-4 h5">{{ 'admin.common.search_invalid_condition'|trans }}</div>
+                            <div class="text-center text-muted">{{ 'admin.common.search_try_change_condition'|trans }}</div>
+                        </div>
+                    </div>
+
+                {# no matching #}
+                {% else %}
+                    <div class="card rounded border-0">
+                        <div class="card-body p-4">
+                            <div class="text-center text-muted mb-4 h5">{{ 'admin.common.search_no_result'|trans }}</div>
+                            <div class="text-center text-muted">{{ 'admin.common.search_try_change_condition'|trans }}</div>
+                            <div class="text-center text-muted">{{ 'admin.common.search_try_advanced_search'|trans }}</div>
+                        </div>
+                    </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

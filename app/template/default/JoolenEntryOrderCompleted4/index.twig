@@ -1,0 +1,308 @@
+{#
+Plugin Name: JoolenEntryOrderCompleted4
+
+Copyright(c) joolen inc. All Rights Reserved.
+
+https://www.joolen.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+{% if plgForm is defined and not null %}
+
+{% form_theme plgForm 'Form/form_div_layout.twig' %}
+
+{% block javascript %}
+    <script src="//yubinbango.github.io/yubinbango/yubinbango.js" chafrset="UTF-8"></script>
+    <script>
+    $(function() {
+        {% if hasHiddenItemsError is defined and hasHiddenItemsError %}
+            $('.plg-entry-order-completed__CloseBtn').trigger('click');
+        {% endif %}
+         $('.plg-entry-order-completed__CloseBtn').on('click', function() {
+             if ($('.collapse').css('display') == 'none') {
+                 $('.plg-entry-order-completed__hiddenItems').addClass('is_active');
+             } else {
+                 $('.plg-entry-order-completed__hiddenItems').removeClass('is_active');
+             }
+         });
+    });
+    </script>
+{% endblock javascript %}
+{% block stylesheet %}
+        <style type="text/css">
+            .ec-registerRole {
+                margin: 0 auto;
+                padding-top: 20px;
+                padding-left: 0;
+                padding-right: 0;
+                box-sizing: border-box;
+                font-size: 16px;
+                line-height: 1.4;
+                color: #525263;
+                -webkit-text-size-adjust: 100%;
+                width: 100%;
+                max-width: 1130px; }
+            .ec-registerRole .plg-entry-order-completed__hiddenItems {
+                width: 100%; }
+            .ec-registerRole .plg-entry-order-completed__hiddenItemsHeading {
+                cursor: pointer; }
+            .ec-registerRole .plg-entry-order-completed__hiddenItemsColumn {
+                display: flex; }
+            .ec-registerRole .plg-entry-order-completed__hiddenItemsTitle {
+                display: inline-block;
+                margin-bottom: 10px;
+                width: 90%;
+                font-size: 14px;
+                font-weight: bold;
+                color: #7D7D7D;
+                line-height: 1.6; }
+            .ec-registerRole .plg-entry-order-completed__Close {
+                display: inline-block;
+                width: 10%;
+                position: relative; }
+            .ec-registerRole .plg-entry-order-completed__CloseBtn {
+                display: inline-block;
+                margin-left: auto;
+                border-radius: 50%;
+                width: 20px;
+                height: 20px;
+                color: white;
+                text-align: center;
+                background: black;
+                cursor: pointer;
+                position: absolute;
+                right: 5px; }
+            .plg-entry-order-completed__hiddenItems.is_active .plg-entry-order-completed__CloseBtn i {
+                display: inline-block;
+                transform: rotateX(180deg) translateY(2px); }
+            @media only screen and (min-width: 768px) {
+                .ec-registerRole {
+                    padding: 60px 0 0; }
+                .ec-registerRole .ec-plg-entry-order-completed__area {
+                    border: 16px solid #F8F8F8;
+                    padding: 20px 30px; }
+            }
+        </style>
+{% endblock %}
+    <div class="ec-registerRole">
+        <div class="ec-pageHeader">
+            <h1>{{ 'front.entry.title'|trans }}</h1>
+        </div>
+        <div style="display: flex;justify-content: center;">
+            会員登録しませんか？パスワードをご入力いただくだけで会員登録が完了します。<br>
+        </div>
+        <div class="ec-off1Grid">
+            <div class="ec-off1Grid__cell ec-plg-entry-order-completed__area">
+                <form method="post" action="{{ url('shopping_complete') }}" novalidate class="h-adr">
+                    <span class="p-country-name" style="display:none;">Japan</span>
+                    {{ form_widget(plgForm._token) }}
+                    <div class="plg-entry-order-completed__hiddenItems">
+                        <div class="plg-entry-order-completed__hiddenItemsHeading">
+                            <div class="plg-entry-order-completed__hiddenItemsColumn">
+                                <div class="plg-entry-order-completed__hiddenItemsTitle">
+                                    パスワード以外の項目
+                                </div>
+                                <div class="plg-entry-order-completed__Close">
+                                    <a class="plg-entry-order-completed__CloseBtn" data-toggle="collapse" data-target="#collapsePlgEntryOrderCompleted" aria-expanded="false" aria-controls="collapsePlgEntryOrderCompleted">
+                                        <i class="fas fa-angle-down"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ec-borderedDefs">
+
+                        <div class="collapse" id="collapsePlgEntryOrderCompleted">
+                            <dl>
+                                <dt>
+                                    {{ form_label(plgForm.name, 'common.name', { 'label_attr': { 'class': 'ec-label' }}) }}
+                                </dt>
+                                <dd>
+                                    <div class="ec-halfInput{{ has_errors(plgForm.name.name01, plgForm.name.name02) ? ' error'}}">
+                                        {{ form_widget(plgForm.name.name01, { 'attr': { 'placeholder': 'common.last_name' }}) }}
+                                        {{ form_widget(plgForm.name.name02, { 'attr': { 'placeholder': 'common.first_name' }}) }}
+                                        {{ form_errors(plgForm.name.name01) }}
+                                        {{ form_errors(plgForm.name.name02) }}
+                                    </div>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt>
+                                    {{ form_label(plgForm.kana, 'common.kana', { 'label_attr': { 'class': 'ec-label' }}) }}
+                                </dt>
+                                <dd>
+                                    <div class="ec-halfInput{{ has_errors(plgForm.kana.kana01, plgForm.kana.kana02) ? ' error'}}">
+                                        {{ form_widget(plgForm.kana.kana01, { 'attr': { 'placeholder': 'common.last_name_kana' }}) }}
+                                        {{ form_widget(plgForm.kana.kana02, { 'attr': { 'placeholder': 'common.first_name_kana' }}) }}
+                                        {{ form_errors(plgForm.kana.kana01) }}
+                                        {{ form_errors(plgForm.kana.kana02) }}
+                                    </div>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt>
+                                    {{ form_label(plgForm.company_name, 'common.company_name', { 'label_attr': { 'class': 'ec-label' }}) }}
+                                </dt>
+                                <dd>
+                                    <div class="ec-halfInput{{ has_errors(plgForm.company_name) ? ' error' }}">
+                                        {{ form_widget(plgForm.company_name) }}
+                                        {{ form_errors(plgForm.company_name) }}
+                                    </div>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt>
+                                    {{ form_label(plgForm.address, 'common.address', { 'label_attr': { 'class': 'ec-label' }}) }}
+                                </dt>
+                                <dd>
+                                    <div class="ec-zipInput{{ has_errors(plgForm.postal_code) ? ' error' }}"><span>{{ 'common.postal_symbol'|trans }}</span>
+                                        {{ form_widget(plgForm.postal_code) }}
+                                        <div class="ec-zipInputHelp">
+                                            <div class="ec-zipInputHelp__icon">
+                                                <div class="ec-icon"><img
+                                                        src="{{ asset('assets/icon/question-white.svg') }}" alt="">
+                                                </div>
+                                            </div><a href="https://www.post.japanpost.jp/zipcode/" target="_blank"><span>{{ 'common.search_postal_code'|trans }}</span></a>
+                                        </div>
+                                        {{ form_errors(plgForm.postal_code) }}
+                                    </div>
+
+                                    <div class="ec-select{{ has_errors(plgForm.address.pref) ? ' error' }}">
+                                        {{ form_widget(plgForm.address.pref) }}
+                                        {{ form_errors(plgForm.address.pref) }}
+                                    </div>
+                                    <div class="ec-input{{ has_errors(plgForm.address.addr01) ? ' error' }}">
+                                        {{ form_widget(plgForm.address.addr01, { 'attr': { 'placeholder': 'common.address_sample_01' }}) }}
+                                        {{ form_errors(plgForm.address.addr01) }}
+                                    </div>
+                                    <div class="ec-input{{ has_errors(plgForm.address.addr02) ? ' error' }}">
+                                        {{ form_widget(plgForm.address.addr02,  { 'attr': { 'placeholder': 'common.address_sample_02' }}) }}
+                                        {{ form_errors(plgForm.address.addr02) }}
+                                    </div>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt>
+                                    {{ form_label(plgForm.phone_number, 'common.phone_number', { 'label_attr': { 'class': 'ec-label' }}) }}
+                                </dt>
+                                <dd>
+                                    <div class="ec-telInput{{ has_errors(plgForm.phone_number) ? ' error' }}">
+                                        {{ form_widget(plgForm.phone_number) }}
+                                        {{ form_errors(plgForm.phone_number) }}
+                                    </div>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt>
+                                    {{ form_label(plgForm.email, 'common.mail_address', { 'label_attr': { 'class': 'ec-label' }}) }}
+                                </dt>
+                                <dd>
+                                    <div class="ec-input{{ has_errors(plgForm.email.first) ? ' error' }}">
+                                        {{ form_widget(plgForm.email.first, { 'attr': { 'placeholder': 'common.mail_address_sample' }}) }}
+                                        {{ form_errors(plgForm.email.first) }}
+                                    </div>
+                                    <div class="ec-input{{ has_errors(plgForm.email.second) ? ' error' }}">
+                                        {{ form_widget(plgForm.email.second, { 'attr': { 'placeholder': 'common.repeated_confirm' }}) }}
+                                        {{ form_errors(plgForm.email.second) }}
+                                    </div>
+                                </dd>
+                            </dl>
+
+                            <dl>
+                                <dt>
+                                    {{ form_label(plgForm.birth, 'common.birth_day', { 'label_attr': {'class': 'ec-label' }}) }}
+                                </dt>
+                                <dd>
+                                    <div class="ec-birth{{ has_errors(plgForm.birth) ? ' error' }}">
+                                        {{ form_widget(plgForm.birth.year) }}<span>/</span>
+                                        {{ form_widget(plgForm.birth.month) }}<span>/</span>
+                                        {{ form_widget(plgForm.birth.day) }}
+                                        {{ form_errors(plgForm.birth) }}
+                                    </div>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt>
+                                    {{ form_label(plgForm.sex, 'common.gender', { 'label_attr': { 'class': 'ec-label' }}) }}
+                                </dt>
+                                <dd>
+                                    <div class="ec-radio{{ has_errors(plgForm.sex) ? ' error' }}">
+                                        {{ form_widget(plgForm.sex) }}
+                                        {{ form_errors(plgForm.sex) }}
+                                    </div>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt>
+                                    {{ form_label(plgForm.job, 'common.job', { 'label_attr': {'class': 'ec-label' }}) }}
+                                </dt>
+                                <dd>
+                                    <div class="ec-select{{ has_errors(plgForm.job) ? ' error' }}">
+                                        {{ form_widget(plgForm.job) }}
+                                        {{ form_errors(plgForm.job) }}
+                                    </div>
+                                </dd>
+                            </dl>
+                            {# エンティティ拡張の自動出力 #}
+                            {% for f in plgForm if f.vars.eccube_form_options.auto_render %}
+                                {% if f.vars.eccube_form_options.form_theme %}
+                                    {% form_theme f f.vars.eccube_form_options.form_theme %}
+                                    {{ form_row(f) }}
+                                {% else %}
+                                    <dl>
+                                        <dt>
+                                            {{ form_label(f) }}
+                                        </dt>
+                                        <dd>
+                                            <div class="{{ f.vars.eccube_form_options.style_class }}{{ has_errors(f) ? ' error' }}">
+                                                {{ form_widget(f) }}
+                                                {{ form_errors(f) }}
+                                            </div>
+                                        </dd>
+                                    </dl>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <dl>
+                            <dt>
+                                {{ form_label(plgForm.password, 'common.password', { 'label_attr': {'class': 'ec-label' }}) }}
+                            </dt>
+                            <dd>
+                                <div class="ec-input{{ has_errors(plgForm.password.first) ? ' error' }}">
+                                    {{ form_widget(plgForm.password.first, {
+                                        'attr': { 'placeholder': 'common.password_sample'|trans({ '%min%': eccube_config.eccube_password_min_len, '%max%': eccube_config.eccube_password_max_len }) },
+                                        'type': 'password'
+                                    }) }}
+                                    {{ form_errors(plgForm.password.first) }}
+                                </div>
+                                <div class="ec-input{{ has_errors(plgForm.password.second) ? ' error' }}">
+                                    {{ form_widget(plgForm.password.second, {
+                                        'attr': { 'placeholder': 'common.repeated_confirm'|trans },
+                                        'type': 'password'
+                                    }) }}
+                                    {{ form_errors(plgForm.password.second) }}
+                                </div>
+                            </dd>
+                        </dl>
+                    </div>
+                    <div class="ec-registerRole__actions">
+                        <div class="ec-off4Grid">
+                            <div class="ec-off4Grid__cell">
+                                <div class="ec-checkbox{{ has_errors(plgForm.user_policy_check) ? ' error' }}">
+                                    <label>
+                                        {{ form_widget(plgForm.user_policy_check) }}
+                                        {{ 'front.entry.agree_with_terms'|trans({ '%url%': url('help_agreement') })|raw }}
+                                    </label>
+                                    {{ form_errors(plgForm.user_policy_check) }}
+                                </div>
+                                <button class="ec-blockBtn--action" type="submit">{{ 'front.entry.do_register'|trans }}</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endif %}

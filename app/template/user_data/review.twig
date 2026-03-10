@@ -1,0 +1,18 @@
+{% extends 'default_frame.twig' %}
+
+{% block main %}
+
+	<article id="new-review" class="info_item_review pagereview">
+		<section>
+			<h1 class="page-area-title">REVIEW</h1>
+			{% set page = '' %}
+			{% set queryParams = app.request.query.all %}
+            {% if queryParams.page is defined %}
+    			{% set page = queryParams['page'] %}
+            {% endif %}
+            {{ get_reviewlist(page) }}
+
+		</section>
+	</article>
+
+{% endblock %}

@@ -1,0 +1,51 @@
+{% set CategoryList = repository('Plugin\\[code]\\Entity\\[code]Config').getCategoryList %}
+{% set Config = repository('Plugin\\[code]\\Entity\\[code]Config').get %}
+
+{% block stylesheet %}
+<style>
+    .uic-menu .nav .nav {
+        padding-left: 15px;
+    }
+    .uic-menu a {
+        color: #525263;
+    }
+</style>
+{% endblock %}
+
+{% macro tree(Category, Config) %}
+    {% from _self import tree %}
+    <a href="{{ url('product_list') }}?category_id={{ Category.id }}" class="nav-link">
+        {{ Category.name }}
+    </a>
+    {% if Category.children|length > 0 %}
+        <ul class="nav">
+            {% for ChildCategory in Category.children %}
+                <li>
+                    {{ tree(ChildCategory, Config) }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endmacro %}
+{% from _self import tree %}
+
+<!-- [code] -->
+<div class="ec-role uic-menu">
+    {% if Config.title %}
+        <div class="ec-secHeading">
+            <span class="ec-secHeading__en">{{ Config.title }}</span>
+        </div>
+    {% endif %}
+    {% if CategoryList != null %}
+        <div class="ec-secBody">
+            <ul class="nav">
+            {% for Category in CategoryList %}
+                <li>
+                    {{ tree(Category, Config) }}
+                </li>
+            {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+</div>
+<!-- /[code] -->

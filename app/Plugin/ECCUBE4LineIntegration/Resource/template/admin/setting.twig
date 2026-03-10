@@ -1,0 +1,246 @@
+{#
+[LINE管理]-[設定]画面
+#}
+
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['plugin_line_integration', 'plugin_line_message_setting'] %}
+
+{% block title %}LINE管理{% endblock %}
+{% block sub_title %}設定{% endblock %}
+{% block javascript %}
+<script>
+    // 入力内容のバリデーション
+    $('#submit_button').on('click', function () {
+        const isEnabled       = $('#{{ settingForm.cart_notify_is_enabled.vars.id }}').prop("checked");
+        const cartItemCount   = $('#{{ settingForm.cart_notify_max_cart_item_count.vars.id }}').val();
+        const pastDayToNotify = $('#{{ settingForm.cart_notify_past_day_to_notify.vars.id }}').val();
+        const baseUrl         = $('#{{ settingForm.cart_notify_base_url.vars.id }}').val();
+
+        const isError = isEnabled && (cartItemCount === "" || pastDayToNotify === "" || baseUrl === "");
+        if (isError) {
+            // エラーの旨を表示し、POSTをキャンセル
+            alert("かご落ち機能を有効にするには、関連する項目を設定してください。");
+            return false;
+        } else {
+            // エラーがないので、FormをPOSTする
+            $('#hidden_submit_button').click();
+            return true;
+        }
+    });
+
+</script>
+{% endblock %}
+
+{% block main %}
+    {% form_theme settingForm '@admin/Form/bootstrap_4_horizontal_layout.html.twig' %}
+    <form name="search_form" id="setting_form" method="post" action="{{ url('plugin_line_message_setting_commit') }}">
+        {{ form_widget(settingForm._token) }}
+        <div class="c-contentsArea__cols">
+            <div class="c-contentsArea__primaryCol">
+                <div class="c-primaryCol">
+                    <div class="card rounded border-0 mb-4">
+                        <div class="card-header">
+                            <span>メッセージ送受信設定</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="d-inline-block">
+                                        <span>アクセストークン</span>
+                                    </div>
+                                </div>
+                                <div class="col mb-2">
+                                    {{ form_widget(settingForm.line_access_token, { attr: { placeholder: 'アクセストークン', class : 'input_line_access_token form-control' } } ) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card rounded border-0 mb-4">
+                        <div class="card-header">
+                            <span>基本情報</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="d-inline-block">
+                                        <span>Channel ID</span>
+                                    </div>
+                                </div>
+                                <div class="col mb-2">
+                                    {{ form_widget(settingForm.line_channel_id, { attr: { placeholder: 'Channel ID', class : 'input_line_channel_id form-control' } } ) }}
+                                    {{ form_errors(settingForm.line_channel_id) }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="d-inline-block">
+                                        <span>Channel Secret</span>
+                                    </div>
+                                </div>
+                                <div class="col mb-2">
+                                    {{ form_widget(settingForm.line_channel_secret, { attr: { placeholder: 'Channel Secret', class : 'input_line_channel_secret form-control' } } ) }}
+                                    {{ form_errors(settingForm.line_channel_secret) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card rounded border-0 mb-4">
+                        <div class="card rounded border-0 mb-4">
+                            <div class="card-header">
+                                <span>かご落ち機能</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-3">
+                                        <div class="d-inline-block">
+                                            <span>かご落ち機能を有効にする</span>
+                                        </div>
+                                    </div>
+                                    <div class="col mb-2">
+                                        {{ form_widget(settingForm.cart_notify_is_enabled) }}
+                                        {{ form_errors(settingForm.cart_notify_is_enabled) }}
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-3">
+                                        <div class="d-inline-block">
+                                            <span>かご落ちLINEの送信コマンド</span>
+                                        </div>
+                                    </div>
+                                    <div class="col mb-2">
+                                        <div class="input-group" id="cron-path">
+                                            <input type="text" readonly="readonly" class="form-control" value="{{ cartNotifyExecutePath }}">
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-secondary" type="button" style="border-color: #9aa4ae;">
+                                                    <i class="fas fa-clipboard"></i> クリップボードにコピー
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <script>
+                                            document.querySelector('#cron-path button').addEventListener('click', function (event) {
+                                                const copyTarget = document.querySelector("#cron-path input");
+                                                copyTarget.select();
+                                                document.execCommand("Copy");
+                                            });
+                                        </script>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col mb-0">
+                                        <p>
+                                            ※ かご落ちLINEを自動で配信するためには、サーバにcronの設定をする必要があります。詳細はREADMEをご確認ください。
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <hr>
+
+                                <div class="row">
+                                    <div class="col-3">
+                                        <div class="d-inline-block">
+                                            <span>最後にカートが更新されてからメッセージを送るまでの日数</span>
+                                        </div>
+                                    </div>
+                                    <div class="col mb-2">
+                                        {% if settingForm.cart_notify_past_day_to_notify.vars.data is null %}
+                                            {{ form_widget(settingForm.cart_notify_past_day_to_notify) }}
+                                        {% else %}
+                                            <div class="input-group" id="past-day">
+                                                <input type="number" class="form-control" readonly="readonly"
+                                                       id="{{ settingForm.cart_notify_past_day_to_notify.vars.id }}"
+                                                       name="{{ settingForm.cart_notify_past_day_to_notify.vars.full_name }}"
+                                                       value="{{ settingForm.cart_notify_past_day_to_notify.vars.value }}"
+                                                       min="{{ settingForm.cart_notify_past_day_to_notify.vars.attr.min }}"
+                                                       max="{{ settingForm.cart_notify_past_day_to_notify.vars.attr.max }}">
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-secondary" type="button" style="border-color: #9aa4ae;">
+                                                        <i class="fas fa-pencil-alt"></i> この設定を変更する
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <script>
+                                                document.querySelector('#past-day').addEventListener('click', function (event) {
+                                                    const input = document.querySelector('#past-day input');
+                                                    if (input.readOnly) {
+                                                        alert("「最後にカートが更新されてからメッセージを送るまでの日数」は、二重送信や送信漏れの発生する可能性があるため、運用開始後の変更をおすすめしていません。十分にご注意の上、ご変更ください");
+                                                        input.readOnly = false;
+                                                        document.querySelector('#past-day .input-group-append').style.display = "none";
+                                                    }
+                                                })
+                                            </script>
+                                        {% endif %}
+
+                                        {{ form_errors(settingForm.cart_notify_past_day_to_notify) }}
+                                    </div>
+                                </div>
+
+                                <hr>
+
+                                <div class="row">
+                                    <div class="col-3">
+                                        <div class="d-inline-block">
+                                            <span>カート内商品の最大表示数 (1～10)</span>
+                                        </div>
+                                    </div>
+                                    <div class="col mb-2">
+                                        {{ form_widget(settingForm.cart_notify_max_cart_item_count) }}
+                                        {{ form_errors(settingForm.cart_notify_max_cart_item_count) }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-3">
+                                        <div class="d-inline-block">
+                                            <span> トップページURL</span>
+                                        </div>
+                                    </div>
+                                    <div class="col mb-2">
+                                        {# 特に設定されていないときはトップページのURLを表示 #}
+                                        {{ form_widget(settingForm.cart_notify_base_url, {'value': settingForm.vars.value.cart_notify_base_url ?? url('homepage')}) }}
+                                        {{ form_errors(settingForm.cart_notify_base_url) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card rounded border-0 mb-4">
+                        <div class="card-header">
+                            <span>LINE友達追加設定</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="d-inline-block">
+                                        <span>権限追加をキャンセルした際の戻り先URL</span>
+                                    </div>
+                                </div>
+                                <div class="col mb-2">
+                                    {{ form_widget(settingForm.line_add_cancel_redirect_url, {'value': settingForm.vars.value.line_add_cancel_redirect_url ?? url('mypage_login')}) }}
+                                    {{ form_errors(settingForm.line_add_cancel_redirect_url) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="c-conversionArea">
+                <div class="c-conversionArea__container">
+                    <div class="row justify-content-between align-items-center">
+                        <div class="c-conversionArea__leftBlockItem"></div>
+                        <div class="col-6">
+                            <div class="row align-items-center justify-content-end">
+                                <div class="col-auto">
+                                    <button class="btn btn-ec-conversion px-5" id="submit_button">保存する</button>
+                                    <input type="submit" id="hidden_submit_button" style="display: none">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+{% endblock %}

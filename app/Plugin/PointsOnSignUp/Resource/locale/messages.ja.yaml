@@ -1,0 +1,12 @@
+#flash messages
+points_on_sign_up.admin.save.complete: 已註冊。
+points_on_sign_up.admin.save.error: 註冊失敗。
+points_on_sign_up.admin.error.negative_points: 請輸入大於等於 0 的數字。
+
+#設定畫面
+points_on_sign_up.admin.config.title: 會員註冊積分贈送
+points_on_sign_up.admin.config.sub_title: 插件清單
+points_on_sign_up.admin.config.config_title: 設定
+points_on_sign_up.admin.config.points: 會員註冊積分贈送
+points_on_sign_up.admin.config.conversion.save: 註冊
+points_on_sign_up.admin.config.conversion.back: 插件清單

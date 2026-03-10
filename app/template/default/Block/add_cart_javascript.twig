@@ -1,0 +1,34 @@
+ <script>
+    function AddCart(id) {
+            var id = $('.add-cart-'+id).data('id');
+            $form = $('#form' + id);
+            console.log($form.serialize())
+            $.ajax({
+                url: $form.attr('action'),
+                type: $form.attr('method'),
+                data: $form.serialize(),
+                dataType: 'json',
+                success: function(data) {
+                    if (data.done) {
+                    if (typeof fbq === 'function') {
+                        fbq('track', 'AddToCart', {content_ids: [id], content_type: 'product'});
+                    }
+                    showAddToCartSuccessToast()
+                    $.each(data.messages, function() {
+                        $('#ec-modal-header').html(this);
+                    });
+                    $('#ec-modal-checkbox').prop('checked', true);
+                        $.ajax({
+                            url: "{{ url('block_cart') }}",
+                            type: 'GET',
+                            dataType: 'html'
+                        }).done(function(html) {
+                            $('.ec-headerRole__cart').html(html);
+                        });
+                } else {
+                    alert('カートに追加できませんでした');
+                }
+                }
+            });
+        };
+</script>

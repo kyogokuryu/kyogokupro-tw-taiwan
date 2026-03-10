@@ -1,0 +1,102 @@
+<script>
+    /*
+     * [ params内訳 ]
+     * 
+     * (必須) file: 一意なファイル名称
+     * (必須) origin_name: 元ファイル名称
+     * (必須) mime: ファイルのMIMEタイプ
+     * (任意) save_file: 保存済みのファイルURI
+     */
+    function HtmlFactory(params) 
+    {
+        var types = {
+            // 画像
+            'image/png': function (path, result) {
+                return image(path, result);
+            },
+            'image/jpeg': function (path, result) {
+                return image(path, result);
+            },
+            'image/jpg': function (path, result) {
+                return image(path, result);
+            },
+            'image/gif': function (path, result) {
+                return image(path, result);
+            },
+            'image/vnd.microsoft.icon': function (path, result) {
+                return image(path, result);
+            },
+            // 音声
+            'audio/mp3': function (path, result) {
+                return audio(path, result);
+            },
+            'audio/mpeg': function (path, result) {
+                return audio(path, result);
+            },
+            'audio/mpg': function (path, result) {
+                return audio(path, result);
+            },
+            // 動画
+            'video/mp4': function (path, result) {
+                return video(path, result);
+            },
+            'video/mpeg': function (path, result) {
+                return video(path, result);
+            },
+            'video/mpg': function (path, result) {
+                return video(path, result);
+            },
+            // ドキュメント
+            'application/pdf': function (path, result) {
+                return outerLink(path, result);
+            },
+            // 圧縮ファイル
+            'application/zip': function (path, result) {
+                return outerLink(path, result);
+            },
+            'application/x-zip-compressed': function (path, result) {
+                return outerLink(path, result);
+            },
+        };
+
+        var image = function (path, result) {
+            var proto = '<a href="__path__" target="_blank"><img class="dlc" src="__path__" alt="__name__" /></a>';
+            proto = proto.replace(/__path__/g, path);
+            proto = proto.replace(/__name__/g, result.origin_name);
+            return $(proto);
+        };
+
+        var audio = function (path, result) {
+            var proto = '<p>__name__</p><audio src="__path__" class="dlc" controls><p>{{ 'sheeb.dlc.common.audio.support'|trans }}</p></audio>';
+            proto = proto.replace(/__path__/g, path);
+            proto = proto.replace(/__name__/g, result.origin_name);
+            return $(proto);
+        };
+
+        var video = function (path, result) {
+            var proto = '<p>__name__</p><video class="dlc" controls><source src="__path__" /><p>{{ 'sheeb.dlc.common.video.support'|trans }}</p></video>';
+            proto = proto.replace(/__path__/g, path);
+            proto = proto.replace(/__name__/g, result.origin_name);
+            return $(proto);
+        };
+
+        var outerLink = function (path, result) {
+            var proto = '<a href="__path__" target="_blank">__name__</a>';
+            proto = proto.replace(/__path__/g, path);
+            proto = proto.replace(/__name__/g, result.origin_name);
+            return $(proto);
+        };
+        
+        // メイン処理
+        var path = null;
+        if (params.save_file) {
+            path = params.save_file;
+        } else {
+            path = '{{ asset('', 'temp_image') }}' + params.file;
+        }
+        
+        return types[params.mime](path, params);
+    }
+
+    //# sourceURL=Modules/content_view.js
+</script>

@@ -1,0 +1,43 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+
+{% set body_class = 'video_page' %}
+
+{% block stylesheet %}
+    <style type="text/css">
+        li.list-group-item {
+            z-index: inherit !important;
+        }
+    </style>
+{% endblock %}
+
+{% block main %}
+    {% if pagination.totalItemCount > 0 %}
+        <div class="ec-shelfRole">
+            <ul class="ec-shelfGrid">
+                {% for video in pagination %}
+                    <li class="ec-shelfGrid__item">
+                        <a href="{{ url('video_detail', {id: video.id}) }}">
+                            <p class="ec-shelfGrid__item-image">
+                                <img src="https://img.youtube.com/vi/{{ video.getVideoYoutubeId }}/maxresdefault.jpg">
+                            </p>
+                            <p class="name">{{ video.name }}</p>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="ec-pagerRole">
+            {% include "pager.twig" with {'pages': pagination.paginationData} %}
+        </div>
+    {% endif %}
+{% endblock %}

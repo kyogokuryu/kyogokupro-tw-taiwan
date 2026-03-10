@@ -1,0 +1,180 @@
+<style>
+@media screen and (max-width: 480px) {
+   	#hinr .bottom, #hinr .container {
+		display: none;
+	}
+}
+</style>
+
+{% for Product in ProductsList %}
+	{% if Product.ProductClasses[0].ProductPinpoints|length > 0 %}
+		{% set sale_time = Product.ProductClasses[0].ProductPinpoints[0].Pinpoint.endTime %}
+		{% if sale_time %}
+			{% if sale_time > date() %}
+				{% set sale_time = sale_time|date_format('', 'Y/m/d H:i') %}
+			{% else %}
+				{% set sale_time = '' %}
+			{% endif %}
+		{% endif %}
+	{% else %}
+		{% set sale_time = '' %}
+	{% endif %}
+	<li class="ec-shelfGrid__item">
+		<div>
+			<div class="image ec-shelfGrid__item-image" style="position: relative;border:solid 1px #9B9B9B">
+				<a onclick="oneclick_modal_open({{ Product.id }})" style="width:40%; max-width: 180px;">
+					<img src="{{ asset(Product.main_list_image|no_image_product, 'save_image') }}" loading="lazy" style="width: 100%;">
+				</a>
+				{% if Customer %}
+					{% set is_favorite = get_favorite(Customer,Product) %}
+					{% if BaseInfo.option_favorite_product %}
+						<div class="favorite-box favorite-product-{{ Product.id }}">
+								{% if is_favorite == false %}
+									<button class="icon-star" onclick="addFavorite({{ Product.id }})"  id="favorite">
+										<img style="width:19px;height:19px;" loading="lazy" src="{{ asset('assets/icon/favorite_supplier.svg') }}" alt="">
+									</button>
+									<form action="" method="post" id="favorite-form-{{ Product.id }}">
+										<input style="display:none;" type="text" name="supplier_page" value="{{ url('salon-suppliers') }}"/>
+									</form>
+								{% else %}
+									<button class="icon-star" onclick="deleteFavorite({{ Product.id }})">
+										<img style="width:19px;height:19px;" loading="lazy" src="{{ asset('assets/icon/favorite_active.svg') }}" alt="">
+									</button>
+									<form action="" method="post" id="favorite-form-delete-{{ Product.id }}">
+										<input style="display:none;" type="text" name="product_id" value="{{ Product.id }}"/>
+										<input type="hidden" name="_token" value="{{ csrf_token(constant('Eccube\\Common\\Constant::TOKEN_NAME')) }}">
+									</form>
+								{% endif %}
+						</div>
+					{% endif %}
+				{% endif %}
+			</div>
+			<div class="info ec-shelfGrid__item">
+				<a href="{{ url('product_detail', {'id': Product.id}) }}">
+					<p class="name">{{ Product.name }}</p>
+				</a>
+			</div>
+
+		</div>
+		<div class="price-box">
+			<div class="price-and-sale">
+				<div class="sell-flex">
+					<p class="price-unit">¥</p>
+					<p class="price02-default">
+						{% if Product.hasProductClass %}
+							{% if Product.getPrice02Min == Product.getPrice02Max %}
+								{{ Product.getPrice02IncTaxMin|number_format }}
+							{% else %}
+								{{ Product.getPrice02IncTaxMin|number_format }}
+								～
+								{{ Product.getPrice02IncTaxMax|number_format }}
+							{% endif %}
+						{% else %}
+							{% if Product.ProductClasses[0].pinpointSaleItem %}
+								{{ Product.ProductClasses[0].pinpointSaleItem.getPriceIncTax|number_format }}
+							{% else %}
+								{{ Product.getPrice02IncTaxMin|number_format }}
+							{% endif %}
+						{% endif %}
+					</p>
+				</div>
+				{% if Product.ProductClasses[0].getPrice01IncTax() %}
+					<div class="sale-off-box">
+						<p class="sale-off-discount">{{ get_sale_rate_suplier(Product.id) > 10 ? (get_sale_rate_suplier(Product.id)|round(-1))|number_format  : get_sale_rate_suplier(Product.id)|number_format }}%OFF</p>
+						<p class="sale-off-price">卸価格<s>￥{{ Product.ProductClasses[0].getPrice01IncTax()|number_format}}</s>
+						</p>
+					</div>
+				{% endif %}
+			</div>
+			<div class="add-cart-box">
+				{% set productId = Product.id %}
+				{% set productClassId = Product.ProductClasses[0].id %}
+				<form action="{{ url('product_add_cart', {id:productId}) }}" method="post" id="form{{ productId }}" name="form{{ productId }}">
+					<input type="hidden" name="product_id" value="{{ productId }}">
+					<input type="hidden" name="ProductClass" value="{{ productClassId }}">
+					<input type="hidden" name="quantity" value="1">
+					<input type="hidden" name="_token" value="{{ csrf_token(constant('Eccube\\Common\\Constant::TOKEN_NAME')) }}">
+				</form>
+				<div class="add-cart-button">
+					<button type="button" class="add-cart" id="btn-add-cart-{{ productClassId }}" data-product-id="{{ productId }}" style="">
+						{% if Carts %}
+							{% for Cart in Carts %}
+								{% for cart in Cart.CartItems %}
+									{% if cart.ProductClass == Product.ProductClasses[0] %}
+										<span class="quantity-cart quantity-cart-{{ productClassId }}">{{ cart.Quantity }}</span>
+									{% endif %}
+								{% endfor %}
+							{% endfor %}
+						{% endif %}
+						<img loading="lazy" src="{{ asset('assets/icon/add_cart_supplier.svg') }}" alt="カートに追加" style="">
+					</button>
+				</div>
+			</div>
+		</div>
+	</li>
+	<div class="modal-product-detail modal-product-detail-{{ Product.id }}">
+		<div onclick="oneclick_modal_close({{ Product.id }})" class="background-modal background-modal-{{ Product.id }}"></div>
+		<div class="modal-content">
+			<button class="close">
+				<img src="{{ asset('assets/img/icon/icon-close-white.svg') }}" alt="閉じる" onclick="oneclick_modal_close({{ Product.id }})">
+			</button>
+			<div class="slider item_visual" data-length="{{ Product.ProductImage | length }}" style="">
+				{% for ProductImage in Product.ProductImage %}
+					{% if ProductImage.category == 0 %}
+						<img style="max-witdh: 300px; min-width: 180px;" src="{{ asset(ProductImage, 'save_image') }}">
+					{% endif %}
+				{% else %}
+					<img style="max-witdh: 300px; min-width: 180px;" src="{{ asset(''|no_image_product, 'save_image') }}"/>
+				{% endfor %}
+			</div>
+			<div class="button-slider">
+				<div style="min-height: 30px; min-width: 30px;">
+					<button type="button" id="prev-slider" class="prev-slider">
+						<
+					</button>
+					</div>
+				</div>
+				<div id="slide-info"></div>
+				<h2 class="name">{{ Product.name }}</h2>
+				<div class="price-box">
+					<div class="price-and-sale">
+						<div class="sell-flex">
+							<p class="price-unit">¥</p>
+							<p class="price02-default">
+								{% if Product.hasProductClass %}
+									{% if Product.getPrice02Min == Product.getPrice02Max %}
+										{{ Product.getPrice02IncTaxMin|number_format }}
+									{% else %}
+										{{ Product.getPrice02IncTaxMin|number_format }}
+										～
+										{{ Product.getPrice02IncTaxMax|number_format }}
+									{% endif %}
+								{% else %}
+									{% if Product.ProductClasses[0].pinpointSaleItem %}
+										{{ Product.ProductClasses[0].pinpointSaleItem.getPriceIncTax|number_format }}
+									{% else %}
+										{{ Product.getPrice02IncTaxMin|number_format }}
+									{% endif %}
+								{% endif %}
+							</p>
+						</div>
+						{% if Product.ProductClasses[0].getPrice01IncTax() %}
+							<div class="sale-off-box">
+								<p class="sale-off-price">
+									卸価格<s>￥{{ Product.ProductClasses[0].getPrice01IncTax()|number_format}}</s>
+								</p>
+								<p class="sale-off-discount">{{ get_sale_rate_suplier(Product.id) > 10 ? (get_sale_rate_suplier(Product.id)|round(-1))|number_format  : get_sale_rate_suplier(Product.id)|number_format }}%OFF</p>
+							</div>
+						{% endif %}
+					</div>
+				</div>
+				<div class="add-cart-box">
+					<div class="add-cart-button">
+						<button type="button" class="add-cart" data-product-id="{{ productId }}" style="">
+							カートに入れる
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+{% endfor %}

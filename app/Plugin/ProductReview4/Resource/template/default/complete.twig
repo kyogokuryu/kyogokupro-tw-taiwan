@@ -1,0 +1,73 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) LOCKON CO.,LTD. All Rights Reserved.
+
+http://www.lockon.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+
+{% set body_class = 'product_review_complete' %}
+
+{% block main %}
+<article id="contact" class="product_review">
+	<section>
+    <div class="ec-role">
+        <div class="ec-pageHeader">
+            <h1>{{ 'product_review.front.review.title'|trans}}</h1>
+        </div>
+    </div>
+    <div class="ec-registerCompleteRole review-form-complete">
+        <div class="complete-gray">{{ 'product_review.front.review.complete.thanks_detail'|trans|nl2br }}</div>
+
+        <div class="row" style="margin-top:1em;">
+            <div class="col-xs-3">
+                <img src="{{ asset(Product.main_list_image|no_image_product, 'save_image') }}">
+            </div>
+            <div class="col-xs-9">
+                <div class="complete-green">評論已送出。<br>謝謝您！</div>
+            </div>
+        </div>
+
+        <div style="margin-top:30px">
+            {% if app.session.flashBag.has('add_point') %}
+                {% for add_point in app.session.flashBag.get('add_point') %}
+                    {% if add_point > 0 %}
+                    <p style="color:orange;font-weight:bold;font-size:14px;">購買商品評論提交獎勳 {{ add_point }}PT 已經發放！請在我的頁面上確認。</p>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        {# <div class="row review-form-complete-wp mt50">
+            <a href="{{ item.link}}">
+                <div class="col-xs-4">
+                    <img src="{{ item.src }}">
+                </div>
+                <div class="col-xs-8">
+                    <h3 class="complete-h4">{{ item.title }}</h3>
+                    <p class="complete-p">{{ item.summary }}</p>
+                </div>
+            </a>
+        </div> #}
+
+    {#
+        <div class="ec-off3Grid ec-text-ac">
+            <div class="ec-off3Grid__cell">
+                <div class="ec-reportHeading">
+                    <h2>{{ 'product_review.front.review.complete.thanks'|trans}}</h2>
+                </div>
+                <p class="ec-reportDescription">{{ 'product_review.front.review.complete.thanks_detail'|trans|nl2br }}</p>
+                <div class="ec-off4Grid compbtnarea">
+                    <div class="ec-off6Grid__cell"><a class="ec-blockBtn--cancel" href="{{ url('product_detail', { id: id }) }}">{{ 'product_review.front.review.complete.back'|trans }}</a></div>
+                </div>
+            </div>
+        </div>
+    #}
+    </div>
+    </section>
+</article>
+{% endblock %}

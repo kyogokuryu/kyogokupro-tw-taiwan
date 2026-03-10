@@ -1,0 +1,112 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+
+{% set body_class = 'countdown_history' %}
+
+{% set mypageno = 'countdown_history' %}
+
+{% block stylesheet %}
+   <link rel="stylesheet" href="{{ asset('assets/css/datetimepicker.min.css') }}"></link>
+{% endblock %}
+
+{% block javascript %}
+ 
+    <script language="javascript" src="https://momentjs.com/downloads/moment.js"></script>
+    <script type="text/javascript" src="{{ asset('assets/js/datetimepicker.js') }}"></script>
+    
+    <script>
+        PageCountdown.getInstance().isCountdownNotRun = true;
+        (function($){
+            isFristSelect =true;
+            $(function() {
+                $("#selectLastdate").change(function() {
+                   setGroup($(this).val());
+                });
+            });
+
+            function setGroup (value) {
+                var url = new URL(document.location.href);
+                url.searchParams.set('last-date', value);
+                url.searchParams.delete('pageno');
+                document.location.href = url;
+            }
+
+        })(jQuery);
+        
+    </script>
+{% endblock %}
+
+{% block main %}
+    <div class="ec-withdrawRole">
+        <h3 class="mypage-history-title text-left">{{ 'カウントダウンポイント獲得履歴'|trans }}</h3>
+        <hr class="mypage-review-title">
+    </div>
+
+    <div class="edu_list ">
+        <div class="ec-searchnavRole">
+            <div class="ec-searchnavRole__infos" style="border-top:0">
+                <div class="ec-searchnavRole__counter">
+                    {% if pagination.totalItemCount > 0 %}
+                        {{ '<span class="ec-font-bold">%count%件</span><span>找到的产品</span>'|trans({ '%count%': pagination.totalItemCount })|raw }}
+                    {% else %}
+                        <span>{{ '未找到您正在寻找的产品。'|trans }}</span>
+                    {% endif %}
+                </div>
+                <div class="ec-searchnavRole__actions" style="position: relative;">
+                    <div class="ec-select">
+                        {% set otionArray = ["全部"|trans, "7日前"|trans, "30日前"|trans] %}
+                        {% set ii = otionArray|length -1 %}
+                        <select id="selectLastdate">
+                            {% for i in 0..ii %}
+                                <option {{ i == lastDateGroup ? 'selected' : '' }} value={{i}}>{{otionArray[i]}}</otion>
+                            {% endfor %}
+                        <select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+        {% if pagination.totalItemCount > 0 %}
+        <div class="page_countdown_history">
+            <table>
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>時間</th>
+                        <th>秒</th>
+                        <th>ポイント</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pointHistory in pagination %}
+                        {% set classRow  = loop.index % 2 == 0 ? 'td-even' : 'td-odd' %}
+                        <tr>
+                            <td class="{{ classRow }}">{{pointHistory.id}}</td>
+                            <td class="{{ classRow }}">{{pointHistory.created_at | date_format('','Y/m/d H:i:s')}}</td>
+                            <td class="{{ classRow }}">{{pointHistory.second}}</td>
+                            <td class="{{ classRow }} td-point">{{pointHistory.point|number_format}}</td>
+                        </tr>
+                    {% endfor %}
+                    
+                </tbody>
+            </table>
+        </div>
+            
+            <div class="ec-pagerRole">
+                {% include "pager.twig" with {'pages': pagination.paginationData} %}
+            </div>
+        {% else %}
+            <div class="ec-favoriteRole__header" style="text-align:center">{{ '該当するデータが存在しません。'|trans }}</div>
+        {% endif %}
+    </div>
+{% endblock %}

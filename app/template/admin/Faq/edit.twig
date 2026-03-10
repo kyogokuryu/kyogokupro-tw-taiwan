@@ -1,0 +1,129 @@
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['faq', 'faq'] %}
+
+{% block title %}{{ 'admin.QvA.registe'|trans }}{% endblock %}
+{% block sub_title %}{{ 'admin.QvA.sub_title'|trans }}{% endblock %}
+
+{% form_theme form '@admin/Form/bootstrap_4_horizontal_layout.html.twig' %}
+
+{% block stylesheet %}
+    <style>
+
+    </style>
+{% endblock stylesheet %}
+
+{% block javascript %}
+    <script>
+
+    </script>
+{% endblock javascript %}
+
+{% block main %}
+    <form name="form1" role="form" class="form-horizontal h-adr" id="point_form" method="post" action="">
+
+        {{ form_widget(form._token) }}
+
+        <div class="c-contentsArea__cols">
+            <div class="c-contentsArea__primaryCol">
+                <div class="c-primaryCol">
+                    <div class="card rounded border-0 mb-4">
+                        <div class="card-header"><span>{{ 'Q&A設定'|trans }}</span></div>
+                        <div id="ex-shop-tax" class="card-body">
+                            {% if Faq.id %}
+                                <div class="row">
+                                    <div class="col-3">
+                                        <div class="d-inline-block">
+                                            <span>{{ 'Q&AカテゴリID'|trans }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <p>{{ Faq.id }}</p>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="d-inline-block">
+                                        <span>{{ 'Q&Aカテゴリ'|trans }}</span>
+                                        <span class="badge badge-primary ml-1">
+                                            {{ 'admin.common.required'|trans }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col mb-2">
+                                    {{ form_widget(form.FaqCategory) }}
+                                    {{ form_errors(form.FaqCategory) }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="d-inline-block">
+                                        <span>{{ '質問'|trans }}</span>
+                                        <span class="badge badge-primary ml-1">
+                                            {{ 'admin.common.required'|trans }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col mb-2">
+                                    {{ form_widget(form.question) }}
+                                    {{ form_errors(form.question) }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="d-inline-block">
+                                        <span>{{ '回答'|trans }}</span>
+                                        <span class="badge badge-primary ml-1">
+                                            {{ 'admin.common.required'|trans }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col mb-2">
+                                    {{ form_widget(form.answer) }}
+                                    {{ form_errors(form.answer) }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="d-inline-block">
+                                        <span>{{ 'TOPページに表示するか'|trans }}</span>
+                                        <span class="badge badge-primary ml-1">
+                                            {{ 'admin.common.required'|trans }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col mb-2">
+                                    {{ form_widget(form.display_top) }}
+                                    {{ form_errors(form.display_top) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="c-conversionArea">
+            <div class="c-conversionArea__container">
+                <div class="row justify-content-between align-items-center">
+                    <div class="col-6">
+                        <div class="c-conversionArea__leftBlockItem">
+                            <a class="c-baseLink" href="{{ path('admin_faq_page', { page_no : app.session.get('eccube.admin.faq.search.page_no')|default('1') } ) }}"
+                               data-action="confirm" title="{{ 'admin.common.move_to_confirm_message'|trans({'%name%' : 'Q&A一覧'|trans }) }}">
+                                <i class="fa fa-backward" aria-hidden="true"></i><span>{{ 'Q&A一覧'|trans }}</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div id="ex-conversion-action" class="col-6">
+                        <div class="row align-items-center justify-content-end">
+                            <div class="col-auto">
+                                <button class="btn btn-ec-conversion px-5" type="submit">{{ 'admin.common.registration'|trans }}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+{% endblock %}

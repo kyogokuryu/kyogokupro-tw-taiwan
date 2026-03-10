@@ -1,0 +1,11 @@
+# 闪存消息
+[code_lower].admin.config.save.complete: 已保存。
+
+# 配置
+[code_lower].admin.config.title: [code_name]
+[code_lower].admin.config.config_title: 设置
+[code_lower].admin.config.conversion.save: 保存
+[code_lower].admin.config.conversion.back: 插件列表
+
+[code_lower].admin.config.label_title: 标题
+[code_lower].admin.config.label_display_title: 显示标题

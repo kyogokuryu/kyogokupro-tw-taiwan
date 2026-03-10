@@ -1,0 +1,52 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<!-- CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    	<link rel="stylesheet" href="/html/template/default/assets/css/jsQR.css"/>
+		<!-- JavaScript -->
+		<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+        <script src="/html/template/default/assets/js/jsQR.js" defer></script>
+		<script src="/html/template/default/assets/js/qrcode.min.js" defer></script>
+	</head>
+	<body style="background-color:white;">
+		<h1>店頭ポイント付与　URL</h1>
+
+		<center style="margin-top:30px;">
+		<div id="qrcode" style="text-align:center;width:128px;height:128px;margin:20px;"></div>
+		<a href="{{ url('shop_event_point') }}" target="_blank">{{ url('shop_event_point') }}</a>
+		</center>
+	<script>
+		$(function(){
+
+
+
+			function makeQR(text){
+				document.getElementById("qrcode").innerHTML = "";// Clear
+				let qrcode = new QRCode("qrcode", {
+					text: text,
+					width: 128, height: 128,
+					colorDark: "#000000",
+					colorLight: "#ffffff",
+					correctLevel: QRCode.CorrectLevel.H
+				});
+			}
+
+		
+			makeQR('{{ url('shop_event_point') }}');
+
+		});
+	</script>
+	</body>
+</html>

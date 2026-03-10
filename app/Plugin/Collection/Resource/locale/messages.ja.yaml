@@ -1,0 +1,47 @@
+collection.admin.collection.title: 专题管理
+collection.admin.collection.edit.title: 新增专题
+collection.admin.collection.sub_title: 内容管理
+collection.admin.collection.collection: 专题
+collection.admin.collection.new: 新建
+
+collection.admin.collection.label.code_name: 专题代码/名称
+collection.admin.collection.label.visible: 显示/隐藏
+collection.admin.collection.label.enable: 显示
+collection.admin.collection.label.disable: 隐藏
+collection.admin.collection.label.display_from_to: 公开期间
+collection.admin.collection.label.image: 专题图片
+collection.admin.collection.label.display_from_to.tooltip: 若未填写，则始终显示
+collection.admin.collection.label.id: ID
+collection.admin.collection.label.code: 专题代码
+collection.admin.collection.label.code.tooltip: 专题代码将显示在URL中
+collection.admin.collection.label.name: 专题名称
+collection.admin.collection.label.description: 专题描述
+collection.admin.collection.label.quantity: 商品数量
+collection.admin.collection.label.name.tooltip: 专题名称将显示在前端
+collection.admin.collection.label.description.tooltip: 专题描述将显示在前端
+collection.admin.collection.label.update_date: 更新日期
+collection.admin.collection.label.url: URL
+collection.admin.collection.label.image.tooltip: 专题图片只显示一张在前端
+collection.admin.collection.maxfilesize.alert: 上传文件大小超过2MB
+
+collection.admin.collection.label.count: 条
+collection.admin.collection.modal.label.header: 商品搜索
+collection.admin.collection.modal.label.multi_search: 商品名称/ID/代码
+
+collection.admin.collection.edit.label.new: 添加商品
+collection.admin.collection.edit.label.product.tooltip: 添加商品后，URL将显示在专题管理页面
+
+collection.admin.collection.csv.id_description: 指定要添加到专题的商品的商品ID
+collection.admin.collection.csv.upload: 商品CSV上传
+collection.admin.collection.csv.upload_notice: 上传后，所有注册商品将被覆盖
+collection.admin.collection.csv.download: 下载已注册商品
+collection.admin.collection.file.upload_notice: 仅可注册一张图片
+
+collection.admin.collection.csv.validation.numeric_only: 请输入数字。
+collection.admin.collection.csv.validation.not_existing_product: 不存在指定的商品ID。
+collection.admin.collection.csv.validation.unique: 包含重复的商品ID
+collection.form_error.unique_code: 专题代码已存在，请输入未注册的专题代码。
+collection.admin.edit.collectionproduct.unique: 已选择重复的商品。
+
+collection.admin.collection.product_class.unlimited: 无限制
+collection.admin.collection.price: 圓

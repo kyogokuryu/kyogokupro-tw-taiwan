@@ -1,0 +1,35 @@
+{% extends 'default_frame.twig' %}
+
+{% block main %}
+
+	<article id="education">
+		<section>
+			<h1 class="page-area-title">EDUCATION</h1>
+			{% set category = '' %}
+			{% set queryParams = app.request.query.all %}
+            {% if queryParams.category is defined %}
+    			{% set category = queryParams['category'] %}
+            {% endif %}
+            <div id="category_menu">
+				<ul class="menubox">
+					<li><a href="/education?category=greige" {% if category == 'greige' %}class="active"{% endif %}><span>Greige<span></a></li>
+					<li><a href="/education?category=beige" {% if category == 'beige' %}class="active"{% endif %}><span>Beige<span></a></li>
+					<li><a href="/education?category=milktea" {% if category == 'milktea' %}class="active"{% endif %}><span>MilkTea<span></a></li>
+					<li><a href="/education?category=purple" {% if category == 'purple' %}class="active"{% endif %}><span>Purple<span></a></li>
+					<li><a href="/education?category=blue" {% if category == 'blue' %}class="active"{% endif %}><span>Blue<span></a></li>
+					<li><a href="/education?category=mat" {% if category == 'mat' %}class="active"{% endif %}><span>Mat<span></a></li>
+					<li><a href="/education?category=white" {% if category == 'white' %}class="active"{% endif %}><span>White<span></a></li>
+					<li><a href="/education?category=silver" {% if category == 'silver' %}class="active"{% endif %}><span>Silver<span></a></li>
+					<li><a href="/education?category=pink" {% if category == 'pink' %}class="active"{% endif %}><span>Pink<span></a></li>
+					<li><a href="/education?category=blonde" {% if category == 'blonde' %}class="active"{% endif %}><span>Blonde<span></a></li>
+					<li><a href="/education?category=colour_shampoo" {% if category == 'colour_shampoo' %}class="active"{% endif %}><span>Colour Shampoo<span></a></li>
+				</ul>
+			</div>
+
+			<div class="messagebox">
+                {{ get_youtube(99, category) }}
+            </div>
+		</section>
+	</article>
+
+{% endblock %}

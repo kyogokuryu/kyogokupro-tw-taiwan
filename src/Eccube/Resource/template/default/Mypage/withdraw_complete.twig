@@ -1,0 +1,41 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+
+{% set mypageno = 'withdraw' %}
+
+{% set body_class = 'mypage' %}
+
+{% block main %}
+    <div class="ec-layoutRole__main">
+        <div class="ec-mypageRole">
+            <div class="ec-pageHeader">
+                <h1>{{ '我的帳號'|trans }}/{{ '退訂程序'|trans }}</h1>
+            </div>
+        </div>
+        <div class="ec-mypageRole">
+            <div class="ec-withdrawCompleteRole">
+                <div class="ec-off4Grid">
+                    <div class="ec-off4Grid__cell">
+                        <div class="ec-reportHeading">
+                            <h2>{{ '提現已完成'|trans }}</h2>
+                        </div>
+                        <p class="ec-reportDescription">{{ '非常感謝您使用我們的服務。
+我們期待再次見到您。
+'|trans|nl2br }}</p>
+                        <p><a href="{{ url('homepage') }}"
+                              class="ec-blockBtn--cancel">{{ '首頁'|trans }}</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

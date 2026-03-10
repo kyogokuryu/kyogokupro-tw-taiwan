@@ -1,0 +1,85 @@
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['store', 'plugin', 'plugin_list'] %}
+
+{% block title %}A8SalesTag4{% endblock %}
+{% block sub_title %}プラグイン一覧{% endblock %}
+
+{% form_theme form '@admin/Form/bootstrap_4_horizontal_layout.html.twig' %}
+
+{% block stylesheet %}{% endblock stylesheet %}
+
+{% block javascript %}{% endblock javascript %}
+
+{% block main %}
+    <form role="form" method="post">
+
+        {{ form_widget(form._token) }}
+
+        <div class="c-contentsArea__cols">
+            <div class="c-contentsArea__primaryCol">
+                <div class="c-primaryCol">
+                    <div class="card rounded border-0 mb-4">
+                        <div class="card-header">
+                            {% if form.vars.value is null %}
+                                <span>このプラグインを使用するには、A8.netの広告主契約が必要です。広告主IDをお持ちの方は以下設定お願いします。<br />
+                                <a href="https://www.a8.net/ec/" target="_blank">広告出稿をご希望の方はこちら</a></span>
+                            {% else %}
+                                <span>設定</span>
+                            {% endif %}
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-3"><span>広告主ID</span><span class="badge badge-primary ml-1">必須</span></div>
+                                <div class="col mb-2">
+                                    {{ form_widget(form.eid) }}
+                                    {{ form_errors(form.eid) }}
+                                    記入例：「s00000001234」
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-3"><span>クロスドメイン設定</span></div>
+                                <div class="col mb-2">
+                                    {{ form_widget(form.is_enabled_crossdomain) }}
+                                    {{ form_errors(form.is_enabled_crossdomain) }}
+                                    <br />
+                                    外部ドメインのカートを使用するのみONにしてください。※OFFのままでEccubeカートは機能します。ONにするとEccubeカートが機能しない場合があります。
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-3">注意事項</div>
+                                <div class="col mb-2">
+                                    <ul>
+                                        <li>現在使用中のレイアウトの<code>&lt;head&gt;&lt;/head&gt;タグ内</code>に<code>a8 sales tag 4</code>が設定されていない場合は手動で設定してください。</li>
+                                        <li>CVタグが注文完了画面に表示されない場合は「管理画面のページ管理」より該当のページに<kbd>&#123;&#123; include('@A8SalesTag4/default/Shopping/sales.twig', ignore_missing=true) &#125;&#125;</kbd>を手動で挿入してください。</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="c-conversionArea">
+            <div class="c-conversionArea__container">
+                <div class="row justify-content-between align-items-center">
+                    <div class="col-6">
+                        <div class="c-conversionArea__leftBlockItem">
+                            <a class="c-baseLink" href="{{ url('admin_store_plugin') }}">
+                                <i class="fa fa-backward" aria-hidden="true"></i>
+                                <span>プラグイン一覧</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="row align-items-center justify-content-end">
+                            <div class="col-auto">
+                                <button class="btn btn-ec-conversion px-5" type="submit">登録</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+{% endblock %}

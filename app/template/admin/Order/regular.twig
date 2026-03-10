@@ -1,0 +1,22 @@
+{% if(regular > 0) %}
+<div id="regular_note" style="display:none">
+    {% for f in regular_orders %}
+        <div><a href="{{ url('admin_order_edit',{'id': f.id }) }}" target="_blank">【{{ f.id }}】</a>{{ f.create_date | date('Y/m/d') }}{{ f.regular_note|nl2br }}</div>
+    {% endfor %}
+</div>
+<script>
+window.addEventListener('load',function (){
+
+    var msg = $("#regular_note").html();
+    console.log($("#regular_note"));
+    if(msg){
+      $('#orderOverview .card-body .col-6:nth-child(2)').append('<div class="row mb-3"><div class="col-3"><i class="fa fa-commenting  fa-fw mr-1" aria-hidden="true"></i>定期メッセージ</div><div class="col"><div style="overflow-y:scroll;max-height:300px;">'+ msg +'</div></div></div>')
+    }
+    $('#orderOverview .card-body .col-6:nth-child(2)').append('<div class="row mb-3"><div class="col-3"><i class="fa fa-history fa-fw mr-1" aria-hidden="true"></i>定期回数</div><div class="col">{{ regular }}</div></div>')
+    
+    {% for Shipping in Order.Shippings %}
+    $('#orderOverview .card-body .col-6:nth-child(2)').append('<div class="row mb-3"><div class="col-3"><i class="fa fa-truck fa-fw mr-1" aria-hidden="true"></i>定期お届け予定日</div><div class="col">{{ Shipping.shippingDeliveryDate|date("Y/m/d") }}</div></div>')
+    {% endfor %}
+});
+</script>
+{% endif %}

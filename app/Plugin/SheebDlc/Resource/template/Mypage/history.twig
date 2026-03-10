@@ -1,0 +1,23 @@
+
+
+{# Snippetの制御 #}
+<script>
+    {% if isExistDownloadContentByOrder(Order) %}
+    $(function() {
+        var deliveryHeader = $('.ec-orderDelivery .ec-rectHeading h2');
+        deliveryHeader.text("{{ 'sheeb.dlc.mypage.purchased.items'|trans }}");
+        
+        $('.ec-orderDelivery__title').addClass('dlc-hidden');
+        $('.ec-orderDelivery__address').addClass('dlc-hidden');
+        $('.ec-orderDelivery .ec-definitions--soft').addClass('dlc-hidden');
+    });
+    {% endif %}
+
+    //# sourceURL=Mypage/history.js
+</script>
+
+<style>
+    .dlc-hidden {
+        display: none;
+    }
+</style>

@@ -1,0 +1,37 @@
+<!-- ▼item_list▼ -->
+<div class="ec-shelfRole list">
+    <p class="bloc-title">おすすめ商品一覧</p>
+    {% for Collection in repository('Plugin\\Collection\\Entity\\Collection').getCollectionBlock %}
+        {% if Collection.collectionCode == 'recommend_product_cbd' %}
+            <ul class="ec-shelfGrid">
+            {% for CollectionProduct in Collection.getCollectionProductsLimit(20) %}
+                <li class="ec-shelfGrid__item">
+                    <a href="{{ url('product_detail', {'id': CollectionProduct.Product.id}) }}">
+                        <p class="ec-shelfGrid__item-image">
+                            <img src="{{ asset(CollectionProduct.Product.mainFileName|no_image_product, "save_image") }}"  loading="lazy">
+                        </p>
+                        <h2 class="name">{{ CollectionProduct.Product.name }}</h2>
+                        {% if false %}
+                            <p>{{ CollectionProduct.comment|raw|nl2br }}</p>
+                        {% endif %}
+                    </a>
+                    <a href="{{ url('product_detail', {'id': CollectionProduct.Product.id}) }}">
+                        <p class="price02-default">
+                        {% if CollectionProduct.Product.hasProductClass %}
+                            {% if CollectionProduct.Product.getPrice02Min == CollectionProduct.Product.getPrice02Max %}
+                                {{ CollectionProduct.Product.getPrice02IncTaxMin|price }}
+                            {% else %}
+                                {{ CollectionProduct.Product.getPrice02IncTaxMin|price }} ～ {{ CollectionProduct.Product.getPrice02IncTaxMax|price }}
+                            {% endif %}
+                        {% else %}
+                            {{ CollectionProduct.Product.getPrice02IncTaxMin|price }}
+                        {% endif %}
+                        </p>
+                    </a>
+                </li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endfor %}
+</div>
+<!-- ▲item_list▲ -->

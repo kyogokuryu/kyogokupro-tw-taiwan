@@ -1,0 +1,145 @@
+/* .upper {
+    overflow: hidden !important;
+}
+.upper .gnav{
+   margin-right: 20px;
+} */
+
+.ec-headerNaviRole .bottom {
+    display: none !important;
+}
+
+.beauty-supervisor-contents {
+    max-width: 1100px !important;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.beauty-supervisor-main {
+    width: 80%;
+    margin: auto;
+    color: #000000;
+}
+
+.beauty-supervisor-main .spacing-content {
+    margin: 0 20px;
+}
+
+.beauty-supervisor-main .beauty-supervisor-title {
+    height: 35px;
+    background-color: #5E5E5E;
+    color: #ffffff;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    margin-bottom: 16px;
+    margin-top: 20px;
+}
+
+.beauty-supervisor-main .beauty-supervisor-title:first-child {
+    margin-top: 0;
+}
+
+.beauty-supervisor-main .supervisor-info {
+    display: flex;
+    justify-content: space-between;
+}
+
+.beauty-supervisor-main .supervisor-info .supervisor-image {
+    width: 37%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.beauty-supervisor-main .supervisor-info .supervisor-name {
+    width: 58%;
+    display: flex;
+    align-items: center;
+    font-size: 28px;
+    font-weight: 400;
+}
+
+.beauty-supervisor-main .personal-introduction .personal-introduction-content {
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 24px;
+}
+
+.beauty-supervisor-main .biography ul li,
+.beauty-supervisor-main .professional-certification ul li,
+.beauty-supervisor-main .official-website ul li {
+    list-style-type: square;
+    margin-left: 20px;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 24px;
+    /* white-space: pre-line; */
+}
+
+.beauty-supervisor-main .official-website ul li a {
+    text-decoration: underline;
+}
+.beauty-supervisor-main .official-website ul li.social-link a {
+    margin-left: 20px;
+}
+
+@media screen and (max-width: 768px) {
+    .upper {
+        overflow: hidden !important;
+    }
+    .ec-layoutRole {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    .ec-layoutRole__mainWithColumn {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    .beauty-supervisor-main {
+        width: 100%;
+        margin-top: 95px;
+        padding-bottom: 60px;
+        border-bottom: 1px solid #000000;
+    }
+
+    .beauty-supervisor-main .beauty-supervisor-title {
+        height: 30px;
+        font-size: 16px;
+        font-weight: 500;
+    }
+
+    .beauty-supervisor-main .supervisor-info .supervisor-name {
+        font-size: 16px;
+    }
+
+    .beauty-supervisor-main .personal-introduction .personal-introduction-content {
+        font-size: 16px;
+        line-height: 18px;
+    }
+
+    .beauty-supervisor-main .biography ul li,
+    .beauty-supervisor-main .professional-certification ul li,
+    .beauty-supervisor-main .official-website ul li {
+        font-size: 16px;
+        word-break: break-all;
+        line-height: 18px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .beauty-supervisor-main {
+        margin-top: 20px;
+    }
+}
+@media screen and (max-width: 416px) {
+    .beauty-supervisor-main .official-website ul li a{
+        font-size: 14px;
+    }
+}

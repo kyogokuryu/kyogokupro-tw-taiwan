@@ -1,0 +1,205 @@
+
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['store', 'plugin', 'plugin_list'] %}
+{% set MODE_LOCAL = constant('Plugin\\SheebDlc\\Entity\\Config::MODE_LOCAL') %}
+{% set MODE_GOOGLE_DRIVE = constant('Plugin\\SheebDlc\\Entity\\Config::MODE_GOOGLE_DRIVE') %}
+
+{% block title %}{{ 'sheeb.dlc.admin.config.title'|trans }}{% endblock %}
+{% block sub_title %}{{ 'sheeb.dlc.admin.config.sub_title'|trans }}{% endblock %}
+
+
+{% form_theme form '@admin/Form/bootstrap_4_layout.html.twig' %}
+
+{% block stylesheet %}
+    <style type="text/css">
+        .col-sm-2 {
+            max-width: none;
+        }
+
+        label {
+            display: inline;
+        }
+        
+        .dlc-hidden {
+            display: none;
+        }
+        
+        .ec-addressList__remove {
+            width: 1em;
+            height: 1em;
+        }
+        
+        .ec-addressList__remove .ec-icon{
+            width: 1em;
+            height: 1em;
+        }
+        
+        .google-drive-not-use-files td {
+            padding: 3px 10px;
+        }
+        
+    </style>
+{% endblock %}
+
+
+{% block javascript %}
+<script>
+$(function(){
+    var functions = {
+        {{ MODE_LOCAL }}: function() {
+            $('.dlc-only-mode-{{ MODE_GOOGLE_DRIVE }}').addClass('dlc-hidden');
+            $('#sheeb_dlc_google_drive_service_account').removeAttr('required')
+        },
+        {{ MODE_GOOGLE_DRIVE }}: function() {
+            $('.dlc-only-mode-{{ MODE_GOOGLE_DRIVE }}').removeClass('dlc-hidden');
+            {% if not isExistGoogleDriveCredential() %}
+                $('#sheeb_dlc_google_drive_service_account').attr('required', 'required')
+            {% endif %}
+        }
+    };
+    var switchDisplay = function() {
+        var selected = $('.mode input[type="radio"]:checked').val();
+        functions[selected]();
+    };
+    
+    $('.mode input[type="radio"]').change(function() {
+        switchDisplay();
+    });
+    
+    switchDisplay();
+    //# sourceURL=Admin/SheebDlc/config.js
+});
+</script>
+{% endblock %}
+
+{% block main %}
+    <form method="post" enctype="multipart/form-data" action="{{ url('sheeb_dlc_admin_config') }}">
+        {{ form_widget(form._token) }}
+        <div class="c-contentsArea__cols">
+            <div class="c-contentsArea__primaryCol">
+                <div class="c-primaryCol">
+                    {# プラグイン内部設定 #}
+                    <div class="card rounded border-0 mb-4">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col-8">
+                                    <span class="card-title">{{ 'sheeb.dlc.admin.config.download.card_title'|trans }}</span>
+                                </div>
+                                <div class="col-4 text-right">
+                                    <a data-toggle="collapse" href="#basicConfig" aria-expanded="false" aria-controls="basicConfig"><i class="fa fa-angle-up fa-lg"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="collapse show ec-cardCollapse" id="basicConfig">
+                            <div class="card-body">
+                                {#ダウンロード可能ステータス#}
+                                <div class="row mb-2">
+                                    <div class="col-3">
+                                        <div class="d-inline-block" data-tooltip="true" data-placement="top" title="{{ 'sheeb.dlc.admin.config.order_status.tooltip'|trans }}">
+                                            <span>{{ form.available_order_status.vars.label|trans }}</span><i class="fa fa-question-circle fa-lg ml-1"></i>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        {{ form_widget(form.available_order_status) }}
+                                        {{ form_errors(form.available_order_status) }}
+                                    </div>
+                                </div>
+                                <hr>
+                                {#保存モード#}
+                                <div class="row mb-2">
+                                    <div class="col-3">
+                                        <div class="d-inline-block" data-tooltip="true" data-placement="top" title="{{ 'sheeb.dlc.admin.config.mode.tooltip'|trans }}">
+                                            <span>{{ form.mode.vars.label|trans }}</span><i class="fa fa-question-circle fa-lg ml-1"></i>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        {{ form_widget(form.mode, { attr: { class: 'mode' } }) }}
+                                        {{ form_errors(form.mode) }}
+                                    </div>
+                                </div>
+                                <hr>
+                                {#Google Drive サービスアカウントJSON#}
+                                {% set GOOGLE_DRIVE_CREDENTIAL_FILE = constant('Plugin\\SheebDlc\\PluginManager::GOOGLE_CREDENTIAL_PATH') %}
+                                <div class="row mb-2 dlc-only-mode-{{ MODE_GOOGLE_DRIVE }}">
+                                    <div class="col-3">
+                                        <div class="d-inline-block" data-tooltip="true" data-placement="top" title="{{ 'sheeb.dlc.admin.config.google_drive.service_account.tooltip'|trans }}">
+                                            <span>{{ 'sheeb.dlc.admin.config.google_drive.service_account'|trans }}</span><i class="fa fa-question-circle fa-lg ml-1"></i>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <input type="file" id="sheeb_dlc_google_drive_service_account" name="sheeb_dlc_google_drive_service_account" />
+                                        {% if isExistGoogleDriveCredential() %}
+                                            <p class="badge-ec-green">{{ 'sheeb.dlc.admin.config.mode.google_drive.credential.exist'|trans }}</p>
+                                        {% else %}
+                                            <p class="badge-ec-red">{{ 'sheeb.dlc.admin.config.mode.google_drive.credential.not_exist'|trans }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {# エラー情報 #}
+                                {% if has_error %}
+                                <hr>
+                                <pre>{{ error_message }}</pre>
+                                {% endif %}
+                                {# ファイル一覧 #}
+                                {% if drive_files is not empty  %}
+                                <hr>
+                                <div class="row mb-2 dlc-only-mode-{{ MODE_GOOGLE_DRIVE }}">
+                                    <div class="col-3">
+                                        <div class="d-inline-block" data-tooltip="true" data-placement="top" title="{{ 'sheeb.dlc.admin.config.mode.google_drive.files.not_use.tooltip'|trans }}">
+                                            <span>{{ 'sheeb.dlc.admin.config.mode.google_drive.files.not_use'|trans }}</span><i class="fa fa-question-circle fa-lg ml-1"></i>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <a class="badge-ec-red" href="{{ url('sheeb_dlc_remove_all_google_drive_file') }}" {{ csrf_token_for_anchor() }} data-method="delete">
+                                            <span>{{ 'sheeb.dlc.admin.config.mode.google_drive.files.all_remove_button'|trans }}</span>
+                                        </a>
+                                        <table class="google-drive-not-use-files">
+                                            <thead>
+                                            <tr>
+                                                <th>{{ 'sheeb.dlc.admin.config.mode.google_drive.files.name'|trans }}</th>
+                                                <th>{{ 'sheeb.dlc.admin.config.mode.google_drive.files.remove_button'|trans }}</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for drive_file in drive_files %}
+                                                <tr>
+                                                    <td>{{ drive_file.getName() }}</td>
+                                                    <td>
+                                                        <a class="ec-addressList__remove" href="{{ url('sheeb_dlc_remove_google_drive_file', { file_id : drive_file.getId }) }}" {{ csrf_token_for_anchor() }} data-method="delete">
+                                                            <div class="ec-icon"><img src="{{ asset('assets/icon/cross.svg') }}" alt="remove"></div>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div><!-- /.card -->
+                </div>
+            </div>
+
+            <div class="c-conversionArea">
+                <div class="c-conversionArea__container">
+                    <div class="row justify-content-between align-items-center">
+                        <div class="col-6">
+                            <div class="c-conversionArea__leftBlockItem"></div>
+                        </div>
+                        <div class="col-6">
+                            <div id="ex-conversion-action" class="row align-items-center justify-content-end">
+                                <div class="col-auto">
+                                    <button type="submit" class="btn btn-ec-conversion px-5">{{ 'admin.common.registration'|trans }}</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </form>
+{% endblock %}

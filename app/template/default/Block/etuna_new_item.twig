@@ -1,0 +1,46 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) Takashi Otaki All Rights Reserved.
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+{% if NewItem is not empty %}
+    <h1>新製品</h1>
+    <ul>
+    {% for item in NewItem %}
+        <li>
+            <a href="{{ url('product_detail', {'id': item.id}) }}">
+                <div class="image">
+                {% if item.ProductImage[0] %}
+                    <img src="{{ asset(item.ProductImage[0], 'save_image') }}"  loading="lazy">
+                {% else %}
+                    <img src="{{ asset(''|no_image_product, 'save_image') }}"  loading="lazy" />
+                {% endif %}
+                </div>
+                <div class="info">
+                {% if Config.newitem_disp_title == 1 %}
+                    <p class="name">{{ item.name }}</p>
+                {% endif %}
+                {% if Config.newitem_disp_price == 1 %}
+                    <p class="price02-default">
+                        {% if item.hasProductClass %}
+                            {% if item.getPrice02Min == item.getPrice02Max %}
+                                {{ item.getPrice02IncTaxMin|price }}
+                            {% else %}
+                                {{ item.getPrice02IncTaxMin|price }} ～ {{ item.getPrice02IncTaxMax|price }}
+                            {% endif %}
+                        {% else %}
+                            {{ item.getPrice02IncTaxMin|price }}
+                        {% endif %}
+						{{ include('Block/point_block.twig',{'price':item.getPrice02IncTaxMin}) }}
+                    </p>
+                {% endif %}
+                </div>
+            </a>
+        </li>
+    {% endfor %}
+    </ul>
+{% endif %}

@@ -1,0 +1,27 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+
+{% set body_class = 'cbd top' %}
+
+{% block main %}
+
+	<div class="top-content01"><a href="{{ url('user_data', {'route': 'point'}) }}">
+		新規会員登録でポイントプレゼント中<br><span>￥1,000TWD分</span>プレゼント
+	</a></div>
+	<div class="top-banner">{{ include('Block/uc_banner_cbd01_block.twig') }}</div>
+	<div class="top-sale">{{ include('Block/category_product02.twig') }}</div>
+	<div class="top-product">{{ include('Block/recommend_product_cbd.twig') }}</div>
+	<div class="top-banner mb30">{{ include('Block/uc_banner_cbd02_block.twig') }}</div>
+	<div class="top-slide new">{{ include('Block/category_product03.twig') }}</div>
+	<div class="top-slide best">{{ include('Block/best_seller_cbd.twig') }}</div>
+
+{% endblock %}

@@ -1,0 +1,70 @@
+{#
+ * This file is part of the Recommend Product plugin
+ *
+ * Copyright (C) 2016 LOCKON CO.,LTD. All Rights Reserved.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+#}
+{% set recommend_products = repository('Plugin\\Recommend4\\Entity\\RecommendProduct').getRndRecommendProduct(rec_type) %}
+{% import _self as stars %}
+
+{# 星テキスト生成用マクロ #}
+{% macro stars(positive, negative) %}
+    {% set positive_stars = ["", "★", "★★", "★★★", "★★★★", "★★★★★"] %}
+    {% set negative_stars = ["", "☆", "☆☆", "☆☆☆", "☆☆☆☆", "☆☆☆☆☆"] %}
+    {{ positive_stars[positive] }}{{ negative_stars[negative] }}
+{% endmacro %}
+<!-- ▼item_list▼ -->
+<div class="ec-shelfRole sell-list">
+    {% if(rec_type == 1) %}
+    <p class="bloc-title">人気急上昇商品</p>
+    {% else %}
+    <p class="bloc-title">おすすめ商品一覧</p>
+    {% endif %}
+    <ul class="ec-shelfGrid">
+        {% for RecommendProduct in recommend_products %}
+            <li class="ec-shelfGrid__item">
+                <a href="{{ url('product_detail', {'id': RecommendProduct.Product.id}) }}">
+
+                    <p class="ec-shelfGrid__item-image">
+                        <img src="{{ asset(RecommendProduct.Product.mainFileName|no_image_product, "save_image") }}"  loading="lazy">
+                    </p>
+                    <h2 class="name">{{ RecommendProduct.Product.name }}</h2>
+                    <p class="review">
+                        {% set positive_star = RecommendProduct.review_ave %}
+                        {% set nagative_star = 5 - positive_star %}
+                        <span class="star">{{ stars.stars(positive_star, nagative_star) }}<i>({{ RecommendProduct.review_cnt }})</i></span>
+                    </p>                         
+                    {% if false %}
+                        <p>{{ RecommendProduct.comment|raw|nl2br }}</p>
+                    {% endif %}
+                </a>
+                <a href="{{ url('product_detail', {'id': RecommendProduct.Product.id}) }}">
+                    <div class="sell-flex">
+                        <p class="price02-default">
+                        {% if RecommendProduct.Product.hasProductClass %}
+                            {% if RecommendProduct.Product.getPrice02Min == RecommendProduct.Product.getPrice02Max %}
+                                {{ RecommendProduct.Product.getPrice02IncTaxMin|price }}
+                            {% else %}
+                                {{ RecommendProduct.Product.getPrice02IncTaxMin|price }} ～ {{ RecommendProduct.Product.getPrice02IncTaxMax|price }}
+                            {% endif %}
+                        {% else %}
+                            {{ RecommendProduct.Product.getPrice02IncTaxMin|price }}
+                        {% endif %}
+                        </p>
+                        {% set sc = get_product_sell_count(RecommendProduct.Product.id) %}
+                        {% if sc %}
+                        <div class="sell_product_page sell_count_wrap">
+                            <span class="sell_count">{{ sc }}</span><span class="sell_count_unit">個</span><br><span class="sell_count_label"> 累計販売数</span>
+                        </div>
+                        {% endif %}
+                    </div>
+
+					{{ include('Block/point_block.twig',{'price':RecommendProduct.Product.getPrice02IncTaxMin}) }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+<!-- ▲item_list▲ -->

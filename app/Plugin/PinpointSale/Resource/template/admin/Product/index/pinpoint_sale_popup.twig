@@ -1,0 +1,44 @@
+<table class="table table-striped">
+    <thead class="table-active">
+    <tr>
+        {% if hasProductClass %}
+            <th class="pt-2 pb-2 pl-2">{{ 'admin.product.class_category1__short'|trans }}</th>
+            <th class="pt-2 pb-2">{{ 'admin.product.class_category2__short'|trans }}</th>
+        {% endif %}
+        <th class="pt-2 pb-2">{{ discountName }}</th>
+        <th class="pt-2 pb-2">{{ 'pinpoint_sale.admin.list.head2'|trans }}</th>
+        <th class="pt-2 pb-2">{{ 'pinpoint_sale.admin.list.head3'|trans }}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for value in data %}
+        {% set Pinpoint = value.pinpoint %}
+        <tr id="ex-pinpoint-{{ Pinpoint.id }}">
+            {% if hasProductClass %}
+                {% set class1Name = value.class1Name %}
+                {% set class2Name = value.class2Name %}
+                <td class="pl-3">{{ class1Name }}</td>
+                <td>{{ class2Name }}</td>
+            {% endif %}
+            <td>{{ pinpoint_sale_view(Pinpoint) }}</td>
+            <td>{{ Pinpoint.start_time|date("Y/m/d H:i") }}～{{ Pinpoint.end_time|date("Y/m/d H:i") }}</td>
+            <td>
+                <div class="mb-1">
+                {% set PinpointRepeat = Pinpoint.PinpointRepeat %}
+                {% if PinpointRepeat is not null %}
+                    {{ PinpointRepeat.start_time|pinpoint_sale_time }} ～ {{ PinpointRepeat.end_time|pinpoint_sale_time }}
+                {% endif %}
+                </div>
+                <div class="d-flex flex-wrap align-items-center">
+                    {% if PinpointRepeat is not null %}
+                        {% set activeWeeks = pinpoint_repeat_week(PinpointRepeat) %}
+                        {% for week in activeWeeks %}
+                            <span class="rounded border pl-1 pr-1 ml-1 mr-1 mb-1">{{ week }}</span>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

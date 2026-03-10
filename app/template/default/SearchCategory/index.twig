@@ -1,0 +1,336 @@
+{% extends 'home_frame.twig' %}
+
+{% block main %}
+    <nav aria-label="breadcrumb" role="navigation">
+        <ol class="breadcrumb mb-2 p-0">
+            <li class="breadcrumb-item">
+                <a href="{{ url('homepage') }}">
+                    {{ '最上頁'|trans }}
+                </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                <a>按品牌搜尋</a>
+            </li>
+        </ol>
+    </nav>
+
+    <div class="search-category-contents">
+        <div class="search-category-main">
+            <h1 class="search-title">按品牌搜尋</h1>
+
+            <div class="search-category">
+                <div class="search-btn">
+                    <div class="search-btn-line"> 
+                        <button class="collapse-btn" id="a" href="#search-a">阿</button>
+                        <button class="collapse-btn" id="ka" href="#search-ka">卡</button>
+                        <button class="collapse-btn" id="sa" href="#search-sa">萨</button>
+                        <button class="collapse-btn" id="ta" href="#search-ta">塔</button>
+                        <button class="collapse-btn" id="na" href="#search-na">那</button>
+                    </div>
+
+                    <div class="search-btn-line">
+                        <button class="collapse-btn" id="ha" href="#search-ha">哈</button>
+                        <button class="collapse-btn" id="ma" href="#search-ma">马</button>
+                        <button class="collapse-btn" id="ya" href="#search-ya">亚</button>
+                        <button class="collapse-btn" id="ra" href="#search-ra">拉</button>
+                        <button class="collapse-btn" id="wa" href="#search-wa">娃</button>
+                    </div>
+                </div>
+                <div class="btn-expand">
+                    <button class="btn-expand-all">展开全部</button>
+                    <button class="btn-search-category">按類別搜尋</button>
+                </div>
+            </div>
+
+            <div class="result-category">
+
+            </div>
+        </div>
+    </div>
+    
+
+    <style>
+
+        .search-category-contents{
+            max-width: 1100px !important;
+            width: 100%;
+            margin: 0 auto;
+        }
+        .search-category-main{
+            width:61%;
+            margin: auto;
+        }
+
+        .search-title{
+            font-size: 20px;
+            text-align: center;
+            font-weight: 600;
+            margin-top: 38px;
+            margin-bottom: 37px;
+        }
+        .search-category{
+            padding: 0 10px;
+        }
+            
+
+        .search-category .search-btn .search-btn-line{
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .search-category .search-btn .search-btn-line:last-child{
+            margin-bottom: 0px;
+        }
+        .search-category .search-btn .search-btn-line button{
+            width: 60px;
+            height: 60px;
+            border: 1px solid #000000;
+            background: transparent;
+
+            font-size: 20px;
+            font-weight: 500;
+            font-family: Cabin;
+            color: #000;
+        }
+
+        .search-category .search-btn .search-btn-line button.disable{
+            border-color: #C8C8C8;
+            color: #C8C8C8;
+        }
+
+        .search-category .btn-expand-all{
+            border: 1px solid #000000;
+            background: transparent;
+
+            font-size: 20px;
+            font-weight: 500;
+            font-family: Cabin;
+            color: #000;
+
+            width:100%;
+            height: 60px;
+            margin-top:33px;
+            border-radius: 10px;
+        }
+        .search-category .btn-search-category{
+            border: 0;
+            background: #D9D9D9;
+
+            font-size: 20px;
+            font-weight: 500;
+            font-family: Cabin;
+            color: #E73253;
+
+            width:100%;
+            height: 60px;
+            margin-top:20px;
+            border-radius: 10px;
+        }
+        .result-category{
+            margin: 22px auto 0 auto;
+        }
+        .result-category .result-category-item .collapse-btn{
+            border-bottom: 1px solid #fff;
+            background: #322927;
+            
+
+            display: flex;
+            padding: 19px 21px 22px 21px;
+            justify-content: space-between;
+            align-items: center;
+            width:100%;
+        }
+
+        .result-category .result-category-item .collapse-btn label{
+            color:#fff;
+            font-size:20px;
+            font-weight: 500;
+            margin-bottom:0;
+        }
+
+        .result-category .result-category-item .collapse-btn.disable label{
+            color:#C8C8C8;
+        }
+
+        .result-category .result-category-item .collapse .collapse-item{
+
+        }
+
+        .result-category .result-category-item .collapse .collapse-item .collapse-title{
+            background:#fff;
+            border-bottom:1px solid #322927;
+            padding:19px 21px 22px 21px;
+        }
+        .result-category .result-category-item .collapse .collapse-item .collapse-title label{
+            color:#000;
+            font-size:20px;
+            font-weight:500;
+            line-height:18.84px;
+            font-family:Cabin;
+        }
+        .result-category .result-category-item .collapse .collapse-item .resual-item{
+            border-bottom:1px solid #322927;
+        }
+        .result-category .result-category-item .collapse .collapse-item .resual-item a{
+            background:#D9D9D9;
+            display:flex;
+            justify-content:space-between;
+            padding:0 17px 0 21px;
+            height:60px;
+            width:100%;
+        }
+        .result-category .result-category-item .collapse .collapse-item .resual-item label{
+            color:#000;
+            font-size:20px;
+            font-weight:500;
+            line-height:18.84px;
+            font-family:Cabin;
+        }
+        .result-category .result-category-item .collapse .collapse-item .resual-item .resual-info{
+            display: flex;
+            align-items: center;
+        }
+        .result-category .result-category-item .collapse .collapse-item .resual-item .resual-arrow{
+            transform: rotate(270deg);
+            filter: brightness(0);
+        }
+
+        .ec-layoutRole__contents{
+            overflow:visible !important;
+        }
+        
+
+        @media screen and (max-width: 768px) {
+            .search-category-main{
+                width:100%;
+                margin: auto;
+            }
+            .result-category{
+                margin: 22px -10px 0 -10px;
+            }
+        }
+    </style>
+
+    <script>
+        let katankana = {
+                'a':[{kana: '阿', roman: 'ā'},
+                    {kana: '伊', roman: 'yī'},
+                    {kana: '乌', roman: 'wū'},
+                    {kana: '诶', roman: 'éi'},
+                    {kana: '哦', roman: 'ó'} ],
+                'ka':[{kana: '卡', roman: 'kǎ'},
+                    {kana: '奇', roman: 'qí'},
+                    {kana: '库', roman: 'kù'},
+                    {kana: '克', roman: 'kè'},
+                    {kana: '科', roman: 'kē'} ],
+                'sa':[{kana: '萨', roman: 'sà'},
+                    {kana: '西', roman: 'xī'},
+                    {kana: '苏', roman: 'sū'},
+                    {kana: '塞', roman: 'sāi'},
+                    {kana: '索', roman: 'suǒ'} ],
+                'ta':[{kana: '塔', roman: 'tǎ'},
+                    {kana: '奇', roman: 'qí'},
+                    {kana: '次', roman: 'cì'},
+                    {kana: '特', roman: 'tè'},
+                    {kana: '托', roman: 'tuō'} ],
+                'na':[{kana: '那', roman: 'nà'},
+                    {kana: '尼', roman: 'ní'},
+                    {kana: '奴', roman: 'nú'},
+                    {kana: '内', roman: 'nèi'},
+                    {kana: '诺', roman: 'nuò'} ],
+                'ha':[{kana: '哈', roman: 'hā'},
+                    {kana: '希', roman: 'xī'},
+                    {kana: '胡', roman: 'hú'},
+                    {kana: '赫', roman: 'hè'},
+                    {kana: '霍', roman: 'huò'} ],
+                'ma':[{kana: '马', roman: 'mǎ'},
+                    {kana: '米', roman: 'mǐ'},
+                    {kana: '木', roman: 'mù'},
+                    {kana: '梅', roman: 'méi'},
+                    {kana: '莫', roman: 'mò'} ],
+                'ya':[{kana: '亚', roman: 'yà'},
+                    {kana: '育', roman: 'yù'},
+                    {kana: '哟', roman: 'yō'} ],
+                'ra':[{kana: '拉', roman: 'lā'},
+                    {kana: '里', roman: 'lǐ'},
+                    {kana: '鲁', roman: 'lǔ'},
+                    {kana: '勒', roman: 'lè'},
+                    {kana: '罗', roman: 'luó'}],
+                'wa':[{kana: '娃', roman: 'wá'},
+                    {kana: '我', roman: 'wǒ'} ]
+            }
+
+        let keyKana = Object.keys(katankana);
+        keyKana.map((kana)=>{
+            let kanaLine = katankana[kana];
+
+            let result =  jQuery('<div>', {
+                id: `search-${kana}-item`,
+                class: 'result-category-item',
+            }).appendTo('.result-category');
+
+            let collapse =  jQuery('<div>', {
+                class: 'collapse-btn',
+                'data-toggle': 'collapse',
+                href: `#search-${kana}`,
+                'aria-expanded': 'false',
+                'aria-controls': `search-${kana}`,
+            }).appendTo(result);
+
+            collapse.html(`<label>${kanaLine[0].kana}</label>
+                <img src="/html/user_data/assets/img/icon/i_collapse.svg"/>`)
+
+            let collapseContent =  jQuery('<div>', {
+                class: 'collapse',
+                id: `search-${kana}`,
+            }).appendTo(result);
+
+            let collapseContentOl =  jQuery('<ol>').appendTo(collapseContent);
+
+            kanaLine.map((item)=>{
+                let collapseItem = jQuery('<li>', {
+                    id:`search-${item.roman}`,
+                    class: 'collapse-item',
+                }).appendTo(collapseContentOl);
+
+                collapseItem.append(`<div class="collapse-title"><label>${item.kana}</label></div>`);
+
+                let resualOl = jQuery('<ol>',{
+                    id:`resual-${kana}-${item.roman}`
+                }).appendTo(collapseItem);
+                for(let i = 0; i< 3 ;i ++){
+                    let resualItem = jQuery('<li>', {class:"resual-item"}).appendTo(resualOl);
+                    let resualItemLink = jQuery('<a>', {href:""}).appendTo(resualItem);
+                    resualItemLink.append(`<div class="resual-info">
+                                            <img src="" />
+                                            <label>アナップ / ANAP（18）</label>
+                                        </div>`)
+                    resualItemLink.append(`<div class="resual-arrow">
+                        <img src="/html/user_data/assets/img/icon/i_collapse.svg"/>
+                    </div>`)
+                }
+            })
+        })
+
+        $(".collapse-btn" ).on("click", function() {
+            let idElement = $(this).attr('href');
+            $([document.documentElement, document.body]).animate({
+                scrollTop: $(idElement+"-item")[0].offsetTop
+            }, 100);
+
+            $(idElement).collapse('show');
+        });
+
+        $(".btn-expand-all" ).on("click", function() {
+            keyKana.map((key)=>{
+                $(`#search-${key}`).collapse('show');
+            })
+        })
+
+       
+
+        
+    </script>
+
+{% endblock %}

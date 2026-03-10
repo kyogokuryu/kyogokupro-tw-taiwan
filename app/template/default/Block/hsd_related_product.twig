@@ -1,0 +1,43 @@
+{% block main %}
+{% if rp_count > 0 %}
+
+{% import _self as stars %}
+
+{# 星テキスト生成用マクロ #}
+{% macro stars(positive, negative) %}
+    {% set positive_stars = ["", "★", "★★", "★★★", "★★★★", "★★★★★"] %}
+    {% set negative_stars = ["", "☆", "☆☆", "☆☆☆", "☆☆☆☆", "☆☆☆☆☆"] %}
+    {{ positive_stars[positive] }}{{ negative_stars[negative] }}
+{% endmacro %}
+
+    <div class="top-slide hsd-related">
+        <p class="h2">{{ title|raw }}</p>
+        <ul>
+        {% for reldat in hsd_related_product %}
+            <li>
+                <a href="{{ url('product_detail', {'id': reldat.id}) }}">
+                    <div class="image"><img src="{{ asset('', 'save_image') }}{{ reldat.file_name | no_image_product }}"></div>
+                    <div class="info ec-shelfGrid__item">
+                        <h2 class="name">{{reldat.name}}</h2>
+                        <p class="review">
+                            {% set positive_star = reldat['review_ave'] %}
+                            {% set nagative_star = 5 - positive_star %}
+                            <span class="star">{{ stars.stars(positive_star, nagative_star) }}<i>({{ reldat['review_cnt'] }})</i></span>
+                        </p>   
+                        <p class="price">
+                        {% if show_price == 'show_price' %}
+                            {% if reldat.min_price == reldat.max_price %}
+                                ￥{{ reldat.min_price|number_format(0, '.', ',') }}
+                            {% else %}
+                                ￥{{ reldat.min_price|number_format(0, '.', ',') }} 〜 ￥{{ reldat.max_price|number_format(0, '.', ',') }}
+                            {% endif %}
+                        {% endif %}
+                        </p>
+                    </div>
+                </a>
+            </li>
+        {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+{% endblock %}

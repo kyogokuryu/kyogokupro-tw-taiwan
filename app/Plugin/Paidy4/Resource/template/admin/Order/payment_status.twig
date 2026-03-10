@@ -1,0 +1,335 @@
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['order', 'paidy4_admin_payment_status'] %}
+
+{% block title %}{{ 'paidy.admin.payment_status.title'|trans }}{% endblock %}
+{% block sub_title %}{{ 'paidy.admin.payment_status.sub_title'|trans }}{% endblock %}
+
+{% form_theme searchForm '@admin/Form/bootstrap_4_layout.html.twig' %}
+
+{% block stylesheet %}
+{% endblock stylesheet %}
+
+{% block javascript %}
+    <script>
+        $(function () {
+            // チェックボックス
+            $('#check_all').on('change', function() {
+                if ($(this).prop('checked')) {
+                    $('input[id^="paidy_check_"]').prop('checked', true);
+                } else {
+                    $('input[id^="paidy_check_"]').prop('checked', false);
+                }
+            });
+
+            // 一括処理
+            $('#change_payment_status').click(function(){
+                var check_cnt = countCheck();
+                if(check_cnt == 0) {
+                    alert("チェックボックスが選択されていません");
+                    return false;
+                }
+                if($('#search_payment_payment_status').val().length == 0) {
+                    alert("{{ 'paidy.admin.payment_status.bulk_alert'|trans }}");
+                    return false;
+                }
+                if(confirm("{{ 'paidy.admin.payment_status.bulk_modal_message'|trans }}")) {
+                    $('#paidy_request').val('change_payment_status');
+                    $('#paidy_mode').val($('#search_payment_payment_status').val());
+                    $('#form_bulk').submit();
+                }
+            });
+
+            // 個別売上取消
+            $('.paidy_refund_button').click(function(){
+                var order_id = $(this).attr('id');
+                var refund_amount = $('#paidy_refund_amount_' + order_id).val();
+                var refund_all = false;
+                var paidy_submit_flg = true;
+                if($('#paidy_refund_all_' + order_id).prop('checked')) {
+                    refund_all = true;
+                } else {
+                    if (refund_amount == '' || refund_amount == 0) {
+                        alert("返金額を入力して下さい。");
+                        paidy_submit_flg = false;
+                    }
+                }
+
+                if (paidy_submit_flg) {
+                    if(confirm("{{ 'paidy.admin.payment_status.bulk_modal_message'|trans }}")) {
+                        $('#paidy_request').val('refunds');
+                        $('#paidy_mode').val('refunds');
+                        $('#paidy_refund_order_id').val(order_id);
+                        $('#paidy_refund_amount').val(refund_amount);
+                        $('#paidy_refund_all').val(refund_all);
+                        $('#form_bulk').submit();
+                    }
+                }
+            });
+
+            // 全額返金チェックボックスによるdisabled切り替え
+            $('input[id^="paidy_refund_all_"]').on('change', function() {
+                var checkbox_id = $(this).attr('id');
+                var textbox_id  = checkbox_id.replace('all', 'amount');
+                if ($(this).prop('checked')) {
+                    $('#'+textbox_id).prop('disabled', true);
+                } else {
+                    $('#'+textbox_id).prop('disabled', false);
+                }
+            });
+        });
+
+        function countCheck() {
+            var check_count = 0;
+            $('input[id^="paidy_check_"]').each(function(){
+                if($(this).prop('checked')) {
+                    check_count++;
+                }
+            });
+            return check_count;
+        }
+    </script>
+{% endblock javascript %}
+
+{% block main %}
+    <!--検索条件設定テーブルここから-->
+    <div class="c-outsideBlock">
+        <form name="search_form" method="POST" action="{{ url('paidy4_admin_payment_status') }}">
+            <div class="c-outsideBlock__contents">
+                <div class="row">
+                    <div class="col-12">
+                        {{ form_widget(searchForm._token) }}
+                        <div>
+                            <label class="col-form-label" data-tooltip="true" data-placement="top" title="{{ 'paidy.admin.payment_status.tooltip.multi_search_label'|trans }}">{{ 'paidy.admin.payment_status.multi_search_label'|trans }}<i class="fa fa-question-circle fa-lg ml-1"></i></label>
+                            {{ form_widget(searchForm.multi) }}
+                            {{ form_errors(searchForm.multi) }}
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-12">
+                                <p class="col-form-label">{{ 'paidy.admin.payment_status.search_condition_order_status'|trans }}</p>
+                                {{ form_widget(searchForm.OrderStatuses, {'label_attr': {'class': 'checkbox-inline'}}) }}
+                                {{ form_errors(searchForm.OrderStatuses) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-row">
+                            <div class="form-group col-12">
+                                <p class="col-form-label">{{ 'paidy.admin.payment_status.search_condition_paidy_status'|trans }}</p>
+                                {{ form_widget(searchForm.paidy_status, {'label_attr': {'class': 'checkbox-inline'}}) }}
+                                {{ form_errors(searchForm.paidy_status) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="c-outsideBlock__contents">
+                <div class="row">
+                    <div class="mb-4">
+                        <div class="col-12">
+                            <button class="btn btn-ec-conversion px-5" type="submit">検索</button>
+                            {% if pagination %}
+                                <span class="font-weight-bold ml-2">
+                                    {{ 'paidy.admin.payment_status.search_result_count'|trans({ '%count%': pagination.totalItemCount }) }}
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="c-outsideBlock__contents" id="collective_setting_box__body">
+                <div class="box-header">
+                    <h3 class="box-title">{{ 'paidy.admin.payment_status.bulk_label'|trans }}</h3>
+                </div>
+                <div id="collective_setting__body" class="box-body">
+                    <div id="collective_setting__list" class="table_list">
+                        <div id="collective_setting__list_body" class="table-responsive with-border">
+                            <table class="table">
+                                <tr>
+                                    <td class="text-center" style="background-color: #f9f9f9;">
+                                        <label class="control-label required ">{{ 'paidy.admin.payment_status.bulk_payment_process'|trans }}</label>
+                                    </td>
+                                    <td>
+                                        {{ form_widget(searchForm.payment_status) }}
+                                        {{ form_errors(searchForm.payment_status) }}
+                                    </td>
+                                    <td>
+                                        <a href="#" class="btn btn-success" id="change_payment_status">
+                                            {{ 'paidy.admin.payment_status.bulk_submit'|trans }}
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <!--検索条件設定テーブルここまで-->
+
+    <div class="c-contentsArea__cols">
+        <div class="c-contentsArea__primaryCol">
+            <div class="c-primaryCol">
+                {% if pagination and pagination.totalItemCount %}
+                    <form id="form_bulk" method="POST" action="{{ url('paidy4_admin_payment_status_request') }}">
+                        <input type="hidden" name="paidy_request" id="paidy_request" value="" />
+                        <input type="hidden" name="paidy_mode" id="paidy_mode" value="" />
+                        <input type="hidden" name="paidy_refund_order_id" id="paidy_refund_order_id" value="" />
+                        <input type="hidden" name="paidy_refund_amount" id="paidy_refund_amount" value="" />
+                        <input type="hidden" name="paidy_refund_all" id="paidy_refund_all" value="" />
+                        <input type="hidden" name="{{ constant('Eccube\\Common\\Constant::TOKEN_NAME') }}" value="{{ csrf_token(constant('Eccube\\Common\\Constant::TOKEN_NAME')) }}">
+                        <div class="row justify-content-between mb-2">
+                            <div class="col-6"></div>
+                            <div class="col-5 text-right">
+                                <div class="d-inline-block">
+                                    <select class="custom-select" onchange="location.href = this.value;">
+                                        {% for pageMax in pageMaxis %}
+                                            <option {% if pageMax.name == page_count%} selected {% endif %}
+                                                    value="{{ path('paidy4_admin_payment_status', {'page_no': 1, 'page_count': pageMax.name}) }}">
+                                                {{ 'paidy.admin.payment_status.display_count'|trans({ '%count%': pageMax.name|e }) }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card rounded border-0 mb-4">
+                            <div class="card-body p-0">
+                                <table class="table table-sm" id="search_result">
+                                    <thead>
+                                        {% set thead_class = "border-top-0 pt-2 pb-2 text-center" %}
+                                        {% set thead_class_top = "border-bottom-0" %}
+                                        <tr>
+                                            <th class="{{ thead_class }} pl-3 align-middle" rowspan="2">
+                                                <input type="checkbox" id="check_all" name="filter" value="open">
+                                            </th>
+                                            <th class="{{ thead_class }} {{ thead_class_top }}">{{ 'paidy.admin.payment_status.col_order_date'|trans }}</th>
+                                            <th class="{{ thead_class }} {{ thead_class_top }}">{{ 'paidy.admin.payment_status.col_order_no'|trans }}</th>
+                                            <th class="{{ thead_class }} {{ thead_class_top }}">{{ 'paidy.admin.payment_status.col_order_name'|trans }}</th>
+                                            <th class="{{ thead_class }} {{ thead_class_top }}">{{ 'paidy.admin.payment_status.col_order_price'|trans }}</th>
+                                            <th class="{{ thead_class }} {{ thead_class_top }}">{{ 'paidy.admin.payment_status.col_order_staus'|trans }}</th>
+                                            <th class="{{ thead_class }} {{ thead_class_top }}">{{ 'paidy.admin.payment_status.col_payment_date'|trans }}</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="{{ thead_class }}">{{ 'paidy.admin.payment_status.col_paidy_refund'|trans }}</th>
+                                            <th class="{{ thead_class }}">{{ 'paidy.admin.payment_status.col_paidy_order_id'|trans }}</th>
+                                            <th class="{{ thead_class }}">{{ 'paidy.admin.payment_status.col_paidy_expire_date'|trans }}</th>
+                                            <th class="{{ thead_class }}">{{ 'paidy.admin.payment_status.col_paidy_order_amount'|trans }}</th>
+                                            <th class="{{ thead_class }}">{{ 'paidy.admin.payment_status.col_paidy_order_status'|trans }}</th>
+                                            <th class="{{ thead_class }}">{{ 'paidy.admin.payment_status.col_shipping_date'|trans }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% set tbody_class = "align-middle text-center" %}
+                                    {% set tbody_class_bottom = "border-top-0" %}
+                                    {% for Order in pagination %}
+                                        {% set paidy_payment_total = Order.paidy_capture_total|default(0) - Order.paidy_refund_total |default(0) %}
+                                        {% if Order.payment_total != paidy_payment_total and Order.paidy_capture_id != "" %}
+                                            {% set rowspan = "3" %}
+                                            {% set differentFlg = true %}
+                                        {% else %}
+                                            {% set rowspan = "2" %}
+                                            {% set differentFlg = false %}
+                                        {% endif %}
+                                        <tr>
+                                            <td class="{{ tbody_class }} pl-3" rowspan="{{ rowspan }}">
+                                                <input type="checkbox"  name="ids[]" id="paidy_check_{{ Order.id }}" value="{{ Order.id }}">
+                                            </td>
+                                            <td class="{{ tbody_class }}" id="order_date--{{ Order.id }}">{{ Order.order_date|date_min }}</td>
+                                            <td class="{{ tbody_class }}" id="id--{{ Order.id }}">
+                                                <a class="action-edit" href="{{ url('admin_order_edit', { id : Order.id }) }}">{{ Order.order_no }}</a>
+                                            </td>
+                                            <td class="{{ tbody_class }}" id="name--{{ Order.id }}">{{ Order.name01 }} {{ Order.name02 }}</td>
+                                            <td class="{{ tbody_class }}" id="payment_total--{{ Order.id }}">
+                                                {{ Order.payment_total|price }}
+                                                {% for order in Order %}
+                                                    {% if order.paidy_payment_total != Order.payment_total %}
+                                                        <br /><span class="badge badge-danger">{{ paidy.paidy_payment_total|price }}</span>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </td>
+                                            <td class="{{ tbody_class }}" id="order_status--{{ Order.id }}">
+                                                <span class="badge badge-ec-blue" style="background-color: #fff; color: {{ Order.OrderStatusColor }}; border-color: {{ Order.OrderStatusColor }}">
+                                                    {{ Order.OrderStatus }}
+                                                </span>
+                                            </td>
+                                            <td class="{{ tbody_class }}" id="order_paidy_payment_date--{{ Order.id }}">{{ Order.payment_date|date_sec|default('未入金') }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="{{ tbody_class }} {{ tbody_class_bottom }}" id="paidy_refund--{{ Order.id }}">
+                                                {% if Order.paidy_capture_id != "" %}
+                                                    <input type="text" name="paidy_refund" id="paidy_refund_amount_{{ Order.id }}" value="" size="7" disabled="disabled">TWD
+                                                    <input type="checkbox" id="paidy_refund_all_{{ Order.id }}" value="{{ Order.id }}" checked="checked">全額
+                                                    <a class="btn btn-ec-regular paidy_refund_button" id="{{ Order.id }}">売上取消(リファンド)</a>
+                                                {% endif %}
+                                            </td>
+                                            <td class="{{ tbody_class }} {{ tbody_class_bottom }}" id="order_paidy_order_id--{{ Order.id }}">{{ Order.paidy_order_id }}</td>
+                                            <td class="{{ tbody_class }} {{ tbody_class_bottom }}" id="order_paidy_expire_date--{{ Order.id }}">{{ Order.paidy_expire_date|date_min }}</td>
+                                            <td class="{{ tbody_class }} {{ tbody_class_bottom }}" id="order_paidy_payment_total--{{ Order.id }}">
+                                                {{ paidy_payment_total|price }}
+                                            </td>
+                                            <td class="{{ tbody_class }} {{ tbody_class_bottom }}" id="order_paidy_status--{{ Order.id }}">
+                                                {% if Order.paidy_status == "authorized" %}
+                                                    {% set paidy_status_color = status_color_code.authorized %}
+                                                {% elseif Order.paidy_status == "closed" %}
+                                                    {% set paidy_status_color = status_color_code.closed %}
+                                                {% else %}
+                                                    {% set paidy_status_color = status_color_code.empty %}
+                                                {% endif %}
+                                                <span class="badge badge-ec-blue" style="background-color: #fff; color: {{ paidy_status_color }}; border-color: {{ paidy_status_color }}">
+                                                    {{ Order.paidy_status|upper }}
+                                                </span>
+                                            </td>
+                                            <td class="{{ tbody_class }} {{ tbody_class_bottom }}" id="order_paidy_shipping_date--{{ Order.id }}">
+                                                {% if Order.Shippings[0] is defined %}
+                                                    {{ Order.Shippings[0].shipping_date|date_sec|default('未発送') }}
+                                                {% else %}
+                                                    未発送
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% if differentFlg == true %}
+                                        <tr>
+                                            <td class="{{ tbody_class }} {{ tbody_class_bottom }}" colspan="6">
+                                                <span style="color:red;">{{ 'paidy.admin.payment_status.payment_total_different'|trans }}</span>
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                <div class="row justify-content-md-center mb-4"></div>
+                            </div>
+
+                            <div class="row justify-content-md-center mb-4">
+                                {% if pagination.totalItemCount > 0 %}
+                                    {% include "@admin/pager.twig" with { 'pages' : pagination.paginationData, 'routes' : 'paidy4_admin_payment_status_pageno' } %}
+                                {% endif %}
+                            </div>
+
+                        </div>
+                    </form>
+                {# 検索条件エラー時 #}
+                {% elseif has_errors %}
+                    <div class="card rounded border-0">
+                        <div class="card-body p-4">
+                            <div class="text-center text-muted mb-4 h5">{{ 'paidy.admin.payment_status.invalid_condition'|trans }}</div>
+                            <div class="text-center text-muted">{{ 'paidy.admin.payment_status.change_condition'|trans }}</div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="card rounded border-0">
+                        <div class="card-body p-4">
+                            <div class="text-center text-muted mb-4 h5">{{ 'paidy.admin.payment_status.no_result'|trans }}</div>
+                            <div class="text-center text-muted">{{ 'paidy.admin.payment_status.change_condition'|trans }}</div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

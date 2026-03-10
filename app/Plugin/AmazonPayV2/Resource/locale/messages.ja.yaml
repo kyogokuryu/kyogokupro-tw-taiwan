@@ -1,0 +1,79 @@
+#nav
+amazon_pay_v2.admin.nav.payment_list: Amazon Pay支付管理
+
+#flash messages
+amazon_pay_v2.admin.save.success: 已保存。
+amazon_pay_v2.admin.save.failed: 保存失败。
+
+#twig
+amazon_pay_v2.admin.config.title: Amazon Pay
+amazon_pay_v2.admin.config.sub_title: 插件列表
+amazon_pay_v2.admin.config.header: 设置
+amazon_pay_v2.admin.config.save: 保存
+amazon_pay_v2.admin.config.required: 必填
+amazon_pay_v2.admin.config.back: 返回插件列表
+amazon_pay_v2.admin.config.amazon_account_mode: 帐户切换
+amazon_pay_v2.admin.config.env: 环境切换
+amazon_pay_v2.admin.config.env.sandbox: 沙盒环境
+amazon_pay_v2.admin.config.seller_id: 卖家ID
+amazon_pay_v2.admin.config.public_key_id: 公钥ID
+amazon_pay_v2.admin.config.private_key_path: 私钥路径
+amazon_pay_v2.admin.config.client_id: 客户端ID
+amazon_pay_v2.admin.config.test_client_id: 测试客户端ID
+amazon_pay_v2.admin.config.prod_key: 切换生产环境密钥
+amazon_pay_v2.admin.config.sale: 购买时Amazon支付状态
+amazon_pay_v2.admin.config.use_confirm_page: 支付确认页面
+amazon_pay_v2.admin.config.auto_login: 自动登录
+amazon_pay_v2.admin.config.login_required: 必须登录/注册
+amazon_pay_v2.admin.config.order_correct: 订单修正功能
+amazon_pay_v2.admin.config.mail_notices: 订单完成邮件特殊说明
+amazon_pay_v2.admin.config.use_cart_button: 放置“使用Amazon支付”按钮（购物车页面）
+amazon_pay_v2.admin.config.cart_button_color: 颜色
+amazon_pay_v2.admin.config.cart_button_place: 放置方式
+amazon_pay_v2.admin.config.use_mypage_login_button: 放置“LoginWithAmazon”按钮（个人中心/登录）
+amazon_pay_v2.admin.config.mypage_login_button_color: 颜色
+amazon_pay_v2.admin.config.mypage_login_button_place: 放置方式
+amazon_pay_v2.admin.payment_status.title: Amazon Pay支付管理
+amazon_pay_v2.admin.payment_status.sub_title: 订单管理
+amazon_pay_v2.admin.payment_status.search: 搜索
+amazon_pay_v2.admin.payment_status.search_result_count: '搜索结果：%count%条'
+amazon_pay_v2.admin.payment_status.search_condition_payment: 支付方式
+amazon_pay_v2.admin.payment_status.search_condition_order_status: 处理状态
+amazon_pay_v2.admin.payment_status.search_condition_amazon_status: Amazon支付状态
+amazon_pay_v2.admin.payment_status.invalid_condition: 搜索条件错误
+amazon_pay_v2.admin.payment_status.no_result: 未找到符合搜索条件的数据
+amazon_pay_v2.admin.payment_status.change_condition: 更改搜索条件，然后重试。
+amazon_pay_v2.admin.payment_status.display_count: '%count%条'
+amazon_pay_v2.admin.payment_status.col_order_date: 下单日期
+amazon_pay_v2.admin.payment_status.col_order_no: 订单号
+amazon_pay_v2.admin.payment_status.col_order_name: 姓名
+amazon_pay_v2.admin.payment_status.col_order_price: 购买金额
+amazon_pay_v2.admin.payment_status.col_amazon_order_capture: 批量销售
+amazon_pay_v2.admin.payment_status.col_amazon_order_cancel: 批量取消
+amazon_pay_v2.admin.payment_status.col_amazon_order_reference_id: Amazon参考ID
+amazon_pay_v2.admin.payment_status.col_amazon_order_status: Amazon支付状态
+amazon_pay_v2.admin.payment_status.col_order_staus: 处理状态
+amazon_pay_v2.admin.payment_status.bulk_label: 批量操作
+amazon_pay_v2.admin.payment_status.bulk_submit: 确定
+amazon_pay_v2.admin.payment_status.bulk_modal_title: 批量操作确认
+amazon_pay_v2.admin.payment_status.bulk_modal_body: 将更改多个项目。确定执行吗？
+amazon_pay_v2.admin.payment_status.bulk_modal_action_exec: 执行
+amazon_pay_v2.admin.payment_status.bulk_modal_action_cancel: 取消
+amazon_pay_v2.admin.payment_status.bulk_alert: 未选择
+
+amazon_pay_v2.admin.config.tooltip.sale: 选择销售后，您可以在购买完成时同时进行销售处理。
+amazon_pay_v2.admin.config.tooltip.auto_login: 在使用Amazon Pay登录时，EC-CUBE也会自动登录。此功能仅适用于已执行“Amazon Pay购买同时会员注册”的会员。
+amazon_pay_v2.admin.config.tooltip.login_required: Amazon Pay支付时，必须登录/注册EC网站。
+amazon_pay_v2.admin.config.tooltip.order_correct: 如果无法分割获得的姓名和电话号码，则按照订单信息、送货信息和会员信息的顺序搜索并分割相同字符串。
+amazon_pay_v2.admin.config.tooltip.mail_notices: 在Amazon Pay支付时，向订单完成邮件添加特殊说明。
+
+#front
+amazon_pay_v2.front.error: 出错了。
+amazon_pay_v2.front.out_of_stock: 库存不足。无法购买超出库存数量的商品。
+amazon_pay_v2.front.shopping.zero_payment_error: Amazon Pay不支持总金额为0的支付。
+amazon_pay_v2.front.shopping.undefined_pref_error: 无法正确获取送货地址的省份。请确认Amazon账户的送货地址省份是否以汉字正确输入。
+
+amazon_pay_v2.front.shopping.customer_regist_v2: 同意使用条款，并将订单者信息注册为会员
+amazon_pay_v2.front.shopping.mail_magazine: 订阅邮件杂志
+
+amazon_pay_v2.front_mypage_fail_to_login: 非常抱歉，只有在网站购买商品并使用Amazon支付的会员才能使用Amazon帐户登录。

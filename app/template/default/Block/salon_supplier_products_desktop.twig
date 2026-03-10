@@ -1,0 +1,150 @@
+{% block style %}
+	<style>
+		.products_supplier .supplier_desktop th {
+			text-align: center;
+		}
+		.products_supplier .supplier_desktop td {
+			padding: 0;
+			text-align: center;
+		}
+		.products_supplier .supplier_desktop td p.name {
+			text-align: left;
+			height: auto;
+			overflow: hidden;
+			display: -webkit-box;
+			-webkit-box-orient: vertical;
+			-webkit-line-clamp: 3;
+		}
+		.products_supplier .product-content {
+			padding: 10px 10px 10px 20px !important;
+		}
+		.products_supplier .supplier_desktop .sell-flex {
+			justify-content: center;
+		}
+		.products_supplier .link-product {
+			padding: 5px 7px;
+			border: 1px solid #5F90EF;
+			color: #5F90EF;
+			border-radius: 50px;
+		}
+		.is_desktop .form-search .input-form-search {
+			max-width: 400px;
+			width: 400px;
+			border-radius: 5px;
+		}
+	</style>
+{% endblock %}
+<thead>
+	<tr>
+		<th style="text-align: left;padding-left: 170px;">商品名</th>
+		<th>卸価格</th>
+		<th>OFF率</th>
+		<th>販売単価</th>
+		<th>発注数</th>
+		<th></th>
+	</tr>
+</thead>
+<tbody>
+	{% for Product in Products %}
+		{% if Product.ProductClasses[0].ProductPinpoints|length > 0 %}
+			{% set sale_time = Product.ProductClasses[0].ProductPinpoints[0].Pinpoint.endTime %}
+			{% if sale_time %}
+				{% if sale_time > date() %}
+					{% set sale_time = sale_time|date_format('', 'Y/m/d H:i') %}
+				{% else %}
+					{% set sale_time = '' %}
+				{% endif %}
+			{% endif %}
+		{% else %}
+			{% set sale_time = '' %}
+		{% endif %}
+		<tr>
+			<td class="product-content" style="width:100%">
+				<div style="display:flex;gap:10px;width: 100%;align-items:center">
+					{% if Customer %}
+						{% set is_favorite = get_favorite(Customer,Product) %}
+						{% if BaseInfo.option_favorite_product %}
+							<div class="favorite-box favorite-product-{{ Product.id }}">
+								<div>
+									{% if is_favorite == false %}
+										<button class="icon-star" onclick="addFavorite({{ Product.id }})"  id="favorite">
+											<img style="width:19px;height:19px;" loading="lazy" src="{{ asset('assets/icon/favorite_supplier.svg') }}" alt="">
+										</button>
+										<form action="" method="post" id="favorite-form-{{ Product.id }}">
+											<input style="display:none;" type="text" name="supplier_page" value="{{ url('salon-suppliers') }}"/>
+										</form>
+									{% else %}
+										<button class="icon-star" onclick="deleteFavorite({{ Product.id }})">
+											<img style="width:19px;height:19px;" loading="lazy" src="{{ asset('assets/icon/favorite_active.svg') }}" alt="">
+										</button>
+										<form action="" method="post" id="favorite-form-delete-{{ Product.id }}">
+											<input style="display:none;" type="text" name="product_id" value="{{ Product.id }}"/>
+											<input type="hidden" name="_token" value="{{ csrf_token(constant('Eccube\\Common\\Constant::TOKEN_NAME')) }}">
+										</form>
+									{% endif %}
+								</div>
+							</div>
+						{% endif %}
+					{% endif %}
+					<div class="image ec-shelfGrid__item-image" style="position: relative;border:solid 1px #9B9B9B;">
+						<a onclick="oneclick_modal_open({{ Product.id }})" style="">
+							<img src="{{ asset(Product.main_list_image|no_image_product, 'save_image') }}" loading="lazy" style="">
+						</a>
+					</div>
+					<p class="name">
+						{{ Product.name }}
+					</p>
+				</div>
+				<a class="link-product" href="{{ url('product_detail', {'id': Product.id}) }}">
+					商品ページ
+				</a>
+			</td>
+			<td style="width: 10%">
+				<div class="sell-flex">
+					<p class="">¥</p>
+					<p class="price02-default">
+						{% if Product.hasProductClass %}
+							{% if Product.getPrice02Min == Product.getPrice02Max %}
+								{{ Product.getPrice02IncTaxMin|number_format }}
+							{% else %}
+								{{ Product.getPrice02IncTaxMax|number_format }}
+							{% endif %}
+						{% else %}
+							{% if Product.ProductClasses[0].pinpointSaleItem %}
+								{{ Product.ProductClasses[0].pinpointSaleItem.getPriceIncTax|number_format }}
+							{% else %}
+								{{ Product.getPrice02IncTaxMin|number_format }}
+							{% endif %}
+						{% endif %}
+					</p>
+				</div>
+			</td>
+			<td style="padding: 0 10px;width: 10%" >
+				<p class="sale-off-discount">{{ get_sale_rate_suplier(Product.id) > 10 ? (get_sale_rate_suplier(Product.id)|round(-1))|number_format  : get_sale_rate_suplier(Product.id)|number_format }}%OFF</p>
+			</td>
+			<td style="padding: 0 10px;width: 10%" >
+				<p class="sale-off-price">￥{{ Product.ProductClasses[0].getPrice01IncTax()|number_format}}</p>
+			</td>
+			<td style="padding: 0 10px;width: 10%" >
+				{% set productId = Product.id %}
+				{% set productClassId = Product.ProductClasses[0].id %}
+				<div class="quantity-box">
+					<button type="button" onclick="down('{{ productId }}')">
+						-
+					</button>
+					<input class="quantity-{{ productId }}" type="number" name="quantity" value="1" min="1" max="9999">
+					<button type="button" onclick="up('{{ productId }}')">
+						+
+					</button>
+				</div>
+			</td>
+			<td style="padding: 0 10px;width: 10%" >
+				<div class="add-cart-button">
+					<button type="button" class="add-cart" id="btn-add-cart-{{ productClassId }}" data-product-id="{{ productId }}" form="form{{ productId }}" style="">
+						カートに追加
+					</button>
+				</div>
+			</td>
+		</tr>
+	{% endfor %}
+</tbody>

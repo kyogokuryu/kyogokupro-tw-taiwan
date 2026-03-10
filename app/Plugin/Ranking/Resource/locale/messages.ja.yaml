@@ -1,0 +1,6 @@
+ranking.type.comment.placeholder: 请输入说明文（可使用HTML标记）。
+ranking.modal.product_search.title: 商品搜索
+ranking.modal.product_search.input_name: 商品名称・ID・编码
+ranking.select_product: 选择商品
+ranking.remove_product: 移除
+ranking.block.title: 相关商品

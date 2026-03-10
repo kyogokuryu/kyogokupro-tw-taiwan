@@ -1,0 +1,85 @@
+<?php
+
+/*
+ * This file is part of EC-CUBE
+ *
+ * Copyright(c) LOCKON CO.,LTD. All Rights Reserved.
+ *
+ * http://www.lockon.co.jp/
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Plugin\MailMagazine4\Repository;
+
+use DateTime;
+use Eccube\Repository\AbstractRepository;
+use Doctrine\Common\Persistence\ManagerRegistry;
+use Plugin\MailMagazine4\Entity\MailMagazineSendHistory;
+use Eccube\Doctrine\Query\Queries;
+use Doctrine\ORM\Query;
+
+/**
+ * SendHistoryRepository.
+ */
+class MailMagazineSendHistoryRepository extends AbstractRepository
+{
+    /**
+     * @var Queries
+     */
+    protected $queries;
+
+    /**
+     * MailMagazineSendHistoryRepository constructor.
+     *
+     * @param Queries         $queries
+     * @param ManagerRegistry $registry
+     * @param string          $entityClass
+     */
+    public function __construct(
+        Queries $queries,
+        ManagerRegistry $registry,
+        $entityClass = MailMagazineSendHistory::class
+    ) {
+        parent::__construct($registry, $entityClass);
+        $this->queries = $queries;
+    }
+
+    /**
+     * @param array $searchData
+     *
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    public function getQueryBuilderBySearchData($searchData = [])
+    {
+        $qb = $this->createQueryBuilder('sh')
+            ->select('sh');
+
+        // Order By
+        $qb->addOrderBy('sh.create_date', 'DESC');
+
+        return $this->queries->customize($this->getQueryKey(), $qb, $searchData);
+    }
+
+    /**
+     * Get query key
+     *
+     * @return string
+     */
+    public function getQueryKey()
+    {
+        return 'MailMagazineSendHistory.getQueryBuilderBySearchData';
+    }
+
+    /**
+     *
+     */
+    public function overScheduleList()
+    {
+        return $this->getEntityManager()
+            ->createQuery('SELECT m FROM Plugin\MailMagazine4\Entity\MailMagazineSendHistory m WHERE m.send_schedule <= :now AND m.status = 1 ORDER BY m.id DESC')
+            ->setParameter('now', new DateTime())
+            ->getResult(Query::HYDRATE_ARRAY);
+    }
+}

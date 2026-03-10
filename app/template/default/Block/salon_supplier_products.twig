@@ -1,0 +1,1234 @@
+{% import _self as stars %}
+
+{# 星テキスト生成用マクロ #}
+{% macro stars(positive, negative) %}
+	{% set positive_stars = ["", "★", "★★", "★★★", "★★★★", "★★★★★"] %}
+	{% set negative_stars = ["", "☆", "☆☆", "☆☆☆", "☆☆☆☆", "☆☆☆☆☆"] %}
+	{{ positive_stars[positive] }}{{ negative_stars[negative] }}
+{% endmacro %}
+
+{% set Categories = repository('Eccube\\Entity\\Category').getList() %}
+
+{% block style %}
+	<style>
+		input[type=number]::-webkit-inner-spin-button,
+		input[type=number]::-webkit-outer-spin-button {
+			-webkit-appearance: none;
+			margin: 0;
+		}
+		.supplier_mobile {
+			display: none;
+		}
+		.supplier_desktop {
+			display: block;
+			width: 100%;
+		}
+		.ec-layoutRole__contents.supplier {
+			display: block;
+		}
+		.ec-layoutRole__mainWithColumn.supplier {
+			width: 100% !important;
+			max-width: 100%;
+			margin: auto;
+		}
+		.search-box-supplier {
+			display: flex;
+			justify-content: space-between;
+			padding-left: 10px;
+			padding-right: 10px;
+		}
+		.search-box-supplier .select-options.is_desktop {
+			display: flex;
+			gap: 20px;
+			min-width: max-content;
+			padding-right: 10px;
+		}
+		.search-box-supplier .select-options.is_desktop .select-option-category {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 1px 0;
+			border-radius: 50px;
+			color: #808080;
+			gap: 5px;
+			font-size: 14px;
+			font-weight: 600;
+			cursor: pointer;
+			position: relative;
+		}
+		.search-box-supplier .select-options.is_desktop ul {
+			position: absolute;
+			top: 25px;
+			left: 0;
+			max-width: 500px;
+			width: 100%;
+			max-height: 500px;
+			overflow-y: auto;
+			background-color: #ffffff;
+			border: 1px solid #808080;
+			padding: 10px 0;
+			display: none;
+			z-index: 1000;
+		}
+		.search-box-supplier .select-options.is_desktop .select-option-category ul.active {
+			display: block;
+		}
+		.search-box-supplier .select-options.is_desktop .select-option-category ul a div {
+			padding: 5px 10px;
+			min-width: max-content;
+		}
+		.search-box-supplier .select-options.is_desktop .select-option-category ul a div.active {
+			color: #EA7F31;
+			background-color: #F6F6F6;
+			border-radius: 5px;
+			border: none;
+		}
+		.search-box-supplier .select-options.is_desktop .select-option-category ul a div.active {
+			color: #EA7F31;
+		}
+		.search-box-supplier .select-options.is_desktop .select-option-category.active {
+			color: #EA7F31;
+		}
+		.sort-bar .fillter_title {
+			font-size: 16px;
+			color: #EA7F31;
+		}
+		
+		.form-search .input {
+			width: 100%;
+			height: 58px;
+			display: flex;
+			justify-content: end;
+			align-items: center;
+		}
+		.form-search .input-form-search {
+			display: flex;
+			align-items: center;
+			max-width: 450px;
+			width: 450px;
+			height: 37px;
+			border-radius: 10px;
+			border: 0.5px solid #39393A;
+		}
+		.form-search .input-form-search .icon-search {
+			margin-left: 10px;
+			margin-right: 10px;
+			width: 20px;
+		}
+		.form-search .input-form-search input {
+			margin-right: 10px;
+			width: 100%;
+			height: 28px;
+			border: 0 solid #39393A;
+		}
+		.head-fillter {
+			padding-left: 10px;
+			padding-right: 10px;
+		}
+		.sort-bar {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+		
+		.sort-bar .clear-filter {
+			color: #2981D2;
+			border: 1px solid #2981D2;
+			border-radius: 50px;
+			padding: 3px 10px;
+			font-size: 12px;
+			display: none;
+		}
+		.select-options.is_desktop {
+			display: block;
+			align-items: center;
+			gap: 11px;
+		}
+		.sort-bar .select-options .select-option-category {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 1px 12px;
+			border: 2px solid #808080;
+			border-radius: 50px;
+			color: #808080;
+			gap: 3px;
+			font-size: 14px;
+			font-weight: 600;
+			cursor: pointer;
+			position: relative;
+		}
+		.sort-bar .select-options .select-option-category.active {
+			border: 2px solid #EA7F31;
+			color: #EA7F31;
+		}
+		.sort-bar .select-options .select-option-category ul {
+			position: absolute;
+			top: 40px;
+			left: 0;
+			max-width: 340px;
+			max-height: 500px;
+			overflow-y: auto;
+			width: max-content;
+			background-color: #ffffff;
+			border: 1px solid #808080;
+			border-radius: 10px;
+			padding: 10px 0;
+			display: none;
+			z-index: 1000;
+		}
+		.sort-bar .select-options .select-option-category ul.active {
+			display: block;
+		}
+		.sort-bar .select-options .select-option-category ul a div {
+			padding: 5px 10px;
+			cursor: pointer;
+			min-width: max-content;
+		}
+		.sort-bar .select-options .select-option-category ul a div.active {
+			color: #EA7F31;
+			background-color: #F6F6F6;
+			border-radius: 5px;
+			border: none;
+		}
+		.sort-bar .select-options .select-option-category ul a div.active {
+			color: #EA7F31;
+		}
+		.sort-bar .select-options .select-option-category .active {
+			border: 2px solid #EA7F31;
+			color: #EA7F31;
+		}
+		.sort-bar .select-options .select-option-favorite {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding: 1px 12px;
+			border: 2px solid #808080;
+			border-radius: 50px;
+			color: #808080;
+			font-size: 14px;
+			font-weight: 600;
+			cursor: pointer;
+		}
+		.sort-bar .select-options .select-option-favorite.active {
+			border: 2px solid #EA7F31;
+			color: #EA7F31;
+		}
+		.sort-bar .total-product {
+			font-size: 20px;
+			color: #808080;
+		}
+		.sort-bar.is_desktop{
+			display: block;
+		}
+		.sort-bar.is_mobile .fillter_title{
+			display: none;
+		}
+		.products_supplier {
+			padding: 10px 0;
+		}
+		.products_supplier .more{
+			display: none;
+		}
+		.products_supplier .ec-pagerRole{
+			display: block;
+		}
+		.products_supplier .more{
+			display: none;
+		}
+		.products_supplier .ec-pagerRole{
+			display: block;
+		}
+		.products_supplier .ec-shelfGrid__item .image {
+			min-width: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			overflow: hidden;
+			height: 0;
+			padding-bottom: 100%;
+		}
+		.products_supplier .ec-shelfGrid__item .image a {
+			min-width: 100%;
+		}
+		.products_supplier .ec-shelfGrid__item .image .favorite-box .icon-star {
+			position: absolute !important;
+			top: 5px !important;
+			left: 5px !important;
+			background: none !important;
+			border: none !important;
+			padding: 0 !important;
+		}
+		.products_supplier .ec-shelfGrid__item .image .favorite-box .icon-star img {
+			position: relative !important;
+			padding: 0 !important;
+		}
+		.products_supplier .ec-shelfGrid__item .image .favorite-box a {
+			position: absolute;
+			top: 5px;
+			left: 5px;
+			background: none;
+			border: none;
+			padding: 0;
+			min-width: max-content;
+		}
+		.products_supplier .ec-shelfGrid__item .image .favorite-box a img {
+			position: relative !important;
+			padding: 0 !important;
+		}
+		.products_supplier .info.ec-shelfGrid__item {
+			width: 100%;
+			padding: 5px 0 0 !important;
+		}
+		.products_supplier .price-box {
+			width: 100%;
+			display: flex;
+			align-items: end;
+			margin-top: auto;
+			padding-top: 5px;
+			position: relative;
+			justify-content: space-between;
+		}
+		.products_supplier .price-box .price-and-sale .sell-flex {
+			height: fit-content;
+		}
+		.products_supplier .price-box .price-and-sale {
+			display: flex;
+			align-items: end;
+			gap: 2px;
+		}
+		.products_supplier .price-box .price-and-sale .sell-flex p {
+			height: fit-content;
+			line-height: 1;
+			margin: 0;
+		}
+		.products_supplier .price-box .price-and-sale .sale-off-box .sale-off-discount {
+			padding: 1px 3px;
+			background-color: #EA7F31;
+			color: #ffffff;
+			font-weight: 600;
+			width: fit-content;
+			font-size: 10px;
+			margin-bottom: 2px;
+		}
+		.products_supplier .price-box .price-and-sale .sale-off-box .sale-off-price {
+			color: #000000;
+			font-size: 10px;
+			line-height: 1;
+		}
+		.products_supplier .modal-product-detail .price-box .price-and-sale .sale-off-box .sale-off-price {
+			color: #000000;
+			font-size: 10px;
+			min-width: max-content;
+			line-height: normal;
+		}
+		.modal-product-detail .add-cart-box {
+			position: relative;
+		}
+		.add-cart-box button.add-cart {
+			background-color: #ffffff;
+			border: solid 0.5px #000000;
+			border-radius: 10px;
+			padding: 1px 8.5px;
+			cursor: pointer;
+			width: 40px;
+			position: relative;
+		}
+		.add-cart-box button.add-cart img {
+			width: 30px;
+		}
+		.modal-product-detail {
+			display: none;
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			z-index: 1000;
+			justify-content: center;
+			align-items: center;
+			padding: 0 18px;
+		}
+		.modal-product-detail .background-modal {
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0, 0, 0, 0.5);
+			z-index: 1001;
+			position: fixed;
+		}
+		.modal-product-detail .modal-content {
+			z-index: 1002;
+			background-color: #ffffff;
+			max-width: 500px;
+			width: 100%;
+			height: auto;
+			padding: 34px 14px;
+			border-radius: 0;
+			position: relative;
+		}
+
+		.modal-product-detail .modal-content h2 {
+			font-size: 14px;
+			font-weight: 700;
+			color: #000000;
+			padding: 0 8px;
+			height: fit-content;
+			overflow: hidden;
+			display: -webkit-box;
+			-webkit-box-orient: vertical;
+			-webkit-line-clamp: 3;
+		}
+
+		.modal-product-detail .modal-content button.close {
+			position: absolute;
+			top: -34px;
+			right: 0;
+			background: none;
+			border: none;
+			padding: 0;
+			cursor: pointer;
+			opacity: 1;
+		}
+		.modal-product-detail .modal-content .price-box {
+			display: flex;
+			padding: 0 8px;
+		}
+		.modal-product-detail .modal-content .price-box .price-and-sale {
+			display: flex;
+			align-items: center;
+			gap: 5px;
+		}
+		.modal-product-detail .modal-content .price-box .price-and-sale .sell-flex {
+			height: fit-content;
+			color: #D74646;
+			font-size: 22px;
+		}
+		.modal-product-detail .modal-content .price-box .price-and-sale .sale-off-box {
+			display: flex;
+			align-items: end;
+			gap: 5px;
+		}
+		.modal-product-detail .modal-content .add-cart-box {
+			width: 100%;
+			margin-top: 20px;
+		}
+		.modal-product-detail .modal-content .add-cart-box .add-cart-button {
+			width: 100%;
+			text-align: center;
+		}
+		.modal-product-detail .modal-content .add-cart-box button.add-cart {
+			position: relative;
+			top: 0;
+			right: 0;
+			background-color: #F9D94C;
+			color: #000000;
+			margin: 0 auto;
+			max-width: 345px;
+			width: 100%;
+			border-radius: 15px;
+			padding: 12px 0;
+			border: none;
+		}
+		.modal-product-detail .button-slider {
+			display: flex;
+			width: fit-content;
+			margin: 10px auto 0;
+			justify-content: space-between;
+			align-items: center;
+			gap: 10px;
+		}
+		.modal-product-detail .button-slider button {
+			border: none;
+			background: none;
+			font-size: 26px;
+		}
+		.modal-product-detail .button-slider .total {
+			font-size: 16px;
+		}
+		span.quantity-cart {
+			background-color: #EA7F31;
+			color: #ffffff;
+			border-radius: 50%;
+			width: 13px;
+			height: 13px;
+			position: absolute;
+			top: -3px;
+			right: 0;
+			font-size: 10px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		.slider {
+			max-height: 450px;
+			height: fit-content;
+			overflow: hidden;
+		}
+		.sort-bar .select-options .select-option-category ul .head-ul-mobile {
+			display: none;
+		}
+
+		{
+			# desktop #
+		}
+		thead tr th {
+			text-align: center;
+			font-weight: 500;
+			color: #808080;
+		}
+		tbody tr td {
+			padding: 5px;
+		}
+		tbody tr td.product-content {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 15px;
+			width: 100%;
+		}
+		tbody tr td .add-cart-button button {
+			min-width: max-content;
+			background-color: #EA7F31;
+			color: #fff;
+			font-size: 12px;
+			padding: 10px 10px;
+			border: none;
+			border-radius: 8px;
+			font-weight: 600;
+		}
+		tbody tr td.product-content .image {
+			min-width: 100px;
+			min-height: 100px;
+			max-width: 100px;
+			max-height: 100px;
+		}
+		tbody tr td.product-content .image img {
+			height: 100%;
+			object-fit: cover;
+			position: absolute;
+			top: 0;
+			left: 0;
+		}
+		tbody tr td.product-content .name {
+			max-width: 400px;
+		}
+		tbody tr td .sale-off-discount {
+			color: #EA7F31;
+		}
+		tbody tr td.product-content .link-product {
+			min-width: max-content;
+			border: solid 2px #5F90EF;
+			border-radius: 50px;
+			padding: 1px 5px;
+			color: #5F90EF;
+		}
+		tbody tr td.product-content .favorite-box .icon-star {
+			top: 5px !important;
+			left: 5px !important;
+			background: none !important;
+			border: none !important;
+			padding: 0 !important;
+		}
+		tbody tr td.product-content .favorite-box .icon-star img {
+			position: relative !important;
+			padding: 0 !important;
+		}
+		tbody tr td.product-content .favorite-box a {
+			background: none;
+			border: none;
+			padding: 0;
+			min-width: max-content;
+		}
+		tbody tr td.product-content .favorite-box a img {
+			position: relative !important;
+			padding: 0 !important;
+		}
+		tbody tr td .quantity-box {
+			border: solid 1px #E3E3E3;
+			display: flex;
+			width:fit-content;
+			margin: 0 auto;
+		}
+		tbody tr td .quantity-box button {
+			border: none;
+			min-width: 30px;
+			min-height: 30px;
+		}
+		tbody tr td .quantity-box input {
+			border: none;
+			text-align: center;
+			min-width: 40px;
+			max-width: 45px;
+			padding-left: 5px;
+		}
+		.search-box-supplier .select-options .select-option-favorite{
+			display: flex;
+			align-items: center;
+			color: #808080;
+			gap: 5px;
+			font-size: 14px;
+			font-weight: 600;
+			cursor: pointer;
+			position: relative;
+		}
+		.search-box-supplier .select-options .select-option-favorite.active {
+			color: #EA7F31;
+		}
+		.search-box-supplier .select-options .select-option-favorite img {
+			width: 20px;
+			height: 20px;
+
+		}
+		.form-search{
+			width: 100%;
+		}
+		
+		@media only screen and (min-width: 768px) {
+			.ec-layoutRole__contents .ec-layoutRole__right.supplier {
+				display: none !important;
+			}
+			.sort-bar .select-options.is_mobile {
+				display: none;
+				align-items: center;
+				gap: 11px;
+			}
+		}
+		@media only screen and (max-width: 768px) {
+			.search-box-supplier{
+				padding-left: 0px;
+				padding-right: 0px;
+			}
+			.head-fillter {
+				padding-left: 0px;
+				padding-right: 0px;
+			}
+			.form-search .input{
+				justify-content: center;
+			}
+			.supplier_mobile {
+				display: flex;
+			}
+			.supplier_desktop {
+				display: none;
+			}
+			.ec-layoutRole__right .ec-layoutRole__right.supplier {
+				display: block;
+			}
+			.sort-bar .select-options.is_mobile {
+				display: flex;
+				align-items: center;
+				gap: 11px;
+			}
+			.search-box-supplier {
+				justify-content: center;
+				padding-top: 160px;
+			}
+			.search-box-supplier .select-options.is_desktop{
+				display: none;
+			}
+			.sort-bar .fillter_title {
+				color: #808080;
+			}
+			.products_supplier .more{
+				display: block;
+			}
+			.products_supplier .ec-pagerRole{
+				display: none;
+			}
+			.sort-bar .clear-filter{
+				display: block;
+			}
+			.is_desktop .form-search .input-form-search {
+				width: calc(100vw - 30px) !important;
+				border-radius: 10px !important;
+			}
+			.sort-bar {
+				padding: 10px 0;
+			}
+		}
+		@media(max-width: 480px) {
+			.search-box-supplier {
+				margin-top: 0;
+				padding-top: 0!important;
+			}
+			.ec-layoutRole__mainWithColumn.supplier{
+				padding-top: 0px!important;
+			}
+		}
+		@media(max-width: 768px) {
+			.slider {
+				max-height: 350px;
+				height: fit-content;
+				overflow: hidden;
+			}
+			.products_supplier .ec-shelfGrid__item .image {
+				min-width: 100%;
+				height: 0;
+				padding-bottom: 100%;
+			}
+			.sort-bar .select-options .select-option-category ul {
+				position: fixed;
+				top: 0;
+				left: 0;
+				max-width: 100vw;
+				min-height: 100vh;
+				max-height: 100vh;
+				overflow-y: auto;
+				min-width: 100vw;
+				background-color: #ffffff;
+				border-radius: 0;
+				border: none;
+				padding: 55px 0 0;
+				display: none;
+				z-index: 98;
+				font-weight: 600;
+			}
+			.sort-bar .select-options .select-option-category ul.active {
+				border: none;
+				color: #EA7F31;
+				padding-top: 80px;
+			}
+			.sort-bar .select-options .select-option-category ul .head-ul-mobile {
+				display: block;
+			}
+			.sort-bar .select-options .select-option-category ul .head-ul-mobile .close-fillter {
+				padding: 10px 20px;
+				text-align: right;
+				color: #1C7AD1;
+			}
+			.sort-bar .select-options .select-option-category ul .head-ul-mobile .title {
+				padding: 10px 20px;
+				color: #EA7F31;
+				background-color: #F6F6F6;
+				border-radius: 5px;
+			}
+			.sort-bar .select-options .select-option-category ul li {
+				padding: 10px 20px;
+				color: #000000;
+			}
+			.sort-bar.is_desktop{
+				display: none;
+			}
+			.sort-bar.is_mobile .fillter_title{
+				display: block;
+			}
+		}
+		@media(max-width: 412px) {
+			.slider {
+				max-height: 350px;
+				height: fit-content;
+				overflow: hidden;
+			}
+			.products_supplier .ec-shelfGrid__item .image {
+				min-width: 100%;
+				height: 0;
+				padding-bottom: 100%;
+			}
+			.salon_specific_bottom .btn_go_cart {
+				padding: 5px;
+			}
+			.salon_specific_bottom .points_expected {
+				font-size: 10px;
+			}
+			.salon_specific_bottom .points_expected .point {
+				font-size: 14px;
+			}
+			.salon_specific_bottom .total_cart .total_cart_payment {
+				font-size: 14px;
+			}
+		}
+		.more {
+			margin: 0 auto;
+			width: fit-content;
+			padding: 50px 0 30px;
+		}
+		.more a {
+			color: #2981D2;
+			text-align: center;
+			font-weight: 600;
+		}
+		tbody tr td.product-content .favorite-box .icon-star {
+			top: 5px !important;
+			left: 5px !important;
+			background: none !important;
+			border: none !important;
+			padding: 0 !important;
+		}
+		tbody tr td.product-content .favorite-box .icon-star img {
+			position: relative !important;
+			padding: 0 !important;
+			min-width: 19px;
+		}
+		tbody tr td.product-content .favorite-box a {
+			background: none;
+			border: none;
+			padding: 0;
+			min-width: max-content;
+		}
+		tbody tr td.product-content .favorite-box a img {
+			position: relative !important;
+			padding: 0 !important;
+		}
+		tbody tr td .quantity-box {
+			border: solid 1px #E3E3E3;
+			display: flex;
+			width:fit-content;
+			margin: 0 auto;
+		}
+		tbody tr td .quantity-box button {
+			border: none;
+			min-width: 30px;
+			min-height: 30px;
+		}
+		.message{
+			position: fixed;
+			width: 100%;
+			height: 100%;
+			top: 0;
+			left: 0;
+			padding: 20px;
+			z-index: 1000;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		.message-content{
+			background-color: #ffffff;
+			border-radius: 10px;
+			padding: 10px;
+			max-width: 210px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+			text-align: center;	
+			border: 1px solid #D9D9D9;
+		}
+	</style>
+{% endblock %}
+{% block javascript %}
+	{{ include("Block/toast_add_to_cart_success.twig") }}
+	{{ include("Block/list_product_addCart.twig") }}
+	 <script>
+											
+								document.addEventListener("DOMContentLoaded", function () {		
+									$('.ec-layoutRole__contents').addClass('supplier');
+									$('.ec-layoutRole__contents .ec-layoutRole__mainWithColumn').addClass('supplier');
+									$('.ec-layoutRole__contents .ec-layoutRole__right').addClass('supplier');
+									$(function() {
+				
+										// 表示件数を変更
+										$('.disp-number').change(function() {
+											var dispNumber = $(this).val();
+											$('#disp_number').val(dispNumber);
+											$('#pageno').val(1);
+											$("#form1").submit();
+										});
+				
+										// 並び順を変更
+										$('.order-by').change(function() {
+											var orderBy = $(this).val();
+											$('#orderby').val(orderBy);
+											$('#pageno').val(1);
+											$("#form1").submit();
+										});
+				
+										listProductResignEventAddCart();
+									});											
+																							
+									const addCartButtons = document.querySelectorAll(".add-cart");
+									addCartButtons.forEach(function (button) {
+											button.addEventListener("click", function () {
+												console.log('click');
+											const productId = button.getAttribute("data-product-id");
+											addToCart(productId);
+										});
+									});
+								});
+																							
+								function hideDialog() {
+									document.querySelector('.gift-dialog').style.display = 'none';
+									localStorage.setItem('lastShownTime', Date.now());
+								}
+				
+								{% set isPrime = app.user ? app.user.prime_member > 0 : false %}
+								{% set urank = app.user ? app.user.owner_rank  : 0 %}
+																																				
+								function addToCart(productId) {
+									$form = $('#form' + productId);
+									console.log()
+									$.ajax({
+										url: $form.attr('action'),
+										type: $form.attr('method'),
+										data: $form.serialize(),
+										dataType: 'json',
+										beforeSend: function (xhr, settings) { // Buttonを無効にする
+										$('.add-cart').prop('disabled', true);
+										}
+									}).done(function (data) {
+										if (data.done == true) {
+											showAddToCartSuccessToast();
+											$('.points_expected .point').html(data.add_point+"P");
+											$('.total_cart .total_cart_payment').html("¥"+data.total_price);
+											if($('.quantity-cart.quantity-cart-' + data.product_class_id).length == 0){
+												$('#btn-add-cart-'+data.product_class_id).append(`<span data-quantity="${data.quantity}" class="quantity-cart quantity-cart-${data.product_class_id}">${data.quantity}</span>`);
+											}
+											let quantity_cart = $('.quantity-cart.quantity-cart-' + data.product_class_id);
+											quantity_cart.text(data.quantity);
+											let count = parseInt($('.count').attr('data-count')) + parseInt($('.quantity-'+productId).val());
+											$('.count').attr('data-count', count)
+											$('.count').text(count)
+										}else{
+											 showAddToCartErrorToast(data.messages);
+										}
+										if ($('.add-cart.go').hasClass('on')) {
+											{% if(app.user.name01 is defined) %}
+												{% if(app.user.email == "ryuhairartist@gmail.com" or app.user.email == "daisuke.kasahara@gmail.com" ) %}
+													var product_id = $("#product_id").val()
+													console.log(product_id)
+													oneclick_modal_open(product_id)
+												{% else %}
+													let shop_url = $('a.shop-url').attr('href')
+													window.location.href = shop_url;
+												{% endif %}
+						
+												{% else %}
+													let shop_url = $('a.shop-url').attr('href')
+													window.location.href = shop_url;
+												{% endif %}
+						
+												return false;
+											}
+						
+										// レスポンス内のメッセージをalertで表示
+										$.each(data.messages, function () {
+											$('#ec-modal-header').html(this);
+										});
+						
+										$('#ec-modal-checkbox').prop('checked', true);
+						
+											// カートブロックを更新する
+											$.ajax({url: "{{ url('block_cart') }}", type: 'GET', dataType: 'html'}).done(function (html) {
+												$('.ec-headerRole__cart').html(html);
+												$('.ec-headerRole__cart').append(`<a href="{{ url('cart') }}"></a>`);
+												$('.ec-cartNavi').wrapAll('<a href="{{ url('cart') }}"></a>');
+												$('.ec-cartNaviIsset_listCart').wrapAll('<a href="{{ url('cart') }}"></a>');
+											});
+										}).fail(function (data) {
+											alert('{{ 'カートへの追加に失敗しました。'|trans }}');
+											console.log(data);
+										}).always(function (data) { // Buttonを有効にする
+											$('.add-cart').prop('disabled', false);
+										});
+								}
+																																			
+							</script>
+{% endblock %}
+{% set Products = pagination %}
+{% set paramFilter = app.request.query.get('sub_category_id') ?? null %}
+{% set paramCategory = app.request.query.get('category_id') ?? null %}
+{% set paramFavorite = app.request.query.get('favorite_user_id') %}
+{% set paramSearch = app.request.query.get('name') %}
+<div style="margin: 0px 5px;background-color:#ffffff">
+	<div class="show_cart_desktop">
+		{{ include("Block/bottom_header_supplier.twig") }}
+	</div>
+	<div class="search-box-supplier is_desktop">
+		<div class="select-options is_desktop">
+			<div class="select-option-category {{ paramFilter ? 'active' : '' }}">
+				{% if paramFilter is not null %}
+					<img style="width:15px" loading="lazy" src="{{ asset('assets/icon/category_active.svg') }}" alt=""/>
+				{% else %}
+					<img style="width:15px" loading="lazy" src="{{ asset('assets/icon/category.svg') }}" alt=""/>
+				{% endif %}
+				カテゴリーで絞り込み
+				<ul>
+					<a href="{{ url('salon-suppliers') }}">
+						<div class="{{ paramFilter is null ? 'active' : '' }}">
+							すべて
+						</div>
+					</a>
+					{% for Category in arrChildCategories %}
+						<a href="{{ url('salon-suppliers') }}?category_id={{ category.id }}&sub_category_id={{ Category.id }}">
+							<div class="{{ Category.id == paramFilter ? 'active' }}">
+								{{ Category.name }}
+							</div>
+						</a>
+					{% endfor %}
+				</ul>
+			</div>
+			{% if Customer %}
+				<a href="{{ url('salon-suppliers') }}?favorite_user_id={{ Customer ? Customer.id : 0 }}" class="select-option-favorite {{ paramFavorite ? 'active' : '' }} ">
+					{% if paramFavorite %}
+						<img loading="lazy" src="{{ asset('assets/icon/star_active.svg') }}" alt="" class="icon-search"> 
+						{% else %}
+						<img loading="lazy" src="{{ asset('assets/icon/star.svg') }}" alt="" class="icon-search"> 
+					{% endif %}
+					お気に入りで絞り込み
+				</a>
+			{% endif %}
+		</div>
+		{% set currentPath = app.request.get('_route') %}
+		<form method="get" class="form-search" action="{{ currentPath == 'salon-suppliers' ? '/salon-suppliers' : '/products/list' }}" id="product-form">
+			<div class="input" data-type="product">
+				<div class="input-form-search">
+					<img loading="lazy" src="{{ asset('assets/img/icon/icon-search-thin.svg') }}" alt="" class="icon-search">
+					<input type="text" class="no-background" name="name" placeholder="キーワード検索">
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="head-fillter is_mobile">
+		<div class="sort-bar">
+			{% if paramFilter is not null or paramSearch is not null or paramFavorite is not null %}
+				<div class="sort-bar is_desktop">
+					<div class="fillter_title">
+						{% if paramFilter is not null %}
+							{{ get_category_name(paramFilter) }}で絞り込み
+						{% endif %}
+						{% if paramSearch is not null %}
+							"{{ paramSearch }}"で絞り込み
+						{% endif %}
+						{% if paramFavorite is not null %}
+							お気に入りで絞り込み
+						{% endif %}
+					</div>
+					<a href="{{ url('salon-suppliers') }}" class="clear-filter">クリア</a>
+				</div>
+			{% endif %}
+			<div>
+				<div class="select-options is_mobile">
+					<div class="select-option-category {{ paramFilter ? 'active' : '' }}">
+						カテゴリー
+						{% if paramFilter is not null %}
+							<img loading="lazy" src="{{ asset('assets/icon/drop_down_active.svg') }}" alt=""/>
+						{% else %}
+							<img loading="lazy" src="{{ asset('assets/icon/drop_down.svg') }}" alt=""/>
+						{% endif %}
+
+						<ul>
+							<div class="head-ul-mobile">
+								<div class="close-fillter">決定</div>
+							</div>
+							<a href="{{ url('salon-suppliers') }}">
+								<div class="{{ paramFilter is null ? 'active' : '' }}">
+									すべて
+								</div>
+							</a>
+							{% for Category in arrChildCategories %}
+								<a href="{{ url('salon-suppliers') }}?category_id={{ category.id }}&sub_category_id={{ Category.id }}">
+									<div class="{{ Category.id == paramFilter ? 'active' }}">
+										{{ Category.name }}
+									</div>
+								</a>
+							{% endfor %}
+						</ul>
+					</div>
+					{% if Customer %}
+						<a href="{{ url('salon-suppliers') }}?favorite_user_id={{ Customer ? Customer.id : 0 }}" class="select-option-favorite {{ paramFavorite ? 'active' : '' }} ">
+							お気に入り
+						</a>
+					{% endif %}
+
+				</div>
+			</div>
+			<div class="total-product">
+				<span>{{ Products|length }}商品</span>
+			</div>
+		</div>
+		{% if paramFilter is not null or paramSearch is not null or paramFavorite is not null %}
+			<div class="sort-bar is_mobile">
+				<div class="fillter_title">
+					{% if paramFilter is not null %}
+						{{ get_category_name(paramFilter) }}で絞り込み
+					{% endif %}
+					{% if paramSearch is not null %}
+						"{{ paramSearch }}"で絞り込み
+					{% endif %}
+					{% if paramFavorite is not null %}
+						お気に入りで絞り込み
+					{% endif %}
+				</div>
+				<a href="{{ url('salon-suppliers') }}" class="clear-filter">クリア</a>
+			</div>
+		{% endif %}
+	</div>
+	{% if Products|length > 0 %}
+		<div class="ec-shelfRole products_supplier">
+			<ul class="ec-shelfGrid supplier_mobile">
+				{{ include("Block/salon_supplier_products_mobile.twig") }}
+			</ul>
+			<table class="supplier_desktop">
+				{{ include("Block/salon_supplier_products_desktop.twig") }}
+			</table>
+			{% if Products|length > 12 %}
+				<div class="more">
+					<a href="#">もっと見る</a>
+				</div>
+				<div class="ec-pagerRole">
+					{% include "pager.twig" with {'pages': pagination.paginationData} %}
+				</div>
+			{% endif %}
+
+		</div>
+		<div id="toastContainer"></div>
+	{% else %}
+		<span>{{ 'お探しの商品は見つかりませんでした'|trans }}</span>
+	{% endif %}
+	<div style="display:none" class="message">
+		<div class="message-content">
+
+		</div>
+	</div>
+</div>
+{% block script %}
+	 <script>
+	 	$(document).ready(function() {
+			let itemsToShow = 24;
+			let items = $('.ec-shelfGrid__item');
+			items.slice(itemsToShow).hide();
+
+			$('.more a').on('click', function(e) {
+				e.preventDefault();
+				let itemsToReveal = itemsToShow + 24;
+				items.slice(0, itemsToReveal).fadeIn('fast');
+				itemsToShow = itemsToReveal;
+				if (itemsToShow < items.length) {
+					$('.more').show();
+				}else{
+					$('.more').hide();
+				}
+			});
+		});
+		function oneclick_modal_open(product_id){
+			$('.modal-product-detail-'+product_id).css('display', 'flex');
+			setTimeout(function() {
+				$('.modal-product-detail-'+product_id+' .slider').slick({
+					dots: true,
+					infinite: true,
+					speed: 500,
+					slidesToShow: 1,
+					slidesToScroll: 1,
+					adaptiveHeight: true,
+					cssEase: 'linear',
+					prevArrow: $('.prev-slider'),
+					nextArrow: $('.next-slider'),
+				});
+				var totalSlides = $('.modal-product-detail-'+product_id+' .slider').slick('getSlick').slideCount;
+				var currentSlide = $('.modal-product-detail-'+product_id+' .slider').slick('slickCurrentSlide') + 1; // +1 because it's 0-indexed
+				buttonSlider(totalSlides,currentSlide);
+				var elm = '<span>' + currentSlide + '</span>/'+ totalSlides;
+				$('.modal-product-detail-'+product_id+' span.total').html(elm);
+
+								$('.prev-slider, .next-slider').click(function(){
+					currentSlide = $('.modal-product-detail-'+product_id+' .slider').slick('getSlick').currentSlide + 1; // +1 because it's 0-indexed
+					var elm = '<span>' + currentSlide + '</span>/'+ totalSlides;
+					$('.modal-product-detail-'+product_id+' span.total').html(elm);
+					buttonSlider(totalSlides,currentSlide);
+				});
+				$('.modal-product-detail-'+product_id+' .slider').on('afterChange', function(event, slick, currentSlide, getSlick){
+					currentSlide = currentSlide + 1;
+					var elm = '<span>' + currentSlide + '</span>/'+ totalSlides;
+					$('.modal-product-detail-'+product_id+' span.total').html(elm);
+					});
+			}, 0);
+						}
+
+		function buttonSlider(totalSlides,currentSlide){
+			if(currentSlide == 1){
+				$('.prev-slider').css('display', 'none');
+			}else{
+				$('.prev-slider').css('display', 'block');
+			}
+
+			if(currentSlide == totalSlides){
+				$('.next-slider').css('display', 'none');
+			}else{
+				$('.next-slider').css('display', 'block');
+			}
+		}
+				
+		function oneclick_modal_close(product_id){
+			$('.modal-product-detail-'+product_id).css('display', 'none');
+		}
+		$('.select-option-category').click(function(){
+			$('.select-option-category ul').toggleClass('active');
+			$('.header_salon').toggleClass('hidden-block');
+		});
+		$('.select-option-category ul').click(function(){
+			$('.select-option-category ul').toggleClass('active');
+			$('.header_salon').toggleClass('hidden-block');
+		})
+		$('.select-option-category ul .close-fillter').click(function(){
+			$('.select-option-category ul').removeClass('active');
+			$('.header_salon').removeClass('hidden-block');
+		});
+		function up(e) {
+			let quantityInput = $('.quantity-' + e);
+			let currentValue = parseInt(quantityInput.val());
+			if (!isNaN(currentValue)) {
+				quantityInput.val(currentValue + 1);
+				$('#form' + e + ' input[name="quantity"]').val(quantityInput.val());
+			}
+		}
+		function down(e) {
+			let quantityInput = $('.quantity-' + e);
+			let currentValue = parseInt(quantityInput.val());
+			if (!isNaN(currentValue) && currentValue > 1) {
+				quantityInput.val(currentValue - 1);
+				$('#form' + e + ' input[name="quantity"]').val(quantityInput.val());
+			}
+		}
+		function addFavorite(e){
+			$form = $('#favorite-form-' + e);
+			$.ajax({
+				url: `/products/add_favorite/${e}`,
+				type: 'GET',
+				data: $form.serialize(),
+				success: function(data) {
+					$('.message-content').html(data.message);
+					$('.message').show();
+					$('.message').on('click', function(){
+						$('.message').hide();
+					});
+					html = 
+					`<button class="icon-star" onclick="deleteFavorite(${e})" >
+						<img style="width:19px;height:19px;" loading="lazy" src="{{ asset('assets/icon/favorite_active.svg') }}" alt="">
+					</button>
+					<form action="" method="post" id="favorite-form-delete-${e}">
+						<input style="display:none;" type="text" name="product_id" value="${e}"/>
+						<input type="hidden" name="_token" value="{{ csrf_token(constant('Eccube\\Common\\Constant::TOKEN_NAME')) }}">
+					</form>`
+					$('.favorite-product-'+ e).html(html);
+					setTimeout(() => {
+						$('.message').hide();
+					}, 3000);
+				}
+			});
+		}
+
+		function deleteFavorite(e){
+			$form = $('#favorite-form-delete-' + e);
+			$.ajax({
+				url: `{{ url('salon_supplier_delete_favorite') }}`,
+				type: 'GET',
+				data: $form.serialize(),
+				success: function(data) {
+					$('.message-content').html(data.message);
+					$('.message').show();
+					$('.message').on('click', function(){
+						$('.message').hide();
+					});
+					html = 
+					`<button class="icon-star" onclick="addFavorite(${e})" id="favorite">
+						<img style="width:19px;height:19px;" loading="lazy" src="{{ asset('assets/icon/favorite_supplier.svg') }}" alt="">
+					</button>
+					<form action="" method="post" id="favorite-form-${e}">
+						<input style="display:none;" type="text" name="supplier_page" value="{{ url('salon-suppliers') }}"/>
+					</form>`
+					$('.favorite-product-'+ e).html(html);
+					setTimeout(() => {
+						$('.message').hide();
+					}, 3000);
+				}
+			});
+		}
+	</script>
+{% endblock %}

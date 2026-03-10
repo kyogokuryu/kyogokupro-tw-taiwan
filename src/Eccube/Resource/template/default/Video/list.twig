@@ -1,0 +1,215 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+
+{% set body_class = 'video_page' %}
+
+{% block stylesheet %}
+    <style type="text/css">
+        li.list-group-item {
+            z-index: inherit !important;
+        }
+        @media screen and (max-width: 480px) {
+
+            .not-show-sp {
+                display: none !important; }
+        }
+        @media screen and (max-width: 480px) {
+            .edu_list li {
+                padding-top: 15px;
+            }
+        }
+
+        .category-title {
+            border-radius: 25px;
+            background: rgba(231, 200, 204,1);
+            color: #39393A;
+            font-size: 15px;
+            white-space: nowrap;
+            display: block;
+            padding: 1px 10px;
+            font-weight: normal;
+            width:fit-content;
+            margin-left:10px;
+            
+        }
+       
+        .video-frame {
+            position: relative;
+        }
+
+        .video-category-link {
+            border-radius: 25px;
+            background: rgba(231, 200, 204,1);
+            padding: 5px 7px;
+            margin-left: 5px;
+        }
+    </style>
+{% endblock %}
+
+{% block javascript %}
+<script>
+    var paramCategory={
+    s:null,//s = status
+    c:null,//c = category
+}
+    $(document).ready(()=>{
+    $('.video-category-list li').on("click",(e)=>{
+        let type = e.currentTarget.getAttribute('type');
+        let value = e.currentTarget.getAttribute('value');
+        let urltarget =  window.location.href
+        if(type == 's'){
+            paramCategory.s = paramCategory.s == value?null:value
+        }
+        else if(type == 'c'){
+            paramCategory.c = paramCategory.c == value?null:value
+            /*if(paramCategory.c.indexOf(value) >=0){
+                paramCategory.c.splice(paramCategory.c.indexOf(value),1)
+            }else{
+                paramCategory.c.push(value);
+                ?category=
+            }*/
+        }
+        var url = new URL(urltarget);
+        url.searchParams.delete('watched');
+        url.searchParams.delete('category');
+        if(paramCategory.s!=null)
+            url.searchParams.set('watched', paramCategory.s);
+        if(paramCategory.c!=null)
+            url.searchParams.set('category', paramCategory.c);
+        window.location.href = url.href
+    })
+
+    function getDataCategory(){
+    let s = null;
+    let c = [];
+    const urlParams = new URLSearchParams(window.location.search);
+    s = urlParams.get('watched')
+    c = urlParams.get('category')
+
+    return {
+    s,c
+}
+}
+
+    updateSelectedAttribute();
+    function updateSelectedAttribute(){
+
+    paramCategory = getDataCategory();
+    if(paramCategory.s){
+    $(`.video-category-list li[type='s'][value=${paramCategory.s}]`).addClass('select')
+}
+
+    if(paramCategory.c){
+    $(`.video-category-list li[type='c'][value=${paramCategory.c}]`).addClass('select')
+}
+}
+})
+</script>
+{% endblock %}
+
+{% block main %}
+    <div class="ec-withdrawRole">
+        <h3 class="mypage-history-title text-left">{{ 'ポイント獲得動画'|trans }}</h3>
+        <hr class="mypage-review-title">
+    </div>
+
+    <div class="video-category-list">
+        {% if app.user %}
+            <ul>
+                <p class="fil-name">ステータス</p>
+                <li type="s" value=false>未獲得</li>
+                <li type="s" value=true style="margin-right: 0;">獲得済み</li>
+            </ul>
+        {% endif %}
+
+        {% if videoCategories %}
+            <ul>
+                <p class="fil-name">カテゴリー</p>
+                {% for category in videoCategories %}
+                    <li type="c" value="{{ category.id }}">{{ category.name }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+    </div>
+    {% if pagination.totalItemCount > 0 %}
+
+        <div class="edu_list">
+
+            <div><p class="num-video">{{pagination.totalItemCount}} ビデオが見つけました。</p></div>
+            <ul>
+                {% for video in pagination %}
+                    <li class="video-item">
+                        <div class="video-frame">
+                            <a href="{{ url('video_detail', {id: video.id}) }}" class="">
+                                {% if video.thumbnail is defined %}
+                                    <div class="seen-video-parent">
+                                        <img src={{video.thumbnail}}></img>
+                                    </div>
+                                {% else %}
+                                    <div class="seen-video-parent">
+                                        <img src="https://img.youtube.com/vi/{{ video.getVideoYoutubeId }}/maxresdefault.jpg"></img>
+                                    </div>
+                                {% endif %}
+
+                                <p class="name_video">{{ video .name }}</p>
+
+                                <div style="display:flex; justify-content:space-between;align-items: flex-start;">
+                                    <div class="point-brown-gradial brown-gradial">
+                                        <div>
+                                            <img src="{{ asset('assets/icon/logo-icon.svg') }}" alt="">
+                                        </div>
+                                        <div class="box-title">
+                                            <p class="title">獲得できる<span> </span></p>
+                                            <p class="title">ポイント<span> </span></p>
+                                        </div>
+                                        <div>
+                                            <p class="point">{{video.videoPointSetting.getPoint|number_format}}<span class="sub-name">P</span> </p>
+                                        </div>
+                                    </div>
+                                    <div class="video-list-right" style="margin:auto 0;display: flex;">
+                                        {% if app.user %}
+                                            {% if video.id in watchedVideoIds %}
+                                                <div class="seen-video right-item">
+                                                    <div class="icon-checkmark" style="margin-right:5px"></div>
+                                                    <span>獲得済み</span>
+                                                </div>
+                                            {% endif %}
+                                        {% endif %}
+
+                                        {% if video.VideoCategory %}
+                                            <p class="category-title right-item" >{{ video.VideoCategory.name }}</P>
+                                        {% endif %}
+                                    </div>
+
+                                </div>
+
+                            </a>
+                        </div>
+                    </li>
+
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="ec-pagerRole">
+            {% include "pager.twig" with {'pages': pagination.paginationData} %}
+        </div>
+    {% else %}
+        <div class="ec-alert-warning" style="margin-top: 50px">
+            <div class="ec-alert-warning__icon"><img src="{{ asset('assets/icon/exclamation-white.svg') }}" style='vertical-align: middle;'>
+            </div>
+            <div class="ec-alert-warning__text">
+                {{ '現在、ビデオがありません。'|trans|nl2br }}
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

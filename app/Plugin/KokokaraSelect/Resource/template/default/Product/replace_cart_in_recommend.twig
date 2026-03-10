@@ -1,0 +1,9 @@
+{% if Product.stock_find %}
+    {% if is_kokokara_select_product(Product) %}
+        <div class="cart_in_recommend_btn" style="display: none;">
+    {% else %}
+        <div class="cart_in_recommend_btn">
+    {% endif %}
+{% else %}
+    <div class="cart_in_recommend_btn">
+{% endif %}

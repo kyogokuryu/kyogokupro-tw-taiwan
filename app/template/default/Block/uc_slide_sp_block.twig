@@ -1,0 +1,43 @@
+{% if is_sp() %}
+{% set Config = repository('Plugin\\uc_slide_sp\\Entity\\uc_slide_spConfig').get %}
+{% set Images = repository('Plugin\\uc_slide_sp\\Entity\\uc_slide_spData').getRandomImages %}
+<style>
+.slider{
+  display: none;
+}
+.slider.slick-initialized{
+  display: block; /*slick-initializedが付与されたら表示*/
+}
+.slider-height .top-mv{
+    width:100%;
+    aspect-ratio: 320 / 320;
+}
+</style>
+<!-- uc_slide -->
+<div class="sp slider-height">
+    <div class="top-mv">
+        <div class="slideshow"><div class="inr">
+            <ul class="">
+            {% for image in Images %}
+                <li class="slider" {% if(loop.index == 1) %}style="display:block"{% endif %}>
+                {% if image.link_url %}<a href="{{ image.link_url }}" class="slide__link">{% endif %}
+                <div class="slide-item"><img height="320" src="{{ url('homepage') }}html/user_data/{{ image.img_url }}" alt="{{ image.img_alt }}"></div>
+                {% if image.link_url %}</a>{% endif %}
+                </li>
+            {% endfor %}
+            </ul>
+        </div></div>
+    </div>
+</div>
+<script>
+$('.top-mv ul').slick({
+    fade: false,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    speed: 500,
+    arrows: false,
+    dots: true,
+});
+</script>
+<!-- /uc_slide -->
+{% endif %}

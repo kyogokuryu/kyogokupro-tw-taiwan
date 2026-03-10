@@ -1,0 +1,102 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) LOCKON CO.,LTD. All Rights Reserved.
+
+http://www.lockon.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<body bgcolor="#F0F0F0" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
+<div align="center"><a href="{{ url('homepage') }}" style="font-family:Helvetica, Arial, sans-serif;font-size:30px;color:#333333;text-decoration:none;"><img style="width:150px;padding-bottom:10px" src="/html/user_data/assets/img/kyogoku_logo.png"></a></div>
+<!-- 100% background wrapper (grey background) -->
+<table border="0" width="100%" height="100%" cellpadding="0" cellspacing="0" bgcolor="#F0F0F0" style="border-spacing:0;mso-table-lspace:0pt;mso-table-rspace:0pt;">
+    <tr>
+        <td align="center" valign="top" bgcolor="#F0F0F0" style="background-color:#F0F0F0;border-collapse:collapse;">
+            <br>
+            <!-- 600px container (white background) -->
+            <table border="0" width="100%" height="100%" cellpadding="0" cellspacing="0" bgcolor="#F0F0F0" style="border-spacing:0;mso-table-lspace:0pt;mso-table-rspace:0pt;">
+                <tr>
+                    <td align="center" valign="top" bgcolor="#F0F0F0" style="background-color:#F0F0F0;border-collapse:collapse;">
+                        <br>
+                        <!-- 600px container (white background) -->
+                        <table id="html-mail-table1" border="0" width="600px" cellpadding="10" cellspacing="0" class="container" style="border-spacing:0;mso-table-lspace:0pt;mso-table-rspace:0pt;">
+                            <tr>
+                                <td class="container-padding content" align="left" style="border-collapse:collapse;padding-left:24px;padding-right:24px;padding-top:12px;padding-bottom:12px;background-color:#ffffff;">
+                                    <br>
+                                    <div class="title" style="font-family:Helvetica, Arial, sans-serif;font-size:18px;font-weight:600;color:#374550;">KYOGOKU 卡雅仕 訂單通知</div>
+                                    <br>
+                                    <div class="body-text" style="font-family:Helvetica, Arial, sans-serif;font-size:14px;line-height:20px;text-align:left;color:#333333;">
+                                        親愛的 {{ Order.name01 }} {{ Order.name02 }} 先生/小姐 您好：<br>
+                                        <br>
+                                        感謝您選購卡雅仕KG 的優質產品！<br/>
+                                        我們已收到您的訂單，以下是您的訂單資訊及後續配送說明。<br/>
+                                        重要提醒： 本通知為系統自動寄出，僅提供訂單確認與資訊查詢，不代表交易已完成。若有任何問題，請隨時與我們聯繫！<br/>
+                                        <br/>
+                                        <hr style="border-top: 3px double #8c8b8b;">
+                                        訂單編號：{{ Order.id }}<br/>
+                                        付款方式： {{ Order.payment_method }}<br/>
+                                        {% for Shipping in Order.Shippings %}
+                                            配送方式：{{ Shipping.Delivery }}<br/>
+                                        {% endfor %}
+                                        我們預計會在2天內（不含列假日）處理您的訂單，並寄出商品！<br/>
+                                        若選擇超商取貨，請於收到通知後攜帶取貨碼至指定門市領取商品。<br/>
+
+                                        <hr style="border-top: 3px double #8c8b8b;">
+                                        　訂單資訊 <br/>
+
+                                        <hr style="border-top: 3px double #8c8b8b;">
+                                        　商品名稱與價格：<br/>
+                                        <hr style="border-top: 3px double #8c8b8b;">
+                                        {% for Shipping in Order.Shippings %}
+                                            {% for OrderItem in Shipping.productOrderItems %}
+                                                {{ OrderItem.product_name }}  {{ OrderItem.classcategory_name1 }}  {{ OrderItem.classcategory_name2 }} x {{ OrderItem.quantity|number_format }}，單價：{{ OrderItem.price|number_format }} 元<br/>
+                                            {% endfor %}
+                                            　原價總金額：{{ Order.subtotal|number_format }} 元<br/>
+                                            　折扣金額：{{ Order.discount|number_format }} 元<br/>
+                                            　運費：{{ Order.delivery_fee_total|number_format }} 元<br/>
+                                            　應付金額：{{ Order.total|number_format }} 元<br/>
+                                            <br/>
+
+                                        <hr style="border-top: 3px double #8c8b8b;">
+                                        　配送資訊<br/>
+                                        <hr style="border-top: 3px double #8c8b8b;">
+                                            收件人姓名：{{ Shipping.name01 }} {{ Shipping.name02 }} 様<br/>
+                                            聯絡電話：{{ Shipping.phone_number }}<br/>
+                                            郵便番号：〒{{ Shipping.postal_code }}<br/>
+                                            收件地址：{% if Shipping.Pref %}{{ Shipping.Pref.name }}{% endif %}{{ Shipping.addr01 }}{{ Shipping.addr02 }}<br/>
+                                        {% endfor %}
+                                        <br/>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <!--/600px container -->
+            <br>
+            <br>
+            <table id="html-mail-table2" border="0" width="600px" cellpadding="10" cellspacing="0" class="container" style="border-spacing:0;mso-table-lspace:0pt;mso-table-rspace:0pt;">
+                <tr>
+                    <td class="container-padding content footer-text" align="left" style="border-collapse:collapse;font-family:Helvetica, Arial, sans-serif;font-size:12px;line-height:16px;color:#aaaaaa;padding-left:24px;padding-right:24px;padding-top:12px;padding-bottom:12px;background-color:#ffffff;">
+                        祝您購物愉快！<br/>
+                        如有任何疑問，請聯繫我們的客服中心。<br/>
+                        電子信箱：<a href="mailto:{{ BaseInfo.email02 }}" style="text-decoration:none;">{{ BaseInfo.email02 }}</a><br/>
+                        copyright © KYOGOKU 卡雅仕 all rights reserved<br/>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+<!--/100% background wrapper-->
+<br>
+<br>
+</body>
+
+</html>

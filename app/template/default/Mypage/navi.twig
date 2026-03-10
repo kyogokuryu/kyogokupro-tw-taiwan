@@ -1,0 +1,37 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+<div class="ec-navlistRole mypage-top-navi-login">
+    <ul id="navi-navlist" class="ec-navlistRole__navlist mypage-header-navlist row">
+        <li class="ec-navlistRole__item static icon-cart {% if mypageno|default('') == 'index' %}active{% endif %}">
+            <div class="mypage-link-btn"><a href="{{ url('mypage') }}">{{ '訂單歷史'|trans }}</a></div>
+        </li>
+        <li class="ec-navlistRole__item static icon-regular {% if mypageno|default('') == 'regular_list' %}active{% endif %}">
+            <div class="mypage-link-btn"><a href="">{{ '常規清單'|trans }}</a></div>
+        </li>
+        <li class="ec-navlistRole__item static icon-account {% if mypageno|default('') == 'change' %}active{% endif %}">
+            <div class="mypage-link-btn"><a href="{{ url('mypage_change') }}">{{ '帳號服務'|trans }}</a></div>
+        </li>
+        {% if BaseInfo.option_favorite_product %}
+            <li class="ec-navlistRole__item static icon-fav {% if mypageno|default('') == 'favorite' %}active{% endif %}">
+                <div class="mypage-link-btn"><a href="{{ url('mypage_favorite') }}">{{ '愛心收藏'|trans }}</a></div>
+            </li>
+        {% endif %}
+    </ul>
+</div>
+
+<script>
+    window.addEventListener('load', function(){
+
+        $('#navi-logout').appendTo('#navi-navlist')
+
+    })
+</script>

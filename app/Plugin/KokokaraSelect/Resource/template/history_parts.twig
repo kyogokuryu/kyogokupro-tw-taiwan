@@ -1,0 +1,26 @@
+{% if kokokaraSelectIndex is defined %}
+    {% set suffix = kokokaraSelectIndex %}
+{% else %}
+    {% set suffix = '_d_'~ProductClass.id %}
+{% endif %}
+{% set ksDirectSelect = is_kokokara_select_direct_select(orderItem.ProductClass) %}
+{% set viewKsOrderItemGroups = get_kokokara_select_order_item_view(orderItem, ksDirectSelect) %}
+{% if viewKsOrderItemGroups|length > 0 %}
+    <div id="kokokara_select_item_{{ suffix }}" >
+    {% if ksDirectSelect %}
+        <div style="margin-top: 10px;">{{ get_kokokara_select_direct_select_name() }}{{ 'kokokara_select.admin.pdf.direct_select.suffix'|trans }}</div>
+        {% for ksMargeItem in viewKsOrderItemGroups %}
+            <div style="margin-bottom: 5px;">
+                {{ ksMargeItem.viewProductName }} × {{ ksMargeItem.quantity }}
+            </div>
+        {% endfor %}
+    {% else %}
+        {% for groupId, viewKsOrderItemGroup in viewKsOrderItemGroups %}
+            <div style="margin-top: 10px;">{{ get_kokokara_select_name() }}内訳({{ groupId }})</div>
+            {% for viewKsOrderItem in viewKsOrderItemGroup %}
+                <div>{{ viewKsOrderItem.name }} × {{ viewKsOrderItem.quantity }}</div>
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
+    </div>
+{% endif %}

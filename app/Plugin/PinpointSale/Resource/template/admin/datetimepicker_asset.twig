@@ -1,0 +1,54 @@
+<link rel="stylesheet" href="{{ asset('assets/css/tempusdominus-bootstrap-4.min.css', 'admin') }}">
+<style type="text/css">
+    .datepicker-days th.dow:first-child,
+    .datepicker-days td:first-child {
+        color: #f00;
+    }
+
+    .datepicker-days th.dow:last-child,
+    .datepicker-days td:last-child {
+        color: #00f;
+    }
+</style>
+
+<script>
+    $(function() {
+        if ($('.pinpoint_custom_date_type').prop('type') != 'date') {
+
+            // input type属性でdateが利用できるかどうか(カレンダー表示できないブラウザ対応)
+            // moment.min.js を先に読み込む
+            $.getScript("{{ asset('assets/js/vendor/moment.min.js', 'admin') }}", function () {
+                $.when(
+                    $.getScript("{{ asset('assets/js/vendor/moment-with-locales.min.js', 'admin') }}"),
+                    $.getScript("{{ asset('assets/js/vendor/tempusdominus-bootstrap-4.min.js', 'admin') }}")
+                ).done(function () {
+
+                    pinpointSaleSetDateTimePicker();
+                });
+            });
+        }
+    });
+
+    function pinpointSaleSetDateTimePicker() {
+
+        $('.pinpoint_custom_date_type').each(function () {
+
+            if ($(this).prop('type') != 'date') {
+                var value = $(this).val();
+
+                $(this).datetimepicker({
+                    locale: '{{ eccube_config.locale }}',
+                    format: 'YYYY-MM-DD',
+                    useCurrent: false,
+                    buttons: {
+                        showToday: true,
+                        showClose: true
+                    },
+                    dayViewHeaderFormat: 'YYYY年 M月'
+                });
+
+                $(this).val(value);
+            }
+        });
+    }
+</script>

@@ -1,0 +1,276 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+<!-- 会員情報にサロン(親ユーザー)と紐づける項目追加 20220510 kikuzawa -->
+{% set member = repository('Eccube\\Entity\\Customer').findBy({'Salon_id' : app.user.id}) %}
+{% set prime = ["", "高级会员", "轻成员"] %}
+
+<style>
+.ec-navlistRole__navlist.mypage-header-navlist .ec-navlistRole__item.icon-point:before{
+  background-image: url('/html/template/default/assets/icon/icon-history.png');
+}
+.banner-go-video{
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    padding:35px 35px;
+    max-width: 100%;
+    width:690px;
+    margin: 16px auto;
+}
+.text-link{
+    margin-right:30px;
+}
+.banner-title{
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom:15px;
+}
+.banner-link{
+    font-size: 24px;
+    font-weight: bold;
+    padding:3px 0;
+    border-top:2px solid #39393a;
+    border-bottom:2px solid #39393a;
+    width: fit-content;
+    margin: auto;
+}
+a.banner-go-video:focus ,
+a.banner-go-video:hover{
+    text-decoration: none;
+}
+
+a.banner-go-video:focus .banner-link,
+a.banner-go-video:hover .banner-link{
+    border-top:2px solid rgba(57, 57, 58, .7);
+    border-bottom:2px solid rgba(57, 57, 58, .7);
+    -webkit-background-clip: padding-box; /* for Safari */
+    background-clip: padding-box; /* for IE9+, Firefox 4+, Opera, Chrome */
+}
+
+.banner-icon{
+    filter: brightness(0) saturate(100%) invert(19%) sepia(7%) saturate(74%) hue-rotate(202deg) brightness(93%) contrast(86%);
+}
+a.banner-go-video:hover ~ .banner-icon{
+    opacity: 0.7;
+}
+
+.banner-icon img{
+    height:90px;
+}
+.vip_card_wrap{
+    potition:relative;
+}
+.vip_card_text{
+  position:absolute;
+  top: 40%;
+  left:20px;
+}
+
+@media screen and (max-width: 480px) {
+    .banner-go-video{
+        padding:18px 12px;
+    }
+    .text-link{
+        margin-right:10px;
+    }
+    .banner-title{
+        font-size: 14px;
+        margin-bottom:8px;
+    }
+    .banner-link{
+        font-size: 12px;
+    }
+    .banner-icon img{
+        height:52px;
+    }
+}
+
+</style>
+
+<div class="ec-navlistRole mypage-top-navi" style="display:flex; align-items:center;">
+    <div class="mypage_bk" style="width:100%;">
+        {# <h1>{{ '我的页面'|trans }}</h1> #}
+        <h1>{{ ''|trans }}</h1>
+            
+        <div class="row mypage-header-item">
+            <div class="col-xs-10 col-md-8">
+            {% if app.user.name01 == '客人' %}
+                <div class="mypage-header-name"><b>{{  app.user.name01 }} </b></div>
+            {% else %}
+                <div class="mypage-header-name"><b>{{ '%last_name% %first_name%'|trans({ '%last_name%': app.user.name01, '%first_name%': app.user.name02 }) }} </b>
+                    &nbsp; {{ prime[app.user.prime_member] }}
+                </div>
+            {% endif %}
+                
+                {% if BaseInfo.option_point %}
+                <div class="mypage-header-point" >積分累積<b><span my-cur-point>{{ app.user.point|number_format }}</span></b><span>PT</span></div>
+                {% endif %}
+                {# <div class="mypage-header-af"><a data-url="{{ url('entry') }}?salon={{ app.user.id }}" class="copy">紹介特典ID: {{ app.user.id}}</a> <a href="https://kyogokupro.com/note/kyogoku-afi-manual/"><div style="display:inline-block;margin-left:1em;" class="mypage-checkin-rule">使い方 <div class="mark-circle">？</div></div></a></div> #}
+                {# <div>
+                    <p class="invite-url"><a data-url="{{ url('entry') }}?salon={{ app.user.id }}" style="font-size:0.7em;" class="copy">クリックで紹介用URLをコピー</a></p>
+                </div> #}
+
+            </div>
+            {# <div style="padding-left:0" class="col-xs-5 col-md-4 vip_card"> #}
+                {#
+                <div class="checkin-area">
+                    {% if app.user.isLoginPoint() %}
+                        <form action="/mypage/add_login_poiint" method="post"><button id="checkin" class="checkin-btn"><span class="checkin-text">报到</span><div class="checkin-star"><img loading="lazy"  src="/html/template/default/assets/icon/icon-star.png"></div></button></form>
+                    {% else %}
+                        <button id="checkin" class="checkin-btn"><span class="checkin-text">报到</span><div class="checkin-star active"><img loading="lazy"  src="/html/template/default/assets/icon/icon-star-on.png"></div>{{ app.user.getLoginPoint() }}PT 获得</button>
+                    {% endif %}
+                </div>
+                #}
+                {# <div class="vip_card_wrap">
+                    <div class="vip_card_img"><img src="/html/template/default/assets/img/urank/card-rank{{ app.user.owner_rank }}.png"></div>
+                    <div class="vip_card_text">{{ app.user.owner_val }} / 150,000</div>
+                </div>
+
+                <div class="vip_rank_btn_wrap">
+                    <a class="vip_rank_btn" href="/mypage/urank">VIP Rankについて ＞</a>
+                </div>
+            </div> #}
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-md-12">
+                <div class="checkin-area2" >
+                    {% if app.user.isLoginPoint() %}
+                        <form action="/mypage/add_login_poiint" method="post"><button id="checkin" class="checkin-btn"><span class="checkin-text">報到</span><div class="checkin-star"><img loading="lazy"  src="/html/template/default/assets/icon/icon-star.png"></div></button></form>
+                    {% else %}
+                        <button id="checkin" class="checkin-btn"><span class="checkin-text">報到</span><div class="checkin-star active"><img loading="lazy"  src="/html/template/default/assets/icon/icon-star-on.png"></div> 獲得 {{ app.user.getLoginPoint() }}PT </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="ec-navlistRole mypage-top-navi-login">
+    <!-- login point -->
+
+{#<!--
+ログイン回数:{{ app.user.login_point_day }}
+最終ログイン日: {{ app.user.last_login_date|date('Y-m-d') }}
+ログポイント可：{{ app.user.isLoginPoint() }}
+ログインポイントDay: {{ app.user.getActiveLoginPointDay() }}
+-->#}
+    <div class="mypage-header-loginpoint row mt-3">
+        {% for item in app.user.getLoginDayList() %}
+        <div class="loginpoint col" style="width:14%">
+            <div class="loginpoint-circle"><div class="loginpoint-circle-base {% if item.active %}active{% endif %}"><span class="loginpoint-val">+{{ item.point }}</span></div></div>
+            <div class="loginpoint-date">{% if item.today %}今天{% else %} {{ item.day }} {% endif %}</div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div>
+        <div class="tooltip2">
+            <div class="mypage-checkin-rule">規則 <div class="mark-circle">？</div></div>
+            <div class="description2">每天签到即可赚取积分。连续签到将获得奖励积分。</div>
+        </div>
+    </div>
+
+    {# <div>
+        <a class="banner-go-video brown-gradial" href="{{url('video_list') }}">
+            <div class="text-link" style="text-align:center;" >
+                <p class="banner-title">只需观看视频即可获得积分！</p>
+                <p class="banner-link" >点击此处查看目标视频</p>
+            </div>
+            <div class="banner-icon ">
+                <img src="{{ asset('assets/icon/logo-icon.svg') }}" alt="">
+            </div>
+
+        </a>
+    </div> #}
+    
+    
+
+    <ul id="navi-navlist" class="ec-navlistRole__navlist mypage-header-navlist row">
+        
+        {#
+        <li class="ec-navlistRole__item col-xs-6 {% if mypageno|default('') == 'index' %}active{% endif %}">
+            <a href="{{ url('mypage') }}">{{ '订单历史'|trans }}</a>
+        </li>
+        #}
+        {# <li class="ec-navlistRole__item static icon-regular {% if mypageno|default('') == 'regular_list' %}active{% endif %}">
+            <div class="mypage-link-btn"><a href="{{ url('eccube_payment_lite4_mypage_regular_list')  }}">{{ '常规清单'|trans }}</a></div>
+        </li> #}
+
+        <li class="ec-navlistRole__item static icon-account {% if mypageno|default('') == 'change' %}active{% endif %}">
+            <div class="mypage-link-btn"><a href="{{ url('mypage_change') }}">{{ '帳號服務'|trans }}</a></div>
+        </li>
+        
+        {% if BaseInfo.option_favorite_product %}
+            <li class="ec-navlistRole__item static icon-fav {% if mypageno|default('') == 'favorite' %}active{% endif %}">
+                <div class="mypage-link-btn"><a href="{{ url('mypage_favorite') }}">{{ '愛心收藏'|trans }}</a></div>
+            </li>
+        {% endif %}
+
+        {# <li class="ec-navlistRole__item static icon-point {% if mypageno|default('') == 'point_history' %}active{% endif %}">
+            <div class="mypage-link-btn"><a href="{{ url('mypage_point_history') }}">{{ '视频观看点获取历史记录'|trans }}</a></div>
+        </li>
+        <li class="ec-navlistRole__item static icon-point {% if mypageno|default('') == 'countdown_history' %}active{% endif %}">
+            <div class="mypage-link-btn">
+                <a href="{{ url('mypage_countdown_history') }}">
+                {{ '倒计时点获取历史记录'|trans }}
+                </a>
+            </div>
+        </li> #}
+
+
+        <!-- 会員情報にサロン(親ユーザー)と紐づける項目追加 20220510 kikuzawa -->
+        {% if member is not empty %}
+            <li class="ec-navlistRole__item static icon-af {% if mypageno|default('') == 'salonaf' %}active{% endif %}">
+                <div class="mypage-link-btn"><a href="{{ url('mypage_salonaf') }}">{{ 'AF 销售总额'|trans }}</a></div>
+            </li>
+        {% endif %}
+        
+        {#
+        <li class="ec-navlistRole__item {% if mypageno|default('') == 'delivery' %}active{% endif %}">
+            <a href="{{ url('mypage_delivery') }}">{{ '送貨地址清單'|trans }}</a>
+        </li>
+        <li class="ec-navlistRole__item {% if mypageno|default('') == 'withdraw' %}active{% endif %}">
+            <a href="{{ url('mypage_withdraw') }}">{{ '取消訂閱'|trans }}</a>
+        </li>
+        <li id="navi-logout" class="ec-navlistRole__item {% if mypageno|default('') == 'logout' %}active{% endif %}">
+            <a href="{{ url('logout') }}">{{ '登出'|trans }}</a>
+        </li>
+        #}
+    </ul>
+
+
+
+
+</div>
+
+
+
+
+<script>
+    window.addEventListener('load', function(){
+
+        $('#navi-logout').appendTo('#navi-navlist')
+
+    })
+
+    //紹介用URLボタンのコピー処理 20220809 kikuzawa
+    $('.copy').on('click', function(){
+        let url = $('.copy').data('url');
+        let $textarea = $('<textarea></textarea>');
+        $textarea.text(url);
+        $(this).append($textarea);
+        $textarea.select();
+        document.execCommand('copy');
+        $textarea.remove();
+        alert('コピーしました');
+    });
+</script>

@@ -1,0 +1,23 @@
+# 閃光訊息
+uc_slide_cbd_sp.admin.setting.save.complete: 設定已儲存。
+uc_slide_cbd_sp.admin.setting.delete.complete: 資料已刪除。
+
+# 設定
+uc_slide_cbd_sp.admin.config.title: UC幻燈片 CBD(手機)
+uc_slide_cbd_sp.admin.config.config_title: 外掛設定
+uc_slide_cbd_sp.admin.config.edit_title: 圖片編輯
+uc_slide_cbd_sp.admin.config.image_title: 圖片設定
+uc_slide_cbd_sp.admin.config.no_image: 尚未上傳圖片。
+uc_slide_cbd_sp.admin.config.conversion.save: 儲存
+uc_slide_cbd_sp.admin.config.conversion.add: 新增
+uc_slide_cbd_sp.admin.config.conversion.back: 返回外掛列表
+uc_slide_cbd_sp.admin.config.conversion.top: 圖片列表
+
+uc_slide_cbd_sp.admin.config.label_block_type: 區塊類型
+uc_slide_cbd_sp.admin.config.label_slide_type: 幻燈片類型
+uc_slide_cbd_sp.admin.config.label_img_url: 圖片網址（必填）
+uc_slide_cbd_sp.admin.config.label_img_alt: 圖片替代文字
+uc_slide_cbd_sp.admin.config.label_link_url: 圖片連結
+
+## 訊息
+uc_slide_cbd_sp.admin.config.message_path: 使用者資料/~

@@ -1,0 +1,19 @@
+{% block javascript %}
+    <script src="{{ asset('assets/js/twzipcode.js/twzipcode.js', 'admin') }}"></script>
+    <script>
+        let twzipcode = new TWzipcode();
+        $('input').each(function(){
+	        let v = $(this).val();
+	        if(v == 'ゲスト' || v == '★' || v == '0000000' || v == '00000000000'){
+	            $(this).val('');
+	            $('.ec-welcomeMsg').hide();
+	            $('#entry_address_pref').val('');
+	        }
+	    });
+		let optionValue = "{{ form.address.pref.vars.value	 }}"
+		if(optionValue){
+			$('#entry_address_pref').val(optionValue);
+			$('#admin_customer_address_pref').val(optionValue);
+		}
+    </script>
+{% endblock %}

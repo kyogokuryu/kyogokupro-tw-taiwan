@@ -1,0 +1,435 @@
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['store', 'plugin', 'plugin_list'] %}
+
+{% block title %}Ranking{% endblock %}
+{# {% block sub_title %}プラグイン一覧{% endblock %} #}
+{% block sub_title %}ランキング設定{% endblock %}
+
+{% form_theme form '@admin/Form/bootstrap_4_horizontal_layout.html.twig' %}
+
+{% block stylesheet %}
+<style>
+.sliderPreview{
+    width: 600px;
+}
+.sliderPreview #rankingProudcts{
+    font-family: robot;
+}
+.sliderPreview #rankingProudcts{
+    {# border: solid 1px red; #}
+}
+.sliderPreview #rankingProudcts .item{
+    margin: 64px 6px 0;
+    position: relative;
+    color: #525263;
+    text-decoration: none;
+}
+.sliderPreview #rankingProudcts .item .number{
+    position: absolute;
+    z-index: 1;
+    height: 0px;
+    width: auto;
+    top: 0;
+}
+.sliderPreview #rankingProudcts IMG{
+    width: 100%;
+}
+.sliderPreview #rankingProudcts .name{
+    margin: 6px 0 0 6px;
+}
+.sliderPreview #rankingProudcts .price{
+    font-weight: 900;
+    margin: 6px 0 0 6px;
+}
+.sliderPreview #rankingProudcts .colorDot{
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+    margin: 6px 0 0 6px;
+}
+.sliderPreview #rankingProudcts .colorDot LI{
+    margin-right: 12px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: solid 1px #000;
+}
+{# arrow #}
+.sliderPreview #rankingProudcts .slick-arrow{
+    position: absolute;
+    top: 50%;
+    /* transform: translateY(-50%); */
+    width: 50px;
+    height: 50px;
+    /* background: #606060; */
+    background: rgba(0, 0, 0, .7);
+    z-index: 1;
+    opacity: 0.7;
+    cursor: pointer;
+}
+.sliderPreview #rankingProudcts .slick-arrow::before{
+    position: absolute;
+    content: "";
+    top: 50%;
+    width: 26px;
+    height: 26px;
+    border: solid 1px #FFF;
+    top: 11px;
+    border-width: 1px 0px 0px 1px;
+}
+.sliderPreview #rankingProudcts .slick-prev{
+    left: 25px;
+}
+.sliderPreview #rankingProudcts .slick-next{
+    right: 25px;
+}
+.sliderPreview #rankingProudcts .slick-prev::before{
+    transform: rotate(-45deg);
+    left: 21px;
+}
+.sliderPreview #rankingProudcts .slick-next::before{
+    transform: rotate(130deg);
+    right: 21px;
+}
+@media only screen and (max-width: 767px){
+    .sliderPreview #rankingProudcts .slick-track{
+        left: 10%;
+    }
+    .sliderPreview #rankingProudcts .slick-arrow{
+        width: 30px;
+        height: 30px;
+    }
+    .sliderPreview #rankingProudcts .slick-arrow::before{
+        top: 7px;
+        width: 16px;
+        height: 16px;
+    }
+    .sliderPreview #rankingProudcts .slick-prev{
+        left: 0;
+    }
+    .sliderPreview #rankingProudcts .slick-next{
+        right: 0;
+    }
+    .sliderPreview #rankingProudcts .slick-prev::before{
+        left: 12px;
+    }
+    .sliderPreview #rankingProudcts .slick-next::before{
+        right: 12px;
+    }
+}
+.note{
+    font-size: 80%;
+    color: #777;
+}
+.frameItem{
+    align-items: center;
+    padding: 5px 0;
+}
+.frameTypeRadio{
+    display: flex;
+}
+.frameTypeRadio .form-check{
+    margin: 0 10px 0 0;
+}
+.frameTypeRadio .form-check:last-of-type{
+    margin: 0;
+}
+.frameValue{
+    display: flex;
+    align-items: center;
+}
+.frameValue .frameValueLabel{
+    width: 70px;
+    white-space: nowrap;
+}
+</style>
+{% endblock stylesheet %}
+
+{% block javascript %}
+<link rel="stylesheet" href="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.css">
+<script src="https://cdn.jsdelivr.net/jquery.slick/1.6.0/slick.min.js"></script>
+<script>
+
+$(function() {
+    // 商品検索モーダル
+    var dataId = null;
+
+    // 選択済み商品削除ボタンクリック時
+    // $(document).on('click', 'button[id^="RelatedProduct-delete"]', function() {
+    //     var data = $(this).data();
+    //     $('.RelatedProduct-view' + data.id ).addClass('d-none');
+    //     $('#admin_product_RelatedProducts_' + data.id + '_ChildProduct').val('');
+    //     $('#admin_product_RelatedProducts_' + data.id + '_content' ).val('');
+    //     $('#RankingSearchProductResult').children().remove();
+    // });
+
+    // 「商品を選択」ボタンクリック時
+    $(document).on("click", 'button[id^="Product-search"]', function () {
+        dataId = $(this).attr("data-id");
+        $("#RankingProductDataId").val(dataId);
+        $("#RankingSearchProductResult").children().remove();
+    });
+
+    // 商品検索モーダル内 検索実行ボタンクリック時
+    $("#RankingSearchProductButton").on("click", function () {
+        var formIdVal = $("#{{ searchForm.id.vars.id }}").val();
+        var formCatIdVal = $("#{{ searchForm.category_id.vars.id }}").val();
+        var data = {
+            id: formIdVal,
+            category_id: formCatIdVal,
+            {# product_id: {{ Product.id ? Product.id : 0 }} #}
+        };
+        $("#RankingSearchProductResult").children().remove();
+        $.ajax({
+            type: "POST",
+            url: "{{ url('admin_ranking_product_search') }}",
+            data: data,
+            success: function(data){
+                $("#RankingSearchProductResult").append(data);
+            },
+            error: function() {
+                alert('product search failed.');
+            }
+        });
+    });
+
+    // ランキング枠設定タイプ切り替え
+    toggleFrameValueLabel();
+    $('.frameTypeRadio INPUT').on('change', function(){
+        toggleFrameValueLabel();
+    });
+
+    // スライダーデザイン切り替え
+    $('#config_slider_design').on('change', function(){
+        let changedDesignType = $('#config_slider_design').val();
+        let numberImgDir = '{{ asset('Ranking/assets/img/number', 'plugin') }}';
+        $('IMG.number').each(function(){
+            let path = $(this).attr('src');
+            path = path.replace(new RegExp('^' + numberImgDir + '[0-9]+'), numberImgDir + changedDesignType);
+            $(this).attr('src', path);
+        });
+    });
+
+    // スライダープレビュー
+    $('#rankingProudcts').on('setPosition', function(event, slick){
+        console.log("123", $(this).find('number'))
+        let pHeight = $(this).find('IMG').height()
+        console.log("pHeight", pHeight)
+        $(this).find('.number').each(function(){
+            $(this).css({height:pHeight/2.85, left:pHeight/16.15, top:pHeight/4.4*-1})
+        })
+    });
+    $('#rankingProudcts').slick({
+        infinite: true,
+        slidesToShow: 5,
+        slidesToScroll: 1,
+        initialSlide: 2,
+        centerMode: true,
+        adaptiveHeight:true,    // 
+        prevArrow: '<div class="slick-prev"></div>',
+        nextArrow: '<div class="slick-next"></div>',
+        responsive: [{
+            breakpoint: 768,
+            settings: {
+                slidesToShow: 2.5,
+            }
+        }],
+        {# autoplay: {{AutoPlay ? 'true': 'false'}}, #}
+        autoplay: false,
+    });
+    $('#rankingProudcts').slick("slickSetOption", "slidesToScroll", 1);
+});
+// ランキング枠設定タイプ切り替え時最適化
+function toggleFrameValueLabel(){
+    $('.frameItem').each(function(index, frameItem){
+        
+        // 値ラベル表示 切り替え
+        let checkedFrameType = $(frameItem).find('.frameTypeRadio INPUT:checked').val();
+        $(frameItem).find('.frameValueLabel').hide();
+        $(frameItem).find('.frameValueLabel[data-type="' + checkedFrameType + '"]').show();
+
+        // 商品選択ボタン活性/非活性 切り替え
+        if(checkedFrameType == 0){
+            $(frameItem).find('.selectProductBtn').hide();
+        }else{
+            $(frameItem).find('.selectProductBtn').show();
+        }
+    });
+}
+</script>
+{% endblock javascript %}
+
+{% block main %}
+
+    {# {{dump(form)}} #}
+
+    <form role="form" method="post">
+
+        {{ form_widget(form._token) }}
+
+        {# ランキング枠設定用フォーム配列生成 #}
+        {% set FramesForm = [] %}
+        {% set FrameItem = [] %}
+        {% set c = 0 %}
+        {% for i in 1..10 if i <= 10 %}
+            {% set c = c+1 %}
+            {% set typeKeyName = 'frame' ~ c ~ '_type' %}
+            {% set valueKeyName = 'frame' ~ c ~ '_value' %}
+            {% if form[typeKeyName] is defined and form[valueKeyName] is defined %}
+                {% set FrameItem = FrameItem|merge({'type': form[typeKeyName], 'value': form[valueKeyName]}) %}
+                {% set FramesForm = FramesForm|merge({(c):FrameItem}) %}
+            {% endif %}
+        {% endfor %}
+        {# {{dump(FramesForm)}} #}
+
+        <div class="c-contentsArea__cols">
+            <div class="c-contentsArea__primaryCol">
+                {# 全体設定 #}
+                <div class="c-primaryCol">
+                    <div class="card rounded border-0 mb-4">
+                        <div class="card-header"><span>全体設定</span></div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-2">
+                                    <span>対象期間</span>
+                                </div>
+                                <div class="col-auto mb-2">
+                                    {{ form_widget(form.target_period) }}
+                                    {{ form_errors(form.target_period) }}
+                                    <span class="note">*「自動」を選択した枠の対象期間を選択してください.</span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-2">
+                                    <span>スライダー再生</span>
+                                </div>
+                                <div class="col-auto mb-2">
+                                    {{ form_widget(form.slider_auto_play, {'attr': {'class': 'frameTypeRadio'}}) }}
+                                    {{ form_errors(form.slider_auto_play, {'attr': {'class': 'frameTypeRadio'}}) }}
+                                    <span class="note">*ランキングが1画面で表示しきれない時に、スクロールを自動的に開始するかどうかを選択してください.</span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-2">
+                                    <span>スライダーデザイン</span>
+                                </div>
+                                <div class="col-auto mb-2">
+                                    {{ form_widget(form.slider_design) }}
+                                    {{ form_errors(form.slider_design) }}
+                                    <div class="sliderPreview">
+                                        <div id="rankingProudcts">
+                                            {% for i in 0..9 %}
+                                                <a href="#" class="item">
+                                                    <img src="{{ asset('Ranking/assets/img/SalesRanking-200x200.png', 'plugin') }}">
+                                                    <div class="name">Sales Ranking</div>
+                                                    <div class="price">￥5,500</div>
+                                                    <img src="{{ asset('Ranking/assets/img/number'~form.slider_design.vars.value~'/'~loop.index~'.svg', 'plugin') }}" class="number">
+                                                </a>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {# ランキング枠設定 #}
+                <div class="c-primaryCol">
+                    <div class="card rounded border-0 mb-4">
+                        <div class="card-header"><span>ランキング枠設定</span></div>
+                        <div class="card-body">
+                            {% for Frame in FramesForm %}
+                                <div class="row frameItem">
+                                    <div class="col-1">{{loop.index}}位 枠</div>
+
+                                    {# 設定タイプ(自動/手動) #}
+                                    <div class="col-2 frameType">
+                                        {{ form_widget(Frame.type, {'attr': {'class': 'frameTypeRadio'}}) }}
+                                        {{ form_errors(Frame.type, {'attr': {'class': 'frameTypeRadio'}}) }}
+                                    </div>
+                                    
+                                    {# 設定値(設定タイプが自動の場合は順位, 手動の場合は商品ID) #}
+                                    <div class="col-2 frameValue">
+                                        <span class="frameValueLabel" data-type="0" style="display: none;">順位</span>
+                                        <span class="frameValueLabel" data-type="1" style="display: none;">商品ID</span>
+                                        {{ form_widget(Frame.value, {'attr': {'class': 'frameValueInput'}}) }}
+                                        {{ form_errors(Frame.value, {'attr': {'class': 'frameValueInput'}}) }}
+                                    </div>
+
+                                    {# 設定タイプ手動時用商品設定ボタン #}
+                                    <div class="col-3">
+                                        <button type="button" id="Product-search{{loop.index0}}" class="btn btn-ec-regular selectProductBtn" data-toggle="modal" data-target="#RankingSearchProductModal" data-id="{{loop.index}}">
+                                            {{ 'ranking.select_product'|trans }}
+                                        </button>
+                                        {# <button type="button" id="Product-delete{{loop.index0}}" class="btn btn-default text-right" data-id="{{loop.index}}">
+                                            {{ 'ranking.remove_product'|trans }}
+                                        </button> #}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            <input type="hidden" id="RankingProductDataId" value="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# 商品検索モーダル #}
+        {% form_theme searchForm '@admin/Form/bootstrap_4_horizontal_layout.html.twig' %}
+        <div class="modal fade" id="RankingSearchProductModal" tabindex="-1" role="dialog" aria-labelledby="RankingSearchProductModal" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{ 'ranking.modal.product_search.title'|trans }}</h5>
+                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            {{ form_widget(searchForm.id, { attr : { placeholder : 'ranking.modal.product_search.input_name' } } ) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_widget(searchForm.category_id) }}
+                        </div>
+                        <div class="form-group">
+                            <button type="button" id="RankingSearchProductButton" class="btn btn-primary" >
+                                {# {{ 'admin.common.execute'|trans }} #}
+                                {{ 'admin.common.search'|trans }}
+                            </button>
+                        </div>
+                        <div class="form-group" id="RankingSearchProductResult">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# 下部メニュー #}
+        <div class="c-conversionArea">
+            <div class="c-conversionArea__container">
+                <div class="row justify-content-between align-items-center">
+                    <div class="col-6">
+                        <div class="c-conversionArea__leftBlockItem">
+                            <a class="c-baseLink"
+                               href="{{ url('admin_store_plugin') }}">
+                                <i class="fa fa-backward" aria-hidden="true"></i>
+                                <span>プラグイン一覧</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="row align-items-center justify-content-end">
+                            <div class="col-auto">
+                                <button class="btn btn-ec-conversion px-5"
+                                        type="submit">登録</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+{% endblock %}

@@ -1,0 +1,58 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+
+{% form_theme form 'Form/form_div_layout.twig' %}
+
+{% block main %}
+		<article id="login">
+			<section>
+    <div class="ec-role">
+        <div class="ec-pageHeader">
+            <h1>{{ '重設密碼'|trans }}</h1>
+        </div>
+    </div>
+    <div class="ec-forgotRole">
+        <form name="form1" id="form1" method="post" action="{{ url('forgot') }}">
+            {{ form_widget(form._token) }}
+            <div class="ec-off1Grid">
+                <div class="ec-off1Grid__cell">
+                    <div class="ec-forgotRole__form">
+                        <div class="ec-forgotRole__intro">
+                            <p class="ec-para-normal">{{ '請輸入您註冊時使用的電子信箱地址,然後點擊"下一步"按鈕'|trans }}</p>
+                            <p class="ec-para-normal">{{ '我們將向您發送一封重新發布密碼的電子信件。請檢察信件內容並註冊新密碼'|trans }}</p>
+                        </div>
+                        <div class="ec-borderedDefs">
+                            <dl>
+                                <dt>
+                                    {{ form_label(form.login_email, '電子信箱地址', { 'label_attr': { 'class': 'ec-label' }}) }}
+                                </dt>
+                                <dd>
+                                    <div class="ec-input{{ has_errors(form.login_email) ? ' error' }}">
+                                        {{ form_widget(form.login_email) }}
+                                        {{ form_errors(form.login_email) }}
+                                    </div>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ec-off4Grid">
+                <div class="ec-off4Grid__cell">
+                    <button type="submit" class="ec-blockBtn--action">{{ '下一頁'|trans }}</button>
+                </div>
+            </div>
+        </form>
+    </div>
+			</section>
+		</article>
+{% endblock %}

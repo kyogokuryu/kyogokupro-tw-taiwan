@@ -1,0 +1,73 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+<!-- 会員情報にサロン(親ユーザー)と紐づける項目追加 20220510 kikuzawa -->
+{% set member = repository('Eccube\\Entity\\Customer').findBy({'Salon_id' : app.user.id}) %}
+
+
+
+<div class="ec-navlistRole mypage-top-navi">
+    
+    <h1>{{ '定期商品サービス'|trans }}</h1>
+
+</div>
+
+<div class="ec-navlistRole mypage-top-navi-login">
+    <!-- login point -->
+
+    <!--
+    <div><a href=""></a></div>
+    -->
+
+    <ul id="navi-navlist" class="ec-navlistRole__navlist mypage-header-navlist row">
+        
+
+        <li class="ec-navlistRole__item static {% if mypageno|default('') == 'regular_list' %}active{% endif %}">
+            <div class="mypage-link-btn">
+                <a href="{{ url('eccube_payment_lite4_mypage_regular_list')  }}">{{ '定期一覧'|trans }}</a>
+            </div>
+        </li>
+
+        <li class="ec-navlistRole__item static {% if mypageno|default('') == 'credit_card' %}active{% endif %}">
+            <div class="mypage-link-btn">
+                <a href="{{ url('eccube_payment_lite4_mypage_credit_card_index') }}">{{ '定期カード情報編集'|trans }}</a>
+            </div>
+        </li>
+
+    </ul>
+
+
+
+
+</div>
+
+
+
+
+<script>
+    window.addEventListener('load', function(){
+
+        $('#navi-logout').appendTo('#navi-navlist')
+
+    })
+
+    //紹介用URLボタンのコピー処理 20220809 kikuzawa
+    $('.copy').on('click', function(){
+        let url = $('.copy').data('url');
+        let $textarea = $('<textarea></textarea>');
+        $textarea.text(url);
+        $(this).append($textarea);
+        $textarea.select();
+        document.execCommand('copy');
+        $textarea.remove();
+        alert('コピーしました');
+    });
+</script>

@@ -1,0 +1,167 @@
+{% set Config = repository('Plugin\\[code]\\Entity\\[code]Config').get %}
+{% set CategoryList = repository('Plugin\\[code]\\Entity\\[code]Config').getCategoryList %}
+
+{% block stylesheet %}
+<style>
+    .uic-footer-3 {
+        margin-top: 40px;
+        padding: 40px 0;
+        background: #000;
+        text-align: center;
+    }
+    .uic-footer-3 a {
+        color: #fff;
+    }
+    .uic-footer-3 > .ec-role > .row > div {
+        margin-top: 30px;
+    }
+    .uic-footer-3 > .ec-role > .row > div:first-child {
+        margin-top: 0;
+    }
+    .uic-footer-3 .uic-footer__logo,
+    .uic-footer-3 .uic-footer__logo a {
+        font-size: 24px;
+        font-weight: bold;
+    }
+    .uic-footer-3 .uic-footer__logo img {
+        width: 100%;
+        height: auto;
+    }
+    .uic-footer-3 .ec-secHeading {
+        color: #fff;
+        font-size: 15px;
+        margin-bottom: 10px;
+    }
+    .uic-footer-3 .uic-footer__sns>li {
+        display: inline-block;
+    }
+    .uic-footer-3 .uic-footer__sns,
+    .uic-footer-3 .uic-footer__menu{
+        font-size: 14px;
+    }
+    .uic-footer-3 .uic-footer__sns,
+    .uic-footer-3 .uic-footer__description {
+        margin-top: 20px;
+    }
+    .uic-footer-3 .uic-footer__menu {
+        padding: 0;
+        list-style: none;
+    }
+    .uic-footer-3 .uic-footer__menu>li {
+        padding: 10px 0;
+    }
+    .uic-footer-3 .uic-footer__copyright {
+        margin-top: 30px;
+        font-size: 14px;
+        color: #fff;
+    }
+    /* pc ~ */
+    @media only screen and (min-width: 768px){
+        .uic-footer-3 {
+            margin-top: 100px;
+            text-align: left;
+        }
+        .uic-footer-3 > .ec-role > .row > div {
+            margin-top: 0;
+        }
+        .uic-footer-3 .uic-footer__menu>li {
+            padding: 5px 0;
+        }
+    }
+</style>
+{% endblock %}
+
+<!-- [code] -->
+<div class="uic-footer-3">
+    <div class="ec-role">
+        <div class="row">
+            <div class="col-xs-6 col-sm-3">
+                <div class="uic-footer__logo">
+                    <a href="{{ url('homepage') }}">{{ BaseInfo.shop_name }}</a>
+                </div>
+                <ul class="uic-footer__sns list-inline">
+                    <li class="nav-link">
+                        <a href="#"><i class="fab fa-facebook fa-lg fa-fw"></i></a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="#"><i class="fab fa-twitter fa-lg fa-fw"></i></a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="#"><i class="fab fa-instagram fa-lg fa-fw"></i></a>
+                    </li>
+                </ul>
+                <div class="uic-footer__copyright">
+                    copyright (c) {{ BaseInfo.shop_name }} all rights reserved.
+                </div>
+            </div>
+            <div class="col-xs-6 col-sm-3">
+                <div class="ec-secHeading">
+                    <span class="ec-secHeading__en">カテゴリ一覧</span>
+                </div>
+                {% if CategoryList != null %}
+                <ul class="uic-footer__menu">
+                    {% for Category in CategoryList %}
+                        <li class="nav-link">
+                            <a href="{{ url('product_list') }}?category_id={{ Category.id }}">
+                                {{ Category.name }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+            <div class="col-xs-6 col-sm-3">
+                <div class="ec-secHeading">
+                    <span class="ec-secHeading__en">アカウント</span>
+                </div>
+                <ul class="uic-footer__menu">
+                    {% if is_granted('ROLE_USER') %}
+                        <li class="nav-link">
+                            <a href="{{ url('mypage') }}">{{ 'マイページ'|trans }}</a>
+                        </li>
+                        {% if BaseInfo.option_favorite_product %}
+                        <li class="nav-link">
+                            <a href="{{ url('mypage_favorite') }}">{{ 'お気に入り'|trans }}</a>
+                        </li>
+                        {% endif %}
+                        <li class="nav-link">
+                            <a href="{{ url('logout') }}">{{ 'ログアウト'|trans }}</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-link">
+                            <a href="{{ url('entry') }}">{{ '新規会員登録'|trans }}</a>
+                        </li>
+                        {% if BaseInfo.option_favorite_product %}
+                        <li class="nav-link">
+                            <a href="{{ url('mypage_favorite') }}">{{ 'お気に入り'|trans }}</a>
+                        </li>
+                        {% endif %}
+                        <li class="nav-link">
+                            <a href="{{ url('mypage_login') }}">{{ 'ログイン'|trans }}</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="col-xs-6 col-sm-3">
+                <div class="ec-secHeading">
+                    <span class="ec-secHeading__en">ヘルプ</span>
+                </div>
+                <ul class="uic-footer__menu">
+                    <li class="nav-link">
+                        <a href="{{ url('help_about') }}">{{ '当サイトについて'|trans }}</a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="{{ url('help_privacy') }}">{{ 'プライバシーポリシー'|trans }}</a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="{{ url('help_tradelaw') }}">{{ '基於特定商業交易法之描述'|trans }}</a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="{{ url('contact') }}">{{ 'お問い合わせ'|trans }}</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /[code] -->

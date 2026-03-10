@@ -1,0 +1,23 @@
+{% set Faqs = repository('Customize\\Entity\\Faq').getListForTop() %}
+
+<script>
+$(document).on('click', '.question', function () {
+    $(this).next().fadeToggle();
+});
+</script>
+
+<div class="faq-block">
+    {% if Faqs|length > 0 %}
+    <h2>よくあるご質問</h2>
+    <div class="faq-area">
+        {% for Faq in Faqs %}
+        <p class="question"><span class="question-mark">Q</span>{{ Faq.question }}</p>
+        <p class="answer"><span class="answer-mark">A</span>{{ Faq.answer|raw }}</p>
+        <hr class="divider" />
+        {% endfor %}
+    </div>
+    <a href="/faq">
+        <div class="to-faq">よくあるご質問一覧へ</div>
+    </a>
+    {% endif %}
+</div>

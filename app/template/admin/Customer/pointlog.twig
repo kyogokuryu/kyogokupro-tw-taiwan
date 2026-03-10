@@ -1,0 +1,47 @@
+{% if(Customer and Customer.id) %}
+<script>
+    $(function () {
+        // ページ最下部に移動
+        $('#pointlog-info').appendTo($('#customer_form > div.c-contentsArea__cols > div > div'));
+    });
+</script>
+<div class="d-none">
+  <div id="pointlog-info" class="card rounded border-0 mb-4"  style="max-height:500px;overflow:scroll;">
+    <div class="card-header">
+      <div class="row">
+        <div class="col-8">
+          <span class="card-title">ポイント変更履歴</span>
+        </div>
+        <div class="col-4 text-right">
+          <a data-toggle="collapse" href="#gmo_payment_gateway-info__body" aria-expanded="false" aria-controls="gmo_payment_gateway-info__body">
+            <i class="fa fa-angle-up fa-lg"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="collapse show ec-cardCollapse" id="gmo_payment_gateway-info__body">
+      <div class="card-body">
+
+        {% for row in PointLog %}
+        {% if(row.point2 != row.point1) %}
+        <div class="row mb-2">
+          <div class="col-2">
+            {{ row.create_date|date('Y/m/d H:i') }}
+          </div>
+          <div class="col-1" style="{% if(row.point2 - row.point1 > 0) %} color:red; {% endif %}">{% if(row.point2 - row.point1 > 0) %}+{% endif %}{{ row.point2 - row.point1 }} </div>
+          <div class="col-2">
+            {{ row.point1 }} → {{ row.point2 }}
+          </div>
+          <div class="col">
+            {{ row.memo_str }}
+          </div>
+
+        </div>
+        {% endif %}
+        {% endfor %}
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}

@@ -1,0 +1,34 @@
+{% extends 'default_frame.twig' %}
+
+{% set body_class = "point" %}
+
+{% block main %}
+
+	<article>
+		<section>
+			<div class="header-text">
+				<h1>新會員限定 <br>取得<span style='color:#990055'>TWD200</span>會員點數頁面 請按照步驟取得卡雅仕會員點數。</h1>
+			</div>
+			<div class="middle">
+				<img src="html/template/default/assets/icon/icon_member.svg" alt="Member Icon" style="margin-top:10px;">
+				<h2>新會員註冊</h2>
+				<div class="more"><a href="{{ url('entry') }}" class="btn-s1">進行新會員註冊</a></div>
+			</div>
+			<div class="bottom">
+				<p>※取得會員點數時，必須進行新會員註冊。<br> 
+				※本活動的點數取得每人僅限一次。 <br>
+				（如發現不正當取得或利用情況，將嚴格處理）<br>
+				※卡雅仕會員點數可按1點數＝1台幣使用。 <br>
+				※點數的取得及使用方法請參閱會員註冊完成郵件。 <br>
+				※本活動的點數無取得期限，但可能會在未通知的情況下結束發放。<br>
+				※如新會員註冊點數的發放結束，不論任何理由均無法取得點數。<br>
+				※取得的點數使用期限為取得後3天內。<br>
+				※點數可在訂單金額超過500台幣時使用。<br>
+				※超過使用期限的會員點數，不論任何理由均無法使用。<br>
+				※如購買金額低於取得的點數，剩餘的點數可在使用期限內累積使用。<br>
+				※會員點數不可兌換現金或轉售。</p>
+			</div>
+		</section>
+	</article>
+
+{% endblock %}

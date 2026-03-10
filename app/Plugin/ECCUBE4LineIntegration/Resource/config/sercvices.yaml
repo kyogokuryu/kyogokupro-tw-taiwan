@@ -1,0 +1,4 @@
+services:
+  Plugin\ECCUBE4LineIntegration\Form\Extension\EntryLineIntegrationTypeExtension:
+    tags:
+        - { name: form.type_extension, extended_type: Eccube\Form\Type\Front\EntryType }

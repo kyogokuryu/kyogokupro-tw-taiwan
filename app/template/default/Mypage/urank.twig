@@ -1,0 +1,349 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+
+{% set mypageno = 'index' %}
+
+{% set body_class = 'mypage' %}
+{% block stylesheet %}
+
+<link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css"/>
+<style>
+  #page_mypage_urank .ec-layoutRole{
+    background-color: rgb(38,38,38) !important;
+  }
+  .owner_bk{
+    background-color: rgb(38,38,38);
+  }
+  #page_mypage_urank .ec-layoutRole__footer{
+    background: #ffffff !important;
+  }
+  #page_mypage_urank p.title{
+    color:white !important;
+  }
+  .owner_header{
+    text-align:center;
+    color:white;
+  }
+  .owner_header h2{
+    font-size:20px;
+  }
+  .owner_header span{
+    color:white;
+  }
+  .owner_card{
+    text-align:center;
+    position:relative;
+    width:100%;
+  }
+  .owner_card_wrap{
+    max-width:400px;
+    margin:auto;
+  }
+  .owner_card img{
+    max-width:685px;
+    width:100%;
+    margin:auto;
+  }
+  .owner_card_right.swiper-button-next, .owner_card_left.swiper-button-prev {
+    color:white !important;
+  }
+
+  .owner_vip{
+    margin-top:30px;
+  }
+  .owner_point{
+    margin-top:30px;
+  }
+  .owner_text_pos{
+    position:relative;
+    top:0px;
+    font-weight:bold;
+    text-align:left;
+  }
+  .owner_faq{
+    color:white;
+  }
+  .owner_faq a{
+    color:white;
+    margin-left:1em;
+    margin-bottom:0.5em;
+  }
+  .owner_product_list{
+    color:white;
+  }
+  .owner_h1{
+     font-size:150%;
+  }
+  .swiper{
+    display:none;
+  }
+  .owner_ab{
+    position:relative;
+    top:-70px;
+    font-weight:bold;
+    margin:auto;
+  }
+
+  .swiper .progress-bar{
+    background-color: #aaa;
+    box-shadow:none; 
+  }
+
+  .swiper .progress-bar.c1{
+    background-color: #ccc;
+  }
+  .swiper .progress-bar.c2{
+    background-color: #e2b36c;
+  }
+  .swiper .progress-bar.c3{
+    background-color: #dedfe2;
+  }
+  .swiper .progress-bar.c4{
+    background-color: #dedfe2;
+  }
+
+
+@media screen and (max-width:480px) {
+  .owner_card{
+    width:90%;
+    margin:auto;
+  }
+}
+
+</style>
+{% endblock stylesheet %}
+{% block javascript %}
+<script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
+<script>
+  window.addEventListener('load', function(){
+
+    const swiper = new Swiper(".swiper", {
+      initialSlide: {{ Customer.owner_rank }}, 
+      // ページネーションが必要なら追加
+      pagination: {
+        el: ".swiper-pagination"
+      },
+      // ナビボタンが必要なら追加
+      navigation: {
+        nextEl: ".swiper-button-next",
+        prevEl: ".swiper-button-prev"
+      },
+      on:{
+        init:function(){
+          $('.swiper').show();
+        },
+        slideChange: function(swiper){
+          console.log(swiper.realIndex);
+          var rank = swiper.realIndex;
+          $('#vip-rank').attr('src','/html/template/default/assets/img/urank/vip-rank' + rank + '.png');
+        }
+      }
+      });
+
+    $('.swiper-slide').each(function(){
+      let w = $(this).find('.owner_card_wrap img').width()
+      $(this).find('.owner_ab').width(w*0.9)      
+      console.log(w)
+    });
+
+  });
+</script>
+{% endblock javascript %}
+{% block main %}
+{% set rank_name = ["シルバー", "ゴールド", "プラチナ", "ダイヤモンド"] %}
+
+<article id="mypage" class="mypage-history">
+	<section>
+    <div class="ec-layoutRole__main owner_bk">
+        <div class="owner_header">
+            <h1 class="owner_h1">KYOGOKUオーナーズクラブ</h1>
+            <h2 classs="owner_h2">{{ Customer.name01 }} {{ Customer.name02}} さん</h2>
+            <h2 class="owner_h2"><span class="small">現在ランク</span> {{ rank_name[Customer.owner_rank] }}　￥{{ Customer.owner_val|number_format }}</h2>
+        </div>
+
+        <div class="owner_card swiper">
+            <div class="swiper-wrapper">
+              <div class="swiper-slide" data-rank="0">
+                <div class="owner_card_wrap"><img src="/html/template/default/assets/img/urank/card-rank0.png"></div>
+                <div class="owner_ab">
+                  <div class="owner_text_pos"><small>シルバー達成</small> <!-- 次のゴールドまであと {{ Customer.owner_val|number_format }} / <span class="owner_total">30,000</span> --></div>
+                  {% set per = Customer.owner_val * 100 / 30000 %}
+                  <div class="progress">
+                    <div class="progress-bar c1" role="progressbar" style="width: {{ min(per,100) }}%" aria-valuenow="{{ min(per,100) }}" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="swiper-slide" data-rank="1">
+                <div class="owner_card_wrap"><img src="/html/template/default/assets/img/urank/card-rank1.png"></div>
+                <div class="owner_ab">
+                  <div class="owner_text_pos">{% if Customer.owner_rank > 0 %}<small>ゴールド達成</small> ￥30,000{% else %}<small>ゴールドまであと</small> ￥{{ Customer.owner_val|number_format }} / <span class="owner_total">30,000</span>{% endif %}</div>
+                  {% set per = Customer.owner_val * 100 / 30000 %}
+                  <div class="progress">
+                    <div class="progress-bar c2" role="progressbar" style="width: {{ min(per,100) }}%" aria-valuenow="{{ min(per,100) }}" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="swiper-slide" data-rank="2">
+                <div class="owner_card_wrap"><img src="/html/template/default/assets/img/urank/card-rank2.png"></div>
+
+                <div class="owner_ab">
+                  <div class="owner_text_pos">{% if Customer.owner_rank > 1 %}<small>プラチナ達成</small> ￥100,000{% else %}<small>プラチナまであと</small> ￥{{ Customer.owner_val|number_format }} / <span class="owner_total">100,000</span>{% endif %}</div>
+                  {% set per = Customer.owner_val * 100 / 100000 %}
+                  <div class="progress">
+                    <div class="progress-bar c3" role="progressbar" style="width: {{ min(per,100) }}%" aria-valuenow="{{ min(per,100) }}" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>                
+                </div>
+              </div>
+
+              <div class="swiper-slide" data-rank="3">
+                <div class="owner_card_wrap"><img src="/html/template/default/assets/img/urank/card-rank3.png"></div>
+                <div class="owner_ab">
+                  <div class="owner_text_pos">{% if Customer.owner_rank > 1 %}<small>ダイヤモンド達成</small> ￥150,000{% else %}<small>ダイヤモンドまであと</small> ￥{{ Customer.owner_val|number_format }} / <span class="owner_total">150,000</span>{% endif %}</div>
+                  {% set per = Customer.owner_val * 100 / 150000 %}
+                  <div class="progress">
+                    <div class="progress-bar c4" role="progressbar" style="width: {{ min(per,100) }}%" aria-valuenow="{{ min(per,100) }}" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>                
+                </div>
+              </div>
+            </div>
+            
+            <!-- 必要に応じてページネーション -->
+            <div class="swiper-pagination"></div>
+
+            <!-- 必要に応じてナビボタン -->
+            <div class="owner_card_left swiper-button-prev"></div>
+            <div class="owner_card_right swiper-button-next"></div>
+        </div>
+        
+
+
+        {#
+        <div><img src="/html/template/default/assets/img/urank/card-rank1.png"></div>
+        <div><img src="/html/template/default/assets/img/urank/card-rank2.png"></div>
+        <div><img src="/html/template/default/assets/img/urank/card-rank3.png"></div>
+        #}
+
+        <div class="owner_vip"><img id="vip-rank" src="/html/template/default/assets/img/urank/vip-rank{{ Customer.owner_rank }}.png"></div>
+        {#
+        <div><img src="/html/template/default/assets/img/urank/vip-rank1.png"></div>
+        <div><img src="/html/template/default/assets/img/urank/vip-rank2.png"></div>
+        <div><img src="/html/template/default/assets/img/urank/vip-rank3.png"></div>
+        #}
+        <div class="owner_point"><img src="/html/template/default/assets/img/urank/point_bak.png"></div>
+
+        <div class="owner_product_list mt20 top-slide new">
+            <h1>限定価格</h1>
+		    {{ include('Block/uc_urank_block.twig') }}
+    	</div>
+
+        <div class="owner_faq">
+            <h1>FAQS</h1>
+            
+            <div class="owner_faq_q">
+              <a href="javascript:void(0)"><b>≫</b>どうやって参加できますか？</a>
+              <p class="onwer_faq_a">ログインするとKyogoku オーナーズクラブに参加できます。このプログラムには追加費用は発生しません。対象の商品購入回数や購入額を満たすと、ランクアップして特典を獲得することができます。</p>
+            </div>
+            <div class="owner_faq_q"><a href="javascript:void(0)">
+              <b>≫</b>参加すると何がもらえますか？</a>
+              <p class="onwer_faq_a">Kyogoku オーナーズクラブに参加すると、お買い物するたびにランクアップして特典を獲得できます。イベントやポップアップへの参加、会員限定のキャンペーン、最新のファッションニュースなどが受けられます。</p>
+            </div>
+            <div class="owner_faq_q"><a href="javascript:void(0)">
+              <b>≫</b>自分のレベルを知るには？</a>
+              <p class="onwer_faq_a">アカウントにログイン後、マイページに表示されるVIP限定アイコンから詳細情報を確認できます。Kyogoku オーナーズクラブページは、ご自身の会員ランク、それに伴う特典、次のランクまでの到達状況、そして各ランクで受けられる特典など、詳細情報を確認することができます。</p>
+            </div>
+            <div class="owner_faq_q">
+              <a href="javascript:void(0)"><b>≫</b>ランクアップするには？</a>
+              <p class="onwer_faq_a">消費限度額に達した時点で次のランクへとアップグレードし、感謝の気持ちを込めてプレゼントを進呈します。</p>
+            </div>
+            {#
+            <div class="owner_faq_q">
+              <a href="javascript:void(0)"><b>≫</b>KYOGOKU PROFESSIONALのアカウントを複数持っている場合はどうすればいいですか？</a>
+              <p>
+                Kyogoku オーナーズクラブは各ランクの会員資格を取得した日から12ヶ月間有効です（シルバーを除く）。データの更新は通常24時間かかります。24時間後にご自身のランクを確認できます。
+                シルバーを達成すると、永久の会員資格を獲得できます。お客様の会員ランクは、毎月更新日の45日前時点の過去12ヶ月間、対象となる注文回数または注文金額に基づいて随時更新されます。              
+              </p>
+            </div>
+            #}
+            <div class="owner_faq_q">
+              <a href="javascript:void(0)"><b>≫</b>Kyogokuのアカウントを複数持っている場合はどうすればいいですか？</a>
+              <p>現時点では、アカウントを統合することができないため、特典を最大限に活用するためにも、1つのアカウントでの買い物をおすすめします。</p>
+            </div>
+        </div>
+
+      {#
+
+どうやって参加できますか？
+
+ログインするとKyogoku オーナーズクラブに参加できます。このプログラムには追加費用は発生しません。対象の商品購入回数や購入額を満たすと、ランクアップして特典を獲得することができます。
+
+参加すると何がもらえますか？
+
+Kyogoku オーナーズクラブに参加すると、お買い物するたびにランクアップして特典を獲得できます。イベントやポップアップへの参加、会員限定のキャンペーン、最新のファッションニュースなどが受けられます。
+
+自分のランクを知るには？
+
+アカウントにログイン後、マイページに表示されるVIP限定アイコンから詳細情報を確認できます。Kyogoku オーナーズクラブページは、ご自身の会員ランク、それに伴う特典、次のランクまでの到達状況、そして各ランクで受けられる特典など、詳細情報を確認することができます。
+
+ランクアップするには？
+
+消費限度額に達した時点で次のランクへとアップグレードし、感謝の気持ちを込めてプレゼントを進呈します。
+
+Kyogoku オーナーズクラブは各ランクの会員資格を取得した日から12ヶ月間有効です（シルバーを除く）。データの更新は通常24時間かかります。24時間後にご自身のランクを確認できます。
+シルバーを達成すると、永久の会員資格を獲得できます。お客様の会員ランクは、毎月更新日の45日前時点の過去12ヶ月間、対象となる注文回数または注文金額に基づいて随時更新されます。
+
+
+Kyogokuのアカウントを複数持っている場合はどうすればいいですか？
+
+現時点では、アカウントを統合することができないため、特典を最大限に活用するためにも、1つのアカウントでの買い物をおすすめします。
+
+        <div class="faq-block owner_faq">
+                <h2>よくあるご質問</h2>
+            <div class="faq-area">
+                        <p class="question"><span class="question-mark">Q</span>KyogokuのIROMEシリーズのカラーレシピはどこから検索できますか？</p>
+                <p class="answer" style="display: none;"><span class="answer-mark">A</span><a href="https://kyogokupro.com/note/recipe/">https://kyogokupro.com/note/recipe/</a>こちらから見ることができます。またはインスタグラムのカラーレシピアカウントをご確認ください。<a href="https://www.instagram.com/haircolour_recipe/?hl=ja">https://www.instagram.com/haircolour_recipe/?hl=ja</a></p>
+                <hr class="divider">
+                        <p class="question"><span class="question-mark">Q</span>返品はできますか？</p>
+                <p class="answer"><span class="answer-mark">A</span>・商品のご返品・ご交換は、商品到着後7日以内にお願いいたします。
+        ・ご注文商品と異なった商品や破損商品が届いた場合の返品・交換の返送料は、株式会社BuzzDropが負担いたします。
+        ・お客様のご都合による返品・交換の場合、返送料はお客様負担とさせていただきます。
+        ※長期ご不在等により、返送になった場合も、お客様ご都合となりますのでご了承くださいませ。
+        ・開封または一部ご使用になった商品のご返品・ご交換はご容赦ください。
+        ・着払い返送を受けた後に良品と交換いたします。</p>
+                <hr class="divider">
+                        <p class="question"><span class="question-mark">Q</span>プロモーションコードの使い方がわからない</p>
+                <p class="answer"><span class="answer-mark">A</span>こちらの記事で詳しい流れを説明しています。<a href="https://kyogokupro.com/note/kyogoku-shopping-promotion-chord/">https://kyogokupro.com/note/kyogoku-shopping-promotion-chord/</a></p>
+                <hr class="divider">
+                    </div>
+            <a href="/faq">
+                <div class="to-faq">よくあるご質問一覧へ</div>
+            </a>
+        </div>
+      #}
+{#
+<div>order_amount:{{ saleOrder.order_amount }}</div>
+
+
+<div>owner_rankj:{{ Customer.owner_rank }}</div>
+<div>customer_id:{{ Customer.id }} </div>
+
+        <div class="ec-role row">
+            <div class="col-xs-8">
+                <a href="{{ url('mypage') }}" class="mypage-back">{{ '我的帳號'|trans }}</a>
+            </div>
+        </div>
+#}
+    </div>
+	</section>
+</article>
+{% endblock %}

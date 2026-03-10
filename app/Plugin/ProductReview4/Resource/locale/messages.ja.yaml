@@ -1,0 +1,97 @@
+#flash messages
+product_review.admin.save.complete: 已註冊。
+product_review.admin.save.error: 註冊失敗。
+product_review.admin.not_found: 找不到商品評論。
+product_review.admin.delete.complete: 已刪除商品評論。
+product_review.admin.product.not_found: 找不到商品。
+
+#共通
+product_review.common.required: 必填
+
+#設定畫面
+product_review.admin.config.title: 評論設定
+product_review.admin.config.sub_title: 插件列表
+product_review.admin.config.config_title: 設定
+product_review.admin.config.review_max: 評論顯示數量（%min%〜%max%）
+product_review.admin.config.conversion.save: 註冊
+product_review.admin.config.conversion.back: 插件列表
+
+#評論列表畫面
+product_review.admin.product_review.title: 評論管理
+product_review.admin.product_review.sub_title: 商品管理
+product_review.admin.product_review.search_detail: 詳細搜尋
+product_review.admin.product_review.search_button: 搜尋
+product_review.admin.product_review.search_clear: 清除搜尋條件
+product_review.admin.product_review.search_result_count: 搜尋結果：%count%項符合。
+product_review.admin.product_review.search_multi: 發布者名稱・發布者URL
+product_review.admin.product_review.search_product_name: 商品名稱
+product_review.admin.product_review.search_product_code: 商品代碼
+product_review.admin.product_review.search_posted_date: 發布日期
+product_review.admin.product_review.search_posted_date_start: 發布日期（起始）
+product_review.admin.product_review.search_posted_date_end: 發布日期（結束）
+product_review.admin.product_review.search_sex: 性別
+product_review.admin.product_review.search_recommend_level: 推薦等級
+product_review.admin.product_review.search_review_status: 公開・非公開
+product_review.admin.product_review.search_no_result: 找不到符合條件的資料。
+product_review.admin.product_review.search_invalid_condition: 搜尋條件錯誤。
+product_review.admin.product_review.search_change_condition_and_retry: 請更改搜尋條件後重試。
+product_review.admin.product_review.search_try_detail_condition: '[詳細搜尋]也可以嘗試。'
+product_review.admin.product_review.diaply_count: %count%項
+product_review.admin.product_review.csv_download: CSV下載
+product_review.admin.product_review.csv_download_setting: CSV輸出項目設定
+product_review.admin.product_review.th_posted_date: 發布日期
+product_review.admin.product_review.th_contributor: 發布者名稱
+product_review.admin.product_review.th_product_name: 商品名稱
+product_review.admin.product_review.th_title: 標題
+product_review.admin.product_review.th_level: 推薦等級
+product_review.admin.product_review.th_status: 公開・非公開
+product_review.admin.product_review.delete: 刪除
+product_review.admin.product_review.delete_cancel: 取消
+product_review.admin.product_review.delete_confirm_title: 確定刪除評論
+product_review.admin.product_review.delete_confirm_message: 是否確定刪除？
+
+#レビュー編集画面
+product_review.admin.product_review_edit.title: 審查・編輯評論
+product_review.admin.product_review_edit.sub_title: 商品管理
+product_review.admin.product_review_edit.review_detail: 評論詳情
+product_review.admin.product_review_edit.product_name: 商品名稱
+product_review.admin.product_review_edit.posted_date: 發布日期
+product_review.admin.product_review_edit.conversion.save: 註冊
+product_review.admin.product_review_edit.conversion.back: 審查評論
+
+#レビュー投稿画面
+product_review.front.review.title: 發布評論
+product_review.front.review.description: 我們期待您對商品的評論。
+product_review.front.review.product_name: 商品名稱
+product_review.front.review.back: 返回
+product_review.front.review.confirm: 前往確認頁面
+
+#レビュー確認画面
+product_review.front.review.confirm.description: |
+#您確定要以以下內容發送嗎？
+#如果確定，請點擊下方的「發布」按鈕。
+product_review.front.review.comfirm.post: 發布
+
+#レビュー完了画面
+product_review.front.review.complete.thanks: 感謝您的評論。
+product_review.front.review.complete.thanks_detail: |
+#我們將在確認內容後進行反映。
+#請稍等片刻。
+product_review.front.review.complete.back: 返回商品頁面
+
+#レビューフォーム
+product_review.form.product_review.reviewer_name: 評論者名稱
+product_review.form.product_review.reviewer_url: URL
+product_review.form.product_review.title: 標題
+product_review.form.product_review.comment: 評論
+product_review.form.product_review.recommend_level: 推薦等級
+
+#商品詳細画面への差し込みブロック
+product_review.front.product_detail.title: 此商品的評論
+product_review.front.product_detail.no_review: 尚無評論。
+product_review.front.product_detail.post_review: 發布評論
+product_review.front.product_detail.name: %name% 先生/小姐
+
+
+
+

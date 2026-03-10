@@ -1,0 +1,128 @@
+# uthUserFile /home/xs679489/kyogokupro.com/public_html/.htpasswd
+# AuthGroupFile /dev/null
+# AuthName MembersOnly
+# AuthType Basic
+# 
+# <Limit GET POST>
+# require valid-user
+# </Limit>
+# 
+# # order deny,allow
+# # deny from all
+# # allow from 153.227.0.52
+# # allow from 114.164.97.244
+# # allow from 153.156.79.24
+#Header set Access-Control-Allow-Origin "https://kyogokupro.com"
+Header set Access-Control-Allow-Origin "*"
+#Header set Access-Control-Allow-Credentials true
+# 
+DirectoryIndex index.php index.html .ht
+<FilesMatch "^composer|^COPYING|^\.env|^\.maintenance|^Procfile|^app\.json|^gulpfile\.js|^package\.json|^package-lock\.json|web\.config|^Dockerfile|\.(ini|lock|dist|git|sh|bak|swp|env|twig|yml|yaml|dockerignore)$">
+    order allow,deny
+    deny from all
+</FilesMatch>
+<IfModule mod_headers.c>
+    # 
+    Header always set X-Frame-Options SAMEORIGIN
+    # XSS
+    Header set X-XSS-Protection "1; mode=block"
+    Header set X-Content-Type-Options nosniff
+</IfModule>
+# 
+<IfModule mod_php7.c>
+    php_value upload_max_filesize 10M
+</IfModule>
+<IfModule mod_rewrite.c>
+    #403 Forbidden
+    #
+    #
+    #Options +FollowSymLinks +SymLinksIfOwnerMatch
+    RewriteEngine On
+    #user_data 20220418 kikuzawa
+    RewriteRule ^user_data/(.*)$ /$1 [R=301,L]
+    # Authorization 
+    RewriteCond %{HTTP:Authorization} ^(.*)
+    RewriteRule ^(.*) - [E=HTTP_AUTHORIZATION:%1]
+    # 
+    RewriteCond %{HTTP_ACCEPT} image/webp
+    RewriteCond %{REQUEST_URI} (?i)(.*)(\.jpe?g|\.png)$
+    RewriteCond %{DOCUMENT_ROOT}%1%2%3.webp -f
+    RewriteRule (?i)(.*)(\.jpe?g|\.png)$ %1$2\.webp [L,T=image/webp]
+    # RewriteCond %{HTTP:x-sakura-forwarded-for} !^$
+    # RewriteRule ^(.*) - [E=HTTPS:on]
+    RewriteRule ^personalcolor_diagnosis(/.*)?$ - [L]
+    RewriteRule ^feed(/.*)?$ - [L]
+    RewriteRule "^\.git" - [F]
+    RewriteRule "^src/" - [F]
+    RewriteRule "^app/" - [F]
+    RewriteRule "^tests/" - [F]
+    RewriteRule "^var/" - [F]
+    RewriteRule "^vendor/" - [F]
+    RewriteRule "^node_modules/" - [F]
+    RewriteRule "^codeception/" - [F]
+    RewriteRule "^bin/" - [F]
+    RewriteRule "^dockerbuild/" - [F]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !^(.*)\.(gif|png|jpe?g|css|ico|js|svg|map)$ [NC]
+    RewriteRule ^(.*)$ index.php [QSA,L]
+    
+</IfModule>
+# 
+# 
+#     AuthType Basic
+#     AuthName "Please enter username and password"
+#     AuthUserFile /path/to/.htpasswd
+#     AuthGroupFile /dev/null
+#     require valid-user
+#
+#     SetEnvIf Request_URI "^/admin" admin_path  # ^/admin
+# <RequireAll>
+#     Require all granted
+#     Require not env admin_path
+# </RequireAll>#
+# svg -> https://on-ze.com/archives/2202
+AddType image/svg+xml .svg .svgz
+AddType image/svg+xml svg svgz
+SetEnvIf Request_URI ".*" AllowXmlrpc
+SetEnvIf Request_URI ".*" AllowWlwManifest
+SetEnvIf Request_URI ".*" AllowCountry
+SetEnvIf Request_URI ".*" AllowRestApi
+# === Performance Optimization (added by Manus) ===
+
+# Browser Caching
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpeg "access plus 30 days"
+    ExpiresByType image/png "access plus 30 days"
+    ExpiresByType image/gif "access plus 30 days"
+    ExpiresByType image/webp "access plus 30 days"
+    ExpiresByType image/svg+xml "access plus 30 days"
+    ExpiresByType text/css "access plus 7 days"
+    ExpiresByType application/javascript "access plus 7 days"
+    ExpiresByType application/x-javascript "access plus 7 days"
+    ExpiresByType text/javascript "access plus 7 days"
+    ExpiresByType application/x-font-woff "access plus 30 days"
+    ExpiresByType application/x-font-woff2 "access plus 30 days"
+    ExpiresByType font/woff2 "access plus 30 days"
+    ExpiresByType application/x-font-ttf "access plus 30 days"
+    ExpiresByType application/vnd.ms-fontobject "access plus 30 days"
+</IfModule>
+
+# Gzip Compression
+<IfModule mod_deflate.c>
+    SetOutputFilter DEFLATE
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css
+    AddOutputFilterByType DEFLATE application/javascript application/x-javascript text/javascript
+    AddOutputFilterByType DEFLATE application/json application/xml
+    AddOutputFilterByType DEFLATE application/x-font-woff application/x-font-woff2 font/woff2
+    AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# Cache-Control for static assets
+<IfModule mod_headers.c>
+    <FilesMatch "\.(ico|jpe?g|png|gif|webp|svg|css|js|woff|woff2|ttf|eot)$">
+        Header set Cache-Control "public, max-age=2592000"
+    </FilesMatch>
+</IfModule>
+
+# === End Performance Optimization ===

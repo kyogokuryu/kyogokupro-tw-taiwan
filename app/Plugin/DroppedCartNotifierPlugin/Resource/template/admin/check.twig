@@ -1,0 +1,31 @@
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['store', 'plugin', 'plugin_list'] %}
+
+{% block title %}かご落ち通知メール{% endblock %}
+{% block sub_title %}動作確認{% endblock %}
+
+{% block main %}
+    <div class="c-contentsArea__cols">
+        <div class="c-contentsArea__primaryCol">
+            <div class="c-primaryCol">
+                <p>
+                    本日顧客に送信されるかご落ち通知メールを管理者宛て（{{ adminMail }}）に送信します。（対象件数{{ targetCount }}件）
+                </p>
+                <p>
+                    ※ 顧客には送信されません。<br>
+                    ※ 管理者宛て完了メールが有効である時は、完了メールも動作確認のため送信されます。<br>
+                    ※ 顧客のログインなどにより、対象件数は変化することがあります。<br>
+                </p>
+                <form action="{{ url('dropped_cart_notifier_check_execute') }}" method="post">
+                    <input type="hidden" name="_token" value="{{ csrf_token('_token') }}">
+                    <button class="btn btn-primary btn-block btn-lg mt-2" style="color: #fff">
+                        送信する
+                    </button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,187 @@
+<div class="siderbar-mobile" style="overflow: auto;">
+	<div class="siderbar-content">
+		<div class="menu-group">
+			<h3>會員專區</h3>
+			<ul>
+				{% if is_granted('ROLE_USER') == false %}
+					<li class='menu-item'>
+						<a href='{{ url('mypage_login') }}'>登入</a>
+					</li>
+					<li class='menu-item'>
+						<a href='{{ url('entry') }}'>會員註冊</a>
+					</li>
+				{% endif %}
+				<li class='menu-item'>
+					<a href='mypage/favorite'>愛心收藏</a>
+				</li>
+				<li class='menu-item'>
+					<a href='/ranking'>人氣排行榜</a>
+				</li>
+			</ul>
+		</div>
+		<hr>
+		<div class="menu-group">
+			<h3>產品分類</h3>
+			<ul>
+				<li class='menu-item'>
+					<a href="{{ url('categories_detail', {'id': 91}) }}">洗髮精</a>
+				</li>
+				<li class='menu-item'>
+					<a href "{{ url('categories_detail', {'id': 78}) }}">護髮素（需沖洗）</a>
+				</li>
+				<li class='menu-item'>
+					<a href="{{ url('categories_detail', {'id': 80}) }}">護髮素（免沖洗）</a>
+				</li>
+				<li class='menu-item'>
+					<a href="{{ url('categories_detail', {'id': 84}) }}">造型用品</a>
+				</li>
+				<li class='menu-item'>
+					<a href="{{ url('categories_detail', {'id': 89}) }}">染髮商品</a>
+				</li>
+				<li class='menu-item'>
+					<a href="{{ url('categories_detail', {'id': 85}) }}">美容美髮儀器</a>
+				</li>
+				<li class='menu-item'>
+					<a href="{{ url('categories_detail', {'id': 90}) }}">醫美清潔保養</a>
+				</li>
+			</ul>
+		</div>
+		<hr>
+		<div class="menu-group">
+			<h3>閱讀與學習</h3>
+			<ul>
+				<li class='menu-item'>
+					<a href='/note'>人氣文章</a>
+				</li>
+				<li class='menu-item'>
+					<a href='/note/hair_color'>染髮特集</a>
+				</li>
+				<li class='menu-item'>
+					<a href='/note/hairstyle'>推薦髮型專欄</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<hr>
+	<div class="siderbar-contact">
+		<div class="contact-item">
+			<a href="mailto:info.kyogoku@gmail.com">
+				<img src="/html/template/default/assets/img/icon/icon-mail.svg" alt="Email Icon">
+				<span>info.kyogoku@gmail.com</span>
+			</a>
+		</div>
+		<div class="contact-item">
+			<a href="tel:0425320179">
+				<img src="/html/template/default/assets/img/icon/icon-phone.svg" alt="Phone Icon">
+				<span>0425320179</span>
+			</a>
+		</div>
+	</div>
+	<div class="siderbar-shipping">
+		<div class="shipping-info">
+			<img src="/html/template/default/assets/img/icon/icon-truck.svg" alt="Shipping Icon">
+			<div class="shipping-text">
+				<p>運費資訊</p>
+				<p>購物滿 TWD $3,500（含稅）</p>
+				<p>即可享免運優惠</p>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	$(function () {
+$('.menu-siderbar-close').click(() => {
+$('.siderbar-mobile').removeClass('show');
+})
+})
+</script>
+
+
+<style>
+	.siderbar-mobile {
+		display: none;
+		position: fixed;
+		left: 0;
+		width: 100vw;
+		height: calc(100vh - 180px);
+		background: #fff;
+		z-index: 999;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		-webkit-overflow-scrolling: touch;
+	}
+	body.no-scroll {
+		overflow: hidden;
+		height: 100vh;
+	}
+
+	.siderbar-content .menu-group {
+		padding: 0 20px;
+	}
+
+	.siderbar-content .menu-group:last-child {
+		border-bottom: none;
+	}
+	.siderbar-content .menu-group h3 {
+		font-size: 18px;
+		font-weight: bold;
+		color: #000;
+		margin-bottom: 15px;
+	}
+	.siderbar-content .menu-group .menu-item {
+		padding: 5px 0;
+		font-size: 16px;
+	}
+	.siderbar-content .menu-group .menu-item a {
+		color: #000;
+		text-decoration: none;
+	}
+
+	.siderbar-contact {
+		padding: 0 20px 20px;
+	}
+
+	.siderbar-contact .contact-item {
+		display: flex;
+		align-items: center;
+		margin-bottom: 10px;
+	}
+	.siderbar-contact .contact-item img {
+		width: 20px;
+		margin-right: 10px;
+	}
+	.siderbar-contact .contact-item span {
+		font-size: 16px;
+		color: #000;
+	}
+	hr {
+		border: 2px solid grey;
+		margin-bottom: 10px;
+	}
+	.siderbar-shipping {
+		padding: 0 20px;
+		margin-bottom: 40px;
+	}
+	.siderbar-shipping .shipping-info {
+		display: flex;
+		width: 300px;
+		align-items: center;
+		border: 1px solid #000000;
+		border-radius: 10px;
+		padding: 20px;
+	}
+	.siderbar-shipping .shipping-info img {
+		width: 40px;
+		margin-right: 20px;
+	}
+	.siderbar-shipping .shipping-info .shipping-text p {
+		margin: 0;
+		font-size: 14px;
+		line-height: 1.5;
+	}
+	.siderbar-shipping .shipping-info .shipping-text p:first-child {
+		font-size: 16px;
+		font-weight: bold;
+	}
+</style>

@@ -1,0 +1,12 @@
+{% set kokokaraSelectIndex2 = 0 %}
+{% for CartIndex,Cart in Carts %}
+    {% for CartItem in Cart.CartItems %}
+        {% set ksDirectSelect = is_kokokara_select_direct_select(CartItem.ProductClass) %}
+        {% if ksDirectSelect == false %}
+            {% for KsCartSelectItemGroup in CartItem.KsCartSelectItemGroups %}
+                <div id="kokokara_select_up_down_{{ kokokaraSelectIndex2 }}"></div>
+            {% endfor %}
+        {% endif %}
+        {% set kokokaraSelectIndex2 = kokokaraSelectIndex2 + 1 %}
+    {% endfor %}
+{% endfor %}

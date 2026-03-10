@@ -1,0 +1,12 @@
+plugin.bundle_product.modal.product_search.title: 商品搜索
+plugin.bundle_product.modal.product_search.input_name: 商品名称/ID/编码
+plugin.bundle_product.select_product: 选择商品
+plugin.bundle_product.remove_product: 删除
+plugin.bundle_product.block.title: 套餐商品
+
+plugin.bundle_sale.front.product.add_cart_error: “%product%”缺货，无法购买。
+
+plugin.bundle_sale.admin.product.update_error: “%product%”已被添加到套餐商品中，因此无法更改为“%product_status%”状态。
+plugin.bundle_sale.admin.product_class.matrix.update_error: “%product_class%”已添加到套餐商品中，因此无法更改。
+
+plugin.bundle_sale.admin.product.update_error.product.empty: 由于未设置套餐商品，因此无法注册。

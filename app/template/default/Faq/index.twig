@@ -1,0 +1,71 @@
+{% extends 'default_frame.twig' %}
+
+{% block javascript %}
+<script>
+function set_value_from_query() {
+    var params = new URLSearchParams(location.search);
+    $('input[name="faq_category_id"]').val(params.get('faq_category_id'));
+    $('input[name="keyword"]').val(params.get('keyword'));
+}
+set_value_from_query();
+
+
+$(document).on('click', '.question', function () {
+    $(this).next().fadeToggle();
+});
+</script>
+{% endblock javascript %}
+
+{% block main %}
+<div class="faq">
+    <h2>よくあるご質問一覧</h2>
+    <form action="" method="GET">
+        <input type="hidden" name="faq_category_id">
+        <input name="keyword" type="text">
+        <button type="submit"><i class="fa fa-search"></i></button>
+    </form>
+    {% if FaqCategories|length > 0 %}
+        {% for FaqCategory in FaqCategories %}
+        <div class="faq-category">
+            <h3 class="category-name">{{ php_str_replace(' ', '', FaqCategory.name) }}</h3>
+            <div class="faq-area">
+                {% for Faq in Faqs %}
+                    {% if Faq.FaqCategory.id == FaqCategory.id %}
+                    <p class="question"><span class="question-mark">Q</span>{{ Faq.question }}</p>
+                    <p class="answer"><span class="answer-mark">A</span>{{ Faq.answer|raw }}</p>
+                    <hr class="divider" />
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+    <div class="no-question">
+        <p class="text">お探しのご質問は見つかりませんでした。</p>
+    </div>
+    {% endif %}
+
+    <div class="link-list">
+        <h2>よくあるご質問</h2>
+        <p class="text">KYOGOKUについてご質問がありましたら</p>
+        <p class="text">まずはこちらをご覧ください</p>
+        <div class="faq-categories">
+            {% for FaqCategory in FaqCategoriesForLink %}
+            <a href="/faq?faq_category_id={{ FaqCategory.id }}">
+                <div class="faq-category">
+                    <span>{{ php_str_replace(' ', '<br>', FaqCategory.name)|raw }}</span>
+                    {% if FaqCategory.icon_name %}
+                        <div class="icon-wrapper">
+                            <img src="{{ asset(FaqCategory.icon_name, 'save_image') }}" />
+                        </div>
+                    {% endif %}
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        <a href="/faq">
+            <div class="to-faq">よくあるご質問一覧へ</div>
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,86 @@
+sales_report.admin.type.monthly.error: 请选择汇总月份。
+sales_report.admin.type.term_start.error: 请选择正确的汇总期间。
+sales_report.admin.label.monthly_year: 年
+sales_report.admin.label.monthly_month: 月
+sales_report.admin.label.term_start: 期间汇总
+sales_report.admin.label.term_end: 期间汇总
+sales_report.admin.label.unit: 汇总单位
+sales_report.admin.label.byDay: 按日汇总
+sales_report.admin.label.byMonth: 按月汇总
+sales_report.admin.label.byWeekDay: 按星期汇总
+sales_report.admin.label.byHour: 按小时汇总
+
+sales_report.admin.title: 销售管理
+sales_report.admin.report_title: 年龄段汇总
+sales_report.admin.sub.title.age: 年龄段汇总
+sales_report.admin.sub.title.product: 商品汇总
+sales_report.admin.sub.title.term: 期间汇总
+
+sales_report.admin.csv.download: CSV下载
+sales_report.admin.age.field.001: 年龄段
+sales_report.admin.age.field.002: 购买数量(件)
+sales_report.admin.age.field.003: 购买总计
+sales_report.admin.age.field.004: 平均购买
+sales_report.admin.age.list.001: 未回答
+sales_report.admin.age.list.002: 代
+sales_report.admin.list.nodata: 在汇总期间没有数据。
+sales_report.admin.age.list.001: 年龄段
+sales_report.admin.age.list.001: 年龄段
+sales_report.admin.money: "购买总计: ¥"
+sales_report.admin.money.code: "¥"
+sales_report.admin.index.001: 月度汇总
+sales_report.admin.index.002: 月度汇总
+sales_report.admin.index.003: 期间汇总
+sales_report.admin.index.004: 期间汇总
+sales_report.admin.placholder: 年-月-日
+sales_report.admin.product.report_title: 商品汇总
+sales_report.admin.product.001: 商品汇总 前
+sales_report.admin.product.002: 件
+sales_report.admin.product.003: 商品编码
+sales_report.admin.product.004: 商品名称
+sales_report.admin.product.005: 购买数量(件)
+sales_report.admin.product.006: 数量(个)
+sales_report.admin.product.007: 金额
+sales_report.admin.term.report_title: 期间汇总
+sales_report.admin.term.001: 汇总单位
+sales_report.admin.list.label.001: 期间
+sales_report.admin.list.label.002: 购买数量
+sales_report.admin.list.label.003: 男性
+sales_report.admin.list.label.004: 女性
+sales_report.admin.list.label.005: 未知
+sales_report.admin.list.label.006: 男性 (会员)
+sales_report.admin.list.label.007: 男性 (非会员)
+sales_report.admin.list.label.008: 女性 (会员)
+sales_report.admin.list.label.009: 女性 (非会员)
+sales_report.admin.list.label.010: 购买总计
+sales_report.admin.list.label.011: 平均购买
+sales_report.admin.list.label.012: 购买总计
+
+sales_report.admin.productCsvHeader.001: 商品编码
+sales_report.admin.productCsvHeader.002: 商品名称
+sales_report.admin.productCsvHeader.003: 购买数量（件）
+sales_report.admin.productCsvHeader.004: 数量（个）
+sales_report.admin.productCsvHeader.005: 金额
+
+sales_report.admin.termCsvHeader.001: 期间
+sales_report.admin.termCsvHeader.002: 购买数量
+sales_report.admin.termCsvHeader.003: 男性
+sales_report.admin.termCsvHeader.004: 女性
+sales_report.admin.termCsvHeader.005: 未知
+sales_report.admin.termCsvHeader.006: 男性(会员)
+sales_report.admin.termCsvHeader.007: 男性(非会员)
+sales_report.admin.termCsvHeader.008: 女性(会员)
+sales_report.admin.termCsvHeader.009: 女性(非会员)
+sales_report.admin.termCsvHeader.010: 购买总计
+sales_report.admin.termCsvHeader.011: 平均购买
+
+sales_report.admin.ageCsvHeader.001: 年龄段
+sales_report.admin.ageCsvHeader.002: 购买数量(件)
+sales_report.admin.ageCsvHeader.003: 购买总计
+sales_report.admin.ageCsvHeader.004: 平均购买
+
+sales_report.admin.generation: 代
+sales_report.admin.nav.001: 销售汇总
+sales_report.admin.nav.002: 期间汇总
+sales_report.admin.nav.003: 商品汇总
+sales_report.admin.nav.004: 年龄段汇总

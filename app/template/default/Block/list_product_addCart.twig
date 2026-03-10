@@ -1,0 +1,78 @@
+{% block javascript %}
+<script>
+let isAddCartResignEventRun = false;
+function listProductResignEventAddCart() {
+    $('.add-cart').on('click', function(e) {
+        
+        
+        e.stopPropagation();
+        var $form = $(this).parents('li').find('form');
+
+        // 個数フォームのチェック
+        var $quantity = $form.parent().find('.quantity');
+        if ($quantity.val() < 1) {
+            $quantity[0].setCustomValidity('{{ '1以上で入力してください。'|trans }}');
+            setTimeout(function() {
+                loadingOverlay('hide');
+            }, 100);
+            return true;
+        } else {
+            $quantity[0].setCustomValidity('');
+        }
+        e.preventDefault();
+        if(isAddCartResignEventRun) return;
+        $.ajax({
+            url: $form.attr('action'),
+            type: $form.attr('method'),
+            data: $form.serialize(),
+            dataType: 'json',
+            beforeSend: function(xhr, settings) {
+                // Buttonを無効にする
+                $(e.target).prop('disabled', true);
+                $('.add-cart').css('pointer-events', "none");
+                isAddCartResignEventRun = true;
+            }
+        }).done(function(data) {
+            if (data.done == true) {
+                showAddToCartSuccessToast();
+                if (typeof fbq === 'function') {
+                    try {
+                        var productId = $form.find('input[name="product_id"]').val();
+                        fbq('track', 'AddToCart', {content_ids: [productId], content_type: 'product'});
+                    } catch (e) {}
+                }
+            }
+            else showAddToCartErrorToast(data.messages);
+            // レスポンス内のメッセージをalertで表示
+            $.each(data.messages, function() {
+                $('#ec-modal-header').html(this);
+            });
+
+            $('#ec-modal-checkbox').prop('checked', true);
+
+            // カートブロックを更新する
+            $.ajax({
+                url: '{{ url('block_cart') }}',
+                type: 'GET',
+                dataType: 'html'
+            }).done(function(html) {
+                $('.ec-headerRole__cart').html(html);
+                $('.ec-headerRole__cart').append(`<a href="{{ url('cart') }}"></a>`);
+                $('.ec-cartNavi').wrapAll('<a href="{{ url('cart') }}"></a>');
+                $('.ec-cartNaviIsset_listCart').wrapAll('<a href="{{ url('cart') }}"></a>');
+            });
+        }).fail(function(data) {
+            alert('{{ 'カートへの追加に失敗しました。'|trans }}');
+        }).always(function(data) {
+            // Buttonを有効にする
+            $(e.target).prop('disabled', false);
+            $('.add-cart').css('pointer-events', "all");
+            isAddCartResignEventRun = false;
+        });
+
+    
+    });
+}
+
+</script>
+{% endblock %}

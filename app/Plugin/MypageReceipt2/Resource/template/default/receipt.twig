@@ -1,0 +1,157 @@
+{% set config = repository('Plugin\\MypageReceipt2\\Entity\\MypageReceipt2Config').get %}
+
+{% extends '@MypageReceipt2/default/mypage_receipt2_frame.twig' %}
+
+{% set mypageno = 'index' %}
+
+{% set body_class = 'mypage_receipt2' %}
+
+{% block main %}
+{% if config.mypage_receipt2_enable == 1 and Order.OrderStatus == config.OrderStatus %}
+    <div class="receipt_title">
+		{{ 'ご注文番号'|trans }}<span>{{ Order.order_no }}</span> {{ '領収書'|trans }}
+	</div>
+	
+	<div id="print">
+		<a class="btn btn-primary" href="javascript:void(0)" onclick="window.print();return false;">{{ 'このページを印刷'|trans }}</a>
+	</div>
+
+	<div class="box">
+		<div class="left">
+			<div id="name">
+				{% if Order.company_name is not empty %}{{ Order.company_name }}{% else %}{{ Order.name01 }} {{ Order.name02 }}{% endif %}　様
+			</div>
+			<div id="detail_area">
+				<div id="create_date">{{ 'ご注文日時'|trans }}：{{ Order.create_date|date("Y年m月d日") }}</div>
+				<div id="order_id">{{ 'ご注文番号'|trans }}：{{ Order.id }}</div>
+				{% if BaseInfo.option_mypage_order_status_display %}
+					<div id="order_status">{{ 'ご注文状況'|trans }}：{{ Order.CustomerOrderStatus }}</div>
+				{% endif %}
+			</div>
+		</div>
+		<div class="right">
+			<div id="info_area">
+				<div class="info_title">{{ '【発行元】 発行日'|trans }}：{{ "now"|date("Y年m月d日") }}</div>
+				<div class="address">
+					〒{{ BaseInfo.postal_code }} {{ BaseInfo.pref }}{{ BaseInfo.addr01 }}{{ BaseInfo.addr02 }}
+				</div>
+				<div class="shop_name">
+					{{ BaseInfo.company_name }}
+				</div>
+				<div class="tel_fax">
+					TEL {{ BaseInfo.phone_number }}
+				</div>
+			</div>
+		</div>
+		<div class="clear"></div>
+	</div>
+
+    <div class="box">
+		<div class="title_bar">{{ 'ご購入商品情報'|trans }}</div>
+		<div class="clear"></div>
+		<div class="left">
+			{% for OrderDetail in Order.MergedProductOrderItems %}
+				<div class="product_area">
+                	<div class="item">
+                    	<div class="product_name">{{ OrderDetail.product_name }} {{ is_reduced_tax_rate(OrderDetail) ? '※'|trans }}</div>
+                        <div class="classcategory">
+							{% if OrderDetail.classcategory_name1 is not empty %}
+								{{ OrderDetail.classcategory_name1 }}
+							{% endif %}
+							{% if OrderDetail.classcategory_name2 is not empty %}
+								/ {{ OrderDetail.classcategory_name2 }}
+							{% endif %}
+                        </div>
+						<div class="price">
+							{{ OrderDetail.price_inc_tax|price }} × {{ OrderDetail.quantity|number_format }}
+                            &nbsp;&nbsp;小計：{{ OrderDetail.total_price|price }}
+						</div>
+					</div>
+				</div>
+			{% endfor %}
+			<div>
+				{{ '※ は軽減税率対象商品です。'|trans }}
+			</div>
+		</div>
+		<div class="right">
+			<div id="price_area">
+				<div id="subtotal">{{ '小計'|trans }}：{{ Order.subtotal|price }}</div>
+				<div id="charge">{{ '手数料'|trans }}：{{ Order.charge|price }}</div>
+				<div id="delivery_total">{{ '送料'|trans }}：{{ Order.delivery_fee_total|price }}</div>
+				{% if Order.taxable_discount < 0 %}
+                    <div id="discount">{{ '値引き'|trans }}：{{ Order.taxable_discount|price }}</div>
+				{% endif %}
+				<div class="total_amount"><strong>{{ '合計'|trans }}：{{ Order.taxable_total|price }}</strong>
+				{# <span class="small">{{ ' 税込'|trans }}</span> #}
+				</div>
+				
+				{% for rate, total in Order.taxable_total_by_tax_rate %}
+					<div class="tax_rate">[ {{ '税率 %rate% %対象'|trans({ '%rate%': rate }) }} {{ total|price }} ]</div>
+				{% endfor %}
+				
+				{% for item in Order.tax_free_discount_items %}
+					{% if loop.first %}
+						<div>-----------------------------------</div>
+					{% endif %}
+					<div class="tax_free_discount">{{ item.product_name }}：{{ item.total_price|price }}</div>
+				{% endfor %}
+				
+				{% if Order.taxable_total != Order.payment_total %}
+					<div class="total_amount"><strong>{{ 'お支払い合計'|trans }}：{{ Order.payment_total|price }}</strong>
+					{# <span class="small">{{ ' 税込'|trans }}</span> #}
+					</div>
+				{% endif %}
+				
+			</div>
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	<div class="box">
+		<div class="title_bar">{{ '配送情報'|trans }}</div>
+		{% for Shipping in Order.Shippings %}
+			<div class="shipping_area">
+				<div class="left">
+					<div class="otodoke">{{ 'お届け先'|trans }}{% if Order.multiple %}({{ loop.index }}){% endif %}</div>
+					<div class="address">
+						{{ Shipping.name01 }}&nbsp;{{ Shipping.name02 }}&nbsp;({{ Shipping.kana01 }}&nbsp;{{ Shipping.kana02 }})<br />
+						{{ '〒'|trans }}{{ Shipping.postal_code }} {{ Shipping.Pref }}{{ Shipping.addr01 }}{{ Shipping.addr02 }}<br />
+						{{ 'TEL'|trans }} {{ Shipping.phone_number }}
+					</div>
+					<div class="shipping_delivery">
+                        {{ '配送方法'|trans }} :{{ Shipping.shipping_delivery_name }}<br />
+                        {{ 'お届け日'|trans }} :{{ Shipping.shipping_delivery_date|date_day_with_weekday|default('未指定'|trans) }}<br />
+                        {{ 'お届け時間'|trans }} :{{ Shipping.shipping_delivery_time|default('未指定'|trans) }}<br />
+					</div>
+				</div>
+				<div class="right">
+					<div class="shipping_list">
+						{% for orderItem in Shipping.productOrderItems %}
+							<div class="shipping_product_name">{{ orderItem.productName }} {{ is_reduced_tax_rate(orderItem) ? '※'|trans }}</div>
+							<div class="shipping_product_category">
+								{% if orderItem.ProductClass is not null %}
+									{% if orderItem.ProductClass.ClassCategory1 is not null %}
+										{{ orderItem.productClass.classCategory1.className.name }}：{{ orderItem.productClass.classCategory1 }}
+									{% endif %}
+									{% if orderItem.ProductClass.ClassCategory2 %}
+										<br />{{ orderItem.productClass.classCategory2.className.name }}：{{ orderItem.productClass.classCategory2 }}
+									{% endif %}
+								{% endif %}
+							</div>
+							<div class="shipping_product_price">
+								{{ orderItem.price_inc_tax|price }} × {{ orderItem.quantity|number_format }}
+							</div>
+						{% endfor %}
+					</div>
+				</div>
+				<div class="clear"></div>
+			</div>
+		{% endfor %}
+	</div>
+	
+	<div class="box">
+		<div class="title_bar">{{ 'お支払情報'|trans }}</div>
+		<div id="payment_method">{{ 'お支払方法'|trans }}：{{ Order.PaymentMethod }}</div>
+	</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,230 @@
+{% if 'cbd' not in body_class %}
+
+	<div id="sinr">
+		{# <div class="side-cbd">
+			<a href="{{ url('user_data', {'route': 'cbd'}) }}"><img loading="lazy"  src="{{ asset('assets/img/cbd-banner.png','user_data') }}" alt="kyogoku cannabidio/cbd 純度99%の深層リラックス体験"></a>
+		</div> #}
+
+		{# <div class="side-search">
+			<div class="type">
+				<span><label><input type="radio" name="type" value="product" data-type="product" checked>商品検索</label></span>
+				<span><label><input type="radio" name="type" value="post" data-type="post">読み物検索</label></span>
+			</div>
+			<div class="input">
+				<div data-type="product">
+				    <form method="get" class="searchform" action="{{ path('product_list') }}" id="product-form">
+		                <input type="text" name="name">
+				    </form>
+					<button form="product-form" class="submit-btn" type="submit">SEARCH</button>
+				</div>
+				<div data-type="post">
+					<form role="search" method="get" id="post-form" class="searchform" action="https://kyogokupro.com/note/">
+						<input type="text" value="" name="s" id="s">
+					</form>
+					<button form="post-form" class="submit-btn" type="submit">SEARCH</button>
+				</div>
+			</div>
+		</div> #}
+
+		<div class="side-nav login">
+			<div class="box product">
+				<p class="h2"><a href="{{ url('mypage_login') }}">こんにちは、ログイン</a></p>
+				<div class="inr">
+					<ul>
+						{# <li><a href="{{ url('homepage') }}">トップページ</a></li> #}
+						{# <li><a href="{{ url('mypage') }}">アカウント</a></li> #}
+						{# <li><a href="{{ url('video_list')}}">ポイント獲得動画</a></li> #}
+						{# <li><a href="{{ url('mypage') }}">注文履歴</a></li> #}
+						{% if is_granted('ROLE_USER') %}
+							<li><a href="{{ url('logout') }}">ログアウト</a></li>
+						{% endif %}
+						{# <li><a href="#">再購入</a></li>
+						<li><a href="#">表示履歴</a></li> #}
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<div class="side-nav">
+			{# <div class="box product">
+				<p class="h2">すべてのアイテム</p>
+				<div class="inr">
+					<ul>
+						<li class="c38"><a href="{{ url('product_list') }}?category_id=38">お得なお届け便</a></li>
+						<li class="c20"><a href="{{ url('product_list') }}?category_id=20">タイムセール</a></li>
+		                <li class="l9"><a href="{{ url('product_list') }}?category_id=16">公式通販限定</a></li>
+		                
+						<li class="c43"><a href="{{ url('product_list') }}?category_id=43">スキンケア</a></li>
+		                <li class="l2"><a href="{{ url('product_list') }}?category_id=18">ヒト幹細胞ケア</a></li>
+		                
+						<li class="l3"><a href="{{ url('product_list') }}?category_id=7">カラーシャンプー</a></li>
+		                
+						<li class="l4"><a href="{{ url('product_list') }}?category_id=12">トリートメント(洗い流す)</a></li>
+		                <li class="l5"><a href="{{ url('product_list') }}?category_id=17">トリートメント(洗い流さない)</a></li>
+		                
+						<li class="c11"><a href="{{ url('product_list') }}?category_id=11">ヘアケア</a></li>
+
+						<li class="l6"><a href="{{ url('product_list') }}?category_id=8">カラー剤＆ブリーチ剤</a></li>
+		                <li class="l7"><a href="{{ url('product_list') }}?category_id=9">ヘアカラー関連</a></li>
+		                
+						<li class="c19"><a href="{{ url('product_list') }}?category_id=19">サロン関連</a></li>
+		                <li class="c21"><a href="{{ url('product_list') }}?category_id=21">コーム</a></li>
+		                
+						
+						<li class="l8"><a href="{{ url('product_list') }}?category_id=10">書籍</a></li>
+		                <li class="l10"><a href="{{ url('product_list') }}?category_id=15">教材</a></li>
+						
+						<li class="c39"><a href="{{ url('product_list') }}?category_id=39">ギフトカード</a></li>
+						
+					</ul>
+					<a class="category_btn" href="/category">カテゴリ 一覧</a>
+				</div>
+			</div> #}
+			{# <div class="box blog">
+				<p class="h2">読んで学ぶ</p>
+				<div class="inr">
+					<ul>
+						<li class="l1"><a href="{{ url('homepage') }}note">新着順に読む</a></li>
+						<li class="l7"><a href="{{ url('homepage') }}note/popular/">人気順に読む</a></li>
+						<li class="l2"><a href="{{ url('homepage') }}note/special/">特集一覧</a></li>
+						<li class="l3"><a href="{{ url('homepage') }}note/recipe/">カラーレシピ</a></li>
+						<li class="l4"><a href="{{ url('homepage') }}note/column/">ミニコラム</a></li>
+						<li class="l5"><a href="{{ url('homepage') }}note/backnumber">バックナンバー</a></li>
+						<li class="l6"><a href="{{ url('user_data', {'route': 'education'}) }}">無料技術動画</a></li>
+					</ul>
+				</div>
+			</div> #}
+			{# <div class="box info">
+				<p class="h2">ご案内</p>
+				<div class="inr">
+					<ul> #}
+						{# <li class="l2"><a href="{{ url('homepage') }}note/column/information/">お知らせ</a></li> #}
+						{# <li class="l3"><a href="{{ url('help_agreement') }}">ご利用ガイド</a></li>
+						<li class="l4"><a href="{{ url('contact') }}">お問い合わせ</a></li> #}
+						{# <li class="l5"><a href="{{ url('mypage_login') }}">会員ログイン</a></li> #}
+					{# </ul>
+				</div>
+			</div> #}
+		</div>
+
+		<div class="side-info">
+			{# <div class="box mail"><a href="https://kyogokupro.com/contact">buzzdrop.co.jp@gmail.com</a></div> #}
+			<div class="box tel"><a href="tel:080-6679-3625">080-6679-3625</a></div>
+			<div class="box deliv"><a href="{{ url('user_data', {'route': 'aboutetc'}) }}">
+				配送料金<br>5500（税込）<br>以上ご購入で送料無料<br><span>※一部地域除く</span>
+			</a></div>
+		</div>
+
+		{# <div class="side-banner">
+			<a class="story" href="{{ url('homepage') }}note/brand-story">ブランドストーリー<span>Brand Story</span></a>
+			<a class="message" href="{{ url('homepage') }}note/message" class="message">社長メッセージ<span>Message</span></a>
+			<a class="philosophy" href="{{ url('homepage') }}note/philosophy">企業理念<span>Philosophy</span></a>
+		</div> #}
+	</div>
+
+{# CBD関連ページ #}
+{% else %}
+
+<div id="sinr">
+
+	<div class="side-nav login">
+		<div class="box product">
+			<p class="h2"><a href="{{ url('mypage_login') }}">こんにちは、ログイン</a></p>
+			<div class="inr">
+				<ul>
+					{# <li><a href="{{ url('user_data', {'route': 'cbd'}) }}">トップページ</a></li> #}
+					<li><a href="{{ url('mypage') }}">アカウント</a></li>
+					<li><a href="{{ url('video_list')}}">ポイント獲得動画</a></li>
+					<li><a href="{{ url('mypage') }}">注文履歴</a></li>
+					{% if is_granted('ROLE_USER') %}
+						<li><a href="{{ url('logout') }}">ログアウト</a></li>
+					{% endif %}
+					{# <li><a href="#">再購入</a></li>
+					<li><a href="#">表示履歴</a></li> #}
+				</ul>
+			</div>
+		</div>
+	</div>
+
+	<div class="side-nav">
+		<div class="box product">
+			<p class="h2">すべてのアイテム</p>
+			<div class="inr">
+				<ul>
+					<li class="c22"><a href="{{ url('product_list') }}?category_id=22">CBD製品一覧</a></li>
+						<li class="c38"><a href="{{ url('product_list') }}?category_id=38">お得なお届け便</a></li>
+						<li class="c20"><a href="{{ url('product_list') }}?category_id=20">タイムセール</a></li>
+		                <li class="l9"><a href="{{ url('product_list') }}?category_id=16">公式通販限定</a></li>
+
+						<li class="c43"><a href="{{ url('product_list') }}?category_id=43">スキンケア</a></li>
+		                <li class="l2"><a href="{{ url('product_list') }}?category_id=18">ヒト幹細胞ケア</a></li>
+		                
+		                <li class="l3"><a href="{{ url('product_list') }}?category_id=7">カラーシャンプー</a></li>
+		                
+						<li class="l4"><a href="{{ url('product_list') }}?category_id=12">トリートメント(洗い流す)</a></li>
+		                <li class="l5"><a href="{{ url('product_list') }}?category_id=17">トリートメント(洗い流さない)</a></li>
+		                
+						<li class="l6"><a href="{{ url('product_list') }}?category_id=8">カラー剤＆ブリーチ剤</a></li>
+		                <li class="l7"><a href="{{ url('product_list') }}?category_id=9">ヘアカラー関連</a></li>
+		                
+						<li class="c19"><a href="{{ url('product_list') }}?category_id=19">サロン関連</a></li>
+		                <li class="c21"><a href="{{ url('product_list') }}?category_id=21">コーム</a></li>
+		                
+						
+						<li class="l8"><a href="{{ url('product_list') }}?category_id=10">書籍</a></li>
+		                <li class="l10"><a href="{{ url('product_list') }}?category_id=15">教材</a></li>
+						
+						<li class="c39"><a href="{{ url('product_list') }}?category_id=39">ギフトカード</a></li>
+						
+				</ul>
+					<a class="category_btn" href="/category">カテゴリ 一覧</a>
+			</div>
+		</div>
+		<div class="box blog">
+			<p class="h2">読んで学ぶ</p>
+			<div class="inr">
+					<ul>
+						<li class="l1"><a href="{{ url('homepage') }}note">新着順に読む</a></li>
+						<li class="l7"><a href="{{ url('homepage') }}note/popular/">人気順に読む</a></li>
+						<li class="l2"><a href="{{ url('homepage') }}note/special/">特集一覧</a></li>
+						<li class="l3"><a href="{{ url('homepage') }}note/recipe/">カラーレシピ</a></li>
+						<li class="l4"><a href="{{ url('homepage') }}note/column/">ミニコラム</a></li>
+						<li class="l5"><a href="{{ url('homepage') }}note/backnumber">バックナンバー</a></li>
+						<li class="l6"><a href="{{ url('user_data', {'route': 'education'}) }}">無料技術動画</a></li>
+					</ul>
+			</div>
+		</div>
+		<div class="box info">
+			<p class="h2">インフォメーション</p>
+			<div class="inr">
+				<ul>
+					<li class="l3"><a href="{{ url('user_data', {'route': 'aboutetc'}) }}">ご案内</a></li>
+					<li class="l3"><a href="{{ url('help_agreement') }}">ご利用ガイド</a></li>
+					<li class="l4"><a href="{{ url('contact') }}?from=cbd">お問い合わせ</a></li>
+					{# <li class="l5"><a href="{{ url('mypage_login') }}">会員ログイン</a></li> #}
+				</ul>
+			</div>
+		</div>
+	</div>
+
+	<div class="side-info">
+		<div class="box mail"><a href="https://kyogokupro.com/contact">buzzdrop.co.jp@gmail.com</a></div>
+		<div class="box tel"><a href="tel:080-6679-3625">080-6679-3625</a></div>
+		<div class="box deliv"><a href="{{ url('user_data', {'route': 'aboutetc'}) }}">
+			配送料金<br>5500（税込）<br>以上ご購入で送料無料<br><span>※一部地域除く</span>
+		</a></div>
+	</div>
+
+	<div class="side-line">
+		<a href="https://lin.ee/28rac17" target="_blank"><span>今すぐ友達追加</span>公式ラインだけのお得情報をゲット</a>
+	</div>
+
+		<div class="side-banner">
+			<a class="story" href="{{ url('homepage') }}note/brand-story">ブランドストーリー<span>Brand Story</span></a>
+			<a class="message" href="{{ url('homepage') }}note/message" class="message">社長メッセージ<span>Message</span></a>
+			<a class="philosophy" href="{{ url('homepage') }}note/philosophy">企業理念<span>Philosophy</span></a>
+		</div>
+</div>
+
+
+{% endif %}

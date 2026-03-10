@@ -1,0 +1,4 @@
+id,name,sort_no,discriminator_type
+"1","价格从低到低","0","productlistorderby"
+"2","新到货订单","2","productlistorderby"
+"3","按价格降序排列","1","productlistorderby"

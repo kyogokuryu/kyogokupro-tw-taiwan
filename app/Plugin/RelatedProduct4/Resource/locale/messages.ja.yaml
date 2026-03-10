@@ -1,0 +1,6 @@
+related_product.type.comment.placeholder: 請輸入說明文字（可使用HTML標籤）。
+related_product.modal.product_search.title: 商品搜尋
+related_product.modal.product_search.input_name: 商品名稱・ID・代碼
+related_product.select_product: 選擇商品
+related_product.remove_product: 刪除
+related_product.block.title: 關聯商品

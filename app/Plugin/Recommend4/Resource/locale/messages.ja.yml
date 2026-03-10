@@ -1,0 +1,29 @@
+plugin_recommend.admin.navi: 推荐管理
+plugin_recommend.admin.not_found: 没有推荐商品。
+plugin_recommend.admin.register.success: 推荐商品已注册。
+plugin_recommend.admin.update.success: 推荐商品已更新。
+plugin_recommend.admin.delete.success: 推荐商品已删除。
+plugin_recommend.admin.delete.confirm: 您确定要删除推荐信息吗？
+plugin_recommend.admin.type.product.not_found: 请添加商品。
+plugin_recommend.admin.type.comment.placeholder: 请输入说明文字（可使用HTML标签）。
+
+plugin_recommend.admin.index.title: 推荐商品管理
+plugin_recommend.admin.index.subtitle: 设定推荐商品内容
+plugin_recommend.admin.index.total_num: <strong>%number% 件</strong> 符合条件
+plugin_recommend.admin.index.col2: 商品图片
+plugin_recommend.admin.index.col3: 商品名称
+plugin_recommend.admin.index.col4: 说明文字
+plugin_recommend.admin.index.delete.confirm: 您确定要删除此推荐商品吗？
+plugin_recommend.admin.notice: 可以通过拖拽更改项目顺序。
+plugin_recommend.admin.new: 新注册推荐商品
+
+plugin_recommend.admin.edit.title: 推荐商品管理
+plugin_recommend.admin.edit.subtitle: 设定推荐商品内容
+plugin_recommend.admin.edit.header: 推荐商品信息
+plugin_recommend.admin.edit.product: 商品
+plugin_recommend.admin.edit.comment: 说明文字
+plugin_recommend.admin.edit.comment.help: （最多%number%字）
+plugin_recommend.admin.edit.existed: 此商品已作为推荐商品注册。
+plugin_recommend.admin.edit.search: 添加商品
+plugin_recommend.admin.edit.product_search.header: 商品搜索
+plugin_recommend.admin.edit.product_search.button: 搜索

@@ -1,0 +1,11 @@
+<script>
+    $(function() {
+		$('.ec-orderConfirm').before($('#add_shopping_cofirm_area'));
+    });
+</script>
+
+<div id="add_shopping_cofirm_area" style="display:none;">
+	<fieldset form="shopping-form">
+		<textarea style="display:none;" id="shopping_order_mail_ex" name="_shopping_order[mail_ex]" class="form-control" rows="6">{{ Order.mail_ex }}</textarea>
+	</fieldset>
+</div>

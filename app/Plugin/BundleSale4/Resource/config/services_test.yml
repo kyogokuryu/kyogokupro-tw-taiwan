@@ -1,0 +1,22 @@
+services:
+  Plugin\BundleSale4\Service\PurchaseFlow\Processor\BundleItemSaleLimitMultipleValidator:
+    autowire: true
+    public: true
+    arguments:
+      - '@Eccube\Repository\ProductClassRepository'
+  Plugin\BundleSale4\Service\PurchaseFlow\Processor\BundleItemStockMultipleValidator:
+    autowire: true
+    public: true
+    arguments:
+      - '@Eccube\Repository\ProductClassRepository'
+  Plugin\BundleSale4\Service\PurchaseFlow\Processor\BundleItemStockValidator:
+    autowire: true
+    public: true
+  Eccube\EventListener\TransactionListener:
+    arguments:
+      - '@doctrine.orm.default_entity_manager'
+    tags:
+      - {name: 'kernel.event_subscriber', event: onKernelRequest, priority: 0}
+      - {name: 'kernel.event_subscriber', event: onKernelException, priority: 0}
+      - {name: 'kernel.event_subscriber', event: onKernelTerminate, priority: 0}
+

@@ -1,0 +1,240 @@
+{% set Config = repository('Plugin\\[code]\\Entity\\[code]Config').get %}
+
+{% block stylesheet %}
+    <style>
+    /* 
+        uic-topbar
+    */
+    .uic-topbar {
+        display: none;
+        position: relative;
+        padding: 8px 0;
+    }
+    /* description */
+    .uic-topbar__description {
+        margin: 0;
+        font-size: 14px;
+        max-width: 400px;
+    }
+    /* nav */
+    .uic-topbar__nav {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 0;
+        margin-left: auto;
+    }
+    .uic-topbar__nav li {
+        display: inline-block;
+        padding: 0 8px;
+    }
+    .uic-topbar__nav > li > a {
+        font-size: 14px;
+        color: black;
+    }
+    @media only screen and (min-width: 768px) {
+        .uic-topbar {
+            display: block;
+        }
+        .uic-topbar > .ec-role {
+            display: flex;
+            align-items: center;
+        }
+    }
+    /* 
+        uic-headbar
+    */
+    .uic-headbar {
+        position: relative;
+        padding: 20px 0;
+    }
+    .ec-role {
+        margin: 0 auto;
+        padding-left: 20px;
+        padding-right: 20px;
+        box-sizing: border-box;
+        font-size: 16px;
+        line-height: 1.4;
+        color: #525263;
+        -webkit-text-size-adjust: 100%;
+        width: 100%;
+        max-width: 1130px;
+    }
+    /* logo */
+    .uic-headbar__logo > h1 {
+        text-align: center;
+        width: 250px;
+        margin: 0 auto;
+    }
+    .uic-headbar__logo > h1,
+    .uic-headbar__logo > h1 > a {
+        font-size: 32px;
+        font-weight: bold;
+        word-break: break-all;
+        color: black;
+    }
+    .uic-headbar__logo > h1 > a:hover {
+        text-decoration: none;
+    }
+    .uic-headbar__logo > h1 img {
+        max-width: 100%;
+        height: auto;
+    }
+    /* right */
+    .uic-header__right {
+        display: flex;
+        align-items: center;
+        margin-left: auto;
+    }
+    /* nav */
+    .uic-headbar__nav {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .uic-headbar__nav > li {
+        display: inline-block;
+        font-size: 14px;
+        color: black;
+    }
+    .uic-headbar__nav > li > a {
+        font-size: 14px;
+        color: black;
+    }
+    /* menu */
+    .uic-headbar__menu {
+        display: none;
+    }
+    .uic-headbar__menu > .uic-headbar__nav > li {
+        padding: 0 6px;
+    }
+    .uic-headbar__menu i {
+        margin-right: 4px;
+    }
+    /* cart */
+    .uic-headbar__cart {
+        z-index: 5;
+    }
+    .uic-headbar__cart .ec-cartNavi {
+        position: absolute;
+        top: 50%;
+        right: 15px;
+        transform: translateY(-50%);
+        z-index: 1;
+    }
+    /* search */
+    .uic-headbar__search {
+        display: none;
+        margin-left: auto;
+    }
+    .uic-headbar__search form {
+        margin: 0;
+    }
+    @media only screen and (min-width: 768px) {
+        .uic-headbar > .ec-role {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .uic-headbar__logo > h1 {
+            text-align: left;
+            width: auto;
+            margin: 0;
+            max-width: 400px;
+        }
+        .uic-headbar__search {
+            display: block;
+        }
+        .uic-headbar__menu {
+            display: block;
+        }
+        .uic-headbar__cart .ec-cartNavi {
+            position: static;
+            top: auto;
+            right: auto;
+            transform: none;
+            z-index: 1;
+        }
+    }
+    </style>
+{% endblock %}
+
+<!-- [code] -->
+<script>
+$(function () {
+    $('.ec-cartNavi').click(function() {
+        if ($('.ec-cartNaviNull').length ) {
+            $('.ec-cartNaviNull').toggleClass('is-active');
+        } else {
+            $('.ec-cartNaviIsset').toggleClass('is-active');
+        }
+    });
+    $('.ec-cartNavi--cancel').click(function() {
+        if ($('.ec-cartNaviNull').length ) {
+            $('.ec-cartNaviNull').toggleClass('is-active');
+        } else {
+            $('.ec-cartNaviIsset').toggleClass('is-active');
+        }
+    });
+});
+</script>
+{% if Config.display_topbar == 0 %}
+<div class="uic-topbar">
+    <div class="ec-role">
+        <p class="uic-topbar__description">{{ BaseInfo.message }}</p>
+        <ul class="uic-topbar__nav">
+            <li class="nav-link">
+                <a href="{{ url('help_about') }}">{{ '当サイトについて'|trans }}</a>
+            </li>
+            <li class="nav-link">
+                <a href="{{ url('help_tradelaw') }}">{{ 'お支払い・配送方法'|trans }}</a>
+            </li>
+            <li class="nav-link">
+                <a href="{{ url('contact') }}">{{ 'お問い合わせ'|trans }}</a>
+            </li>
+        </ul>
+    </div>
+</div>
+{% endif %}
+<div class="uic-headbar">
+    <div class="ec-headerRole__navSP">
+        {{ include('Block/nav_sp.twig') }}
+    </div>
+    <div class="ec-role">
+        <div class="uic-headbar__logo">
+            <h1><a href="{{ url('homepage') }}">{{ BaseInfo.shop_name }}</a></h1>
+        </div>
+        <div class="uic-headbar__search">
+            {{ render(path('block_search_product')) }}
+        </div>
+        <div class="uic-header__right">
+            <div class="uic-headbar__menu">
+                <ul class="uic-headbar__nav">
+                    {% if is_granted('ROLE_USER') %}
+                        <li>
+                            <a href="{{ url('mypage') }}"><i class="fas fa-user fa-fw"></i></a>
+                        </li>
+                        {% if BaseInfo.option_favorite_product %}
+                        <li>
+                            <a href="{{ url('mypage_favorite') }}"><i class="fas fa-heart fa-fw"></i></a>
+                        </li>
+                        {% endif %}
+                        <li>
+                            <a href="{{ url('logout') }}"><i class="fas fa-lock fa-fw"></i></a>
+                        </li>
+                    {% else %}
+                        <li>
+                            <a href="{{ url('entry') }}"><i class="fas fa-user fa-fw"></i></a>
+                        </li>
+                        <li>
+                            <a href="{{ url('mypage_login') }}"><i class="fas fa-lock fa-fw"></i></a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="uic-headbar__cart">
+                {{ include('Block/cart.twig') }}
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /[code] -->

@@ -1,0 +1,135 @@
+<div id="kokokara_select_block" class="card rounded border-0 mb-4">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-8">
+                <div id="kokokara_select_area_title" class="d-inline-block" data-tooltip="true" data-placement="top"
+                     title="{{ 'kokokara_select.admin.product_area_title_tooltip'|trans }}">
+                    <span class="card-title">{{ 'kokokara_select.admin.product_area_title'|trans }}</span>
+                    <i class="fa fa-question-circle fa-lg ml-1"></i>
+                </div>
+            </div>
+            <div class="col-4 text-right">
+                <a data-toggle="collapse" href="#kokokaraSelectArea" aria-expanded="false"
+                   aria-controls="pointExArea">
+                    <i class="fa fa-angle-up fa-lg"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="collapse show ec-cardCollapse" id="kokokaraSelectArea">
+        <div class="card-body" id="kokokara_select_area_body">
+
+            {% set KsProduct = Product.ksProduct %}
+            {% if KsProduct is not null %}
+                <div class="row mb-6">
+                    <div class="col-3">{{ 'kokokara_select.admin.setting.ks_product.sum_quantity'|trans }}</div>
+                    <div class="col">
+                        {{ KsProduct.quantity }}
+                    </div>
+                </div>
+                <div class="row mb-6">
+                    <div class="col-3">{{ 'kokokara_select.admin.setting.ks_product.price_view'|trans }}</div>
+                    <div class="col">
+                        {% if KsProduct.priceView %}有効{% else %}無効{% endif %}
+                    </div>
+                </div>
+                <div class="row mb-6">
+                    <div class="col-3">{{ 'kokokara_select.admin.setting.ks_product.direct_select'|trans }}</div>
+                    <div class="col">
+                        {% if KsProduct.directSelect %}有効{% else %}無効{% endif %}
+                    </div>
+                </div>
+                {% for KsSelectItemGroup in KsProduct.ksSelectItemGroups %}
+                    <div class="row mb-2">
+                        <div class="col-3">
+                            {% if KsSelectItemGroup.groupName is not null and KsSelectItemGroup.groupName is not empty %}
+                                {{ KsSelectItemGroup.groupName }}
+                            {% else %}
+                                {{ 'kokokara_select.admin.setting.ks_select_item_group.title'|trans }}{{ loop.index }}
+                            {% endif %}
+                        </div>
+                        <div class="col">
+                            {{ 'kokokara_select.admin.setting.ks_select_item_group.quantity'|trans }}：{{ KsSelectItemGroup.quantity }}
+                        </div>
+                    </div>
+                    {% if KsSelectItemGroup.ksSelectItems|length > 0 %}
+
+                        <table class="table table-striped">
+                            <thead class="table-active">
+                                <th class="pl-3 pt-2 pb-2">{{ 'admin.product.image__short'|trans }}</th>
+                                <th class="pt-2 pb-2 w-50">{{ 'admin.product.name'|trans }}</th>
+                                {% if KsProduct.directSelect %}
+                                    <th class="pt-2 pb-2">{{ 'kokokara_select.admin.setting.ks_select_item.quantity'|trans }}</th>
+                                {% endif %}
+                                <th class="pt-2 pb-2">
+                                    {{ 'kokokara_select.admin.setting.ks_select_item.list.stock'|trans }}</br>
+                                    ({{ 'admin.product.stock'|trans }})
+                                </th>
+                                <th class="pt-2 pb-2">{{ 'admin.product.display_status__short'|trans }}</th>
+                                <th class="pr-3 pt-2 pb-2">{{ 'admin.product.price'|trans }}</th>
+                            </thead>
+                            <tbody>
+                            {% for KsSelectItem in KsSelectItemGroup.ksSelectItems %}
+                                {% set selectProductClass = KsSelectItem.ProductClass %}
+                                {% set selectProduct = selectProductClass.Product %}
+                                <tr>
+                                    <td>
+                                        <img style="max-width: 50px" src="{{ asset(selectProduct.mainFileName|no_image_product, 'save_image') }}">
+                                    </td>
+                                    <td>
+                                        {{ get_kokokara_select_product_name(selectProductClass) }}
+                                    </td>
+                                    {% if KsProduct.directSelect %}
+                                        <td>
+                                            {{ KsSelectItem.quantity }}
+                                        </td>
+                                    {% endif %}
+                                    <td>
+                                        {% if KsSelectItem.stockUnlimited %}
+                                            {{ 'kokokara_select.admin.setting.ks_select_item.list.stock_unlimited'|trans }}
+                                        {% else %}
+                                            {{ KsSelectItem.stock }}
+                                        {% endif %}
+                                        <br>
+                                        {% if KsSelectItem.ProductClass.stock_unlimited %}
+                                            (無制限)
+                                        {% else %}
+                                            ({{ KsSelectItem.ProductClass.stock }})
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ selectProduct.Status.name }}
+                                    </td>
+                                    <td>
+                                        {{ selectProductClass.price02|price }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+
+            <div class="d-block text-center">
+                {% if KsSelectItemSetting %}
+                    {{ 'kokokara_select.admin.setting.warning.setting_product_class'|trans }}
+                {% else %}
+                    {% if KsSelectItemBuyIng %}
+                        {{ 'kokokara_select.admin.setting.warning.buy_ing_product'|trans }}
+                    {% else %}
+                        {% if id is not null %}
+                            <a href="{{ path('admin_product_kokokara_select_setting', {'id' : id}) }}"
+                               class="btn btn-ec-regular"
+                               data-action="confirm"
+                               title="{{ 'admin.common.move_to_confirm_message'|trans({
+                                   '%name%' : 'kokokara_select.admin.product_area_title'|trans }) }}">{{ 'kokokara_select.admin.move_to_kokokara_select'|trans }}</a>
+                        {% else %}
+                            <button type="button" class="btn btn-ec-regular" disabled="disabled">{{ 'kokokara_select.admin.move_to_kokokara_select'|trans }}</button>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

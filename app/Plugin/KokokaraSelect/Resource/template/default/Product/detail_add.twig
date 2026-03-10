@@ -1,0 +1,8 @@
+<div id="kokokara_select_items" class="ec-productRole__kokokara_select">
+    <div>
+        {{ get_kokokara_select_direct_select_name() }}{{ 'kokokara_select.admin.pdf.direct_select.suffix'|trans }}：
+        {% for ksDirectSelectItem in get_kokokara_select_direct_select_item_view(Product) %}
+            <div class="kokokara_select_detail">{{ ksDirectSelectItem.viewProductName }} × {{ ksDirectSelectItem.quantity }}</div>
+        {% endfor %}
+    </div>
+</div>

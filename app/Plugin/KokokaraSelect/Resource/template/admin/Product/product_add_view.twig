@@ -1,0 +1,18 @@
+{% extends '@admin/Form/bootstrap_4_layout.html.twig' %}
+{% block _admin_product_ksProductOption_row %}
+<div class="row">
+    <div class="col-3">
+        <div class="d-inline-block" data-tooltip="true" data-placement="top"
+             title="{{ 'kokokara_select.admin.product.select_only_tooltip'|trans }}">
+            <span>{{ form.selectOnly.vars.label|trans }}</span>
+            <i class="fa fa-question-circle fa-lg ml-1"></i>
+        </div>
+    </div>
+    <div class="col mb-2">
+        <div>
+            {{ form_widget(form.selectOnly) }}
+            {{ form_errors(form.selectOnly) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

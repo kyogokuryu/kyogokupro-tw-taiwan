@@ -1,0 +1,22 @@
+{% set kokokaraSelectIndex = 0 %}
+{% for shippingForm in form.shippings %}
+    {% set shippingNo = loop.index0 %}
+    {% for orderItemForm in shippingForm.OrderItems %}
+        {% set ksOrderItemExForm = orderItemForm.KsOrderItemEx %}
+        {% set OrderItem = orderItemForm.vars.data %}
+        {% set KsOrderItemEx = OrderItem.KsOrderItemEx %}
+        {% if KsOrderItemEx is not null %}
+            <div class="kokokara_select_item_ex" id="kokokara_select_{{ kokokaraSelectIndex }}"
+                 data-quantity="{{ orderItemForm.quantity.vars.id }}"
+                 data-delmodal="delete_{{ orderItemForm.vars.id }}">
+
+                {{ form_errors(ksOrderItemExForm) }}
+                {{ form_widget(ksOrderItemExForm.parentProductClassId) }}
+                {{ form_widget(ksOrderItemExForm.groupId) }}
+                {{ form_widget(ksOrderItemExForm.ksSelectItemGroupId) }}
+                {{ form_widget(ksOrderItemExForm.ksSelectItemId) }}
+            </div>
+        {% endif %}
+        {% set kokokaraSelectIndex = kokokaraSelectIndex +1 %}
+    {% endfor %}
+{% endfor %}

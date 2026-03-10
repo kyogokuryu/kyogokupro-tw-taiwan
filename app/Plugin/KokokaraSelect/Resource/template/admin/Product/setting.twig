@@ -1,0 +1,458 @@
+{% extends '@admin/default_frame.twig' %}
+
+{% form_theme form '@admin/Form/bootstrap_4_horizontal_layout.html.twig' %}
+
+{% set menus = ['product', 'product_edit'] %}
+
+{% block title %}{{ 'kokokara_select.admin.setting.menu_title'|trans }}{% endblock %}
+{% block sub_title %}{{ 'admin.product.product_management'|trans }}{% endblock %}
+
+{% block stylesheet %}
+    <style>
+        .list-group-item:hover {
+            z-index: inherit;
+        }
+    </style>
+{% endblock stylesheet %}
+
+{% block javascript %}
+    <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.core.min.js', 'admin') }}"></script>
+    <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.widget.min.js', 'admin') }}"></script>
+    <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.mouse.min.js', 'admin') }}"></script>
+    <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.sortable.min.js', 'admin') }}"></script>
+    <script>
+
+        $(function () {
+
+            // グループ追加
+            $('#group_add_btn').on('click', function () {
+
+                var groupPrototype = $(this).data('prototype');
+
+                var nowRowIndex = $('.ks_select_item_group_area').length;
+
+                var newForm = groupPrototype.replace(/__name__/g, nowRowIndex);
+
+                if (nowRowIndex == 0) {
+                    $('#ks_select_item_group_head').after(newForm);
+                } else {
+                    $('.ks_select_item_group_area:last').after(newForm);
+                }
+
+                // 固定セット商品調整
+                if ($('#ks_product_directSelect').prop('checked')) {
+                    modeChange(true);
+                } else {
+                    modeChange(false);
+                }
+
+                // sortNo設定
+                $('#ks_product_KsSelectItemGroups_' + nowRowIndex + '_sortNo').val((nowRowIndex + 1));
+
+                $('.sortable-container').sortable({
+                    items: '> .sortable-item',
+                    cursor: 'move',
+                    update: function (e, ui) {
+                        moveSortNo(ui.item);
+                    }
+                });
+            });
+
+            $(document).on('click', '.kokokaraSelectItemAdd', function () {
+                // group_key設定
+                $('#addProduct').data('group_key', $(this).data('group_key'));
+            });
+
+            // 商品検索
+            $('#searchProductModalButton').on('click', function () {
+                var list = $('#searchProductModalList');
+                list.children().remove();
+
+                var editId = $(this).data('edit_id');
+
+                $.ajax({
+                    url: '{{ url('admin_kokokara_select_search_product') }}',
+                    type: 'POST',
+                    dataType: 'html',
+                    data: {
+                        'id': $('#admin_search_product_id').val(),
+                        'category_id': $('#admin_search_product_category_id').val(),
+                        'edit_id': editId
+                    }
+                }).done(function (data) {
+                    $('#searchProductModalList').html(data);
+                }).fail(function (data) {
+                    alert('search product failed.');
+                });
+            });
+
+            // グループDelete
+            $(document).on('click', 'a.action-group-delete', function (e) {
+                e.preventDefault();
+                var current = $(this).parents(".ks_select_item_group_area");
+                current.remove();
+            });
+
+            // 商品Delete
+            $(document).on('click', 'a.action-delete', function (e) {
+
+                // 再計算
+                var target = $(this).parents('li').find('.ks_select_item_quantity');
+                updateGroupSumQuantity(target, target.val());
+
+                e.preventDefault();
+                var current = $(this).parents("li");
+                current.remove();
+            });
+
+            // 並び替え後にsort noを更新
+            var updateSortNo = function ($itemObj) {
+                var i = 1;
+                var $listGroup = $itemObj.parents('ul');
+                $listGroup.find('.ks_select_item_sort_no').each(function () {
+                    $(this).val(i);
+                    i++;
+                });
+
+                $(".modal-backdrop").remove();
+            };
+
+            // 最初と最後の↑↓を再描画
+            var redrawDisableAllows = function ($itemObj) {
+                var $listGroup = $itemObj.parents('ul');
+                var items = $listGroup.find('.sortable-item');
+                items.find('a').removeClass('disabled');
+                items.first().find('a.action-up').addClass('disabled');
+                items.last().find('a.action-down').addClass('disabled');
+            };
+
+            // オーバレイ後, 表示順の更新を行う
+            var moveSortNo = function ($itemObj) {
+                $('body').append($('<div class="modal-backdrop show"></div>'));
+                updateSortNo($itemObj);
+                redrawDisableAllows($itemObj);
+            };
+
+            // Drag and Drop
+            $('.sortable-container').sortable({
+                items: '> .sortable-item',
+                cursor: 'move',
+                update: function (e, ui) {
+                    moveSortNo(ui.item);
+                }
+            });
+
+            // Up
+            $(document).on('click', 'a.action-up', function (e) {
+                e.preventDefault();
+                var current = $(this).parents("li");
+                if (current.prev().hasClass('sortable-item')) {
+                    current.prev().before(current);
+                    moveSortNo($(this).parents('li'));
+                }
+            });
+
+            // Down
+            $(document).on('click', 'a.action-down', function (e) {
+                e.preventDefault();
+                var current = $(this).parents("li");
+                if (current.next().hasClass('sortable-item')) {
+                    current.next().after(current);
+                    moveSortNo($(this).parents('li'));
+                }
+            });
+        });
+
+        // 検索画面表示時制御
+        $('#addProduct').on('show.bs.modal', function () {
+            $('#save_btn').prop('disabled', true);
+        });
+
+        $('#addProduct').on('hide.bs.modal', function () {
+            $('#save_btn').prop('disabled', false);
+        });
+
+        // 無制限チェックボックス初期表示
+        $('input[id$=_stockUnlimited]').each(function () {
+            var check = $(this).prop('checked');
+            var groupKey = $(this).data('group_key');
+            var keyName = $(this).data('key_name');
+
+            if (check) {
+                $('#ks_product_KsSelectItemGroups_' + groupKey + '_KsSelectItems_' + keyName + '_stock').prop('disabled', true);
+            } else {
+                $('#ks_product_KsSelectItemGroups_' + groupKey + '_KsSelectItems_' + keyName + '_stock').prop('disabled', false);
+            }
+        });
+
+        // 全在庫数チェックボックス
+        $(document).on('click', 'input[id$=_stockUnlimited]', function () {
+            var check = $(this).prop('checked');
+            var groupKey = $(this).data('group_key');
+            var keyName = $(this).data('key_name');
+
+            if (check) {
+                $('#ks_product_KsSelectItemGroups_' + groupKey + '_KsSelectItems_' + keyName + '_stock').prop('disabled', true);
+            } else {
+                $('#ks_product_KsSelectItemGroups_' + groupKey + '_KsSelectItems_' + keyName + '_stock').prop('disabled', false);
+            }
+        });
+
+        // 選択数量計
+        $(document).on('change', '.ks_select_item_group_quantity', function () {
+
+            updateKsSumQuantity();
+        });
+
+        function updateKsSumQuantity() {
+
+            var selectQuantity = 0;
+            var pattern = /^\d*$/;
+            $('.ks_select_item_group_quantity').each(function () {
+
+                if (pattern.test($(this).val())) {
+                    var quantity = parseInt($(this).val());
+                    selectQuantity += quantity;
+                }
+            });
+
+            $('#ks_sum_quantity').text(selectQuantity + '点');
+        }
+
+        $(document).on('change', '.ks_select_item_quantity', function() {
+
+            updateGroupSumQuantity($(this));
+
+            updateKsSumQuantity();
+        });
+
+        function updateGroupSumQuantity(target, minus = 0) {
+
+            var selectQuantity = 0;
+            var pattern = /^\d*$/;
+
+            target.parents('ul').find('.ks_select_item_quantity').each(function () {
+                if (pattern.test($(this).val())) {
+                    var quantity = parseInt($(this).val());
+                    selectQuantity += quantity;
+                }
+            });
+
+            selectQuantity -= minus;console.log(minus);
+
+            if ($('#ks_product_directSelect').prop('checked')) {
+                target.parents('.ks-group-header')
+                    .find('.ks_select_item_group_quantity')
+                    .val(selectQuantity);
+            }
+        }
+
+        // 投入数量初期制御
+        if ($('#ks_product_directSelect').prop('checked')) {
+            modeChange(true);
+        } else {
+            modeChange(false);
+        }
+
+        // 商品の固定選択
+        $('#ks_product_directSelect').on('change', function (e) {
+            modeChange($(this).prop('checked'));
+        });
+
+        function modeChange(checked) {
+            if (checked) {
+                // 投入数量有効化
+                $('.ks_select_item_quantity_area').removeClass('d-none');
+                // 選択数量無効化
+                $('.ks_select_item_group_quantity').prop('disabled', true);
+            } else {
+                // 投入数量無効化
+                $('.ks_select_item_quantity_area').addClass('d-none');
+                // 選択数量有効化
+                $('.ks_select_item_group_quantity').prop('disabled', false);
+            }
+        }
+
+    </script>
+{% endblock %}
+
+{% block main %}
+    <form role="form" method="post" action="{{ url('admin_product_kokokara_select_setting', { id: editId }) }}">
+        {{ form_widget(form._token) }}
+        {{ form_widget(form.quantity) }}
+        <div class="c-contentsArea__cols">
+            <div class="c-contentsArea__primaryCol">
+                <div class="c-primaryCol">
+
+                    {# 選択商品設定 #}
+                    <div class="card rounded border-0 mb-4">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col-8">
+                                    <span>{{ 'kokokara_select.admin.setting.title'|trans }}</span>
+                                </div>
+                                <div class="col-4 text-right">
+                                    {# 選択商品の初期化ボタン #}
+                                    <button class="btn btn-ec-delete" type="button"
+                                            data-toggle="modal"
+                                            data-target="#initializationConfirm">{{ 'kokokara_select.admin.setting.clear'|trans }}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-row mb-2">
+                                <div class="col-2">
+                                    <div class="d-inline-block">
+                                        <span>{{ 'kokokara_select.admin.setting.ks_product.sum_quantity'|trans }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-3 align-items-center">
+                                    <span id="ks_sum_quantity">{{ form.quantity.vars.value|default(0) }}点</span>
+                                </div>
+                            </div>
+                            <div class="form-row mb-2">
+                                <div class="col-2">
+                                    <div class="d-inline-block">
+                                        <span>{{ form.description.vars.label|trans }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-10 align-items-center">
+                                    {{ form_widget(form.description) }}
+                                    {{ form_errors(form.description) }}
+                                </div>
+                            </div>
+                            <div class="form-row mb-2">
+                                <div class="col-2">
+                                    <div class="d-inline-block">
+                                        <span>{{ form.priceView.vars.label|trans }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-10 align-items-center">
+                                    {{ form_widget(form.priceView) }}
+                                    {{ form_errors(form.priceView) }}
+                                </div>
+                            </div>
+                            <div class="form-row mb-2">
+                                <div class="col-2">
+                                    <div class="d-inline-block" data-tooltip="true" data-placement="top"
+                                         title="{{ 'kokokara_select.admin.setting.ks_product.direct_select.help'|trans }}">
+                                        <span>{{ form.directSelect.vars.label|trans }}</span>
+                                        <i class="fa fa-question-circle fa-lg ml-1"></i>
+                                    </div>
+                                </div>
+                                <div class="col-10 align-items-center">
+                                    {{ form_widget(form.directSelect) }}
+                                    {{ form_errors(form.directSelect) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {# グループ追加ボタン #}
+                    <div id="ks_select_item_group_head" class="card rounded border-0 mb-4 product_area">
+                        <div class="card rounded border-0">
+                            <div class="card-header">
+                                <div class="form-row">
+                                    <div class="col-2 align-items-center">
+                                        <button id="group_add_btn" class="btn btn-ec-regular" type="button"
+                                                data-prototype="{% filter escape %}{{ include('@KokokaraSelect/admin/Product/ks_select_item_group_prototype.twig', {'ksSelectItemGroupForm': form.KsSelectItemGroups.vars.prototype, 'index': '__name__'}) }}{% endfilter %}">
+                                            {{ 'kokokara_select.admin.setting.ks_select_item_group.add'|trans }}
+                                        </button>
+                                    </div>
+                                    <div class="col-auto align-items-center">
+                                        <div>{{ 'kokokara_select.admin.setting.ks_select_item_group.add_message'|trans }}</div>
+                                        {{ form_errors(form.KsSelectItemGroups) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {# 選択商品グループ #}
+                    {% for ksSelectItemGroupForm in form.KsSelectItemGroups %}
+                        {{ include('@KokokaraSelect/admin/Product/ks_select_item_group_prototype.twig', {'ksSelectItemGroupForm': ksSelectItemGroupForm, 'index': loop.index0}) }}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        {# 下部メニュー #}
+        <div class="c-conversionArea">
+            <div class="c-conversionArea__container">
+                <div class="row justify-content-between align-items-center">
+                    <div class="col-6">
+                        <div class="c-conversionArea__leftBlockItem">
+                            <a class="c-baseLink" href="{{ url('admin_product_product_edit', {'id': editId}) }}">
+                                <i class="fa fa-backward" aria-hidden="true"></i>
+                                <span>{{ 'admin.product.product_registration'|trans }}</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div id="ex-conversion-action" class="row align-items-center justify-content-end">
+                            <div class="col-auto">
+                                <button id="save_btn" class="btn btn-ec-conversion px-5"
+                                        type="submit">{{ 'admin.common.save'|trans }}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    {# 商品検索画面用のモーダル #}
+    <div class="modal fade" id="addProduct" tabindex="-1" role="dialog" aria-labelledby="addProduct" aria-hidden="true"
+         data-group_key="">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ 'admin.order.add_product_item'|trans }}</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    {{ form_widget(searchProductModalForm.id, { attr : {'class': 'mb-3', 'placeholder': 'admin.product.multi_search_label' }}) }}
+                    {{ form_widget(searchProductModalForm.category_id) }}
+                    <button type="button" id="searchProductModalButton" class="btn btn-ec-conversion px-5 mb-4 mt-2"
+                            data-edit_id="{{ editId }}">{{ 'admin.common.search'|trans }}</button>
+                    <div id="searchProductModalList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# 選択商品の初期化モーダル #}
+    <div class="modal fade" id="initializationConfirm" tabindex="-1"
+         role="dialog"
+         aria-labelledby="deleteConfirm" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title font-weight-bold">{{ 'kokokara_select.admin.setting.clear.title'|trans }}</h5>
+                    <button class="close" type="button" data-dismiss="modal"
+                            aria-label="Close"><span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-left">
+                        {{ 'kokokara_select.admin.setting.clear.confirm_msg'|trans }}</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-ec-sub" type="button"
+                            data-dismiss="modal">
+                        {{ 'admin.common.cancel'|trans }}
+                    </button>
+                    <form method="post"
+                          action="{{ url('admin_kokokara_select_clear', { id: editId }) }}">
+                        {{ form_widget(clearForm._token) }}
+                        <button class="btn btn-ec-delete" type="submit">
+                            {{ 'kokokara_select.admin.setting.clear'|trans }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

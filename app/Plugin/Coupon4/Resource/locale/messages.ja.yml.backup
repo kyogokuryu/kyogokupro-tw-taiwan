@@ -1,0 +1,89 @@
+# Coupon index page
+plugin_coupon.admin.index.title: 优惠券管理
+plugin_coupon.admin.index.subtitle: 优惠券内容设置
+plugin_coupon.admin.index.number: <strong>%number% 件</strong> 符合条件
+plugin_coupon.admin.index.col01: 优惠券ID
+plugin_coupon.admin.index.col02: 优惠券代码
+plugin_coupon.admin.index.col03: 优惠券名称
+plugin_coupon.admin.index.col04: 种类
+plugin_coupon.admin.index.col05: 仅限会员
+plugin_coupon.admin.index.col06: 折扣
+plugin_coupon.admin.index.col07: 剩余发行数量
+plugin_coupon.admin.index.col08: 下限金额
+plugin_coupon.admin.index.col09: 有效期
+plugin_coupon.admin.index.col10: 编辑
+plugin_coupon.admin.index.col11: 状态
+plugin_coupon.admin.index.col12: 删除
+plugin_coupon.admin.index.delete.confirm: 您确定要删除此优惠券吗？
+plugin_coupon.admin.coupon_member.yes: 仅限会员
+plugin_coupon.admin.coupon_member.no: 否
+plugin_coupon.admin.coupon_type.product: 商品
+plugin_coupon.admin.coupon_type.category: 类别
+plugin_coupon.admin.coupon_type.all: 全部商品
+plugin_coupon.admin.index.create_button: 新建优惠券
+
+# Register page
+plugin_coupon.admin.regist.title: 优惠券管理
+plugin_coupon.admin.regist.subtitle: 优惠券内容设置
+plugin_coupon.admin.regist.header: 优惠券信息
+plugin_coupon.admin.regist.discount_price.note: 从总额中减去设置金额。
+plugin_coupon.admin.regist.discount_rate.note: 根据商品总额按比例减去。
+plugin_coupon.admin.regist.coupon_lower_limit.note: 当商品总额达到下限金额时可以使用优惠券。
+plugin_coupon.admin.regist.header.product: 商品信息
+plugin_coupon.admin.regist.header.category: 类别信息
+plugin_coupon.admin.regist.modal.product: 商品搜索
+plugin_coupon.admin.regist.modal.category: 类别搜索
+plugin_coupon.admin.regist.modal.search: 搜索
+plugin_coupon.admin.regist.remove_product_confirm: 已注册商品。您确定要删除吗？
+plugin_coupon.admin.regist.remove_category_confirm: 已注册类别。您确定要删除吗？
+plugin_coupon.admin.regist.remove_both_confirm: 已注册商品和类别。您确定要删除吗？
+plugin_coupon.admin.label.coupon_cd: 优惠券代码
+plugin_coupon.admin.label.coupon_name: 优惠券名称
+plugin_coupon.admin.label.coupon_type: 适用商品
+plugin_coupon.admin.label.coupon_member: 使用限制
+plugin_coupon.admin.label.discount_type: 折扣类型
+plugin_coupon.admin.label.discount_type.price: 折扣金额
+plugin_coupon.admin.label.discount_type.rate: 折扣率
+plugin_coupon.admin.label.discount_price: 折扣金额（日元）
+plugin_coupon.admin.label.discount_rate: 折扣率（%）
+plugin_coupon.admin.label.coupon_release: 发行数量
+plugin_coupon.admin.label.coupon_lower_limit: 下限金额（日元）
+plugin_coupon.admin.label.available_from_date: 有效期
+plugin_coupon.admin.label.available_to_date: 截止日期
+plugin_coupon.admin.notfound: 没有找到优惠券。
+plugin_coupon.admin.coupon_id.notexists: 优惠券ID不存在。
+plugin_coupon.admin.duplicate: 优惠券代码已被使用。
+plugin_coupon.admin.avaiabledate: 有效期有误。
+plugin_coupon.admin.coupontype: 请设置适用于优惠券的商品信息或类别信息。
+plugin_coupon.admin.regist.success: 优惠券已成功注册。
+plugin_coupon.admin.delete.success: 优惠券已成功删除。
+plugin_coupon.admin.enable.success: 优惠券状态已更改。
+plugin_coupon.admin.delete.error: 优惠券删除失败。
+plugin_coupon.admin.pager.failed: 分页失败。
+
+# Order edit
+plugin_coupon.admin.order_edit.header: 使用优惠券代码
+plugin_coupon.admin.order_edit.body: 优惠券代码
+
+# Frontend
+plugin_coupon.front.shopping.notexists: 没有找到优惠券适用商品。请检查优惠券代码。
+plugin_coupon.front.shopping.sameuser: 您已经使用过此优惠券。
+plugin_coupon.front.shopping.couponusetime: 无法使用此优惠券。
+plugin_coupon.front.shopping.minus: 超过总额，无法使用此优惠券。
+plugin_coupon.front.shopping.use.minus: 由于折扣后的总额为负数，因此取消了优惠券的使用。
+plugin_coupon.front.shopping.member: 此优惠券仅限会员使用。
+plugin_coupon.front.shopping.lowerlimit: 要使用此优惠券，请购买达到下限金额的商品。
+plugin_coupon.front.shopping.changeorder: 订单已更改。如果使用了优惠券，请重新设置。
+plugin_coupon.front.shopping.notfound: 此优惠券代码无效。
+plugin_coupon.front.shopping.header: 优惠券
+plugin_coupon.front.shopping.message.use_code: 正在使用优惠券代码 %code%。
+plugin_coupon.front.shopping.message.empty: 如果您有优惠券，请输入优惠券代码。
+plugin_coupon.front.shopping.button.add_coupon: 更改优惠券
+plugin_coupon.front.shopping_coupon.header: 输入优惠券代码
+plugin_coupon.front.shopping_coupon.body: 请输入要使用的优惠券代码。
+plugin_coupon.front.shopping_coupon.use: 使用优惠券
+plugin_coupon.front.shopping_coupon.remove: 不使用优惠券
+plugin_coupon.front.shopping.conflictpoint: 无法同时使用优惠券和积分。
+plugin_coupon.front.mypage.header: 您使用的优惠券代码
+plugin_coupon.front.mypage.body: 优惠券代码
+plugin_coupon.front.code: 优惠券代码

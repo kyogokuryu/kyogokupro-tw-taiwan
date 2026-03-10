@@ -1,0 +1,10 @@
+<script>
+    $(function() {
+		$('.card-body p.form-text').after($('#add_admin_order_edit_area'));
+    });
+</script>
+
+<div id="add_admin_order_edit_area" style="margin-top:5px;">
+	{{ form_widget(form.mail_ex, { attr : { rows : "4"} }) }}
+	{{ form_errors(form.mail_ex) }}
+</div>

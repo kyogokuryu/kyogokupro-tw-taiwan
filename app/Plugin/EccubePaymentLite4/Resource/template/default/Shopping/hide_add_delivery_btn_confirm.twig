@@ -1,0 +1,18 @@
+<script>
+    $(function () {
+        {% if prime_flg %}
+        $('.ec-orderDelivery__title, .ec-orderDelivery__edit, .ec-orderDelivery__actions, .ec-orderDelivery__address').hide();
+        $('.ec-orderDelivery + .ec-orderPayment + .ec-orderPayment').hide();
+        $('.ec-orderDelivery + .ec-orderPayment + .ec-orderPayment + .ec-orderPayment').hide();
+        $('.ec-orderPayment.coupon + .ec-orderPayment +  .ec-orderPayment').hide();
+        $('.ec-orderPayment.coupon + .ec-orderPayment +  .ec-orderPayment +  .ec-orderPayment').hide();
+        $('.ec-orderDelivery .ec-rectHeading').hide()
+        {% endif %}
+        $('.ec-orderDelivery__edit').hide();
+        $('.ec-orderPayment.coupon').hide();
+        $('.ec-orderPayment.coupon + .ec-orderPayment').hide();
+        $('.ec-totalBox__pointBlock').hide()
+
+
+    });
+</script>

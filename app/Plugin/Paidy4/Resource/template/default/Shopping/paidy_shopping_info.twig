@@ -1,0 +1,29 @@
+{% block javascript %}
+<script type="text/javascript">
+    $(function(){
+        $('input#shopping_order_Payment_' + "{{ paidy_payment_id }}").parent().append($("#paidy_info"));
+    });
+</script>
+{% endblock javascript %}
+{% block stylesheet %}
+    <style>
+        #paidy_info {
+            padding: 0 15px 15px;
+        }
+        #paidy_info b img {
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        #paidy_info img {
+            width : auto;
+        }
+    </style>
+{% endblock %}
+<div class="hidden">
+    <div id="paidy_info">
+        <p>{{ plugin_config.description_text|raw|nl2br }}</p>
+        {% if plugin_config.link_disp == 1 %}
+            <p><a href="{{ paidy_customer_link }}" target="_blank">Paidyについて詳しくは {{ paidy_customer_link }}</a></p>
+        {% endif %}
+    </div>
+</div>

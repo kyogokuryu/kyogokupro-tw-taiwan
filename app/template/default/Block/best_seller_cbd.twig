@@ -1,0 +1,30 @@
+<p class="title">ベストセラー</p>
+{% for Collection in repository('Plugin\\Collection\\Entity\\Collection').getCollectionBlock %}
+    {% if Collection.collectionCode == 'best_seller_cbd' %}
+        <ul>
+        {% for CollectionProduct in Collection.getCollectionProductsLimit(20) %}
+            <li>
+                <a href="{{ url('product_detail', {'id': CollectionProduct.Product.id}) }}">
+                    <div class="image">
+                        <img src="{{ asset(CollectionProduct.Product.mainFileName|no_image_product, "save_image") }}" loading="lazy">
+                    </div>
+                    <div class="info">
+                        <h2 class="name">{{ CollectionProduct.Product.name }}</h2>
+                        <p class="price">
+                        {% if CollectionProduct.Product.hasProductClass %}
+                            {% if CollectionProduct.Product.getPrice02Min == CollectionProduct.Product.getPrice02Max %}
+                                {{ CollectionProduct.Product.getPrice02IncTaxMin|price }}
+                            {% else %}
+                                {{ CollectionProduct.Product.getPrice02IncTaxMin|price }} ～ {{ CollectionProduct.Product.getPrice02IncTaxMax|price }}
+                            {% endif %}
+                        {% else %}
+                            {{ CollectionProduct.Product.getPrice02IncTaxMin|price }}
+                        {% endif %}
+                        </p>
+                    </div>
+                </a>
+            </li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+{% endfor %}

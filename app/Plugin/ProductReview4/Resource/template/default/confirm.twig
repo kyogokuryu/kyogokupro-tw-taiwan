@@ -1,0 +1,242 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) LOCKON CO.,LTD. All Rights Reserved.
+
+http://www.lockon.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+
+{% set body_class = 'product_review_confirm' %}
+
+{% form_theme form 'Form/form_div_layout.twig' %}
+
+{% block main %}
+<article id="contact" class="product_review">
+	<section>
+    <div class="ec-registerRole">
+        <div class="ec-pageHeader">
+            <h1>{{ 'product_review.front.review.title'|trans }}</h1>
+        </div>
+        <div class="ec-off1Grid">
+            <div class="ec-off1Grid__cell">
+                <form method="post"　 class="review_form"  action="{{ url('product_review_index', { id: Product.id }) }}">
+                    {{ form_widget(form._token) }}
+                    <p class="ec-para-nomal">{{ 'product_review.front.review.confirm.description'|trans|nl2br }}</p>
+                    <div class="ec-borderedDefs">
+                        {# 商品名 #}
+                        <dl>
+                            <dt>
+                                <label class="ec-label">{{ 'product_review.front.review.product_name'|trans }}</label>
+                            </dt>
+                            <dd>
+                                <div class="ec-input">
+                                    {{ Product.name }}
+                                </div>
+                            </dd>
+                        </dl>
+
+                        <dl>
+                            <dt>
+                                <label style="display:none" class="ec-label">{{ 'product_review.front.review.product_name'|trans }}</label>
+                            </dt>
+                            <dd>
+                                <div class="row">
+                                    <div class="col-xs-3">
+                                        <img src="{{ asset(Product.main_list_image|no_image_product, 'save_image') }}">
+                                    </div>
+                                    <div class="col-xs-9">
+                                        <div class="ec-input">{{ Product.name }}</div>
+
+                                        <div class="review_form_star">   
+                                            <input type="hidden" name="product_review[recommend_level]" value="{{ form.recommend_level.vars.data  }}">
+                                            {#
+                                                <input readonly type="radio" class="product_review_star" value="0" name="product_review[recommend_level]" id="product_review_recommend_level_null" />
+                                                <input readonly type="radio" class="product_review_star" value="1" name="product_review[recommend_level]" id="product_review_recommend_level_1" {% if form.recommend_level.vars.data == 1 %} checked {% endif %}  />
+                                                <input readonly type="radio" class="product_review_star" value="2" name="product_review[recommend_level]" id="product_review_recommend_level_2" {% if form.recommend_level.vars.data == 2 %} checked {% endif %}  />
+                                                <input readonly type="radio" class="product_review_star" value="3" name="product_review[recommend_level]" id="product_review_recommend_level_3" {% if form.recommend_level.vars.data == 3 %} checked {% endif %}  />
+                                                <input readonly type="radio" class="product_review_star" value="4" name="product_review[recommend_level]" id="product_review_recommend_level_4" {% if form.recommend_level.vars.data == 4 %} checked {% endif %}  />
+                                                <input readonly type="radio" class="product_review_star" value="5" name="product_review[recommend_level]" id="product_review_recommend_level_5" {% if form.recommend_level.vars.data == 5 %} checked {% endif %}  />
+                                            #}
+                                                <section>
+                                                <label for="product_review_recommend_level_1" class="{% if form.recommend_level.vars.data >= 1 %} active {% endif %}">
+                                                    <svg width="255" height="240" viewBox="0 0 51 48">
+                                                    <path d="m25,1 6,17h18l-14,11 5,17-15-10-15,10 5-17-14-11h18z"/>
+                                                    </svg>
+                                                </label>
+                                                <label for="product_review_recommend_level_2" class="{% if form.recommend_level.vars.data >= 2 %} active {% endif %}">
+                                                    <svg width="255" height="240" viewBox="0 0 51 48">
+                                                    <path d="m25,1 6,17h18l-14,11 5,17-15-10-15,10 5-17-14-11h18z"/>
+                                                    </svg>
+                                                </label>
+                                                <label for="product_review_recommend_level_3" class="{% if form.recommend_level.vars.data >= 3 %} active {% endif %}">
+                                                    <svg width="255" height="240" viewBox="0 0 51 48">
+                                                    <path d="m25,1 6,17h18l-14,11 5,17-15-10-15,10 5-17-14-11h18z"/>
+                                                    </svg>
+                                                </label>
+                                                <label for="product_review_recommend_level_4" class="{% if form.recommend_level.vars.data >= 4 %} active {% endif %}">
+                                                    <svg width="255" height="240" viewBox="0 0 51 48">
+                                                    <path d="m25,1 6,17h18l-14,11 5,17-15-10-15,10 5-17-14-11h18z"/>
+                                                    </svg>
+                                                </label>
+                                                <label for="product_review_recommend_level_5" class="{% if form.recommend_level.vars.data >= 5 %} active {% endif %}">
+                                                    <svg width="255" height="240" viewBox="0 0 51 48">
+                                                    <path d="m25,1 6,17h18l-14,11 5,17-15-10-15,10 5-17-14-11h18z"/>
+                                                    </svg>
+                                                </label>
+                                                <label for="product_review_recommend_level_null" style="display:none">
+                                                    Clear
+                                                </label>  
+                                                </section>
+                                                
+                                            </div>
+
+                                    </div>
+                                </div>
+                            </dd>
+                        </dl>
+
+                        {# 投稿者名 #}
+                        <dl>
+                            <dt>
+                                {{ form_label(form.reviewer_name, '', {'label_attr': {'class': 'ec-label'}}) }}
+                            </dt>
+                            <dd>
+                                <div class="ec-input{{ has_errors(form.reviewer_name) ? ' error' }}">
+                                    {{ form.reviewer_name.vars.data }}
+                                    {{ form_widget(form.reviewer_name, { type: 'hidden' }) }}
+                                </div>
+                            </dd>
+                        </dl>
+                        {# 投稿者URL #}
+                        <dl style="display:none">
+                            <dt>
+                                {{ form_label(form.reviewer_url, '', {'label_attr': {'class': 'ec-label'}}) }}
+                            </dt>
+                            <dd>
+                                <div class="ec-input{{ has_errors(form.reviewer_url) ? ' error' }}">
+                                    {{ form.reviewer_url.vars.data }}
+                                    {{ form_widget(form.reviewer_url, { type: 'hidden' }) }}
+                                </div>
+                            </dd>
+                        </dl>
+                        {# 性別 #}
+                        <dl>
+                            <dt>
+                                {{ form_label(form.sex, 'common.gender', {'label_attr': {'class': 'ec-label'}}) }}
+                            </dt>
+                            <dd>
+                                <div class="ec-radio{{ has_errors(form.sex) ? ' error' }}">
+                                    {{ form.sex.vars.data }}
+                                    {{ form_widget(form.sex, { type: 'hidden' }) }}
+                                </div>
+                            </dd>
+                        </dl>
+                        {# おすすめレベル
+                        <dl>
+                            <dt>
+                                {{ form_label(form.recommend_level, '', {'label_attr': {'class': 'ec-label'}}) }}
+                            </dt>
+                            <dd>
+                                <div class="ec-radio{{ has_errors(form.recommend_level) ? ' error' }}">
+                                    {% for child in form.recommend_level.children if child.vars.checked %}
+                                        {{ child.vars.label }}
+                                    {% endfor %}
+                                    {{ form_widget(form.recommend_level, { type: 'hidden' }) }}
+                                </div>
+                            </dd>
+                        </dl>
+                        #}
+                        {# タイトル #}
+                        <dl>
+                            <dt>
+                                {{ form_label(form.title, '', {'label_attr': {'class': 'ec-label'}}) }}
+                            </dt>
+                            <dd>
+                                <div class="ec-input{{ has_errors(form.title) ? ' error' }}">
+                                    {{ form.title.vars.data }}
+                                    {{ form_widget(form.title, { type: 'hidden' }) }}
+                                </div>
+                            </dd>
+                        </dl>
+                        {# コメント #}
+
+                        <dl>
+                            <dt>
+                                <label class="ec-label">写真</label>
+                            </dt>
+                            <dd>
+                                <div class="row">
+
+                                {% if ProductReview.pic1 %}
+                                <div class="col-xs-3">
+                                    <img src="{{ ProductReview.pic1 }}">
+                                    {{ form_widget(form.pic1, { type: 'hidden' , attr: {'value': ProductReview.pic1}}) }}
+                                </div>
+                                {% endif %}
+
+                                {% if ProductReview.pic2 %}
+                                <div class="col-xs-3">
+                                    <img src="{{ ProductReview.pic2 }}">
+                                    {{ form_widget(form.pic2, { type: 'hidden' , attr: {'value': ProductReview.pic2}}) }}
+                                </div>
+                                {% endif %}
+
+                                {% if ProductReview.pic3 %}
+                                <div class="col-xs-3">
+                                    <img src="{{ ProductReview.pic3 }}">
+                                    {{ form_widget(form.pic3, { type: 'hidden' , attr: {'value': ProductReview.pic3}}) }}
+                                </div>
+                                {% endif %}
+
+                                {% if ProductReview.pic4 %}
+                                <div class="col-xs-3">
+                                    <img src="{{ ProductReview.pic4 }}">
+                                    {{ form_widget(form.pic4, { type: 'hidden' , attr: {'value': ProductReview.pic4}}) }}
+                                </div>
+                                {% endif %}
+
+                            </dd>
+                        </dl>
+
+
+                        <dl>
+                            <dt>
+                                {{ form_label(form.comment, '', {'label_attr': {'class': 'ec-label'}}) }}
+                            </dt>
+                            <dd>
+                                <div class="ec-input{{ has_errors(form.comment) ? ' error' }}">
+                                    {{ form.comment.vars.data }}
+                                    {{ form_widget(form.comment, { type: 'hidden' }) }}
+                                </div>
+                            </dd>
+                        </dl>
+                    </div>
+                    <div class="ec-registerRole__actions">
+                        <div>
+
+                                <button class="ec-blockBtn--action review_form_action" type="submit" name="mode"
+                                        value="complete">投稿</button>
+                        </div>
+
+
+                        <div class="ec-off4Grid" style="margin-top:30px">
+                            <div class="text-center" style="margin:auto">
+                                <button style="display:none" class="ec-blockBtn--action" type="submit" name="mode"
+                                        value="complete">{{ 'product_review.front.review.comfirm.post'|trans }}</button>
+                                <button class="ec-blockBtn--cancel" type="submit" name="mode"
+                                        value="back">{{ 'product_review.front.review.back'|trans }}</button>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="order_item_id" value="{{ order_item_id }}">
+                </form>
+            </div>
+        </div>
+    </div>
+    </section>
+</article>
+{% endblock %}

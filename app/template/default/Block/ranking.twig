@@ -1,0 +1,79 @@
+{#
+/*
+ * Usage
+    <div>
+        {{ render(path('block_ranking')) }}
+    </div>
+ *
+ */
+#}
+{# {{ dump(RankingProducts) }} #}
+{# {{ dump(AutoPlay) }} #}
+{% import _self as stars %}
+
+{# 星テキスト生成用マクロ #}
+{% macro stars(positive, negative) %}
+    {% set positive_stars = ["", "★", "★★", "★★★", "★★★★", "★★★★★"] %}
+    {% set negative_stars = ["", "☆", "☆☆", "☆☆☆", "☆☆☆☆", "☆☆☆☆☆"] %}
+    {{ positive_stars[positive] }}{{ negative_stars[negative] }}
+{% endmacro %}
+
+{% block javascript %}
+<script>
+    $(function(){
+        // RANKING SLICK
+        var elm = $('.top-slide.ranking').appendTo('#products_ranking')
+    });
+</script>
+{% endblock %}
+{% if RankingProducts|length > 0 %}
+
+	<div  class="top-slide ranking" style="margin:30px auto 50px auto">
+		<p class="title">ランキング</p>
+		<ul>
+		{% for RankingProduct in RankingProducts %}
+            {% set Product = RankingProduct.Product %}
+
+			<li>
+                <div style="margin:10px;"><img style="max-height:30px" src="{{ asset('Ranking/assets/img/number'~SliderDesign~'/'~loop.index~'.svg', 'plugin') }}" class="number"></div>
+				<a href="{{ url('product_detail', {'id': Product.id}) }}">
+					<div class="image"><img src="{{ asset(Product.main_list_image|no_image_product, 'save_image') }}"  loading="lazy"></div>
+					<div class="info ec-shelfGrid__item">
+						<h2 class="name">{{ Product.name }}</h2>
+
+                        <p class="review">
+                            {% set positive_star = Product.review_ave %}
+                            {% set nagative_star = 5 - positive_star %}
+                            <span class="star">{{ stars.stars(positive_star, nagative_star) }}<i>({{ Product.review_cnt }})</i></span>
+                        </p>   
+						<div class="sell-flex">
+							<p class="price02-default">
+							{% if Product.hasProductClass %}
+								{% if Product.getPrice02Min == Product.getPrice02Max %}
+									{{ Product.getPrice02IncTaxMin|price }}
+								{% else %}
+									{{ Product.getPrice02IncTaxMin|price }} ～ {{ Product.getPrice02IncTaxMax|price }}
+								{% endif %}
+							{% else %}
+								{{ Product.getPrice02IncTaxMin|price }}
+							{% endif %}
+							</p>
+
+                            {% set sc = get_product_sell_count(Product.id) %}
+                            {% if sc %}
+                            <div class="sell_product_page sell_count_wrap">
+                                <span class="sell_count">{{ sc }}</span><span class="sell_count_unit">個</span><br><span class="sell_count_label"> 累計販売数</span>
+                            </div>
+                            {% endif %}
+
+						</div>
+						{{ include('Block/point_block.twig',{'price':Product.getPrice02IncTaxMin}) }}
+					</div>
+				</a>
+			</li>
+		{% endfor %}
+		</ul>
+	</div>
+
+
+{% endif %}

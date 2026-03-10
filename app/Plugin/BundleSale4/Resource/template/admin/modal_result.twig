@@ -1,0 +1,66 @@
+<script>
+    function fnBundleProductSelectProduct(product_class_id, product_name, product_image_link, product_image_img, product_code) {
+        const number = $('#BundleItemNumber').val();
+        const ProductClass = $('#BundleItems_' + number + '_ProductClass');
+
+        // Add product argument
+        $('#BundleProduct-product_name', ProductClass).text(product_name);
+        $('#BundleProduct-product_image_link', ProductClass).attr('href', product_image_link);
+        $('#BundleProduct-product_image_img', ProductClass).attr('src', product_image_img);
+
+        $('#BundleProduct-product_code', ProductClass).text("商品コード:" + product_code);
+        $('#BundleProduct-product_quantity', ProductClass).show();
+        // Display new product
+        $('span', ProductClass).removeClass('d-none');
+        $("#admin_product_BundleItems_" + number + "_ProductClass").val(product_class_id);
+        // モーダル閉じる.
+        $("#BundleProductSearchResult").children().remove();
+        $("#BundleProductSearchProductModal").modal("hide");
+        return false;
+    }
+
+    // 商品検索
+    $('#BundleProductSearchProductModal .pagination a').on('click', function(event) {
+        var list = $('#BundleProductSearchResult');
+        list.children().remove();
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: $(this).attr('href'),
+            success: function(data) {
+                $('#BundleProductSearchResult').html(data);
+            },
+            error: function() {
+                alert('paginator failed.');
+            }
+        });
+        event.preventDefault();
+    });
+</script>
+<div class="table-responsive">
+    <table class="table">
+        <tbody>
+        {% for ProductClass in pagination %}
+            <form name="product_form{{ ProductClass.id }}">
+                <tr>
+                    <td>
+                        {{ ProductClass.formattedProductName }}
+                        <br>
+                        <span>商品コード:{{ ProductClass.code }}</span>
+                    </td>
+                    <td class="text-right">
+                        <button onclick="fnBundleProductSelectProduct('{{ ProductClass.id }}', '{{ ProductClass.formattedProductName|escape('js') }}', '{{ url('admin_product_product_edit', { id : ProductClass.Product.id }) }}', '{{ asset(ProductClass.Product.mainFileName|no_image_product, 'save_image') }}', '{{ ProductClass.code|escape('js') }}')" type="button" class="btn btn-default btn-sm">
+                            <i class="fa fa-plus fa-lg font-weight-bold text-secondary"></i>
+                        </button>
+                    </td>
+                </tr>
+            </form>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% if pagination.totalItemCount > 0 %}
+        <div class="pagination">
+            {% include "@admin/pager.twig" with {'pages': pagination.paginationData, 'routes': 'admin_bundle_item_search_product_page'} %}
+        </div>
+    {% endif %}
+</div>

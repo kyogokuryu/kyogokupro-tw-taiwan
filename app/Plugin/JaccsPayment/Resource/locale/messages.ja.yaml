@@ -1,0 +1,52 @@
+jaccs_payment.admin.config.header: 買完後付款
+
+jaccs_payment.admin.config.shop_code.name: 加盟店代碼
+jaccs_payment.admin.config.link_password.name: 連結密碼
+
+jaccs_payment.admin.config.service.name: 發票寄送方式
+jaccs_payment.admin.config.service.option_2: 分開寄送
+jaccs_payment.admin.config.service.option_3: 同包寄送
+jaccs_payment.admin.config.required: 必填
+
+jaccs_payment.admin.config.batch_type.name: 批次類型
+jaccs_payment.admin.config.batch_type.option_0: 手動
+jaccs_payment.admin.config.batch_type.option_1: 指令
+
+jaccs_payment.admin.config.back: 插件列表
+jaccs_payment.admin.config.save: 儲存
+
+jaccs_payment.admin.config.email.name: 電子郵件
+jaccs_payment.admin.config.is_error_mail.name: 通訊錯誤郵件發送
+jaccs_payment.admin.config.is_condition_mail.name: 通訊條件不滿郵件發送
+
+jaccs_payment.shopping.api.conn.config: 未設定jaccs連線資訊
+jaccs_payment.shopping.api.conn.error: 發生jaccs通訊錯誤
+jaccs_payment.shopping.ng: 很抱歉，您的申請未通過審核。請選擇其他付款方式並重新進行購買手續。
+jaccs_payment.shopping.complete_message__body: |
+  感謝您的訂單。我們已經發送了確認郵件。
+  如果您沒有收到確認郵件，可能有一些問題，請您再次聯繫我們或致電詢問。
+  有關您的申請結果，我們可能會另行通知。
+  謝謝您的支持。
+jaccs_payment.shopping.page.ng: 很抱歉，您的申請未通過審核。請選擇其他付款方式並重新進行購買手續。
+jaccs_payment.shopping.page.error: 通訊失敗。很抱歉，請重新進行購買手續。如果此畫面持續出現，請通過以下郵件或電話聯繫我們。
+
+jaccs_payment.admin.index.title: 買完後付款（便利商店/銀行）
+jaccs_payment.admin.index.1: 審核中申請數量
+jaccs_payment.admin.index.2: 未通過審核數量
+jaccs_payment.admin.index.3: 註冊錯誤數量
+jaccs_payment.admin.index.4: 審核保留數量
+jaccs_payment.admin.index.batch: 信用審核結果批次
+
+searchorder.label.jaccs_payment.payment_status: 審核狀態
+admin.order.index.th_order_jaccs_payment_payment_status: 審核狀態
+
+jaccs_payment.admin.config.title: 買完後付款設置
+jaccs_payment.admin.config.sub_title: 插件列表
+
+jaccs_payment.admin.save.success: 儲存成功
+
+jaccs_payment.admin.order.shipping_shippingrequest: 出貨通知
+jaccs_payment.admin.order.shipping_shippingrequest_btn: 登記出貨
+jaccs_payment.admin.order.shipping_shippingrequest_cancel: 取消出貨通知
+jaccs_payment.admin.order.shipping_shippingrequest_ok: 已通知買完後付款系統
+jaccs_payment.admin.order.shipping_shippingrequest_cancel_ok: 已取消出貨通知

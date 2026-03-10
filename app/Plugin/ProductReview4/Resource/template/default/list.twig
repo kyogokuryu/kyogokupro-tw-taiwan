@@ -1,0 +1,172 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) LOCKON CO.,LTD. All Rights Reserved.
+
+http://www.lockon.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+
+{% set body_class = 'product_review' %}
+
+{% import _self as stars %}
+
+{# 星テキスト生成用マクロ #}
+{% macro stars(positive, negative) %}
+    {% set positive_stars = ["", "★", "★★", "★★★", "★★★★", "★★★★★"] %}
+    {% set negative_stars = ["", "☆", "☆☆", "☆☆☆", "☆☆☆☆", "☆☆☆☆☆"] %}
+    {{ positive_stars[positive] }}{{ negative_stars[negative] }}
+{% endmacro %}
+
+{% block stylesheet %}
+    <style>
+    </style>
+{% endblock %}
+
+{% block javascript %}
+<script src="/html/template/default/assets/js/review.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ekko-lightbox/5.3.0/ekko-lightbox.min.js"></script>
+<script>
+	$(document).on('click', '[data-toggle="lightbox"]', function(event) {
+					event.preventDefault();
+					$(this).ekkoLightbox();
+				});
+</script>
+{% endblock %}
+
+{% block main %}
+
+<h3>顧客評論</h3>
+
+<article id="new-review-page" class="info_item_review">
+
+	<section>
+
+		<div class="row">
+			<div class="col-xs-5">
+				<p>
+					{% set positive_star = rateAll.recommend_avg|round %}
+					{% set nagative_star = 5 - positive_star %}
+					<span class="recommend_star">{{ stars.stars(positive_star, nagative_star) }}</span><span><i><b>{{ rateAll.recommend_avg_text }}</b></i></span>
+				</p>
+				<p class="mb15">{{ rateAll.review_count }}條評價</p>
+			</div>
+			<div class="col-xs-7">
+				<a href="{{ url('product_detail', {'id': Product.id}) }}" style="color:#007185">
+					<h3 style="font-size:18px;">{{ Product.name }}</h3>
+				</a>
+			</div>
+		</div>
+		<div>
+			{% for star in rateStar %}
+			<a class="star-link" href="{{ url('product_review_list', {id: Product.id}) }}?l={{ star.recommend_level }}">
+				<div class="row star-row">
+					<div class="col-xs-2 col-md-1 text-align:center">星{{ star.recommend_level }}</div>
+					<div class="col-xs-7 col-md-9" style="padding-top:5px;">
+						<div style="width:95%;" class="star-bar1"><div class="star-bar2" style="width:{{star.per }}%;">&nbsp;</div></div>
+					</div>
+					<div class="col-xs-3 col-md-2 text-center">{{ star.per }} %</div>
+				</div>
+			</a>
+			{% endfor %}
+			
+		</div>
+
+		<hr>
+
+        <div class="reviewbox product-review-list" id="product-review-area">
+
+		{% for Review in pagination %}
+			{% set Product = Review.Product %}
+			<div class="product_review_part">    
+ 
+				<div class="review-box">
+					<div class="recommend_name" style="margin-left:1em">
+						<div class="icon-user"></div>
+						{% set name = Review.reviewer_name %}
+						{% if name|length >= 3 %}
+							{% set hidden_name = name|slice(0, 1) ~ '＊＊＊' ~ name|slice(-1) %}
+						{% elseif name|length == 2 %}
+							{% set hidden_name = '＊' ~ name|slice(1, 1) %}
+						{% elseif name|length == 1 %}
+							{% set hidden_name = '＊' %}
+						{% else %}
+							{% set hidden_name = '' %}
+						{% endif %}
+						<span style="line-height: 1;font-size: 14px;">{{ hidden_name }}</span>
+					</div>                    
+
+					<div class="recommend_star">
+						{% set positive_star = Review.recommend_level %}
+						{% set nagative_star = 5 - positive_star %}
+						{{ stars.stars(positive_star, nagative_star) }}
+						<span class="star-buy">在卡雅仕購買</span>
+					</div>
+					
+					<div class="recommend_date">{{ Review.create_date|date_format('','Y/m/d') }}</div>
+					
+				</div>
+
+				<div class="rebiew-box">
+					<p class="review-title">{{ Review.title }}</p>
+					<p class="review-comm">{{ Review.comment|nl2br }}</p>
+				</div>
+
+				<div class="review-box row">
+					{% if Review.pic1 %}
+					<div class="col-xs-3 review-user-img"><a href="{{ Review.pic1 }}" target="_blank" data-toggle="lightbox"><img src="{{ Review.pic1 }}"></a></div>
+					{% endif %}
+
+					{% if Review.pic2 %}
+					<div class="col-xs-3 review-user-img"><a href="{{ Review.pic2 }}" target="_blank" data-toggle="lightbox"><img src="{{ Review.pic2 }}"></a></div>
+					{% endif %}
+					
+					{% if Review.pic3 %}
+					<div class="col-xs-3 review-user-img"><a href="{{ Review.pic3 }}" target="_blank" data-toggle="lightbox"><img src="{{ Review.pic3 }}"></a></div>
+					{% endif %}
+					
+					{% if Review.pic4 %}
+					<div class="col-xs-3 review-user-img"><a href="{{ Review.pic4 }}" target="_blank" data-toggle="lightbox"><img src="{{ Review.pic4 }}"></a></div>
+					{% endif %}
+				</div>
+
+				<div class="review-bottom">
+					<div class="review-ref-msg ref_msg{{ Review.id }}" style="{% if Review.ref_count > 0 %}  {% else %} display:none {% endif %}"><strong id="ref_count{{ Review.id }}" target="_blank" data-ref="{{ Review.ref_count }}">{{ Review.ref_count }}</strong>有人回覆說這對他們有幫助！</div>
+
+					<div class="row">
+						<div class="col-xs-6">
+							{% if is_granted('ROLE_USER') %}
+								{% if user_id in Review.getRefUsers() %}
+									<button type="button" class="review-ref-button review-ref-pushed" disabled="disabled" data-rid="{{ Review.id }}"><span>有幫助！</span></button>                                
+								{% else %}
+									<button type="button" class="review-ref-button" data-rid="{{ Review.id }}"><span>有幫助！</span></button>
+								{% endif %}
+							{% else %}
+								<a href="{{ url('mypage_login') }}" class="review-ref-button"><span>有幫助！</span></a>                                
+							{% endif %}
+						</div>
+						<div class="col-xs-6 thank-btn-div" style="padding-top:7px">
+							<button class="btn btn-secondary thank-btn" type="button">舉報違規</button>
+							<span class="icon-thank-msg"><i class="bi bi-check"></i>感謝您提供反饋意見</span>
+						</div>
+					</div>
+				</div>
+
+				<hr class="review-bar">
+			</div>
+		{% endfor %}
+
+
+		</div>
+
+		<div class="ec-pagerRole">
+			{% include "@ProductReview4/default/pager.twig" with {'pages': pagination.paginationData, 'id': Product.id} %}
+		</div>
+	</section>
+</article>
+
+
+{% endblock %}

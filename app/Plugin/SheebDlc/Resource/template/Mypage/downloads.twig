@@ -1,0 +1,114 @@
+{% extends 'default_frame.twig' %}
+
+{% set mypageno = 'index' %}
+
+{% set body_class = 'mypage' %}
+
+{% block javascript %}
+<script>
+    $('.dlc-button').on('click', function (e) {
+        setTimeout(dlc_downloaded.bind(this, $(this)), 3000);
+    });
+
+    function dlc_downloaded($clicked) {
+        var $card = $clicked.parent().parent('li.ec-shelfGrid__item')
+        var $counter = $card.find('.dlc-count');
+        var count = $counter.text().trim();
+
+        if ($counter.length === 0) {
+            // 何もしない
+        } else if (parseInt(count) > 1) {
+            count = parseInt(count);
+            --count;
+            $counter.text(count);
+        } else {
+            $card.remove();
+        }
+
+        loadingOverlay("hide");
+    }
+    //# sourceURL=Mypage/downloads.js
+</script>
+{% endblock %}
+
+{% block stylesheet %}
+    <style>
+        .dlc-card-title {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        .dlc-margin-top {
+            margin-top: 0 !important;
+        }
+    </style>
+{% endblock %}
+
+{% block main %}
+<div class="ec-layoutRole__main">
+    {% for error in app.session.flashbag.get('eccube.SheebDlc.error') %}
+        <div class="ec-cartRole__error">
+            <div class="ec-alert-warning">
+                <div class="ec-alert-warning__icon"><img src="{{ asset('assets/icon/exclamation-white.svg') }}"></div>
+                <div class="ec-alert-warning__text">
+                    {{ error|trans|nl2br }}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    <div class="ec-mypageRole">
+        <div class="ec-pageHeader">
+            <h1>{{ 'front.mypage.title'|trans }}/{{ 'sheeb.dlc.mypage.purchased.items.title'|trans }}</h1>
+        </div>
+        {% include 'Mypage/navi.twig' %}
+    </div>
+
+    <div class="ec-orderRole">
+        <div class="ec-shelfRole">
+            <ul class="ec-shelfGrid">
+                {% if OrderItems is not empty %}
+                    {% for OrderItem in OrderItems %}
+                        {% set Product = OrderItem.Product %}
+                        {% set ProductClass = OrderItem.ProductClass %}
+                        <li class="ec-shelfGrid__item">
+                            <a href="{{ url('product_detail', {'id': Product.id}) }}">
+                                <p class="ec-shelfGrid__item-image">
+                                    <img src="{{ asset(Product.main_list_image|no_image_product, 'save_image') }}">
+                                </p>
+                                <p>{{ Product.name }}</p>
+                            </a>
+
+                            <hr>
+                            {# ダウンロードボタン #}
+                            <a {{ csrf_token_for_anchor() }} data-confirm="false" data-method="get" target="_blank" href="{{ url('sheeb_dlc_download', {'order_item_id': OrderItem.id}) }}" class="ec-productRole__btn dlc-margin-top">
+                                <button style="min-width:100%"  type="button" class="ec-blockBtn--dl-action dlc-button">
+                                下载
+                                </button>
+                            </a>
+                            {# 取得期限 #}
+                            {% if OrderItem.sheeb_dlc_viewing_datetime is not empty %}
+                                <p class="dlc-card-title">{{ 'sheeb.dlc.mypage.due_to_download'|trans }}</p>
+                                <p>{{ OrderItem.sheeb_dlc_viewing_datetime|date("Y/m/d H:i") }}</p>
+                                <p class="dlc-card-title">{{ 'sheeb.dlc.mypage.first_download_datetime'|trans }}</p>
+                                <p>{{ OrderItem.sheeb_dlc_first_download_datetime|date("Y/m/d H:i") }}</p>
+                            {% elseif OrderItem.sheeb_dlc_download_due_datetime is not empty %}
+                                <p class="dlc-card-title">{{ 'sheeb.dlc.mypage.due_to_download'|trans }}</p>
+                                <p>{{ OrderItem.sheeb_dlc_download_due_datetime|date("Y/m/d H:i") }}</p>
+                                <p class="dlc-card-title">{{ 'sheeb.dlc.mypage.notice.download_again'|trans }}</p>
+                                <p>{{ 'sheeb.dlc.mypage.notice.download_again_before'|trans }}{{ Product.sheeb_dlc_viewing_days }}{{ 'sheeb.dlc.mypage.notice.download_again_after'|trans }}</p>
+                            {% endif %}
+                            {# 取得回数 #}
+                            {% if OrderItem.sheeb_dlc_downloadable_count is not empty %}
+                                <p class="dlc-card-title">{{ 'sheeb.dlc.mypage.downloadable_count'|trans }}</p>
+                                <p class="dlc-count">{{ OrderItem.sheeb_dlc_downloadable_count }}{{ 'sheeb.dlc.mypage.downloadable_count.unit'|trans }}</p>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                {% else %}
+                    <p class="dlc-card-title">{{ 'sheeb.dlc.mypage.nothing'|trans }}</p>
+                {% endif %}
+            </ul>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+
+<div class="ec-modal">
+	<input type="checkbox" id="ec-modal-checkbox" class="checkbox">
+	<div class="ec-modal-overlay">
+		<label for="ec-modal-checkbox" class="ec-modal-overlay-close"></label>
+		<div class="ec-modal-wrap">
+			<label for="ec-modal-checkbox" class="ec-modal-close">
+				<span class="ec-icon"><img src="{{ asset('assets/icon/cross-dark.svg') }}" alt=""/></span>
+			</label>
+			<div id="ec-modal-header" class="text-center">{{ '已新增到購物車'|trans }}</div>
+			<div class="ec-modal-box">
+				<div class="ec-role">
+					<label for="ec-modal-checkbox" class="ec-inlineBtn--cancel">{{ '繼續選購'|trans }}</label>
+					<a href="{{ url('cart') }}" class="ec-inlineBtn--action">{{ '前往購物車'|trans }}</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

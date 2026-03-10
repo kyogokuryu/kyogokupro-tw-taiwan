@@ -1,0 +1,194 @@
+{% set Config = repository('Plugin\\uc_slide_cbd_sp\\Entity\\uc_slide_cbd_spConfig').get %}
+{% set Images = repository('Plugin\\uc_slide_cbd_sp\\Entity\\uc_slide_cbd_spData').getImages %}
+
+{% block stylesheet %}
+<style>
+    .uic-slide {
+        margin-bottom: 50px;
+    }
+    .uic-slick-slider{
+        display: none;
+    }
+    .uic-slick-slider.slick-initialized{
+        display: block;
+    }
+    .slick-slide img {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+    .slick-slide {
+        height: auto;
+    }
+    .slick-dots {
+        bottom: 0;
+    }
+    .uic-slick-slider .btn-prev {
+        color: #333;
+        position: absolute;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+    }
+    .uic-slick-slider .btn-next {
+        color: #333;
+        position: absolute;
+        top: 50%;
+        right: 0;
+        transform: translateY(-50%);
+    }
+</style>
+<style>
+    .slick-slider {
+        margin-bottom: 30px;
+    }
+
+    .slick-dots {
+        position: absolute;
+        bottom: -45px;
+        display: block;
+        width: 100%;
+        padding: 0;
+        list-style: none;
+        text-align: center;
+    }
+
+    .slick-dots li {
+        position: relative;
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        margin: 0 5px;
+        padding: 0;
+
+        cursor: pointer;
+    }
+
+    .slick-dots li button {
+        font-size: 0;
+        line-height: 0;
+        display: block;
+        width: 20px;
+        height: 20px;
+        padding: 5px;
+        cursor: pointer;
+        color: transparent;
+        border: 0;
+        outline: none;
+        background: transparent;
+    }
+
+    .slick-dots li button:hover,
+    .slick-dots li button:focus {
+        outline: none;
+    }
+
+    .slick-dots li button:hover:before,
+    .slick-dots li button:focus:before {
+        opacity: 1;
+    }
+
+    .slick-dots li button:before {
+        content: " ";
+        line-height: 20px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 12px;
+        height: 12px;
+        text-align: center;
+        opacity: .25;
+        background-color: black;
+        border-radius: 50%;
+
+    }
+
+    .slick-dots li.slick-active button:before {
+        opacity: .75;
+        background-color: black;
+    }
+
+    .slick-dots li button.thumbnail img {
+        width: 0;
+        height: 0;
+    }
+</style>
+{% endblock %}
+
+<!-- uc_slide_cbd_sp -->
+<link rel="stylesheet" href="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.css">
+<script src="https://cdn.jsdelivr.net/jquery.slick/1.6.0/slick.min.js"></script>
+<div class="{% if Config.block_type == 0 %}ec-role{% endif %} uic-slide">
+    <div class="section-body">
+        {% if Images == null %}
+            <p>画像が登録されていません。</p>
+        {% else %}
+            <div class="uic-slick-slider">
+                {% for image in Images %}
+                <div>
+                    {% if image.link_url %}<a href="{{ image.link_url }}" class="slide__link">{% endif %}
+                    <img src="{{ url('homepage') }}html/user_data/{{ image.img_url }}" alt="{{ image.img_alt }}" class="img-fluid" />
+                    {% if image.link_url %}</a>{% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% if Config.slide_type == 0 %}
+            <script type="text/javascript">
+            $(function () {
+                $('.uic-slick-slider').slick({
+                    dots: true,
+                    prevArrow: '<button class="btn btn-link btn-prev"style="z-index:2;"><i class="fa fa-chevron-left fa-2x"></i></button>',
+                    nextArrow: '<button class="btn btn-link btn-next"><i class="fa fa-chevron-right fa-2x"></i></button>'
+                });
+            });
+            </script>
+        {% elseif Config.slide_type == 1 %}
+            <style>
+            .slick-slide {
+            padding-left: 15px;
+            padding-right: 15px;
+            }
+            </style>
+            <script type="text/javascript">
+            $(function () {
+                $('.uic-slick-slider').slick({
+                    dots: true,
+                    prevArrow: '<button class="btn btn-link btn-prev"style="z-index:2;"><i class="fa fa-chevron-left fa-2x"></i></button>',
+                    nextArrow: '<button class="btn btn-link btn-next"><i class="fa fa-chevron-right fa-2x"></i></button>',
+                    infinite: true,
+                    centerMode: true,
+                    slidesToShow: 1,
+                });
+            });
+            </script>
+        {% else %}
+            <div class="uic-slick-slider-nav">
+                {% for image in Images %}
+                <div>
+                    <img src="{{ url('homepage') }}/html/user_data/{{ image.img_url }}" alt="{{ image.img_alt }}" class="img-fluid" />
+                </div>
+                {% endfor %}
+            </div>
+            <script type="text/javascript">
+            $(function () {
+                $('.uic-slick-slider').slick({
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    arrows: false,
+                    fade: true,
+                    asNavFor: '.uic-slick-slider-nav'
+                });
+                $('.uic-slick-slider-nav').slick({
+                    slidesToShow: 5,
+                    slidesToScroll: 1,
+                    asNavFor: '.uic-slick-slider',
+                    centerMode: true,
+                    focusOnSelect: true
+                });
+            });
+            </script>
+        {% endif %}
+    </div>
+</div>
+<!-- /uc_slide_cbd_sp -->

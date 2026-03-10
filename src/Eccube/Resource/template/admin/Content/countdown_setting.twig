@@ -1,0 +1,19 @@
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['countdown', 'countdown_list'] %}
+
+{% block title %}{{ 'admin.content.countdown_management'|trans }}{% endblock %}
+{% block sub_title %}{{ 'admin.content.countdown_list'|trans }}{% endblock %}
+
+{% block main %}
+<div class="c-contentsArea__cols">
+    <div class="c-contentsArea__primaryCol">
+            <div class="c-primaryCol">
+                <div class="d-block mb-3">
+                    <a id="addNew" class="btn btn-ec-regular"
+                       href="{{ url('admin_countdown_new') }}">{{ 'admin.common.create__new'|trans }}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

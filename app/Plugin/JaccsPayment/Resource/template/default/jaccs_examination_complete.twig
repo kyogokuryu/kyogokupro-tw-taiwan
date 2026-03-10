@@ -1,0 +1,118 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) LOCKON CO.,LTD. All Rights Reserved.
+
+http://www.lockon.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+
+{% set body_class = 'cart_page' %}
+
+{% block main %}
+    <div class="ec-role">
+        <div class="ec-pageHeader">
+            <h1>{{ 'front.shopping.confirm_title'|trans }}</h1>
+        </div>
+    </div>
+
+    <div class="ec-cartRole">
+        <div class="ec-cartRole__progress">
+            <ul class="ec-progress">
+                {% set step = 1 %}
+                <li class="ec-progress__item">
+                    <div class="ec-progress__number">{{ step }}{% set step = step + 1 %}
+                    </div>
+                    <div class="ec-progress__label">{{ 'front.cart.nav__cart_items'|trans }}
+                    </div>
+                </li>
+                {% if is_granted('ROLE_USER') == false %}
+                    <li class="ec-progress__item">
+                        <div class="ec-progress__number">{{ step }}{% set step = step + 1 %}
+                        </div>
+                        <div class="ec-progress__label">{{ 'front.cart.nav__customer_info'|trans }}
+                        </div>
+                    </li>
+                {% endif %}
+                <li class="ec-progress__item">
+                    <div class="ec-progress__number">{{ step }}{% set step = step + 1 %}
+                    </div>
+                    <div class="ec-progress__label">{{ 'front.cart.nav__order'|trans }}
+                    </div>
+                </li>
+                <li class="ec-progress__item is-complete">
+                    <div class="ec-progress__number">{{ step }}{% set step = step + 1 %}
+                    </div>
+                    <div class="ec-progress__label">{{ 'front.cart.nav__confirm'|trans }}
+                    </div>
+                </li>
+                <li class="ec-progress__item">
+                    <div class="ec-progress__number">{{ step }}{% set step = step + 1 %}
+                    </div>
+                    <div class="ec-progress__label">{{ 'front.cart.nav__complete'|trans }}
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="ec-cartCompleteRole">
+        <div class="ec-off3Grid ec-text-ac">
+            <div class="ec-off3Grid__cell">
+                <div class="ec-reportHeading">
+                    <h2>{{ 'front.shopping.complete_message__title'|trans }}</h2>
+                </div>
+                <p class="ec-reportDescription">
+                    {{ 'jaccs_payment.shopping.complete_message__body'|trans }}
+                    {% if Order.id %}
+                        <br /><br /><strong>ご注文番号：{{ Order.orderNo }}</strong>
+                    {% endif %}
+                </p>
+
+                {% if Order.complete_message is not empty %}
+                    {{ Order.complete_message|raw }}
+                {% endif %}
+
+                <div class="ec-off4Grid">
+                    {% if hasNextCart %}
+                        <div class="ec-off4Grid__cell"><a class="ec-blockBtn--primary" href="{{ url('cart') }}">{{ 'front.shopping.continue'|trans }}</a></div>
+                    {% else %}
+                        <div class="ec-off4Grid__cell"><a class="ec-blockBtn--cancel" href="{{ url('homepage') }}">{{ 'common.go_to_top'|trans }}</a></div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+<span id="a8sales"></span>
+<script src="//statics.a8.net/a8sales/a8sales.js"></script>
+<script>
+  {% set totalPrice = 0 %}
+  a8sales({
+    "pid": "s00000023337001",
+    "order_number": "{{ Order.order_no }}",
+    "currency": "{{ Order.currency_code }}",
+    "items": [
+    {% for ProductOrderItem in Order.ProductOrderItems %}
+      {% set totalPrice = totalPrice + (ProductOrderItem.price * ProductOrderItem.quantity) %}
+      {
+        "code": "{{ ProductOrderItem.product_code }}",
+        "price": {{ ProductOrderItem.price }},
+        "quantity": {{ ProductOrderItem.quantity }}
+      },
+    {% endfor %}
+    ],
+    "total_price": {{ totalPrice }}
+  });
+</script>
+{% if Order.id %}
+{% set Items = [] %}
+{% for OrderItem in Order.MergedProductOrderItems %}
+{% set Items = Items|merge([OrderItem.product_code~"."~OrderItem.quantity~"."~OrderItem.price|round]) %}
+{% endfor %}
+<script type="text/javascript" src="https://js.felmat.net/fmcv.js?adid=T7503W&uqid={{ Order.orderNo }}&item={{ Items|join(':') }}"></script>
+{% endif %}
+{% endblock %}

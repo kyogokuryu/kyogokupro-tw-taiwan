@@ -1,0 +1,27 @@
+# 闪存消息
+[code_lower].admin.setting.save.complete: 已保存设置。
+[code_lower].admin.setting.delete.complete: 已删除数据。
+
+# 配置
+[code_lower].admin.config.title: [code_name]
+[code_lower].admin.config.config_title: 插件设置
+[code_lower].admin.config.edit_title: 图片编辑
+[code_lower].admin.config.image_title: 图片设置
+[code_lower].admin.config.no_image: 尚未注册图片。
+[code_lower].admin.config.conversion.save: 保存
+[code_lower].admin.config.conversion.add: 添加
+[code_lower].admin.config.conversion.back: 插件列表
+[code_lower].admin.config.conversion.top: 图片列表
+
+[code_lower].admin.config.label_title: 标题
+[code_lower].admin.config.label_display_title: 显示标题
+[code_lower].admin.config.label_display_description: 显示说明文字
+[code_lower].admin.config.label_img_url: 图片URL（必填）
+[code_lower].admin.config.label_img_alt: 图片Alt
+[code_lower].admin.config.label_img_description: 图片说明文字（可包含HTML）
+[code_lower].admin.config.label_link_url: 图片链接
+[code_lower].admin.config.label_column_xs: 列数（移动端）
+[code_lower].admin.config.label_column_lg: 列数（电脑端）
+
+## 消息
+[code_lower].admin.config.message_path: user_data/~

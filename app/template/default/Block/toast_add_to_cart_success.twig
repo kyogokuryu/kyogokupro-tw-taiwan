@@ -1,0 +1,99 @@
+{% block javascript %}
+<script>
+function showAddToCartSuccessToast(event) {
+     var toastBg = document.createElement('div');
+    toastBg.classList.add('background_cart_popup');
+    document.body.appendChild(toastBg);
+
+    
+    var toastBgElement = document.createElement('div');
+    toastBgElement.classList.add('cart_popup_success');
+    document.body.appendChild(toastBgElement);
+
+    /////// line1
+    var toastElement_contentTop = document.createElement('div');
+    toastElement_contentTop.classList.add('content-top');
+    toastBgElement.appendChild(toastElement_contentTop);
+
+    var toastElement_imgDiv = document.createElement('div');
+    toastElement_contentTop.appendChild(toastElement_imgDiv);
+    toastElement_imgDiv.style.display = "flex";
+
+    var toastElement_img = document.createElement('img');
+    toastElement_img.src = "{{ asset('assets/img/icon/icon_success.svg') }}";
+    toastElement_imgDiv.appendChild(toastElement_img);
+
+    var toastElement_title = document.createElement('p');
+
+    var toastElement_titleDiv = document.createElement('div');
+    toastElement_contentTop.appendChild(toastElement_titleDiv);
+
+    var toastElement_title = document.createElement('p');
+    toastElement_title.classList.add('cart_title');
+    toastElement_title.textContent = '已加入購物車';
+    toastElement_titleDiv.appendChild(toastElement_title);
+
+    /////// line2
+    var toastElement_messDiv = document.createElement('div');
+    toastBgElement.appendChild(toastElement_messDiv);
+
+    var toastElement_mess = document.createElement('p');
+    toastElement_mess.classList.add('cart_mess');
+    toastElement_mess.textContent = '即將售罄！請立即結帳！';
+    toastElement_messDiv.appendChild(toastElement_mess);
+
+    let hideToast = () =>{
+        if(toastBg){
+            toastBg.classList.remove('show');
+            toastBgElement.classList.remove('show');
+            setTimeout(function() {
+                if(toastBg){
+                    toastBg.remove();
+                    toastBgElement.remove();
+                }
+            }, 300);
+        }
+    }
+
+    setTimeout(function() {
+        toastBg.classList.add('show');
+        toastBgElement.classList.add('show');
+    }, 100);
+
+    setTimeout(function() {
+        hideToast();
+    }, 3000);
+
+    toastBg.addEventListener("click", hideToast);
+}
+function showAddToCartErrorToast(message) {
+    var toastElement = document.createElement('div');
+    toastElement.classList.add('toast');
+    var svgElement = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svgElement.setAttribute('fill', 'red');
+    svgElement.setAttribute('width', '25px');
+    svgElement.setAttribute('height', '25px');
+    svgElement.setAttribute('viewBox', '0 0 256 256');
+    svgElement.setAttribute('id', 'Flat');
+    var pathElement = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    pathElement.setAttribute('d', 'M128,24A104,104,0,1,0,232,128,104.12041,104.12041,0,0,0,128,24Zm37.65625,130.34375a7.99915,7.99915,0,1,1-11.3125,11.3125L128,139.3125l-26.34375,26.34375a7.99915,7.99915,0,0,1-11.3125-11.3125L116.6875,128,90.34375,101.65625a7.99915,7.99915,0,0,1,11.3125-11.3125L128,116.6875l26.34375-26.34375a7.99915,7.99915,0,0,1,11.3125,11.3125L139.3125,128Z');
+    svgElement.appendChild(pathElement);
+    toastElement.appendChild(svgElement);
+    var textElement = document.createElement('span');
+    textElement.textContent = message;
+    textElement.style.color = 'red'; 
+    toastElement.appendChild(textElement);
+    var toastContainer = document.getElementById('toastContainer');
+    toastContainer.appendChild(toastElement);
+    setTimeout(function() {
+        toastElement.classList.add('show');
+    }, 100);
+    setTimeout(function() {
+        toastElement.classList.remove('show');
+        setTimeout(function() {
+            toastElement.remove();
+        }, 300);
+    }, 3000);
+}
+</script>
+{% endblock %}

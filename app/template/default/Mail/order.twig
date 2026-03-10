@@ -1,0 +1,131 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) LOCKON CO.,LTD. All Rights Reserved.
+
+http://www.lockon.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% autoescape false %}
+{{ Order.name01 }} {{ Order.name02 }}{% if Order.Sex %}{{Order.Sex.id == 1 ? ' 先生'|trans : ' 小姐'|trans}}{% endif %}
+
+請確認以下訂單資訊是否正確。
+
+
+※收據可以在登入後，進入我的帳號的歷史訂單，點選查看詳情按「收據/購買明細書」來下載。
+
+************************************************
+　請款金額
+************************************************
+
+訂購日期：{{ Order.order_date|date_sec }}
+訂單編號：{{ Order.order_no }}
+付款總額：TWD {{ Order.payment_total}}
+付款方式：{{ Order.payment_method }}
+{% if BaseInfo.isOptionPoint and Order.Customer is not null %}
+使用積分：{{ Order.usePoint|number_format }} pt
+新增積分：{{ Order.addPoint|number_format }} pt
+{% endif %}
+聯絡方式：{{ Order.message }}
+
+
+************************************************
+　訂購商品明細
+************************************************
+
+{% for OrderItem in Order.MergedProductOrderItems %}
+產品代碼：{{ OrderItem.product_code }}
+商品名稱：{{ OrderItem.product_name }}  {{ OrderItem.classcategory_name1 }}  {{ OrderItem.classcategory_name2 }} {{ is_reduced_tax_rate(OrderItem) ? '※' }}
+單價：TWD {{ OrderItem.price_inctax }}
+數量：{{ OrderItem.quantity|number_format }}
+
+{% endfor %}
+※商品有資格享受降低稅率。
+-------------------------------------------------
+小計：TWD {{ Order.subtotal }}
+{# 手数料：{{ Order.charge }} #}
+運費：TWD {{ Order.delivery_fee_total}}
+{% if Order.taxable_discount < 0 %}
+折扣：TWD {{ Order.taxable_discount }}
+{% endif %}
+-------------------------------------------------
+合計：TWD {{ Order.taxable_total }}
+    {% for rate, total in Order.taxable_total_by_tax_rate %}
+    ({{ rate }} %主題：TWD {{ total }})
+    {% endfor %}
+{% for item in Order.tax_free_discount_items %}
+-------------------------------------------------
+{{ item.product_name }}：TWD {{ item.total_price }}
+{% endfor %}
+============================================
+付款總額：TWD {{ Order.payment_total }}
+
+************************************************
+　訂購人資訊
+************************************************
+姓名：{{ Order.name01 }} {{ Order.name02 }} 様
+{# 姓名（假名）：{{ Order.kana01 }} {{ Order.kana02 }} 様 #}
+{% if Order.company_name %}
+公司名稱：{{ Order.company_name }}
+{% endif %}
+郵遞區號：{{ Order.postal_code }}
+地址：{% if Order.Pref %}{{ Order.Pref.name }}{% endif %}{{ Order.addr01 }}{{ Order.addr02 }}
+電話號碼：{{ Order.phone_number }}
+電子郵件地址：{{ Order.email }}
+
+{% set isDownloadContent = isExistDownloadContentByOrder(Order) %}
+{% if isDownloadContent == true %}
+************************************************
+　配送資訊
+************************************************
+{% for Shipping in Order.Shippings %}
+{% for OrderItem in Shipping.productOrderItems %}
+產品代碼：{{ OrderItem.product_code }}
+商品名：{{ OrderItem.product_name }}  {{ OrderItem.classcategory_name1 }}  {{ OrderItem.classcategory_name2 }}
+数量：{{ OrderItem.quantity|number_format }}
+    
+{% endfor %}
+{% endfor %}
+該產品是可下載的內容。
+請登入本主頁並享受使用「我的頁面」的樂趣。
+{{ url('mypage') }}
+{% else %}
+************************************************
+　配送資訊
+************************************************
+
+{%  for Shipping in Order.Shippings %}
+收件人{% if Order.multiple %}{{ loop.index }}{% endif %}
+
+姓名：{{ Shipping.name01 }} {{ Shipping.name02 }} 様
+{% if Shipping.company_name %}
+公司名稱：{{ Shipping.company_name }}
+{% endif %}
+郵遞區號：{{ Shipping.postal_code }}
+地址：{% if Shipping.Pref %}{{ Shipping.Pref.name }}{% endif %}{{ Shipping.addr01 }}{{ Shipping.addr02 }}
+電話號碼：{{ Shipping.phone_number }}
+
+配送方式：{{ Shipping.shipping_delivery_name }}
+配送日期：{{ Shipping.shipping_delivery_date is empty ? '未指定' : Shipping.shipping_delivery_date|date_day }}
+配送時間：{{ Shipping.shipping_delivery_time|default('未指定') }}
+
+{%  for OrderItem in Shipping.productOrderItems %}
+商品代碼：{{ OrderItem.product_code }}
+商品名稱：{{ OrderItem.product_name }}  {{ OrderItem.classcategory_name1 }}  {{ OrderItem.classcategory_name2 }}
+數量：{{ OrderItem.quantity|number_format }}
+
+{% endfor %}
+{% endfor %}
+{% endif %}
+
+
+{% if Order.complete_mail_message is not empty %}
+{{ Order.complete_mail_message }}
+{% endif %}
+
+============================================
+
+這封訊息只是通知，請勿回覆詢問，敬請見諒。
+{% endautoescape %}

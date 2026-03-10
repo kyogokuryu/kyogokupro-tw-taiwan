@@ -1,0 +1,150 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<!-- CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    	<link rel="stylesheet" href="/html/template/default/assets/css/jsQR.css"/>
+		<!-- JavaScript -->
+		<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+        <script src="/html/template/default/assets/js/jsQR.js" defer></script>
+		<script src="/html/template/default/assets/js/qrcode.min.js" defer></script>
+	</head>
+	<body style="background-color:black">
+		<h1>QRコードの読み取り</h1>
+		<div id="wrapper" style="width:500px;background-color:white;">
+			<div id="msg">Unable to access video stream.</div>			
+			<div id="camera_area" style="width:500px;height:500px;"></div>
+		</div>
+
+        <center>
+
+        <div style="text-center;margin-top:30px;">
+			<button id="camera_btn" class="btn btn-success">カメラ起動</button>
+		</div>
+
+        <div style="text-center;display:none">
+            <a class="btn btn-info" href="{{ url('admin_homepage_shop_event_point_camera') }}">リロード</a>
+        </div>
+        </center>
+
+	<script>
+		$(function(){
+
+
+			function camera_start(){
+
+				$('#camera_area').html('<canvas id="canvas" style="width:500px;max-width:100%;height:500px;max-height:100%;"></canvas>');
+
+				let video  = document.createElement("video");
+				let canvas = document.getElementById("canvas");
+				let ctx    = canvas.getContext("2d");
+				let msg    = document.getElementById("msg");
+				let active = true;
+
+				const userMedia = {video: {facingMode: "environment"}};
+				navigator.mediaDevices.getUserMedia(userMedia).then((stream)=>{
+					video.srcObject = stream;
+					video.setAttribute("playsinline", true);
+					video.play();
+					startTick();
+				});
+
+				function startTick(){
+					if(active){
+						msg.innerText = "Loading video...";
+					}
+					if(active && video.readyState === video.HAVE_ENOUGH_DATA){
+						canvas.height = video.videoHeight;
+						canvas.width = video.videoWidth;
+						ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+						let img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+						let code = jsQR(img.data, img.width, img.height, {inversionAttempts: "dontInvert"});
+						if(code){
+							drawRect(code.location);// Rect
+							msg.innerText = "読取中";//code.data;// Data
+							console.log(code);
+							post_entry(code.data)
+							//$('#canvas').css('visibility', 'hidden');
+							active = false
+						}else{
+							msg.innerText = "Detecting QR-Code...";
+						}
+					}
+					setTimeout(startTick, 250);
+				}
+
+				function drawRect(location){
+					drawLine(location.topLeftCorner,     location.topRightCorner);
+					drawLine(location.topRightCorner,    location.bottomRightCorner);
+					drawLine(location.bottomRightCorner, location.bottomLeftCorner);
+					drawLine(location.bottomLeftCorner,  location.topLeftCorner);
+				}
+
+				function drawLine(begin, end){
+					ctx.lineWidth = 4;
+					ctx.strokeStyle = "#FF3B58";
+					ctx.beginPath();
+					ctx.moveTo(begin.x, begin.y);
+					ctx.lineTo(end.x, end.y);
+					ctx.stroke();
+				}
+
+				function makeQR(text){
+					document.getElementById("qrcode").innerHTML = "";// Clear
+					let qrcode = new QRCode("qrcode", {
+						text: text,
+						width: 128, height: 128,
+						colorDark: "#000000",
+						colorLight: "#ffffff",
+						correctLevel: QRCode.CorrectLevel.H
+					});
+				}
+
+			}
+			$('#camera_btn').on('click',function(){
+				camera_start();
+			});
+
+			// 新規登録
+			function post_entry(read_text){
+				let url = "{{ url('admin_homepage_shop_event_point_save_status_ajax') }}";
+				let params = {
+					'read_text': read_text
+				}
+
+				$.ajax({
+					type:'post',
+					url:url,
+					dataType:'json',
+					data:params,
+				}).done(function(res){
+					console.log(res);
+					if(res.err == 0){
+					  $('#msg').text(res.msg);
+					  $('#camera_area').html('<div id="canvas2"></div>');
+					}else{
+						alert(res.msg);
+					}
+				}).fail(function(res){
+					alert('失敗しました');
+				});
+			}
+			$('#debug').on('click', function(){
+				post_entry();
+			});
+
+		});
+	</script>
+	</body>
+</html>

@@ -1,0 +1,25 @@
+{% set key = pinpoint_sale_history_suffix(orderItem) %}
+
+{% if pinpointSaleIndex is defined %}
+    {% set suffix = '_'~pinpointSaleIndex %}
+{% else %}
+    {% set suffix = '_d_'~key %}
+{% endif %}
+
+<div id="pinpoint_sale_history{{ suffix }}">
+    {#タイムセール情報#}
+    {% if pinpointDiscounts[key] is defined %}
+        <p>【{{ discountName }} {{ '小計'|trans }}：{{ pinpointDiscounts[key]|number_format }}TWD】</p>
+    {% endif %}
+
+    {#現在のセール情報#}
+    {% if nowPinpointDiscounts[key] is defined %}
+        {% if nowPinpointDiscounts[key] == 0 %}
+            {% if pinpointDiscounts[key] is defined %}
+                <p class="ec-color-accent">(※{{ discountName }}は終了しました)</p>
+            {% endif %}
+        {% else %}
+            <p class="ec-color-accent">【現在の{{ discountName }} 小計：{{ nowPinpointDiscounts[key]|number_format }}TWD】</p>
+        {% endif %}
+    {% endif %}
+</div>

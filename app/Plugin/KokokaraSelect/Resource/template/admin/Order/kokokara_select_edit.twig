@@ -1,0 +1,64 @@
+{% set kokokaraSelectIndex = 0 %}
+{% for orderItemForm in form.OrderItems %}
+    {% set ksOrderItemExForm = orderItemForm.KsOrderItemEx %}
+    {% set OrderItem = orderItemForm.vars.data %}
+    <div class="kokokara_select_item_ex" id="kokokara_select_{{ kokokaraSelectIndex }}">
+        {{ form_errors(ksOrderItemExForm) }}
+        {{ form_widget(ksOrderItemExForm.parentProductClassId) }}
+        {{ form_widget(ksOrderItemExForm.groupId) }}
+        {{ form_widget(ksOrderItemExForm.ksSelectItemGroupId) }}
+        {{ form_widget(ksOrderItemExForm.ksSelectItemId) }}
+        {% if OrderItem.isProduct %}
+            {% set ksDirectSelect = is_kokokara_select_direct_select(OrderItem.ProductClass) %}
+            {% set isKsProduct = is_kokokara_select_product(OrderItem, ksDirectSelect) %}
+            {% if isKsProduct %}
+                {% if Order.isMultiple == false %}
+                    {#構成要素表示#}
+                    {% set ksProductInfo = get_kokokara_select_ks_product_info(OrderItem) %}
+                    {% for info in ksProductInfo %}
+                        <div>{{ info.name }}：({{ info.quantity }}点)</div>
+                    {% endfor %}
+                    <a class="btn btn-ec-regular mt-2 add kokokara_select_item_ex_btn" data-toggle="modal"
+                       data-target="#addKokokaraSelectProduct" data-product_class_id="{{ OrderItem.ProductClass.id }}"
+                       data-quantity="{{ OrderItem.quantity }}"
+                       data-target_name="{{ orderItemForm.vars.name }}">{{ 'kokokara_select.admin.order.add_product'|trans }}</a>
+                {% endif %}
+            {% else %}
+                {#構成要素表示#}
+                {% set ksProductInfo = get_kokokara_select_ks_product_info(OrderItem) %}
+                {% for info in ksProductInfo %}
+                    <div>{{ info.name }}：({{ info.quantity }}点)</div>
+                {% endfor %}
+            {% endif %}
+            {% set isKsSelectItem = is_kokokara_select_item(OrderItem) %}
+            {% if isKsSelectItem %}
+                {% if is_kokokara_select_parent_direct_select(OrderItem) %}
+                    <div class="kokokara_select_direct_select_child"
+                        data-quantity="{{ OrderItem.quantity }}"
+                        data-target_name="{{ orderItemForm.vars.name }}"></div>
+                {% endif %}
+                <div>{{ get_kokokara_select_view_group_name(OrderItem) }}</div>
+            {% endif %}
+        {% endif %}
+    </div>
+    {% set kokokaraSelectIndex = kokokaraSelectIndex +1 %}
+{% endfor %}
+
+<div class="modal fade" id="addKokokaraSelectProduct" tabindex="-1" role="dialog" aria-labelledby="addKokokaraSelectProduct" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ 'kokokara_select.admin.order.add_product_search'|trans }}</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-2">
+                    <label class="col-2 col-form-label">{{ 'kokokara_select.admin.order.group_number'|trans }}</label>
+                    <select id="kokokara_select_group" class="form-control col-2"></select>
+                </div>
+                {{ form_widget(searchKokokaraSelectProductModalForm.productClassId) }}
+                <div id="searchKokokaraSelectProductModalList">読込中...</div>
+            </div>
+        </div>
+    </div>
+</div>

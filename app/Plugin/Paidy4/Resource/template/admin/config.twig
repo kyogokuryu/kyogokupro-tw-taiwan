@@ -1,0 +1,203 @@
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['store', 'plugin', 'plugin_list'] %}
+
+{% block title %}{{ 'paidy.admin.config.title'|trans }}{% endblock %}
+{% block sub_title %}{{ 'paidy.admin.config.sub_title'|trans }}{% endblock %}
+
+{% form_theme form '@admin/Form/bootstrap_4_horizontal_layout.html.twig' %}
+
+{% block stylesheet %}
+
+{% endblock stylesheet %}
+
+{% block javascript %}
+<script>
+    $(function(){
+        toggleButtonCode("cart");
+        toggleButtonCode("products");
+    });
+
+    $("#config_products_button_place").click(function(){
+        toggleButtonCode("products");
+    });
+
+    $("#config_cart_button_place").click(function(){
+        toggleButtonCode("cart");
+    });
+
+    function toggleButtonCode(page) {
+        if ($("#config_" + page + "_button_place_0").prop('checked')) {
+            $("#button_code_" + page).css("display", "none");
+        } else {
+            $("#button_code_" + page).css("display", "block");
+        }
+    }
+</script>
+{% endblock %}
+{% block main %}
+
+    <form role="form" method="post">
+
+        {{ form_widget(form._token) }}
+        <div class="c-contentsArea__cols">
+            <div class="c-contentsArea__primaryCol">
+                <div class="c-primaryCol">
+                    <div class="card rounded border-0 mb-4">
+                        <div class="card-header"><span>{{ 'paidy.admin.config.header'|trans }}</span></div>
+                        <!-- /.box-header -->
+                        <div class="card-body">
+                            <div class="row">
+                                <label class="col-3">{{ 'paidy.admin.config.public_key'|trans }} <span class="text-danger small">必須</span></label>
+                                <div class="col mb-2">
+                                    {{ form_widget(form.public_key) }}
+                                    {{ form_errors(form.public_key) }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="row">
+                                <label class="col-3">{{ 'paidy.admin.config.secret_key'|trans }} <span class="text-danger small">必須</span></label>
+                                <div class="col mb-2">
+                                    {{ form_widget(form.secret_key) }}
+                                    {{ form_errors(form.secret_key) }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="row">
+                                <label class="col-3">{{ 'paidy.admin.config.logo_url'|trans }}</label>
+                                <div class="col mb-2">
+                                    {{ form_widget(form.logo_url) }}
+                                    {{ form_errors(form.logo_url) }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="row">
+                                <label class="col-3">{{ 'paidy.admin.config.store_name'|trans }} <span class="text-danger small">必須</span></label>
+                                <div class="col mb-2">
+                                    {{ form_widget(form.store_name) }}
+                                    {{ form_errors(form.store_name) }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="row">
+                                <label class="col-3">{{ 'paidy.admin.config.mail_title'|trans }} <span class="text-danger small">必須</span></label>
+                                <div class="col mb-2">
+                                    {{ form_widget(form.mail_title) }}
+                                    {{ form_errors(form.mail_title) }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="row">
+                                <label class="col-3">{{ 'paidy.admin.config.mail_description_text'|trans }} <span class="text-danger small">必須</span></label>
+                                <div class="col mb-2">
+                                    {{ form_widget(form.mail_description_text) }}
+                                    {{ form_errors(form.mail_description_text) }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="row">
+                                <label class="col-3">{{ 'paidy.admin.config.charge_type'|trans }} <span class="text-danger small">必須</span></label>
+
+                                <div class="col mb-2">
+                                    {{ form_widget(form.charge_type) }}
+                                    {{ form_errors(form.charge_type) }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="row">
+                                <label class="col-3">{{ 'paidy.admin.config.webhook_url'|trans }} <span class="text-danger small">必須</span></label>
+                                <div class="col mb-2">
+                                    {{ url('paidy_webhook') }}<br/>
+                                    <span class="text-danger">※ Paidy管理画面にWebhook URLの設定を行ってください。</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="row">
+                                <label class="col-3">{{ 'paidy.admin.config.webhook_request_ip'|trans }} <span class="text-danger small">必須</span></label>
+                                <div class="col mb-2">
+                                    {{ form_widget(form.webhook_request_ip) }}
+                                    {{ form_errors(form.webhook_request_ip) }}
+                                    <span class="text-danger">※ 1行に1つのIPを入力してください。</span><br/>
+                                    {% for ip in default_webhook_ip %}
+                                        {{ ip }}<br/>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="row">
+                                <label class="col-3">{{ 'paidy.admin.config.description_disp'|trans }}</label>
+                                <div class="col mb-2">
+                                    {{ form_widget(form.description_disp) }}
+                                    {{ form_errors(form.description_disp) }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="row">
+                                <label class="col-3">{{ 'paidy.admin.config.description_text'|trans }} <span class="text-danger small">必須</span></label>
+                                <div class="col mb-2">
+                                    {{ form_widget(form.description_text) }}
+                                    {{ form_errors(form.description_text) }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="row">
+                                <label class="col-3">{{ 'paidy.admin.config.link_disp'|trans }}</label>
+                                <div class="col mb-2">
+                                    {{ form_widget(form.link_disp) }}
+                                    {{ form_errors(form.link_disp) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="c-conversionArea">
+            <div class="c-conversionArea__container">
+                <div class="row justify-content-between align-items-center">
+                    <div class="col-6">
+                        <div class="c-conversionArea__leftBlockItem">
+                            <a class="c-baseLink"
+                               href="{{ url('admin_store_plugin') }}">
+                                <i class="fa fa-backward" aria-hidden="true"></i>
+                                <span>{{ 'paidy.admin.config.back'|trans }}</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="row align-items-center justify-content-end">
+                            <div class="col-auto">
+                                <button class="btn btn-ec-conversion px-5"
+                                        type="submit">{{ 'paidy.admin.config.save'|trans }}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+{% endblock %}

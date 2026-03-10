@@ -1,0 +1,60 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+<div class="ec-headerNav">
+        <div class="ec-headerNav__item">
+            <select name="lang" class="lang" onchange="langchange(this)">
+                <option value="ja">Japanese</option>
+                <option value="en">English</option>
+                <option value="cn">Chinese</option>
+            </select>
+        </div>
+        <script>
+            function langchange(obj){
+                if($(obj).val() == 'ja'){
+                    window.open('https://kyogokupro.com/')
+                } else if($(obj).val() == 'en'){
+                    window.open('https://translate.google.co.jp/translate?hl=&sl=auto&tl=en&u=https://kyogokupro.com/')
+                } else if($(obj).val() == 'cn'){
+                    window.open('https://translate.google.co.jp/translate?hl=&sl=auto&tl=zh-CN&u=https://kyogokupro.com/')
+                }
+            }
+            $(function(){
+                console.log(location.href);
+            });
+        </script>
+        <div class="ec-headerNav__item">
+            <ul class="snsnavi">
+                <li><a href="https://www.facebook.com/ryu.kyougoku" target="_blank"><img src="{{ asset('assets/img/top/header_sns_facebook.png') }}" alt="facebook"></a></li>
+                <li><a href="https://twitter.com/ryuhairartist" target="_blank"><img src="{{ asset('assets/img/top/header_sns_twitter.png') }}" alt="twitter"></a></li>
+                <li><a href="https://www.instagram.com/ryuhairartist/" target="_blank"><img src="{{ asset('assets/img/top/header_sns_insta.png') }}" alt="insta"></a></li>
+                <li><a href="https://www.youtube.com/channel/UCGPikg9zMu8lyZgZhNk2mnA" target="_blank"><img src="{{ asset('assets/img/top/header_sns_youtube.png') }}" alt="youtube"></a></li>
+            </ul>
+        </div>
+    {% if is_granted('ROLE_USER') %}
+        <div class="ec-headerNav__item">
+            <a href="{{ url('mypage') }}">
+                <i class="ec-headerNav__itemIcon fas fa-user fa-fw"></i>
+            </a>
+        </div>
+        <div class="ec-headerNav__item pc">
+            <a href="{{ url('logout') }}">
+                <i class="ec-headerNav__itemIcon fas fa-sign-out-alt fa-fw"></i>
+            </a>
+        </div>
+    {% else %}
+        <div class="ec-headerNav__item">
+            <a href="{{ url('mypage_login') }}">
+                <i class="ec-headerNav__itemIcon fas fa-sign-in-alt fa-fw"></i>
+            </a>
+        </div>
+    {% endif %}
+</div>

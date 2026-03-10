@@ -1,0 +1,12 @@
+<script>
+    $(function () {
+        $('#eac-user-policy-check').insertBefore('button.ec-blockBtn--action');
+    });
+</script>
+<div id="eac-user-policy-check" class="ec-checkbox{{ has_errors(form.user_policy_check) ? ' error' }}">
+    <label>
+        {{ form_widget(form.user_policy_check) }}
+        {{ eac_check_label|raw }}
+    </label>
+    {{ form_errors(form.user_policy_check) }}
+</div>

@@ -1,0 +1,11 @@
+services:
+  Plugin\PinpointSale\Service\PlgConfigService\ConfigService:
+    arguments:
+      - '@Plugin\PinpointSale\Repository\PlgConfigRepository'
+      - '@Plugin\PinpointSale\Repository\PlgConfigOptionRepository'
+  pinpoint_sale.plg_migration:
+    class: Plugin\PinpointSale\Service\PlgMigrationService
+    public: true
+  pinpoint_sale.config_migration:
+    class: Plugin\PinpointSale\Service\PlgConfigService\ConfigMigrationService
+    public: true

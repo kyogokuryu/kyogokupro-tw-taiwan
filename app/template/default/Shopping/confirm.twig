@@ -1,0 +1,239 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+
+{% form_theme form 'Form/form_div_layout.twig' %}
+
+{% set body_class = '' %}
+
+{% block main %}
+        <article id="cart">
+            <section>
+
+<div class="ec-cartRole">
+</div>
+
+    <form id="shopping-form" method="post" action="{{ url('shopping_checkout') }}">
+    {{ form_widget(form._token) }}
+    <div class="ec-orderRole">
+        <div class="ec-orderRole__detail">
+            <div class="ec-orderAccount">
+                <div class="ec-rectHeading">
+                    <h2>{{ '客戶資訊'|trans }}</h2>
+                </div>
+                <div class="ec-orderAccount__account">
+                    <p class="ec-halfInput">{{ ''|trans }}{{ Order.name01 }} {{ Order.name02 }}{% if Order.Sex %}{{Order.Sex.id == 1 ? ' 先生'|trans : ' 小姐'|trans}}{% endif %}</p>
+                    <p class="ec-input">{{ Order.companyName }}</p>
+                    <p class="ec-zipInput">{{ Order.postal_code }}</p>
+                    <p class="ec-input">{{ Order.pref }}{{ Order.addr01 }}{{ Order.addr02 }}</p>
+                    <p class="ec-telInput">{{ Order.phone_number }}</span></p>
+                    <p class="ec-input">{{ Order.email }}</span></p>
+                </div>
+            </div>
+            <div class="ec-orderDelivery">
+                <div class="ec-rectHeading">
+                    <h2>{{ '購買資訊'|trans }}</h2>
+                </div>
+                {% for shipping in Order.shippings %}
+                    {% set idx = loop.index0 %}
+                    <div class="ec-orderDelivery__item">
+                        <ul class="ec-borderedList">
+                            {% for orderItem in shipping.productOrderItems %}
+                            <li>
+                                <div class="ec-imageGrid">
+                                    <div class="ec-imageGrid__img"><img loading="lazy"  src="{{ asset((orderItem.product is null ? null : orderItem.product.MainListImage)|no_image_product, 'save_image') }}" alt="{{ orderItem.productName }}"></div>
+                                    <div class="ec-imageGrid__content">
+                                        <p>{{ orderItem.productName }}{% if is_reduced_tax_rate(orderItem) %}{{ '※'|trans }}{% endif %}</p>
+                                        {% if orderItem.productClass is not null and orderItem.productClass.classCategory1 %}
+                                            <p>{{ orderItem.productClass.classCategory1.className.name }}：{{ orderItem.productClass.classCategory1 }}</p>
+                                        {% endif %}
+                                        {% if orderItem.productClass is not null and orderItem.productClass.classCategory2 %}
+                                            <p>{{ orderItem.productClass.classCategory2.className.name }}：{{ orderItem.productClass.classCategory2 }}</p>
+                                        {% endif %}
+                                        <p>{{ orderItem.priceIncTax|price }} × {{ orderItem.quantity|number_format }}<span>{{ '小計：'|trans }}{{ orderItem.totalPrice|price }}</span></p>
+                                    </div>
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="ec-orderDelivery__address">
+                        <p>{{ ''|trans }}{{ shipping.name01 }} {{ shipping.name02 }}{% if Order.Sex %}{{Order.Sex.id == 1 ? ' 先生'|trans : ' 小姐'|trans}}{% endif %}</p>
+                        <p>{{ shipping.postal_code }} {{ shipping.pref }}{{ shipping.addr01 }}{{ shipping.addr02 }}</p>
+                        <p>{{ shipping.phone_number }}</p>
+                    </div>
+                    <div class="ec-orderDelivery__actions">
+                        <div class="ec-selects">
+                            <div class="ec-select">
+                                <label>{{ '運送方式'|trans }}</label>
+                                {% set delivery_fee = 0 %}
+                                {% for item in shipping.order_items if item.isDeliveryFee %}
+                                    {% set delivery_fee = item.total_price %}
+                                {% endfor %}
+                                {{ Order.Shippings[idx].Delivery }}({{ delivery_fee|price }})
+                            </div>
+                            <div class="ec-select ec-select__delivery">
+                                <label>{{ '收貨日期'|trans }}</label>
+                                {{ Order.Shippings[idx].shipping_delivery_date? Order.Shippings[idx].shipping_delivery_date|date_day_with_weekday : '未指定'|trans }}
+                            </div>
+                            <div class="ec-select ec-select__time">
+                                <label>{{ '收貨時間'|trans }}</label>
+                                {{ Order.Shippings[idx].shipping_delivery_time?: '未指定'|trans }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="ec-orderPayment">
+                <div class="ec-rectHeading">
+                    <h2>{{ '付款方式'|trans }}</h2>
+                </div>
+                <div class="ec-blockRadio">
+                    {% set charge = 0 %}
+                    {% for item in Order.order_items if item.isCharge %}
+                        {% set charge = item.total_price %}
+                    {% endfor %}
+                    {% if charge == 0 %}
+                    {{ Order.Payment }}
+                    {% else %}
+                    {{ Order.Payment }}({{ charge|price }})
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- プロモーションコード -->
+            <div class="ec-orderPayment coupon">
+                <div class="ec-rectHeading">
+                    <h2>優惠代碼</h2>
+                </div>
+                <div class="ec-blockRadio">
+                    <div class="ec-totalBox__btn"></div>
+                </div>
+            </div>
+
+            {% if BaseInfo.isOptionPoint and Order.Customer is not null %}
+                {% if sale_type != 6 %}
+                    <div class="ec-orderPayment">
+                        <div class="ec-rectHeading">
+                            <h2>{{ '使用點數'|trans }}</h2>
+                        </div>
+                        <div class="ec-blockRadio">
+                            {{ Order.use_point|number_format }} pt
+                        </div>
+                    </div>
+                {% endif %}
+            {% endif %}
+            <div class="ec-orderConfirm">
+                <div class="ec-rectHeading">
+                    <h2>{{ '備註'|trans }}</h2>
+                </div>
+                <div class="ec-input">
+                    {{ Order.message|nl2br }}
+                </div>
+            </div>
+            <div class="ec-totalBox__btn sp">
+                <button type="submit" class="ec-blockBtn--action s2"><span>{{ '確認'|trans }}</span></button>
+                <a href="{{ url('shopping') }}" class="ec-blockBtn--cancel s2"><span>{{ '回購物車'|trans }}</span></a>
+            </div>
+        </div>
+        <div class="ec-orderRole__summary">
+            <div class="ec-totalBox__btn">
+                <button type="submit" class="ec-blockBtn--action s2"><span>{{ '確認'|trans }}</span></button>
+                <a href="{{ url('shopping') }}" class="ec-blockBtn--cancel s2"><span>{{ '回購物車'|trans }}</span></a>
+            </div>
+            <div class="ec-totalBox">
+                <dl class="ec-totalBox__spec">
+                    <dt>{{ '小計'|trans }}</dt>
+                    <dd class="ec-totalBox__specTotal">{{ Order.subtotal|price }}</dd>
+                </dl>
+                {# <dl class="ec-totalBox__spec">
+                    <dt>{{ '委员会'|trans }}</dt>
+                    <dd>{{ Order.charge|price }}</dd>
+                </dl> #}
+                <dl class="ec-totalBox__spec">
+                    <dt>{{ '運費'|trans }}</dt>
+                    <dd>{{ Order.deliveryFeeTotal|price }}</dd>
+                </dl>
+                {% if Order.taxable_discount < 0 %}
+                <dl class="ec-totalBox__spec">
+                    <dt>{{ '折扣'|trans }}</dt>
+                    <dd>{{ Order.taxable_discount|price }}</dd>
+                </dl>
+                {% endif %}
+                {# <div class="ec-totalBox__total">{{ '總共'|trans }}<span class="ec-totalBox__price">{{ Order.taxable_total|price }}</span> #}
+                {# <span class="ec-totalBox__taxLabel">{{ '含税'|trans }}</span> #}
+                {# </div> #}
+                {# {% for rate, total in Order.taxable_total_by_tax_rate %}
+                    <dl class="ec-totalBox__taxRate">
+                        <dt>{{ '税率 %rate% %主题'|trans({ '%rate%': rate }) }}</dt>
+                        <dd>{{ total|price }}</dd>
+                    </dl>
+                {% endfor %}
+                {% for item in Order.tax_free_discount_items %}
+                    {% if loop.first %}<div class="ec-totalBox__total"></div>{% endif %}
+                    <dl class="ec-totalBox__spec">
+                        <dt>{{ item.product_name }}</dt>
+                        <dd>{{ item.total_price|price }}</dd>
+                    </dl>
+                {% endfor %} #}
+                <div class="ec-totalBox__total">{{ '總共金額'|trans }}<span class="ec-totalBox__price">{{ Order.payment_total|price }}</span>
+                {# <span class="ec-totalBox__taxLabel">{{ '含税'|trans }}</span> #}
+                </div>
+                {% if BaseInfo.isOptionPoint and Order.Customer is not null %}
+                <div class="ec-totalBox__pointBlock">
+                    <dl class="ec-totalBox__spec">
+                        <dt>{{ '使用點數'|trans }}</dt>
+                        <dd>{{ Order.UsePoint|number_format }} pt</dd>
+                    </dl>
+                    <dl class="ec-totalBox__spec">
+                        <dt><span class="ec-font-bold">{{ '额外积分'|trans }}</span></dt>
+                        <dd><span class="ec-font-bold">{{ Order.AddPoint|number_format }} pt</span></dd>
+                    </dl>
+                </div>
+                {% endif %}
+                    {% if app.user and app.user.pre_order_discount_price > 0 %}
+                        <div class="ec-totalBox-prime-point">运送 PT 返还福利: +{{ app.user.pre_order_discount_price }} pt</div>
+                    {% endif %}
+               
+            </div>
+        </div>
+    </div>
+</form>
+
+            </section>
+        </article>
+
+
+        <script>
+            $(function(){
+                console.log(window.parent)
+                if(window.parent){
+                    var doc = $(window.parent.document)
+                    let im = doc.find('#direct_order_iframe')
+                    if($(im).attr('id') == "direct_order_iframe"){
+                        console.log(im)
+                        $(im).height(document.body.scrollHeight)
+                        
+                        doc.find('.direct_order_btn').show()
+                        
+                        console.log({im:im, height:document.body.scrollHeight})
+                        $('.ec-layoutRole__header,.ec-layoutRole__footer').hide()
+                        $('form').attr('target','_top')
+                        $('a').attr('target','_top')
+
+                        doc.find('.direct_order_link').each(function(){
+                            $(this).attr('href', "")
+                        });
+                    }
+                }
+            })
+        </script>
+{% endblock %}

@@ -1,0 +1,52 @@
+parameters:
+    paidy:
+        checkout_js: https://apps.paidy.com/
+        api_url: 'https://api.paidy.com/payments/'
+        paidy_customer_link: https://paidy.com/payments/
+        tax_rate: 8
+        currency: JPY
+        version: '2018-04-10'
+        title: 'あと払い（ペイディ）'
+        default_webhook_ip:
+        charge_type:
+            authorize: 1
+            capture: 2
+        status_color_code:
+            authorized: '#437ec4'
+            closed: '#25B877'
+            empty: '#A3A3A3'
+        plugin_error:
+            payment_method_error: '操作に対応していない決済です。'
+            capture_colse_failed: 'Paidy状態が「オーソリ」の受注のみ可能です。'
+            capture_expired: 'Paidy有効期限外のため完了できませんでした。'
+            close_failed: 'キャプチャー済みの受注のみ可能です。'
+            all_refunded: '全額返金済みのため完了できませんでした。'
+            refund_amount_exceeded: '返金可能額を上回るため完了できませんでした。'
+            numeric_error: '部分返金額が数値でないため完了できませんでした。'
+        api_error:
+            404: リクエストしたリソースが見つかりませんでした。
+            authentication.failed: Paidyに認証は成功しませんでした。
+            authorization.failed: Paidyに決済のAuthorizeは成功しませんでした。
+            method.invalid: HTTPメソッドを使用できません。
+            media_type.unsupported: サポートされていないメディアタイプ 。
+            request_content.malformed: リクエスト本文のフォーマットが正しくありません。
+            service.conflict: HTTPメソッドを使用できません。
+            service.exception: サービス内部エラー。
+            service.forbidden: 許可されていませんでした。
+            request_entity.invalid: エンティティの検証失敗。
+            version.unknown: リクエストしたバージョンは存在しません。
+monolog:
+    channels: ['paidy']
+    handlers:
+        paidy:
+            type: fingers_crossed
+            action_level: info
+            passthru_level: info
+            handler: paidy_rotating_file
+            channels: ['paidy']
+        paidy_rotating_file:
+            type: rotating_file
+            max_files: 60
+            path: '%kernel.logs_dir%/%kernel.environment%/paidy.log'
+            formatter: eccube.log.formatter.line
+            level: debug

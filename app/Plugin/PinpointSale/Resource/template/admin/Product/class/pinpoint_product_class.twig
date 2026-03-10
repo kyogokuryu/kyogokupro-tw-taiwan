@@ -1,0 +1,64 @@
+<button id="pinpoint_sale_change" class="btn btn-ec-regular ml-2" type="button">
+    {{ 'pinpoint_sale.admin.pinpoint_area_title'|trans }}
+</button>
+
+<span id="pinpoint_sale_msg" class="invalid-feedback d-block">
+    <span class="d-block">
+        <span class="form-error-icon badge badge-danger text-uppercase">
+            {{ 'pinpoint_sale.admin.product_class.pinpoint_error_title'|trans }}
+        </span>
+        <span class="form-error-message">
+            {{ 'pinpoint_sale.admin.product_class.pinpoint_error_msg'|trans }}
+        </span>
+    </span>
+</span>
+
+<table>
+    <thead id="pinpoint_sale_thead" class="d-none">
+    <th class="pt-2 pb-2 pl-3"></th>
+    <th class="pt-2 pb-2">{{ ClassName1 ? ClassName1.name }}</th>
+    {% if ClassName2 %}
+    <th class="pt-2 pb-2">{{ ClassName2 ? ClassName2.name }}</th>
+    {% endif %}
+    <th class="pt-2 pb-2 pl-4">
+        {{ 'pinpoint_sale.admin.product_class_title'|trans }}
+    </th>
+        <th class="col-auto text-right">
+            <button type="button" id="pinpoint_sale_copy" class="btn btn-ec-regular">
+                <i class="fa fa-files-o mr-1"></i>
+                <span>{{ 'admin.product.copy_first_line'|trans }}</span>
+            </button>
+        </th>
+    </thead>
+    {% for product_class_form in form.product_classes %}
+    <tr class="product_class_pinpoint_sale_target d-none"
+        id="product_class_pinpoint_sale_target_{{ product_class_form.vars.name }}"
+        data-pinpoint_sale_product_class_name="{{ product_class_form.vars.name }}"
+        data-prototype="{% filter escape %}{{ include('@PinpointSale/admin/Product/class/pinpoint_product_class_prototype.twig', {'productPinpointForm': product_class_form.productPinpoints.vars.prototype, 'key1': '__class__', 'key2': '__name__'}) }}{% endfilter %}">
+        <td class="align-middle pl-3">
+            {% set point_check_key = 'pinpoint_sale_'~product_class_form.checked.vars.id %}
+            <input type="checkbox" disabled="disabled" id="{{ point_check_key }}" {% if product_class_form.checked.vars.data %}checked="checked"{% endif %}>
+        </td>
+        <td class="align-middle">
+            {{ product_class_form.vars.value.ClassCategory1 }}
+        </td>
+        {% if ClassName2 %}
+            <td class="align-middle">
+                {{ product_class_form.vars.value.ClassCategory2 }}
+            </td>
+        {% endif %}
+        <td class="align-middle" colspan="2">
+            {% for productPinpointForm in product_class_form.productPinpoints %}
+                {% set index = productPinpointForm.vars.name %}
+                {{ include('@PinpointSale/admin/Product/class/pinpoint_product_class_prototype.twig', {'productPinpointForm': productPinpointForm, 'key1': product_class_form.vars.name, 'key2': index}) }}
+            {% endfor %}
+            <div class="fom-row col-auto">
+                <a class="pinpoint_sale_add_btn" data-product_class_name="{{ product_class_form.vars.name }}" data-key1="{{ product_class_form.vars.name }}">
+                    <i class="fa fa-plus-square-o"></i>
+                    <span class="font-weight-bold">{{ 'pinpoint_sale.admin.pinpoint_area_add'|trans }}</span>
+                </a>
+            </div>
+        </td>
+    </tr>
+    {% endfor %}
+</table>

@@ -1,0 +1,411 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'inapp_frame.twig' %}
+
+{% set body_class = 'video_page ' %}
+
+{% block stylesheet %}
+    <style type="text/css">
+        @media screen and (max-width: 480px){
+            .ec-layoutRole {
+                padding-top: 75px !important;
+            }
+            .ec-layoutRole__mainWithColumn{
+                padding:0;
+                padding-left:0px !important;
+                padding-right: 0px !important;
+            }
+
+        }
+        .edu_header_title{
+            background:#f9f5f8;
+            text-align:center;
+            padding:1px;
+            position:relative;
+        }
+        .edu_header_title h3{
+            font-weight:bold;
+            margin-top: 9px;
+            margin-bottom: 9px;
+        }
+        .edu_header_title .back{
+            position:absolute;
+            top:50%;
+            left:10px;
+            transform:translateY(-50%);
+        }
+        .ec-layoutRole{
+            background: #f9f5f8;
+        }
+        .edu_body{
+            margin:10px;
+            
+        }
+
+
+        li.list-group-item {
+            z-index: inherit !important;
+        }
+
+        iframe{
+            height:200px;
+        }
+        .progress_circle{
+            position:relative;
+            width: fit-content;
+            height: fit-content;
+        }
+        .progress_circle .progress_cir{
+            position:absolute;
+            top:0%;
+            left:0%;
+        }
+        .progress_circle .progress_text{
+            position:absolute;
+            top:calc(50% - 5px);
+            left:50%;
+            transform: translate(-50%,-50%);
+            color:#997641;
+            font-size:32px;
+            font-weight:bold;
+        }
+        .point-box{
+            width:263px;
+            padding:25px;
+            background:linear-gradient(to right, #EABD7D 0%, #997641 51% , #EABD7D 100%);
+            border-radius:30px;
+
+            color:#fff;
+            font-size:32px;
+            font-weight:bold;
+            font-family: Inter,Arial, 'Helvetica Neue', Helvetica, sans-serif;
+        }
+        #list_product{
+            border-top:1px solid #000000;
+            margin-top:20px;
+        }
+
+        #list_product .tip{
+            margin-top:25px;
+            margin-bottom:25px;
+            text-align: center;
+            font-weight: bold;
+            font-family: Inter,Arial, 'Helvetica Neue', Helvetica, sans-serif;
+        }
+
+        .product_preview .dialog{
+            position: absolute;
+            background: #fff;
+            width: 100%;
+            padding: 10px;
+            bottom:0%;
+            animation-duration: 0.3s;
+        }
+        .product_preview .dialog.dialog_show{
+            animation-name: dialog_show;
+        }
+        @keyframes dialog_show {
+            from {bottom:-400px;}
+            to {bottom:0;}
+        }
+        .product_preview .dialog .add-cart{
+            width: 100%;
+            background: #000;
+            color:#fff;
+            padding:10px;
+        } 
+
+        .modal-dialog-centered {
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex-align: center;
+                align-items: center;
+            min-height: calc(100% - (0.5rem * 2));
+        }
+        .modal-dialog-centered .modal-content{
+            width:1000px
+        }
+        .modal-dialog-centered:before {
+                display: block;
+                height: calc(100vh - (0.5rem * 2));
+                content: "";
+        }
+        
+        
+    </style>
+{% endblock %}
+
+{% block javascript %}
+<script>
+var videoYoutubeId = "{{ video.getVideoYoutubeId }}"
+var second = "{{ video.getVideoPointSetting.getSecond }}"
+var point = "{{ video.getVideoPointSetting.getPoint }}"
+var curpoint = "{{ customer.point }}"
+var checkTime
+var player;
+
+var tag = document.createElement('script');
+
+tag.src = "https://www.youtube.com/iframe_api";
+var firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+function onYouTubeIframeAPIReady() {
+player = new YT.Player('iframe_video', {
+    height: '390',
+    width: '640',
+    videoId: videoYoutubeId,
+    playerVars: {
+        'playsinline': 1
+    },
+    events: {
+        'onReady': onPlayerReady,
+        'onStateChange': onPlayerStateChange
+    }
+})
+}
+
+function onPlayerReady(event) {
+    event.target.playVideo()
+    //startInterval(second)
+}
+    function startInterval(second) {
+        $(function () {
+             $.ajax({
+                    url: "{{ url('video_new_point')}}",
+                    type: 'POST',
+                    data: {
+                        video_id: "{{ video.getId }}"
+                    }
+             }).done(function (data) {
+                let point = data;
+                
+                if(point>0){
+                    $("#BundleProductSearchProductModal").modal("show");
+                    $("#mess-dialog").html(point);
+                }
+                if(point<0) point =0;
+                let newPoint = parseInt(curpoint) +parseInt(point);
+
+                $(".point-box span").html(newPoint.toLocaleString('en-US'));
+                $(".point-box").css("font-size",newPoint>=1000?'20px':'24px')
+                $(".progress_circle").css("display","none")
+                $("#d-point").css("justify-content","center")
+                
+            })
+        })
+    }
+
+var time_cds = second; 
+var time_cd =time_cds;
+var time_check =50;
+var intervalID = null;
+function onPlayerStateChange(event) {
+    if (event.data == YT.PlayerState.PLAYING && !intervalID) {
+        // done = true;
+        if(time_cd<=0)
+            return;
+        intervalID = setInterval((dt)=>{
+            time_cd-=time_check/1000;
+            if(time_cd<0)
+                time_cd =0;
+         //   console.log("time_cd",time_cd,dt);
+            
+            document.getElementById("v_timce_cd").innerHTML=  (time_cd).toFixed(0)
+            let v_progress =Math.floor(251*(time_cd/time_cds)); 
+            $('#progress_timce_cd').css('stroke-dashoffset', v_progress);
+            
+    
+
+            if(time_cd<=0){
+                startInterval(second)
+                clearInterval(intervalID);
+                document.getElementById("list_product").style.display = "block";
+
+                $('.img-product').on("click",(event)=>{
+                    let element = event.delegateTarget;
+                    let pId = element.getAttribute('pId');
+                    let e_price =  element.querySelector('.price');
+                    let e_name =  element.querySelector('.p_name');
+                    $('#product_preview .p_name').text( e_name.textContent);
+                    $('#product_preview .p_price').text(e_price.textContent);
+                    $('#product_preview .a_detail').attr('href',element.getAttribute('data-product-url'));
+                    $('#product_preview .add-cart').attr('data-cartid', pId);
+                    $('#product_preview_image').html($('#productImage'+pId).html());
+
+                    $('#product_preview').css("display", "block");
+                    $('#product_preview .dialog').addClass("dialog_show");
+                })
+                $('#product_preview .dialog').on("click",(event)=>{
+                    event.stopPropagation();
+                })
+                $('#product_preview').on("click",()=>{
+                    $('#product_preview').css("display", "none");
+                    $('#product_preview .dialog').removeClass("dialog_show");
+                })
+            }
+        }, time_check);
+    }else{
+        clearInterval(intervalID);
+        intervalID = null
+    }
+
+
+}
+
+    $('.add-cart').on("click",(e)=>{
+                let element = e.delegateTarget;
+                var $form =  $('#productForm' +  element.getAttribute('data-cartid') )
+                e.preventDefault();
+                $.ajax({
+                    url: $form.attr('action'),
+                    type: $form.attr('method'),
+                    data: $form.serialize(),
+                    dataType: 'json',
+                    beforeSend: function(xhr, settings) {
+                        // Buttonを無効にする
+                        $('.add-cart').prop('disabled', true);
+                    }
+                }).done(function(data) {
+                    // レスポンス内のメッセージをalertで表示
+                    $.each(data.messages, function() {
+                        $('#ec-modal-header').html(this);
+                    });
+
+                    $('#ec-modal-checkbox').prop('checked', true);
+
+                    // カートブロックを更新する
+                    $.ajax({
+                        url: '{{ url('block_cart') }}',
+                        type: 'GET',
+                        dataType: 'html'
+                    }).done(function(html) {
+                        $('.ec-headerRole__cart').html(html);
+                    });
+                }).fail(function(data) {
+                    alert('{{ 'カートへの追加に失敗しました。'|trans }}');
+                }).always(function(data) {
+                    // Buttonを有効にする
+                    $('.add-cart').prop('disabled', false);
+                });
+                })
+</script>
+{% endblock javascript%}
+
+{% block main %}
+    <div class="edu_header_title">
+        <a href="/education" class="back">Back</a>
+        <h3><strong>VIDEO</strong></h3>
+    </div>
+    <div id="iframe_video"></div>
+    <div class="edu_body">
+        <div>
+            <p style="word-break: break-word;">{{ video.name }}</p>
+        </div>
+        <div id="d-point" style="display: flex;justify-content: space-between;align-items: center;">
+
+            <div class="point-box" style="font-size:{{customer.point>=1000?'20px':'24px'}}"><p>ポイント：<span>{{customer.point|number_format}}</span>pt</p></div>
+
+            <div class="progress_circle">
+                <svg class="border_progress" height="100" width="100">
+                    <circle cx="50" cy="50" r="40" stroke="#333333" stroke-width="2" fill="#33333300" />
+                </svg>
+                <svg id="progress_timce_cd" class="progress_cir" height="100" width="100">
+                    <defs>
+                        <linearGradient id="grad1" x1="100%" y1="0%" x2="0%" y2="0%">
+                        <stop offset="0%" style="stop-color:#97743F;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#EABD7D;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="50" cy="50" r="40" stroke="url(#grad1)" stroke-width="3" fill="#33333300" />
+                </svg>
+                <p class="progress_text"> <span id="v_timce_cd">{{video.getVideoPointSetting.getSecond}}</span>s</p>
+            </div>
+
+        </div>
+        <div id="list_product" style="display:none">
+            <p class="tip">このアイテムを見ている人におすすめ</p>
+            <div class="dx"> 
+                {% for videoProduct in video.getVideoRelativeProducts %}
+                    {% set product = videoProduct.getProduct %}
+                        {# <p>{{ product.name }}</p>  #}
+                        <div class="img-product" data-product-url="{{ url('product_detail', {'id': product.id}) }}" pId={{product.id}}>
+                            <img src= "https://upload.wikimedia.org/wikipedia/commons/b/b9/Solid_red.png?20130124000714">
+                            <p class="p_name">
+                                {{product.name}}
+                            </p>
+                            <p class="price" style="display:none">
+                                {% if product.hasProductClass %}
+                                    {% if product.getPrice02Min == product.getPrice02Max %}
+                                        {{ product.getPrice02IncTaxMin|price }}
+                                    {% else %}
+                                        {{ product.getPrice02IncTaxMin|price }} ～ {{ product.getPrice02IncTaxMax|price }}
+                                    {% endif %}
+                                {% else %}
+                                    {{ product.getPrice02IncTaxMin|price }}
+                                {% endif %}
+                            </p>
+                            <form name="form{{ product.id }}" id="productForm{{ product.id }}" action="{{ url('product_add_cart', {id:product.id}) }}" method="post"></form>
+                            <div id="productImage{{ product.id }}" style="display:none">
+                                {% for ProductImage in product.ProductImage %}
+                                    <img src="{{ asset(ProductImage, 'save_image') }}">
+                                {% else %}
+                                    <img src="{{ asset(''|no_image_product, 'save_image') }}"/>
+                                {% endfor %}
+                            </div>
+                        </div>
+                {% endfor %}
+            </div>
+                
+        </div>
+    </div>
+    
+    
+
+    <div id="product_preview" class="product_preview">
+        <div class="dialog">
+            <div class="dx" id="product_preview_image">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b9/Solid_red.png?20130124000714">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b9/Solid_red.png?20130124000714">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b9/Solid_red.png?20130124000714">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b9/Solid_red.png?20130124000714">
+            </div>
+            <p class="p_name">Product name</p>
+            <div class="p_flex">
+                <strong><p class="p_price">$123</p></strong>
+                <a class="a_detail">Detatil</a>
+            </div>
+            <div>
+                <button class="add-cart" data-cartid="">Them vao gio hang </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="BundleProductSearchProductModal" tabindex="-1" role="dialog"
+        aria-labelledby="BundleProductSearchProductModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"></h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p >Point video: <span id="mess-dialog"></span><p>
+                    <button type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">Close</span>
+                    </button>
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Slide To Unlock</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="A jquery plugint to slide to unlock/lock with theming">
+    <meta name="keywords" content="jquery, plugin, ES6, javascript, Slide, to, Unlock, SlideToUnlock, lock, touch, mouse, mobile, devices, theme">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <link href="css/slideToUnlock.css" rel="stylesheet">  
+    <!--
+    <link href="css/iphone.theme.css" rel="stylesheet">  
+    -->
+    <style>
+      div.row {
+        margin-top: 10px;
+      }
+
+
+
+
+
+      .kg-cube .locked{
+        background-color: #ededb2;
+        border-color:#FFD814;
+        color:#666;
+        font-weight:bold;
+      }
+
+      .kg-cube .unlocked{
+        background-color:#c8f1ca;
+        border-color:      #04bf0d;
+      }
+
+      .kg-cube .drag{
+        border-radius:0px;
+        background-color:#FFD814;
+        border-color:#FFD814;
+      }
+      .kg-cube .drag:before{
+        content:">>>";
+        color:#666;
+
+      }
+      .kg-cube .text{
+        border-radius:0;
+      }
+      .kg-cube .progressBar{
+        border-radius:0;
+      }
+
+      .kg-cube .slideToUnlock{
+        border-radius:0;
+      }
+    </style>
+</head>
+  <body>
+    <h1>Slide To Unlock</h1>
+    <div class="container kg-cube">
+        <div class="row">
+            <div id="slider1" class="col-5"> </div>
+          </div>
+
+          <div class="row">
+            <div id="slider2" data-lock-text="スワイプして注文" data-unlock-text="注文確定" class="col-5"> </div>
+          </div>
+        </div>
+        
+        <h4><a href="index.html"> Check out the iPhone Theme</a></h4>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+    <script src="js/jquery.slideToUnlock.js"></script>  
+    <script>
+            $(document).ready(function(){
+               $("#slider1").slideToUnlock();
+               var elm = $("#slider2").slideToUnlock({ 
+                useData: true, 
+                theme: "grey",
+                
+                
+                  unlockfn:function($el, slider){
+                    console.log("ロックが解除されました", $el)           
+
+                     setTimeout(function() {
+                      slider.switch_off()
+                     }, 3000);
+                  }
+                });
+
+               $("#slider2").on('touchEnd', function(event){
+                console.log(event);
+               })
+            })
+            
+        </script>
+</body>
+</html>

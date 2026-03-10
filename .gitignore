@@ -1,0 +1,33 @@
+# Dependencies
+/vendor/
+/node_modules/
+
+# Environment
+.env
+.env.local
+
+# Runtime
+/var/cache/
+/var/log/
+/var/sessions/
+
+# Uploads (managed separately)
+/html/upload/
+
+# WordPress (note)
+/note/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Composer
+composer.phar
+
+# Backup files
+*.bak_perf

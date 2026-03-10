@@ -1,0 +1,186 @@
+<!doctype html>
+{#
+This file is part of EC-CUBE
+
+Copyright(c) LOCKON CO.,LTD. All Rights Reserved.
+
+http://www.lockon.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+<html lang="{{ eccube_config.locale }}">
+<head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# product: http://ogp.me/ns/product#">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="eccube-csrf-token" content="{{ csrf_token(constant('Eccube\\Common\\Constant::TOKEN_NAME')) }}">
+    <title>{{ BaseInfo.shop_name }}{% if subtitle is defined and subtitle is not empty %} / {{ subtitle }}{% elseif title is defined and title is not empty %} / {{ title }}{% endif %}</title>
+    {% if Page.author is not empty %}
+        <meta name="author" content="{{ Page.author }}">
+    {% endif %}
+    {# 向井編集分 #}
+    {# {% if Page.description is not empty %}
+        <meta name="description" content="{{ Page.description }}">
+    {% endif %} #}
+    {# {% if Page.keyword is not empty %}
+        <meta name="keywords" content="{{ Page.keyword }}">
+    {% endif %}
+    {% if Page.meta_robots is not empty %}
+        <meta name="robots" content="{{ Page.meta_robots }}">
+    {% endif %}
+    {% if Page.meta_tags is not empty %}
+        {{ include(template_from_string(Page.meta_tags)) }}
+    {% endif %} #}
+    <link rel="icon" href="{{ asset('assets/img/taiwan_logo.png') }}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+	
+<style>
+.mypage_receipt2 {
+	padding-top:10px;
+}
+.mypage_receipt2 .receipt_title {
+	text-align:center;
+	margin:20px 0;
+	font-size:140%;
+}
+.mypage_receipt2 .receipt_title span {
+	font-weight:bold;
+}
+.mypage_receipt2 .box {
+	clear:both;
+	margin-bottom:30px;
+}
+.mypage_receipt2 .left {
+	float:left;
+	width:48%;
+}
+.mypage_receipt2 .right {
+	float:right;
+	width:48%;
+}
+.mypage_receipt2 .clear {
+	clear:both;
+}
+.mypage_receipt2 #name {
+	display:inline-block;
+	font-size:120%;
+	padding:0 10px;
+	border-bottom:1px solid #000;
+	margin-bottom:5px;
+}
+.mypage_receipt2 #info_area {
+	text-align:right;
+}
+.mypage_receipt2 #info_area .shop_name {
+	font-size:110%;
+	font-weight:bold;
+}
+.mypage_receipt2 .box .title_bar {
+	text-align:center;
+	border-bottom:#000 2px solid;
+	margin-bottom:10px;
+	padding-bottom:5px;
+	font-size:120%;
+	font-weight:bold;
+}
+.mypage_receipt2 .box .product_area {
+	margin-bottom:10px;
+	padding-bottom:10px;
+	border-bottom:#000 1px dashed;
+}
+.mypage_receipt2 .box #price_area {
+}
+.mypage_receipt2 .box #price_area #total_amount {
+	margin-top:10px;
+	font-size:120%;
+}
+.mypage_receipt2 .box #price_area #total_amount .small {
+	font-size:80%;
+	padding-left:5px;
+}
+
+.mypage_receipt2 .box .shipping_area {
+	margin-bottom:10px;
+	padding-bottom:10px;
+	border-bottom:#000 1px dashed;
+}
+.mypage_receipt2 .box .shipping_area .otodoke {
+	font-weight:bold;
+}
+.mypage_receipt2 .box .shipping_area .shipping_product_name {
+	font-weight:bold;
+}
+
+.mypage_receipt2 #print {
+	text-align:center;
+}
+@media print{
+.mypage_receipt2 #print {
+	display:none;
+}
+#contents {
+    min-height:auto;
+}
+}
+</style>
+	
+    {% block stylesheet %}{% endblock %}
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script>
+        $(function() {
+            $.ajaxSetup({
+                'headers': {
+                    'ECCUBE-CSRF-TOKEN': $('meta[name="eccube-csrf-token"]').attr('content')
+                }
+            });
+        });
+    </script>
+    {# Layout: HEAD #}
+    {% if Layout.Head %}
+        {{ include('block.twig', {'Blocks': Layout.Head}) }}
+    {% endif %}
+    {# プラグイン用styleseetやmetatagなど #}
+    {% if plugin_assets is defined %}{{ include('@admin/snippet.twig', { snippets: plugin_assets }) }}{% endif %}
+</head>
+<body id="page_{{ app.request.get('_route') }}" class="{{ body_class|default('other_page') }}">
+
+<div class="ec-layoutRole">
+
+    <div class="ec-layoutRole__contents">
+
+        {% set layoutRoleMain = 'ec-layoutRole__main' %}
+
+        <div class="{{ layoutRoleMain }}">
+
+            {# MAIN AREA #}
+            {% block main %}{% endblock %}
+
+        </div>
+
+    </div>
+
+</div><!-- ec-layoutRole -->
+
+<div class="ec-overlayRole"></div>
+<div class="ec-drawerRoleClose"><i class="fas fa-times"></i></div>
+<div class="ec-drawerRole">
+</div>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/jquery.slick/1.6.0/slick.min.js"></script>
+{% include('@common/lang.twig') %}
+<script src="{{ asset('assets/js/function.js') }}"></script>
+<script src="{{ asset('assets/js/eccube.js') }}"></script>
+{% block javascript %}{% endblock %}
+{# Layout: CLOSE_BODY_BEFORE #}
+{% if Layout.CloseBodyBefore %}
+    {{ include('block.twig', {'Blocks': Layout.CloseBodyBefore}) }}
+{% endif %}
+{# プラグイン用Snippet #}
+{% if plugin_snippets is defined %}
+    {{ include('snippet.twig', { snippets: plugin_snippets }) }}
+{% endif %}
+</body>
+</html>

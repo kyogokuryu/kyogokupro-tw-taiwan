@@ -1,0 +1,1893 @@
+#====================================================================================
+
+#共通
+#====================================================================================
+
+common.select: 请选择
+common.select__pref: 请选择都道府县
+common.select__unspecified: 未指定
+common.select__all_products: 所有商品
+common.required: 必填
+common.back: 返回
+common.close: 关闭
+common.send: 发送
+common.registration: 注册
+common.change: 更改
+common.delete: 删除
+common.ok: 确定
+common.cancel: 取消
+common.go_to_top: 返回首页
+common.go_to_cart: 前往購物車
+common.go_to_confirm: 前往确认页面
+common.go_to_next: 前往下一页
+common.move_to_page_top: 返回页首
+common.prev: 上一页
+common.next: 下一页
+common.first: 第一页
+common.last: 最后一页
+common.name: 姓名
+common.kana: 姓名（假名）
+common.first_name: 名
+common.last_name: 姓
+common.first_name_kana: 名（假名）
+common.last_name_kana: 姓（假名）
+common.company_name: 公司名称
+common.shop_name: 店铺名称
+common.address: 地址
+common.pref: 都道府县
+common.postal_symbol: 邮政编码
+common.postal_code_sample: 例：100
+common.search_postal_code: 搜索邮政编码
+common.address_sample_01: 市区町村名称（例如：大阪市北区）
+common.address_sample_02: 番地或大厦名称（例如：西梅田1丁目6-8）
+common.phone_number: 电话号码
+common.phone_number_sample: 例如：11122223333
+common.mail_address: 电子邮箱地址
+common.mail_address_sample: 例如：ec-cube@example.com
+common.repeated_confirm: 请再次输入以确认
+common.password: 密码
+common.password_sample: 半角英文数字符号%min%〜%max%字符
+common.password_for_confirmation: 密码（确认）
+common.gender: 性别
+common.job: 职业
+common.birth_day: 出生年月日
+common.tax_include: 含税
+common.separator__range: 〜
+common.separator__colon: ：
+common.quantity: 數量
+common.quantity__with_separator: 數量：
+common.subtotal: 小计
+common.subtotal__with_separator: 小计：
+common.total: 总计
+common.total__with_separator: 总计：
+common.payment_total: 支付总额
+common.reduced_tax_rate_symbol: ※
+common.reduced_tax_rate_messeage: ※ 为享受减税率的商品。
+common.tax_rate_target: "税率 %rate% %对象"
+common.delivery_fee: 邮费
+common.charge: 手续费
+common.discount: 折扣
+common.point: 积分
+common.enabled: 启用
+common.disabled: 禁用
+common.user_name: "%last_name% %first_name% 您好"
+common.user_name.honor: "您好"
+common.login: 登录
+common.remember_me: 下次自动登录
+common.signup: 注册
+common.forgot_login: 忘记登录信息？
+common.customer_address_count_is_over: 收货地址已达到上限%count%个。如果要输入新的收货地址，请删除或更改现有地址。
+common.search_keyword: 输入关键词
+common.delete_confirm: 确定要删除吗？
+common.pagetop: 返回页首
+common.name.prefix: ""
+common.name.suffix: " 您好"
+
+#====================================================================================
+
+#前端页面
+#====================================================================================
+
+#------------------------------------------------------------------------------------
+
+#区块
+#------------------------------------------------------------------------------------
+
+front.block.cart.go_to_cart: 前往購物車
+front.block.cart.no_item: 当前购物车中没有商品。
+front.block.footer.about_us: 关于我们
+front.block.footer.privacy_policy: 隐私政策
+front.block.footer.inquiry: 联系我们
+front.block.footer.act_on_specified_commercial_transactions: 特定商业交易法信息
+front.block.category.list: 分类列表
+front.block.category.name:  類別名稱
+front.block.category.category__en: 分类
+front.block.category.category__ja: 分类
+front.block.topic.topic__en: 专题
+front.block.topic.topic__ja: 专题
+front.block.topic.title__gelato: 浓郁而健康！意大利奶酪冰淇淋特集
+front.block.topic.title__ice: 酥脆口感诱人！玉米冰淇淋特集
+front.block.eyecatch.title__en: CUBE GELATO ICE
+front.block.eyecatch.title__ja: 享受彩色的"CUBE"意大利奶酪冰淇淋。
+front.block.eyecatch.descriptiron: |
+  Gelato是意大利冰淇淋的一种，其特点是乳脂含量较低，比普通冰淇淋更健康。
+  我们精选当季水果的鲜美，原汁原味地制作成意大利奶酪冰淇淋。尽情享受浓郁风味但甜度适中、健康的Cube Gelato。
+  此外，我们还提供以意大利奶酪冰淇淋制成的冰棒和冰淇淋三明治。
+front.block.eyecatch.view_list: 查看列表
+front.block.new_item.title__en: NEW ITEM
+front.block.new_item.title__ja: 新品推荐
+front.block.new_item.more: 查看更多
+front.block.new_item.item_1_name: 彩色的"CUBE"意大利奶酪冰淇淋
+front.block.new_item.item_1_price: ¥1,200（含税）
+front.block.new_item.item_2_name: 樱桃冰淇淋三明治
+front.block.new_item.item_2_price: ¥800（含税）
+front.block.new_item.item_3_name: 彩色的"CUBE"意大利奶酪冰淇淋 NEO
+front.block.new_item.item_3_price: ¥600（含税）
+front.block.news.title__en: NEWS
+front.block.news.title__ja: 最新消息
+front.block.news.read_more: 查看更多
+front.block.news.see_details: 了解详情
+front.block.login.customer_registration: 新用户注册
+front.block.login.mypage: 我
+#------------------------------------------------------------------------------------
+# 前端区块
+#------------------------------------------------------------------------------------
+
+front.block.login.favorite: 我的收藏
+front.block.login.login: 登录
+front.block.login.logout: 注销
+front.block.login.to_cart: 查看购物车
+front.block.login.to_home: 返回首页
+
+#------------------------------------------------------------------------------------
+# 联系我们
+#------------------------------------------------------------------------------------
+
+front.contact.title: 联系我们
+front.contact.inquiry_notice: |
+  由于内容不同，我们可能需要一些时间来回复您的问题。
+  此外，请注意，如果您在休息日联系我们，我们将在下一个工作日后回复您。
+front.contact.order_notice: 如有关于您的订单的问题，请务必填写“订单号”。
+front.contact.inquiry_contents: 询问内容
+front.contact.complete_title: 询问（完成）
+front.contact.complete_message__title: 询问内容已发送完成
+front.contact.complete_message__body: 如果您没有收到确认邮件，请您再次联系我们，可能是邮件发送出了问题。
+
+#------------------------------------------------------------------------------------
+# 会员注册
+#------------------------------------------------------------------------------------
+
+front.entry.title: 新會員註冊
+front.entry.terms: 使用条款
+front.entry.agree_with_terms: 请先阅读并同意<a class="ec-link" href="%url%" target="_blank">使用条款</a>
+front.entry.agree: 同意
+front.entry.disagree: 不同意
+front.entry.confirm_title: 新會員註冊（确认）
+front.entry.confirm_message: |
+  您确定要使用以下信息进行注册吗？
+  如果确认无误，请点击下方的“注册会员”按钮。
+front.entry.do_register: 注册会员
+front.entry.complete_title: 新會員註冊（完成）
+front.entry.complete_title__temporary: 新會員註冊（临时）
+front.entry.complete_message__title: 感谢您的注册
+front.entry.complete_message__temporary: |
+  您当前是临时会员。我们已向您提供的邮箱发送了一封确认邮件。
+  请点击邮件中的链接完成正式注册。
+front.entry.complete_message__activated: |
+  您已成功注册会员。
+  祝您购物愉快！
+
+#------------------------------------------------------------------------------------
+# 忘记密码
+#------------------------------------------------------------------------------------
+
+front.forgot.title: 忘记密码
+front.forgot.message1: 请输入您注册时使用的邮箱并点击“下一步”按钮。
+front.forgot.message2: ※ 我们将发送一封密码重置邮件，请您查收邮件并设置新密码。
+front.forgot.complete_title: 重置密码（邮件发送）
+front.forgot.complete_message__title: 密码重置邮件已发送完成
+front.forgot.complete_message__body: |
+  我们已向您注册时使用的邮箱发送了一封密码重置邮件。
+  请您查看邮件内容，并根据指引设置新密码。
+  ※ 如果未收到邮件，请检查邮箱地址或重试。
+front.forgot.reset_title: 重置密码（设置新密码）
+front.forgot.reset_complete: 密码已更新。
+front.forgot.reset_error: 链接已失效或无效。
+front.forgot.reset_not_found: 请检查输入内容。
+
+#------------------------------------------------------------------------------------
+# 关于我们/特定商业交易法/...
+#------------------------------------------------------------------------------------
+
+front.about.title: 关于我们
+front.about.business_hour: 营业时间
+front.about.good_traded: 商品信息
+front.about.message: 留言
+front.agreement.title: 使用条款
+front.tradelaw.title: 特定商业交易法信息
+front.privacy.title: 隐私政策
+front.guide.title: 使用指南
+
+#------------------------------------------------------------------------------------
+
+#我的页面
+#------------------------------------------------------------------------------------
+
+front.mypage.welcome: 欢迎，%last_name%%first_name%先生/女士
+front.mypage.title: 我的页面
+front.mypage.welcome__point: 您当前的积分为 %point%pt。
+front.mypage.nav__history: 订单历史
+front.mypage.nav__history_detail: 订单历史详情
+front.mypage.nav__favorite: 收藏列表
+front.mypage.nav__customer: 编辑会员信息
+front.mypage.nav__customer_complete: 编辑会员信息（已完成）
+front.mypage.nav__customer_address: 收货地址列表
+front.mypage.nav__withdrow: 退会手续
+front.mypage.history_count: "共有 %count% 条历史记录"
+front.mypage.history_not_found: 没有订单历史记录。
+front.mypage.message_not_found: 无记录
+front.mypage.view_detail: 查看详情
+front.mypage.order_no: 订单编号
+front.mypage.order_status: 订单状态
+front.mypage.order_date: 订单日期
+front.mypage.use_point: 使用积分
+front.mypage.add_point: 添加积分
+front.mypage.delivery_info: 配送信息
+front.mypage.delivery: 收货地址
+front.mypage.delivery_provider: 配送方式
+front.mypage.delivery_date: 送达日期
+front.mypage.delivery_time: 送达时间
+front.mypage.current_price: 【现价】
+front.mypage.reorder: 重新下单
+front.mypage.payment_info: 支付信息
+front.mypage.payment: 支付方式
+front.mypage.message: 联系我们
+front.mypage.reorder_message: ※ 由于部分商品价格已更改，请在重新下单时注意。
+front.mypage.mail_not_found: 没有邮件历史记录。
+front.mypage.mail_list: 邮件发送历史记录列表
+front.mypage.customer_complete_message__title: 会员注册信息已更新
+front.mypage.customer_complete_message__body: 请继续享受购物乐趣。
+front.mypage.favorite_count: "共有 %count% 件收藏"
+front.mypage.favorite_not_found: 没有收藏。
+front.mypage.customer_address_count: "共有 %count% 个收货地址"
+front.mypage.customer_address_not_found: 没有收货地址。
+front.mypage.add_customer_address: "添加新的收货地址"
+front.mypage.withdraw_message__title: 请在执行退会手续之前确认
+front.mypage.withdraw_message__body: 请注意，一旦完成退会手续，所有已保存的购买历史记录和送货地址等信息将被删除。
+front.mypage.withdraw_execute_message__title: 是否确认执行退会手续？
+front.mypage.withdraw_confirm: 进入退会手续
+front.mypage.withdraw_cancel: 不，我不退会
+front.mypage.withdraw_execute: 是的，我要退会
+front.mypage.withdraw_complete_message__title: 退会已完成
+front.mypage.withdraw_complete_message__body: |
+  感谢您的使用。
+  期待您的再次光临。
+
+#------------------------------------------------------------------------------------
+
+#商品
+#------------------------------------------------------------------------------------
+
+front.product.all_category: 所有
+front.product.search_result: 搜索结果
+front.product.all_products: 所有商品
+
+front.product.search__category_not_found: 没有找到指定的类别
+front.product.search__product_not_found: 找不到您搜索的商品
+front.product.search_result__keyword: “%name%”的搜索结果
+front.product.search_result__detail: '<span class="ec-font-bold">%count%件</span><span>商品已找到</span>'
+front.product.add_cart: 加入购物车
+front.product.add_cart_complete: 已新增到購物車
+front.product.add_cart_error: 添加到购物车失败。
+front.product.add_favorite: 添加到收藏夹
+front.product.add_favorite_alrady: 已添加到收藏夹。
+front.product.out_of_stock: 售罄
+front.product.out_of_stock_label: （暂时缺货）
+front.product.added_to_favorite: 已添加到收藏夹。
+front.product.normal_price: 普通价格
+front.product.sale_price: 销售价格
+front.product.code: 商品编号
+front.product.related_category: 相关类别
+front.product.continue: 繼續選購
+front.product.invalid_quantity: 请输入大于1的数量。
+front.product.product_class_unselected: 未选择项目
+
+#------------------------------------------------------------------------------------
+
+#购物车
+#------------------------------------------------------------------------------------
+
+front.cart.title: 购物车
+front.cart.nav__cart_items: 购物车商品
+front.cart.nav__customer_info: 客户信息
+front.cart.nav__order: 订单处理
+front.cart.nav__confirm: 确认订单内容
+front.cart.nav__complete: 完成
+front.cart.total_price: 商品总价为“<strong>%price%</strong>”。
+front.cart.divide_cart: 购物车中包含无法同时购买的商品。
+front.cart.delete: 删除
+front.cart.delete__confirm: 确定要从购物车中删除商品吗？
+front.cart.product: 商品内容
+front.cart.checkout: 结账
+front.cart.continue: 繼續選購
+front.cart.no_items: 当前购物车中没有商品。
+front.cart.delivery_fee_free__now: 目前免邮费。
+front.cart.delivery_fee_free__price_and_quantity: 还需购买<strong>%price%</strong>或<strong>%quantity%件</strong>商品，即可享受<strong class="ec-color-red">免邮费</strong>。
+front.cart.delivery_fee_free__price: 还需购买<strong>%price%</strong>商品，即可享受<strong class="ec-color-red">免邮费</strong>。
+front.cart.delivery_fee_free__quantity: 还需购买<strong>%quantity%件</strong>商品，即可享受<strong class="ec-color-red">免邮费</strong>。
+
+#------------------------------------------------------------------------------------
+
+#购物
+#------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------
+
+#购物
+#------------------------------------------------------------------------------------
+
+front.shopping.title: 订单处理
+front.shopping.order_no: 订单编号
+front.shopping.customer_info: 客户信息
+front.shopping.delivery_info: 配送信息
+front.shopping.delivery_to: 收货地址
+front.shopping.delivery_provider: 配送方式
+front.shopping.delivery_date: 送货日期
+front.shopping.delivery_time: 送货时间
+front.shopping.to_multiple: 添加收货地址
+front.shopping.payment_info: 支付方式
+front.shopping.point_info: 使用积分
+front.shopping.available_point: "可用积分：%point% pt"
+front.shopping.point_prev: 使用积分
+front.shopping.prev_point: 下单前积分
+front.shopping.next_point: 下单后积分
+front.shopping.add_point: 添加积分
+front.shopping.use_point: 使用积分
+front.shopping.message_info: 联系我们
+front.shopping.message_placeholder: 有任何问题，请在此输入。（最多3000字）
+front.shopping.go_to_confirm: 去确认
+front.shopping.back_to_cart: 返回购物车
+front.shopping.shipping_title: 收货地址选择
+front.shopping.shipping_add_new_shipping: 添加新的收货地址
+front.shopping.shipping_add_new_shipping__short: 添加收货地址
+front.shopping.shipping_unselected: 请选择收货地址
+front.shopping.shipping_send_selected_shipping: 发送到选定的收货地址
+front.shopping.shipping_multiple_title: 多个收货地址
+front.shopping.shipping_multiple_message: 请选择每件商品的收货地址。
+front.shopping.confirm_title: 确认订单内容
+front.shopping.checkout: 下单
+front.shopping.back_to_order: 返回订单处理
+front.shopping.complete_title: 订单完成
+front.shopping.complete_message__title: 感谢您的订购
+front.shopping.complete_message__body: |
+  我们已发送订单确认邮件。
+  如果未收到确认邮件，请务必联系我们以解决问题。
+front.shopping.continue: 继续购买
+front.shopping.guest_purchase_message: 如果您想要以游客身份购买，请继续。
+front.shopping.guest_purchase: 游客购买
+front.shopping.nonmember: 输入客户信息
+front.shopping.shipping_edit_title_nomember: 商品购买/修改收货地址
+front.shopping.shipping_edit_header_customer: 添加收货地址
+front.shopping.shipping_edit_header_nonmember: 修改收货地址
+front.shopping.error: 购买错误
+front.shopping.order_error: 订单处理出错。
+front.shopping.system_error: 订单处理出现意外错误，请联系我们。
+front.shopping.empty_items_error: 订单处理未能成功完成。请重新尝试。
+front.shopping.out_of_stock: “%product%”库存不足，无法购买超过库存数量的商品。
+front.shopping.over_sale_limit: “%product%”有销售限制，无法购买超过限购数量的商品。
+front.shopping.out_of_stock_zero: “%product%”库存不足，已从购物车中删除。
+front.shopping.over_price_limit: 商品总价超出上限，请调整数量。
+front.shopping.in_preparation: “%product%”尚未准备好发货。请联系我们了解详情。
+front.shopping.not_purchase: 包含无法购买的商品。已从购物车中删除。
+front.shopping.price_changed: “%product%”价格已更改。
+front.shopping.payment_total_invalid: 支付总额无效。
+front.shopping.different_payment_methods: 订单中含有不同支付方式的商品，无法同时购买。
+front.shopping.payment_method_unselected: 请选择支付方式。
+front.shopping.payment_method_not_fount: 无可用支付方式。如果配送方式不同，请选择相同的配送方式。
+
+#====================================================================================
+
+#管理画面
+#====================================================================================
+
+#flash消息
+admin.common.save_complete: 已保存
+admin.common.save_error: 保存失败
+admin.common.delete_complete: 已删除
+admin.common.delete_error_relationship: 无法删除该类别，因为它包含视频。
+admin.content.video_management: 视频列表
+admin.content.video_category_management: 视频类别
+admin.common.delete_error: 删除失败
+admin.common.delete_error_foreign_key: 无法删除“%name%”，因为存在关联数据。
+admin.common.delete_error_already_deleted: 已经删除
+admin.common.move_complete: 已更新排序顺序
+admin.common.move_error: 更新排序顺序失败
+admin.common.upload_complete: 已上传
+admin.common.upload_error: 上传失败
+admin.common.csv_upload_complete: 已上传CSV文件
+admin.common.csv_upload_error: 上传CSV文件失败
+admin.common.send_complete: 已发送邮件
+admin.common.send_error: 发送邮件失败
+admin.common.create_complete: 已创建
+admin.common.system_error: 系统错误
+admin.common.to_show_complete: 已显示“%name%”。
+admin.common.to_hide_complete: 已隐藏“%name%”。
+admin.common.choiceType.box: 方塊
+admin.common.choiceType.full_width: 全寬
+admin.common.choiceType.default: 預設
+admin.common.choiceType.carousel: 輪播
+admin.common.choiceType.thumbnail: 縮略圖
+admin.common.choiceType.sidebar: 側邊欄
+admin.common.choiceType.slides: 投影片
+admin.common.choiceType.yes: 是
+admin.common.choiceType.no: 否
+admin.content.countdown_management: 秒倒计时
+admin.content.table.video_1_person: 影片一名
+admin.content.table.video_category: 影片類別
+admin.content.table.video_status: 狀態
+admin.content.table.video_link: 影片連結
+admin.content.table.video_1_person: 影片一名
+admin.content.table.video_category: 影片類別
+admin.content.table.video_status: 狀態
+admin.content.table.video_link: 影片連結
+admin.countdown.point: 點數
+admin.countdown.countdown_time: 倒數次數
+admin.countdown.countdown: 倒數
+admin.countdown.next_countdown_starts: 下次倒數開始時間
+
+
+# actio系统标签
+# Here is the translation of the provided Japanese text to Chinese:
+
+admin.common.save: 保存
+admin.common.registration: 注册
+admin.common.registration__new: 新注册
+admin.common.edit: 编辑
+admin.common.copy: 复制
+admin.common.display: 显示
+admin.common.copy_path: 复制路径
+admin.common.copy_path_complete: 路径已复制
+admin.common.delete: 删除
+admin.common.cancel: 取消
+admin.common.search: 搜索
+admin.common.send: 发送
+admin.common.confirm: 确认
+admin.common.execute: 执行
+admin.common.close: 关闭
+admin.common.bulk_registration: 批量注册
+admin.common.decision: 决定
+admin.common.create: 创建
+admin.common.create__new: 新创建
+admin.common.up: 向上
+admin.common.down: 向下
+admin.common.upload: 上传
+admin.common.download: 下载
+admin.common.prev: 上一页
+admin.common.next: 下一页
+admin.common.first: 第一页
+admin.common.last: 最后一页
+admin.common.back: 返回
+
+# 通用标签、消息
+
+# 汎用ラベル, メッセージ
+Here is the translation of the additional provided Japanese text to Chinese:
+
+admin.common.show: 显示
+admin.common.hide: 隐藏
+admin.common.hidden_label: (隐藏)
+admin.common.to_show: 隐藏中 | 显示
+admin.common.to_hide: 显示中 | 隐藏
+admin.common.required: 必须
+admin.common.bulk_actions: 批量操作
+admin.common.select: 请选择
+admin.common.select__pref: 选择都道府县
+admin.common.select__unspecified: 未指定
+admin.common.separator__range: 〜
+admin.common.separator__colon: ：
+admin.common.count: "%count%件"
+admin.common.search_detail: 详细搜索
+admin.common.search_result: 搜索结果：%count%件符合
+admin.common.search_invalid_condition: 搜索条件有误
+admin.common.search_no_result: 找不到符合搜索条件的数据
+admin.common.search_try_change_condition: 请更改搜索条件后再试
+admin.common.search_try_advanced_search: 也试试[详细搜索]
+admin.common.csv_download: 下载CSV
+admin.common.csv_upload: 上传CSV文件
+admin.common.csv_skeleton_download: 下载模板文件
+admin.common.csv_format: CSV文件格式
+admin.common.csv_select: 选择CSV文件
+admin.common.file_select: 选择文件
+admin.common.file_select_empty: 未选择文件
+admin.common.csv_invalid_format: CSV格式不符
+admin.common.csv_invalid_no_data: 没有CSV数据
+admin.common.csv_invalid_required: "%line%行的%name%未设置"
+admin.common.csv_invalid_greater_than_zero: "%line%行的%name%请设置为大于或等于0的数值"
+admin.common.csv_invalid_format_line: "%line%行的CSV格式不符"
+admin.common.csv_invalid_date_format: "%line%行的%name%日期格式不符"
+admin.common.csv_invalid_not_found: "%line%行的%name%不存在"
+admin.common.csv_invalid_not_found_target: "%line%行的%name%「%target_name%」不存在"
+admin.common.csv_invalid_not_same: "%line%行的%name1%和%name2%不能使用相同的值"
+admin.common.csv_invalid_can_not: "%line%行的%name%不能设置"
+admin.common.csv_invalid_image: '%line%行的%name%不能使用末尾的"/"或"../"'
+admin.common.csv_invalid_foreign_key: "%line%行的%name%因相关数据存在无法删除"
+admin.common.drag_and_drop_description: 项目顺序也可以通过拖放更改
+admin.common.drag_and_drop_image_description: 拖放图片或
+admin.common.delete_modal__title: 删除
+admin.common.delete_modal__message: "此操作无法撤销，确定要删除「%name%」吗？"
+admin.common.move_to_confirm_title: 页面跳转
+admin.common.move_to_confirm_message: "将跳转到%name%。是否保存编辑内容后跳转？"
+admin.common.move_to_confirm_move_only: 不保存直接跳转
+admin.common.move_to_confirm_save_and_move: 保存并跳转
+admin.common.admin_url_warning: 为了安全，请设置难以猜测的管理页面URL。可以从「<a href="%url%">安全管理</a>」设置。
+
+# エンティティに関連するラベル
+Here is the translation of the additional provided Japanese text to Chinese:
+
+admin.common.id: ID
+admin.common.name: 姓名
+admin.common.kana: 姓名（假名）
+admin.common.first_name: 名
+admin.common.last_name: 姓
+admin.common.company_name: 公司名称
+admin.common.company_name_kana: 公司名称（假名）
+admin.common.address: 地址
+admin.common.pref: 都道府县
+admin.common.postal_symbol: 邮政符号
+admin.common.postal_code_sample: 例：100
+admin.common.address_sample_01: 市區鄉鎮名稱（例如：北投區 ）
+admin.common.address_sample_02: 地號・大樓名稱（例如：西梅田1丁目6-8）
+admin.common.phone_number: 电话号码
+admin.common.mail_address: 邮箱地址
+admin.common.password: 密码
+admin.common.password_for_confirmation: 确认密码
+admin.common.prime_member: 会员类别
+admin.common.gender: 性别
+admin.common.job: 职业
+admin.common.birth_day: 生日
+admin.common.birth_day__start: 生日（开始）
+admin.common.birth_day__end: 生日（结束）
+admin.common.point: 积分
+admin.common.shop_memo: 店铺备注栏
+admin.common.create_date: 注册日期
+admin.common.create_date__start: 注册日期（开始）
+admin.common.create_date__end: 注册日期（结束）
+admin.common.update_date: 更新日期
+admin.common.update_date__start: 更新日期（开始）
+admin.common.update_date__end: 更新日期（结束）
+admin.common.last_update_date: 最终更新日期
+admin.common.last_updater: 最终更新者
+admin.common.device_type: 设备类别
+admin.common.authority: 权限
+admin.common.payment_method: 支付方式
+admin.common.charge: 手续费
+#------------------------------------------------------------------------------------
+# ホーム
+#------------------------------------------------------------------------------------
+
+# 機能名称
+admin.home: 首页
+admin.login: 登录
+
+# ラベル
+admin.home.order_status_title: 订单状况
+admin.home.shop_status_title: 店铺状态
+admin.home.shop_status_out_of_stock: 缺货商品数
+admin.home.shop_status_products: 经营商品数
+admin.home.shop_status_customers: 会员数
+admin.home.sales_all_summary_title: 整体销售状况
+admin.home.sales_summary_title: 电商销售状况
+admin.home.sales_ec_mall_summary_title: 电商平台销售状况
+admin.home.sales_live_commerce_summary_title: 直播电商销售状况
+admin.home.sales_summary_value: "%amount% / %count% 件"
+admin.home.sales_summary_this_month: 本月销售金额 / 销售件数
+admin.home.sales_summary_today: 今日销售金额 / 销售件数
+admin.home.sales_summary_yesterday: 昨日销售金额 / 销售件数
+admin.home.sales_summary_weekly: 每周
+admin.home.sales_summary_monthly: 每月
+admin.home.sales_summary_yearly: 每年
+admin.home.sales_summary_evyearly: 每年
+admin.home.sales_summary_amount: 销售金额
+admin.home.sales_summary_count: 销售件数
+admin.home.recommend_plugins_title: 推荐插件
+admin.home.recommend_plugins.owner_store: 业主商店
+admin.home.news_title: 通知
+
+admin.home.statistics.login_user_sum: 本月登录积分获取人数
+admin.home.statistics.login_user_sum.unit: 人
+admin.home.statistics.average_term_customer: 活跃顾客的平均在籍时间
+admin.home.statistics.average_term_customer.unit: 年
+admin.home.statistics.average_term_customer.info: 从创建账户起计算的经过年数（不包括游客）
+admin.home.statistics.ltv: LTV
+admin.home.statistics.ltv.info: (年LTV × 活跃顾客的平均在籍时间) 顾客从创建账户到终止期间为企业带来的利润
+admin.home.statistics.table.header.day: 日期
+admin.home.statistics.table.header.month_sale: 月销售额
+admin.home.statistics.table.header.month_sale.info: 月销售额
+admin.home.statistics.table.header.year_sale: 年销售额
+admin.home.statistics.table.header.year_sale.info: 例 2023/8 从2022/8到2023/8的月销售额总计
+admin.home.statistics.table.header.month_purchaser: 月购买顾客数
+admin.home.statistics.table.header.month_purchaser.info: 每月购买商品的顾客数
+admin.home.statistics.table.header.year_purchaser: 年购买顾客数
+admin.home.statistics.table.header.year_purchaser.info: 每年购买商品的顾客数
+admin.home.statistics.table.header.month_item_quantity: 月销售量
+admin.home.statistics.table.header.month_item_quantity.info: 每月发货商品总数
+admin.home.statistics.table.header.month_shipment: 月发货量
+admin.home.statistics.table.header.month_shipment.info: 含有运单号的每月发货量
+admin.home.statistics.table.header.year_shipment: 年发货量
+admin.home.statistics.table.header.year_shipment.info: 例 2023/8 从2022/8到2023/8的每月发货量总计
+admin.home.statistics.table.header.shippig_fee: 月运费
+admin.home.statistics.table.header.shippig_fee.info: 每月发货量×880日元
+admin.home.statistics.table.header.purchising_price: 采购单价
+admin.home.statistics.table.header.purchising_price.info: 年销售额 ÷ 年发货量
+admin.home.statistics.table.header.year_ltv: 年LTV
+admin.home.statistics.table.header.year_ltv.info: 年销售额 ÷ 年购买顾客数
+admin.header.user_name: "%name% 様"
+admin.header.logout: 登出
+admin.header.last_login: 最后登录
+admin.header.change_password: 更改密码
+admin.login.enable_javascript: 请启用 JavaScript 后使用
+admin.login.login: 登录
+admin.login.login_id: 登录ID
+admin.login.password: 密码
+admin.change_password: 更改密码
+admin.change_password.current_password: 当前密码
+admin.change_password.new_password: 新密码
+admin.change_password.new_password_confirm: 确认新密码
+admin.change_password.password_changed: 密码已更新
+admin.error.go_to_login: 前往登录页面
+
+#------------------------------------------------------------------------------------
+# 商品管理
+#------------------------------------------------------------------------------------
+
+# 機能名称
+admin.product.product_management: 商品管理
+admin.product.product_list: 商品一览
+admin.product.product_registration: 商品注册
+admin.product.product_class_registration: 商品规格注册
+admin.product.class_management: 规格管理
+admin.product.class_category_management: 规格分类管理
+admin.product.category_management: 分类管理
+admin.product.brand_management: 品牌管理
+admin.product.tag_management: 标签管理
+admin.product.product_csv_upload: 商品CSV注册
+admin.product.category_csv_upload: 分类CSV注册
+admin.product.cumulative_sales: 累積銷售
+admin.product.product_name_for_invoice: 發票商品名稱
+admin.product.free_shipping: 免運費 (直播電商用)
+admin.product.brand.brand_name: 品牌名稱
+admin.product.brand.brand_description: 品牌說明
+admin.product.brand.brand_image: 品牌說明圖片
+
+
+# flashメッセージ
+admin.product.bulk_change_status_complete: "%status%: %count%件已成功应用"
+admin.product.copy_complete: 商品已复制
+admin.product.copy_error: 复制商品失败
+admin.product.reset_complete: 商品规格已初始化
+
+# ラベル/メッセージ
+admin.product.product: 商品
+admin.product.product__card_title: 商品信息
+admin.product.preview: 预览商品
+admin.product.product_id: 商品ID
+admin.product.product_id__short: ID
+admin.product.display_status: 公开状态
+admin.product.brand: 品牌
+admin.product.brand_list: 品牌管理
+admin.product.display_status__short: 公开状态
+admin.product.display_status__show: 公开
+admin.product.display_status__hide: 非公开
+admin.product.display_status__abolished: 废止
+admin.product.permanently_delete: 删除
+admin.product.permanently_delete__confirm_title: 删除商品
+admin.product.permanently_delete__confirm_message: 确定要删除此商品吗？
+admin.product.permanently_delete__in_progress: 删除中...
+admin.product.permanently_delete__complete_message: 商品删除成功
+admin.product.permanently_delete__complete: 完成
+admin.product.permanently_delete__system_error: 系统出现错误
+admin.product.copy__confirm_title: 复制商品
+admin.product.copy__confirm_message: 确定要复制此商品吗？
+admin.product.name: 商品名称
+admin.product.image: 商品图片
+admin.product.description_image: 商品描述图片
+admin.product.image__short: 图片
+admin.product.image_size: 推荐尺寸：600px x 600px以上
+admin.product.sale_type: 销售类型
+admin.product.description_detail: 商品描述
+admin.product.description_list: 商品描述（列表）
+admin.product.description_list__add: 添加商品描述（列表）
+admin.product.price: 价格
+admin.product.sale_price: 销售价格 # price02
+admin.product.normal_price: 普通价格 # price01
+admin.product.stock: 库存数
+admin.product.stock__short: 库存
+admin.product.stock__in_stock: 有货
+admin.product.stock__out_of_stock: 缺货
+admin.product.search_word: 搜索词
+admin.product.product_code: 商品编码
+admin.product.product_code__short: 编码
+admin.product.product_name_and_code: 商品名称・商品编码
+admin.product.sale_limit: 销售限制数
+admin.product.delivery_duration: 发货日预估
+admin.product.delivery_fee: 商品运费
+admin.product.tax_rate: 税率
+admin.product.free_area: 自由区域
+admin.product.free_area__card_title: 自由区域
+admin.product.delete_flag: 商品删除标志
+admin.product.search_category: 类别搜索
+admin.product.brand_category: 品牌搜索
+admin.product.save_tag: 标签注册
+admin.product.create_date__card_title: 登录日期・更新日期
+admin.product.move_to_category: 添加・编辑类别
+admin.product.move_to_brand: 添加・编辑品牌
+admin.product.move_to_tag: 添加・编辑标签
+admin.product.move_to_product_class: 编辑商品规格
+admin.product.move_to_product_class__confirm_title: 「%name%」 的商品规格确认
+admin.product.multi_search_label: 商品名称・商品ID・商品编码
+admin.product.product_class: 商品规格
+admin.product.product_class__short: 规格
+admin.product.product_class__create: 设置商品规格
+admin.product.product_class__confirm: 规格确认
+admin.product.product_class__confirm_of_product: 确认此商品的规格
+admin.product.product_class__card_title: 商品规格信息
+admin.product.product_class__reset: 初始化商品规格
+admin.product.product_class__reset_confirm_title: 初始化此商品的规格
+admin.product.product_class__reset_confirm_message: |
+  将重置此商品的所有规格。
+  这不会影响以前的销售数据，但此操作无法撤销。
+  确定要重置吗？
+admin.product.product_class__reset_confirm_excecute: 执行重置规格
+admin.product.product_class_set_stock_quantity: 请输入库存数或设置为无限库存。
+admin.product.copy_first_line: 复制第一行到所有行
+admin.product.procuct_class_count: "共有%count%种组合"
+admin.product.stock_unlimited: 无限库存
+admin.product.stock_unlimited__short: 无限
+admin.product.class_name: 规格名称
+admin.product.class_name__backend_name: 后台名称
+admin.product.class_name__card_title: 规格信息
+admin.product.class_category: 规格分类
+admin.product.class_category__backend_name: 后台名称
+admin.product.class_category__card_title: 规格分类信息
+admin.product.class_category_name: 规格分类名称
+admin.product.class_category_name__short: 分类名称
+admin.product.class_category1: 规格分类1
+admin.product.class_category1__short: 规格1
+admin.product.class_category2: 规格分类2
+admin.product.class_category2__short: 规格2
+admin.product.category: 类别
+admin.product.brand_name_title: 名称
+admin.product.category__product_card_title: 类别
+admin.product.brand__product_card_title: 品牌
+admin.product.category_id: |
+  类别ID
+  更新现有类别时，请设置类别ID
+admin.product.category_name: 类别名称
+admin.product.parent_category_id: 父类别ID
+admin.product.category_all: 所有类别
+admin.product.brand_all: 所有品牌
+admin.product.tag: 标签
+admin.product.tag__product_card_title: 标签
+admin.product.select__class1: 请选择规格1
+admin.product.select__class2: 请选择规格2
+admin.product.select__can_not_select_same_class: 不能选择与规格1相同的规格
+admin.product.unselected_class: 未选择
+
+# 商品CSV雛形
+admin.product.product_csv.product_id_col: 商品ID
+admin.product.product_csv.product_id_description: 新的登記的話請留空。若要更新現有的商品，請指定商品ID。
+admin.product.product_csv.display_status_col: 公開狀態(ID)
+admin.product.product_csv.display_status_description: ""
+admin.product.product_csv.product_name_col: 商品名稱
+admin.product.product_csv.product_name_description: ""
+admin.product.product_csv.shop_memo_col: 店舖備忘欄
+admin.product.product_csv.shop_memo_description: ""
+admin.product.product_csv.description_list_col: 商品說明(清單)
+admin.product.product_csv.description_list_description: ""
+admin.product.product_csv.description_detail_col: 商品說明(詳細)
+admin.product.product_csv.description_detail_description: ""
+admin.product.product_csv.keyword_col: 搜尋關鍵字
+admin.product.product_csv.keyword_description: ""
+admin.product.product_csv.free_area_col: 自由區域
+admin.product.product_csv.free_area_description: ""
+admin.product.product_csv.delete_flag_col: 商品刪除標誌
+admin.product.product_csv.delete_flag_description: 0:註冊 1:刪除指定。未指定的話，0作為處理。
+admin.product.product_csv.product_image_col: 商品圖片
+admin.product.product_csv.product_image_description: 指定圖片的文件名。如果是多張圖片，請用逗號隔開，並用「"」包圍。
+admin.product.product_csv.category_col: 商品類別(ID)
+admin.product.product_csv.category_description: 指定類別ID。如果是多個類別，請用逗號隔開，並用「"」包圍。
+admin.product.product_csv.tag_col: 標籤(ID)
+admin.product.product_csv.tag_description: 指定標籤ID。如果是多個標籤，請用逗號隔開，並用「"」包圍。
+admin.product.product_csv.sale_type_col: 銷售類型(ID)
+admin.product.product_csv.sale_type_description: ""
+admin.product.product_csv.class_category1_col: 規格分類1(ID)
+admin.product.product_csv.class_category1_description: ""
+admin.product.product_csv.class_category2_col: 規格分類2(ID)
+admin.product.product_csv.class_category2_description: ""
+admin.product.product_csv.delivery_duration_col: 發貨天數參考(ID)
+admin.product.product_csv.delivery_duration_description: ""
+admin.product.product_csv.product_code_col: 商品代碼
+admin.product.product_csv.product_code_description: ""
+admin.product.product_csv.stock_col: 庫存數量
+admin.product.product_csv.stock_description: 若庫存數量無限制旗標為0，請設定0以上的數值。
+admin.product.product_csv.stock_unlimited_col: 庫存數量無限制旗標
+admin.product.product_csv.stock_unlimited_description: "0:限制 1: 無限制指定。"
+admin.product.product_csv.sale_limit_col: 銷售限制數量
+admin.product.product_csv.sale_limit_description: 請設定1以上的數值
+admin.product.product_csv.normal_price_col: 原價
+admin.product.product_csv.normal_price_description: 請設定0以上的數值
+admin.product.product_csv.sale_price_col: 銷售價
+admin.product.product_csv.sale_price_description: 請設定0以上的數值
+admin.product.product_csv.delivery_fee_col: 運費
+admin.product.product_csv.delivery_fee_description: 若商品運費設定啟用，請設定0以上的數值
+admin.product.product_csv.tax_rate_col: 稅率
+admin.product.product_csv.tax_rate_description: 若商品稅率功能設定啟用，請設定0以上的數值
+
+# カテゴリCSV雛形
+admin.product.category_csv.category_id_col: 類別ID
+admin.product.category_csv.category_id_description: 新規註冊時請留空。更新現有商品時，請指定商品ID。
+admin.product.category_csv.category_name_col: 類別名稱
+admin.product.category_csv.category_name_description: ""
+admin.product.category_csv.parent_category_id_col: 上層類別ID
+admin.product.category_csv.parent_category_id_description: ""
+admin.product.category_csv.delete_flag_col: 類別刪除標誌
+admin.product.category_csv.delete_flag_description: 0:註冊 1:刪除指定。未指定的話，0作為處理。
+
+#------------------------------------------------------------------------------------
+# 受注
+#------------------------------------------------------------------------------------
+
+# 機能名称
+admin.order.order_management: 訂單管理
+admin.order.order_list: 訂單清單
+admin.order.order_registration: 訂單註冊
+admin.order.shipping_registration: 出貨註冊
+admin.order.shipping_csv_upload: 出貨CSV註冊
+admin.order.mail: 電子郵件通知
+
+# flashメッセージ
+admin.order.shipping_save_message: 與出貨相關的資訊已變更。若需變更運費，請手動透過訂單管理進行變更。
+
+# ラベル/メッセージ
+admin.order.multi_search_label: 訂單編號・姓名・公司名・電子郵件地址・電話號碼
+admin.order.order_info: 訂單資訊
+admin.order.order_date: 訂單日期
+admin.order.order_date__start: 訂單日期(開始)
+admin.order.order_date__end: 訂單日期(結束)
+admin.order.payment_date: 入金日期
+admin.order.payment_date__start: 入金日期(開始)
+admin.order.payment_date__end: 入金日期(結束)
+admin.order.order_no: 訂單編號
+admin.order.shipping_date: 出貨日期
+admin.order.message: 詢問
+admin.order.message_short: 詢問
+admin.order.purchase_price: 購買金額
+admin.order.purchase_price__start: 購買金額(開始)
+admin.order.purchase_price__end: 購買金額(結束)
+admin.order.orderer: 訂購者
+admin.order.orderer_name: 訂購者姓名
+admin.order.orderer_kana: 訂購者姓名(日文片假名)
+admin.order.orderer_company_name: 訂購者公司名
+admin.order.copy_orderer: 訂購者資訊複製
+admin.order.output_delivery_note: 納品書輸出
+admin.order.output_delivery_note_short: 帳票輸出
+admin.order.add_shipping: 出貨資訊新增
+admin.order.delete_shipping: 出貨資訊刪除
+admin.order.delete_shipping_error__confirm_title: 出貨資訊無法刪除
+admin.order.delete_shipping_error__confirm_message: 請先刪除出貨資訊設定的明細，再刪除出貨資訊。
+admin.order.delete_shipping__confirm_message: "出貨資訊將從訂單中刪除。刪除出貨資訊(%num%)嗎？"
+admin.order.order_item_info: 訂單商品資訊
+admin.order.order_item_type: 明細類型
+admin.order.add_product_item: 商品新增
+admin.order.add_other_item: 其他明細新增
+admin.order.update_calculation_results: 計算結果更新
+admin.order.amount: 金額
+admin.order.quantity: 數量
+admin.order.tax_rate: 稅率
+admin.order.tax_type: 課稅類別
+admin.order.subtotal: 小計
+admin.order.discount: 折扣
+admin.order.delivery_fee: 運費
+admin.order.add_point: 加算點數
+admin.order.use_point: 使用點數
+admin.order.total: 總計
+admin.order.payment_total: 支付總計
+admin.order.order_status: 處理狀態
+admin.order.last_buy_date: 最終購買日期
+admin.order.last_buy_date__start: 最終購買日期(開始)
+admin.order.last_buy_date__end: 最終購買日期(終了)
+admin.order.purchase_product: 購買商品名稱
+admin.order.purchase_count: 購買件數
+admin.order.purchase_count__start: 購買件數(開始)
+admin.order.purchase_count__end: 購買件數(終了)
+admin.order.tracking_number: 詢問編號
+admin.order.tracking_number_error: 詢問編號請輸入半形英數字或連字號。
+admin.order.mail_purchase_product_count: "其他%count%點"
+admin.order.mail_history: 電子郵件傳送記錄
+admin.order.mail_send_date: 電子郵件傳送時間
+admin.order.mail_subject: 主旨
+admin.order.mail_body: 內文
+admin.order.mail_create: 建立電子郵件
+admin.order.mail_destination_info: 電子郵件傳送對象
+admin.order.mail_mail_info: 電子郵件內容
+admin.order.mail_confirm: 確認傳送內容
+admin.order.mail_template: 範本
+admin.order.mail_confirm_title: 請確認下方內容後，按下「傳送」按鈕以傳送電子郵件。
+admin.order.mail_send: 傳送
+admin.order.mail_send_complete: 已傳送電子郵件。
+admin.order.shipping_info: 出貨資訊
+admin.order.delivery_date: 到貨日期
+admin.order.delivery_time: 到貨時間
+admin.order.delivery_provider: 配送方式
+admin.order.to_shipped: 變更為已出貨
+admin.order.send_mail: 傳送電子郵件
+admin.order.shop_memo_for_shipped: 出貨用備忘欄
+admin.order.shipping__card_title: 出貨資訊
+admin.order.shipping_id: 出貨ID
+admin.order.shipping_mail: 出貨電子郵件
+admin.order.shipping_mail__completed: "%date%已傳送出貨電子郵件。"
+admin.order.shipping_mail__sent: 已傳送
+admin.order.shipping_mail__unsent: 未傳送
+admin.order.bulk_action__confirm_view_mail_body: 確認電子郵件內容
+admin.order.bulk_action__confirm_message: 此操作將對已儲存的資料進行處理。此外，編輯中尚未註冊完成的資訊將會遺失。若有尚未註冊完成的資訊，請先進行註冊。
+admin.order.bulk_action__in_progress_message: 處理中...
+admin.order.bulk_action__complete_message: 已完成。
+admin.order.shipping_mail_send: 傳送出貨電子郵件
+admin.order.shipping_mail_send__confirm_title: 出荷お知らせ電子郵件
+admin.order.shipping_mail_send__confirm_message: 出荷お知らせ電子郵件。請先確認電子郵件內容後，再按下「傳送」按鈕。此操作無法取消，請注意。
+admin.order.shipping_mail_send__complete_message: 已傳送%count%件電子郵件。
+admin.order.to_shipped__confirm_title: 變更為已出貨
+admin.order.to_shipped__confirm_message: 將出貨資訊變更為已出貨。請先選擇要同時進行的操作，再按下「執行」按鈕。此操作無法取消，請注意。
+admin.order.to_shipped__confirm_send_mail: 傳送電子郵件
+admin.order.to_shipped__confirm_send_mail_in_same_time: 同時傳送出貨お知らせ電子郵件
+admin.order.change_status: 變更處理狀態
+admin.order.csv_shipping_date_description: 請以「YYYY-MM-DD」格式設定出貨日期
+admin.order.order_csv: 受注CSV
+admin.order.shipping_csv: 出貨
+admin.order.shipping_status: 出貨狀態
+admin.order.delivery: 到貨地址
+admin.order.not_payment: 未付款
+admin.order.unshipped: 未出貨
+admin.order.delete__confirm_title: 將刪除訂單資訊
+admin.order.delete__confirm_message: 確定要刪除訂單資訊嗎？
+admin.order.delete_item__confirm_message: "明細將從訂單中刪除。確定要刪除「%name%」嗎？"
+admin.order.change_payment_method_message: 請手動變更付款方式的手續費
+admin.order.non_member: 非會員
+admin.order.search_from_customer: 從會員搜尋/輸入
+admin.order.search_customer_title: 搜尋會員
+admin.order.product_info: 商品資訊
+admin.order.edit_multiple_shipping: 編輯到貨地址
+admin.order.edit_multiple_shipping_description: 若指定多個到貨地址，可透過此按鈕編輯各個到貨地址設定
+admin.order.product_item_not_found: 商品尚未新增
+admin.order.delivery_note_create_date: 發行日期
+admin.order.delivery_note_title: 標題
+admin.order.delivery_note_title__default: 裝箱明細（出貨單）
+admin.order.delivery_note_title__default2: 果然有魚國際行銷有限公司
+admin.order.delivery_note_title__default2.2: 購買證明（收據）
+admin.order.delivery_note_title__default3: 裝箱明細（收據）
+admin.order.delivery_note_output_format: 輸出格式
+admin.order.delivery_note_output_format__browser: 在瀏覽器中開啟
+admin.order.delivery_note_output_format__file: 儲存至檔案
+admin.order.delivery_note_message: 訊息
+admin.order.delivery_note_message__default1: 非常感謝您的購買。
+admin.order.delivery_note_message__default2: 以下為您的訂單出貨資訊。
+admin.order.delivery_note_message__default3: 請您確認。
+admin.order.delivery_note_memo: 備註
+admin.order.delivery_note_line1: 第1行
+admin.order.delivery_note_line2: 第2行
+admin.order.delivery_note_line3: 第3行
+admin.order.delivery_note_save_input: 儲存輸入內容
+admin.order.delivery_note_download_error: "下載失敗"
+admin.order.delivery_note_parameter_error: "未指定出貨ID"
+admin.order.failed_to_change_status: "%name%: 無法將 %from% 變更為 %to%"
+admin.order.failed_to_change_status__short: "無法將 %from% 變更為 %to%"
+admin.order.skip_change_status: "%name%: 已跳過狀態變更"
+
+# 出荷CSV雛形
+admin.order.shipping_csv.shipping_id_col: 出貨ID
+admin.order.shipping_csv.shipping_id_description: ""
+admin.order.shipping_csv.tracking_number_col: 追蹤編號
+admin.order.shipping_csv.tracking_number_description: ""
+admin.order.shipping_csv.shipping_date_col: 出貨日期
+admin.order.shipping_csv.shipping_date_description: "請以「YYYY-MM-DD」格式設定出貨日期"
+
+#------------------------------------------------------------------------------------
+# 会員
+#------------------------------------------------------------------------------------
+
+# 機能名称
+admin.customer.customer_management: 會員管理
+admin.customer.customer_list: 會員一覽
+admin.customer.customer_registration: 會員註冊
+admin.customer.customer_address_registration: 到貨地址註冊
+admin.customer.kg_management: KG業務管理
+
+# ラベル/メッセージ
+admin.customer.customer_id: 會員ID
+admin.customer.customer_info: 會員資訊
+admin.customer.purchase_history: 訂單歷史紀錄
+admin.customer.purchase_history__not_found: 沒有訂單歷史紀錄
+admin.customer.customer_address: 到貨地址
+admin.customer.customer_address__not_found: 沒有到貨地址
+admin.customer.customer_address__add: 新增到貨地址
+admin.customer.customer_address_count_is_over: 到貨地址註冊已達上限 %eccube_deliv_addr_max% 件。若要新增到貨地址，請先刪除或修改現有的地址。
+admin.customer.customer_address_id: 到貨地址ID
+admin.customer.customer_address_info: 到貨地址資訊
+admin.customer.multi_search_label: 會員ID、電子郵件地址、姓名
+admin.customer.customer_status: 會員類型
+admin.customer.birth_month: 出生月份
+admin.customer.resend: 重新傳送暫時會員電子郵件
+admin.customer.resend_confirm_title: 將重新傳送暫時會員電子郵件。
+admin.customer.resend_confirm_message: 確定要重新傳送暫時註冊電子郵件嗎？
+admin.customer.no_customer_address: 此會員沒有到貨地址
+admin.customer.no_purchase_history: 此會員沒有訂單歷史紀錄
+
+admin.clog.c_cate: 業務類型
+admin.clog.c_staff: 負責人
+admin.clog.c_date: 聯絡日期
+
+#------------------------------------------------------------------------------------
+# コンテンツ管理
+#------------------------------------------------------------------------------------
+
+# 機能名称
+admin.content.contents_management: 影片管理
+admin.content.news_management: 最新消息管理
+admin.content.file_management: 檔案管理
+admin.content.layout_management: 版面管理
+admin.content.page_management: 頁面管理
+admin.content.css_management: CSS 管理
+admin.content.js_management: JavaScript 管理
+admin.content.block_management: 區塊管理
+admin.content.cache_management: 快取管理
+admin.content.maintenance_management: 維護管理
+
+admin.content.countdown_list: 倒數計時管理
+
+# ラベル/メッセージ
+admin.content.file.add_file__card_title: 新增檔案/資料夾
+admin.content.file.add_file: 新增檔案
+admin.content.file.add_directory: 新增資料夾
+admin.content.file.directory_name: 資料夾名稱
+admin.content.file.file_list__card_title: 此資料夾內的檔案
+admin.content.file.updated: 更新
+admin.content.file.directory_tree: 資料夾結構
+admin.content.file.upload_complete: 已上傳 %success% 個檔案。（%success%/%count%）
+admin.content.file.upload_error: 無法上傳 %file_name%。(%error%)
+admin.content.layout_delete: 刪除版面
+admin.content.layout_no_page: 尚未註冊頁面
+admin.content.layout__card_title: 版面概述
+admin.content.layout_name: 版面名稱
+admin.content.layout_edit__card_title: 編輯版面
+admin.content.layout_drag_and_drop_message: 拖曳區塊
+admin.content.layout_up: 向上移動
+admin.content.layout_down: 向下移動
+admin.content.layout_move_to: 移動至區段
+admin.content.layout_preview: 預覽
+admin.content.layout_preview__select_page: 請選擇頁面
+admin.content.layout_preview_select_page: 請選擇要預覽的頁面
+admin.content.layout_preview_code: 程式碼預覽
+admin.content.layout_preview_code__confirm_title: 區塊程式碼預覽
+admin.content.layout_preview_code__confirm_message: 若需編輯，請從區塊編輯畫面進行編輯（此時版面設定不會儲存）
+admin.content.layout_preview_code__confirm_move_to_block: 編輯程式碼
+admin.content.layout_move_to__confirm_title: "移動區塊"
+admin.content.layout_move_to__confirm_message: 請選擇區塊要移動的位置
+admin.content.layout_move_to__execute: 移動
+admin.content.layout_section__unused: "未使用的區塊"
+admin.content.layout_section__head: "<head></head> 標籤內"
+admin.content.layout_section__body_after: "<body> 標籤之後"
+admin.content.layout_section__header: "#header"
+admin.content.layout_section__contents_top: "#contents_top"
+admin.content.layout_section__side_left: "#side_left"
+admin.content.layout_section__main: Main
+admin.content.layout_section__main_top: "#main_top"
+admin.content.layout_section__main_bottom: "#main_bottom"
+admin.content.layout_section__side_right: "#side_right"
+admin.content.layout_section__contents_bottom: "#contents_bottom"
+admin.content.layout_section__footer: "#footer"
+admin.content.layout_section__drawer: "#drawer"
+admin.content.layout_section__close_body_before: "</body> 標籤之前"
+admin.content.page_name: 頁面名稱
+admin.content.page__card_title: 頁面設定
+admin.content.page_url: 網址
+admin.content.page_url_exists: 網址已存在。
+admin.content.page_file_name: 檔案名稱
+admin.content.page_source_code: 程式碼
+admin.content.page_layout__card_title: 版面設定
+admin.content.page_pc: PC
+admin.content.page_mobile: 行動裝置
+admin.content.page_meta__card_title: SEO設定
+admin.content.page_meta_author: 作者
+admin.content.page_meta_description: 描述
+admin.content.page_meta_keyword: 關鍵字
+admin.content.page_meta_robot: 機器人
+admin.content.page_meta_metatag: meta 標籤
+admin.content.page_meta_metatag_placeholder: |
+  商品詳細頁面中的記載範例
+    <meta property="og:type" content="og:product" />
+    <meta property="og:title" content="{{ Product.name }}" />
+    <meta property="og:image" content="{{ url('homepage') }}{{ asset(Product.main_list_image|no_image_product, 'save_image') }}" />
+    <meta property="og:description" content="{{ Product.description_list|striptags }}" />
+    <meta property="og:url" content="{{ url('product_detail', {'id': Product.id}) }}" />
+    <meta property="product:price:amount" content="{{ Product.getPrice02IncTaxMin }}"/>
+    <meta property="product:price:currency" content="{{ eccube_config.currency }}"/>
+    <meta property="product:product_link" content="{{ url('product_detail', {'id': Product.id}) }}"/>
+    <meta property="product:retailer_title" content="{{ Product.name }}"/>
+admin.content.page_file_name_exists: 已存在相同檔名資料。請輸入其他檔名。
+admin.content.css__card_title: CSS 設定
+admin.content.js__card_title: JavaScript 設定
+admin.content.block_name: 區塊名稱
+admin.content.block__card_title: 區塊設定
+admin.content.block_file_name: 檔案名稱
+admin.content.block_file_name_exists: 已存在相同檔名資料。請輸入其他檔名。
+admin.content.block_source_code: 程式碼
+admin.content.cache__card_title: 快取管理
+admin.content.cache_message: 若在正式環境透過 FTP 等方式上傳並替換 Twig 檔案，需要刪除 Twig 快取才能反映畫面。
+admin.content.cache_delete: 刪除快取
+admin.content.news.publish_date: 發布時間
+admin.content.news.display_status: 發布狀態
+admin.content.news.display_status__show: 公開
+admin.content.news.display_status__hide: 非公開
+admin.content.news.title: 標題
+admin.content.news.url: 網址
+admin.content.news.body: 內文
+admin.content.news.news_registration: 新着情報註冊
+admin.content.news.new_window: 在新視窗開啟
+admin.content.maintenance__card_title: 維護模式
+admin.content.maintenance_message: |
+  啟用維護模式後，商店功能將暫時停止，僅能存取管理畫面。
+  ※ 安裝/啟用/停用/刪除外掛時，將自動切換至維護模式。
+admin.content.maintenance_switch__on: 啟用
+admin.content.maintenance_switch__off: 停用
+admin.content.maintenance_switch__on_message: 已啟用維護模式。
+admin.content.maintenance_switch__off_message: 已停用維護模式。
+
+#------------------------------------------------------------------------------------
+# 設定
+#------------------------------------------------------------------------------------
+
+# 機能名称
+admin.setting: 設定
+admin.setting.shop: 商店設定
+admin.setting.shop.shop_setting: 基本設定
+admin.setting.shop.tradelaw_setting: 特定商取引法設定
+admin.setting.shop.agreement_setting: 使用條款設定
+admin.setting.shop.payment_list: 支付方式清單
+admin.setting.shop.payment_setting: 支付方式設定
+admin.setting.shop.delivery_list: 運送方式清單
+admin.setting.shop.delivery_setting: 運送方式設定
+admin.setting.shop.tax_setting: 稅率設定
+admin.setting.shop.mail_setting: 電子郵件設定
+admin.setting.shop.csv_setting: CSV 輸出項目設定
+admin.setting.system: 系統設定
+admin.setting.system.member_management: 會員管理
+admin.setting.system.member_password_change: 密碼變更
+admin.setting.system.authority_management: 權限管理
+admin.setting.system.security_management: 安全性管理
+admin.setting.system.log_display: 日誌顯示
+admin.setting.system.master_data_management: 主控資料管理
+admin.setting.system.system_info: 系統資訊
+
+#------------------------------------------------------------------------------------
+# 設定：店舗設定：基本設定
+#------------------------------------------------------------------------------------
+
+admin.setting.shop.shop.base_info: 商店資訊
+admin.setting.shop.company_name_kana: 公司名稱(假名)
+admin.setting.shop.shop.shop_name: 商店名稱
+admin.setting.shop.shop.shop_name_kana: 商店名稱(假名)
+admin.setting.shop.shop.shop_name_en: 商店名稱(英文表記)
+admin.setting.shop.shop.business_hour: 商店營業時間
+admin.setting.shop.shop.email_from: 發信人電子郵件地址(From)
+admin.setting.shop.shop.email_for_inquiries: 詢問接受電子郵件地址(From, ReplyTo)
+admin.setting.shop.shop.email_reply_to: 回覆接受電子郵件地址(ReplyTo)
+admin.setting.shop.shop.email_return_path: 發信錯誤接受電子郵件地址(ReturnPath)
+admin.setting.shop.shop.good_traded: 販售商品說明文
+admin.setting.shop.shop.message: 商店訊息
+admin.setting.shop.shop.option_delivery_fee: 運費設定
+admin.setting.shop.shop.option_delivery_fee_free_amount: 運費免費條件（金額）
+admin.setting.shop.shop.option_delivery_fee_free_quantity: 運費免費條件（數量）
+admin.setting.shop.shop.option_delivery_fee_by_product: 商品個別運費設定
+admin.setting.shop.shop.option_customer: 會員設定
+admin.setting.shop.shop.option_customer_activate: 暫時會員功能
+admin.setting.shop.shop.option_mypage_order_status_display: 在會員頁面顯示訂單狀態
+admin.setting.shop.shop.option_favorite_product: 收藏商品功能
+admin.setting.shop.shop.option_remember_me: 自動登入功能
+admin.setting.shop.shop.option_product: 商品設定
+admin.setting.shop.shop.nostock_hidden: 隱藏缺貨商品
+admin.setting.shop.shop.option_tax: 稅率設定
+admin.setting.shop.shop.option_product_tax: 商品個別稅率功能
+admin.setting.shop.shop.option_point: 點數設定
+admin.setting.shop.shop.option_point_enabled: 點數功能
+admin.setting.shop.shop.option_point_rate: 點數回饋率
+admin.setting.shop.shop.option_point_conversion_rate: 點數兌換率
+
+#------------------------------------------------------------------------------------
+# 設定：店舗設定：支払方法設定
+#------------------------------------------------------------------------------------
+
+admin.setting.shop.payment.terms_of_use: 使用條款
+admin.setting.shop.payment.terms_of_use_error: 請確認下限和上限的值
+admin.setting.shop.payment.unlimited: 無限制
+admin.setting.shop.payment.payment_id: ID
+admin.setting.shop.payment.payment_name: 支付方式名稱
+admin.setting.shop.payment.logo_image: 標誌圖像
+admin.setting.shop.payment.logo_image_size: "建議尺寸：500px × 100px"
+
+#------------------------------------------------------------------------------------
+# 設定：店舗設定：配送方法設定
+#------------------------------------------------------------------------------------
+
+admin.setting.shop.delivery.base_info: 基本資訊
+admin.setting.shop.delivery.delivery_name: 運送業者名稱
+admin.setting.shop.delivery.delivery_sevice_name: 運送方式名稱
+admin.setting.shop.delivery.tracking_number_url: 查詢編號網址
+admin.setting.shop.delivery.sale_type: 銷售類型
+admin.setting.shop.delivery.payment_method: 可使用的支付方式
+admin.setting.shop.delivery.delivery_time_setting: 送貨時間設定
+admin.setting.shop.delivery.delivery_fee_by_pref: 都道府縣別運費設定
+admin.setting.shop.delivery.apply_to_pref__title: 全國一律設定
+admin.setting.shop.delivery.apply_to_pref__button: 適用至各都道府縣
+admin.setting.shop.delivery.fee.invalid: 請輸入數字。
+#------------------------------------------------------------------------------------
+# 設定：店舗設定：税率設定
+#------------------------------------------------------------------------------------
+
+admin.setting.shop.tax.rounding_type: 稅率規則
+admin.setting.shop.tax.base_rate_setting: 基本稅率設定
+admin.setting.shop.tax.tax_rate: 稅率
+admin.setting.shop.tax.apply_date: 適用日期時間
+
+#------------------------------------------------------------------------------------
+# 設定：店舗設定：メール設定
+#------------------------------------------------------------------------------------
+
+admin.setting.shop.mail.mail_template_edit: 樣板編輯
+admin.setting.shop.mail.mail_template: 樣板
+admin.setting.shop.mail.mail_subject: 主旨
+admin.setting.shop.mail.mail_body: 內文
+admin.setting.shop.mail.mail_text: 文字
+admin.setting.shop.mail.mail_html: HTML
+admin.setting.shop.mail.preview: 預覽
+
+#------------------------------------------------------------------------------------
+# 設定：店舗設定：CSV出力項目設定
+#------------------------------------------------------------------------------------
+
+admin.setting.shop.csv.csv_columns: CSV輸出項目
+admin.setting.shop.csv.csv_type: CSV類型
+admin.setting.shop.csv.non_output_colmuns: 不輸出項目
+admin.setting.shop.csv.output_colmuns: 輸出項目
+admin.setting.shop.csv.operation: 操作項目
+admin.setting.shop.csv.operation__output: 輸出
+admin.setting.shop.csv.operation__release: 解除
+admin.setting.shop.csv.operation__all_output: 全部輸出
+admin.setting.shop.csv.operation__all_release: 全部解除
+admin.setting.shop.csv.order: 項目順序
+admin.setting.shop.csv.order__up: 往上一個
+admin.setting.shop.csv.order__down: 往下一個
+admin.setting.shop.csv.order__top: 最上
+admin.setting.shop.csv.order__bottom: 最下
+admin.setting.shop.csv.how_to_use: |
+  請按住您要選取的項目，然後按“項目操作”按鈕進行移動，以設定要輸出的CSV項目。
+  您可以按“項目順序”按鈕來更改要輸出的項目的順序。
+  要選取多個項目，請按住Ctrl鍵（Mac鍵盤則為Command鍵）再按住項目。按住Shift鍵可選取範圍。
+#------------------------------------------------------------------------------------
+# 設定：システム設定：メンバー管理 / パスワード変更
+#------------------------------------------------------------------------------------
+
+admin.setting.system.member.member_registration: 會員註冊
+admin.setting.system.member.name: 名稱
+admin.setting.system.member.department: 所屬部門
+admin.setting.system.member.login_id: 登入ID
+admin.setting.system.member.password: 密碼
+admin.setting.system.member.password_confirm: 密碼（確認）
+admin.setting.system.member.work: 啟用
+admin.setting.system.member.delete__confirm_title: 刪除會員。
+admin.setting.system.member.delete__confirm_message: 要刪除會員嗎？
+admin.setting.system.member.work_can_not_change: 無法變更為停用。
+#------------------------------------------------------------------------------------
+# 設定：システム設定：権限管理
+#------------------------------------------------------------------------------------
+
+admin.setting.system.authority__card_title: 權限設定
+admin.setting.system.authority.description: |
+  請在拒絕URL中輸入從%url%開始的URL。
+  拒絕URL之後的內容將被拒絕訪問。(URL為前方一致)
+admin.setting.system.authority.example: '例如) /setting <span class="text-danger">請務必輸入「/」</span>'
+admin.setting.system.authority.authority: 權限
+admin.setting.system.authority.deny_url: 拒絕URL
+admin.setting.system.authority.add_row: 新增列
+admin.setting.system.authority.authority_not_selected: 權限未選擇。
+admin.setting.system.authority.deny_url_is_empty: 拒絕URL未輸入。
+admin.setting.system.authority.deny_url_is_invalid: 請務必輸入「/」。
+
+#------------------------------------------------------------------------------------
+# 設定：システム設定：セキュリティ管理
+#------------------------------------------------------------------------------------
+
+admin.setting.system.security__card_title: 安全性設定
+admin.setting.system.security.admin_url: 管理畫面URL
+admin.setting.system.security.admin_url_description: 建議您設定難以猜測的URL。
+admin.setting.system.security.admin_url_changed: 管理畫面的URL已更改。請重新登入。
+admin.setting.system.security.ip_limit: IP限制
+admin.setting.system.security.ip_limit_description: |
+  僅允許特定IP地址連線存取管理功能。
+  請一行輸入一個允許存取的IP地址。若無輸入任何內容，則所有IP皆可存取。
+admin.setting.system.security.ip_limit_sample: |
+  127.0.0.1
+  192.0.2.1
+admin.setting.system.security.force_ssl: 強制SSL
+admin.setting.system.security.force_ssl_description: 僅在https連線下才能設定SSL限制。
+admin.setting.system.security.ip_limit_invalid_ipv4: "%ip%不是IPv4地址。"
+admin.setting.system.security.ip_limit_invalid_https: "HTTP無法設定。"
+admin.setting.system.security.admin_url_warning: 管理畫面URL為安全考量，請設定難以猜測的URL。
+admin.setting.system.security.not_found_env_file: 未找到.env檔案。若未使用.env，則無法透過管理畫面變更安全性設定。
+#------------------------------------------------------------------------------------
+# 設定：システム設定：ログ表示
+#------------------------------------------------------------------------------------
+
+admin.setting.system.log.line_number: 行數
+admin.setting.system.log.read: 讀取
+
+#------------------------------------------------------------------------------------
+# 設定：システム設定：マスタデータ管理
+#------------------------------------------------------------------------------------
+
+admin.setting.system.master_data.select: 選取
+admin.setting.system.master_data.description: |
+  您可以設定主數據的值。
+  無法註冊重複的ID。
+  註冊空的ID時，將刪除值。
+  請注意，某些設定值可能會導致網站無法正常運作。
+admin.setting.system.master_data.id: ID
+admin.setting.system.master_data.name: 名稱
+admin.setting.system.master_data.duplicate_id: 無法註冊重複的ID。
+
+#------------------------------------------------------------------------------------
+# 設定：システム設定：システム情報
+#------------------------------------------------------------------------------------
+
+admin.setting.system.system.eccube: EC-CUBE
+admin.setting.system.system.server_os: 伺服器作業系統
+admin.setting.system.system.database_server: 資料庫伺服器
+admin.setting.system.system.web_server: 網頁伺服器
+admin.setting.system.system.php: PHP
+admin.setting.system.system.user_agent: 使用者代理 (User Agent)
+admin.setting.system.system.php_info: PHP 資訊
+
+#------------------------------------------------------------------------------------
+# オーナーズストア
+#------------------------------------------------------------------------------------
+
+admin.store: 店主商店
+admin.store.template: 樣板
+admin.store.template.template_list: 樣板清單
+admin.store.template.template_install: 上傳
+admin.store.template.template_install__page_title: 上傳樣板
+admin.store.template.select: 選取
+admin.store.template.save_path: 儲存路徑
+admin.store.template.download: 下載
+admin.store.template.upload_new_template: 上傳新樣板
+admin.store.template.template_name: 樣板名稱
+admin.store.template.template_code: 樣板代碼
+admin.store.template.template_file: 樣板檔案
+admin.store.template.file_format: "檔案格式: zip,tar,tar.gz"
+admin.store.template.delete_error__default_template: 無法刪除預設樣板
+admin.store.template.delete_error__current_template: 無法刪除正在使用的樣板
+admin.store.template.template_code_already_exists: 樣板代碼已存在
+admin.store.template.upload_failed: 上傳失敗
+admin.store.template.invalid_upload_file: 檔案擴充名錯誤
+admin.store.plugin: 外掛程式
+admin.store.plugin.plugin_owners_install: 尋找外掛程式
+admin.store.plugin.plugin_list: 外掛程式清單
+admin.store.plugin.search.not_found: 找不到符合搜尋條件的資料。
+admin.store.plugin.search.not_auth: 請設定授權金鑰。
+admin.store.plugin.installed: 已安裝
+admin.store.plugin.update: 更新
+admin.store.plugin.install.complete: 已安裝外掛程式。
+admin.store.plugin.install.failed: 外掛程式安裝失敗。
+admin.store.plugin.enable.complete: 已啟用「%plugin_name%」。
+admin.store.plugin.already.enabled: 「%plugin_name%」已啟用。
+admin.store.plugin.disable.complete: 已停用「%plugin_name%」。
+admin.store.plugin.already.disabled: 「%plugin_name%」已停用。
+admin.store.plugin.uninstall.complete: 已刪除外掛程式。
+admin.store.plugin.update.complete: 已更新「%plugin_name%」。
+admin.store.plugin.update.failed: 「%plugin_name%」更新失敗。
+admin.store.plugin.mkdir.error: 無法建立目錄「%dir_name%」。
+admin.store.setting: 授權金鑰設定
+admin.store.setting.api_key_setting: 授權金鑰設定
+admin.store.setting.api_key_setting_info: 若您有授權金鑰，請輸入後按「註冊」按鈕。
+admin.store.setting.api_key: 授權金鑰
+admin.store.setting.api_key_tooltip: 這是購買外掛程式等時所需的金鑰。
+admin.store.setting.get_api_key: 新規發行授權金鑰
+admin.store.setting.get_api_key_info: 新規發行和註冊授權金鑰。
+admin.store.setting.captcha_message: 請輸入圖片中顯示的文字。
+admin.store.setting.php_path_setting: PHP 路徑設定
+admin.store.setting.php_path: PHP 路徑
+admin.store.setting.invalid_captcha: 輸入的字串不正確。
+admin.store.setting.captcha_error: 錯誤
+admin.store.package.api.0.error: 無法與店主商店通訊。請稍後再試。
+admin.store.package.api.403.error: 無法驗證店主商店。請確認授權金鑰設定。
+admin.store.package.api.500.error: 無法與店主商店通訊。請稍後再試。
+admin.plugin.uninstall.error.not_disable: 請先停用外掛程式。
+admin.plugin.uninstall.depend: "無法刪除「%name%」，因為「%depend_name%」依賴它。"
+admin.plugin.disable.depend: "請先停用「%depend_name%」，再停用「%name%」。"
+
+# TODO: メッセージ精査
+admin.store.plugin.popup.delete.confirm.title: 驗證外掛程式刪除
+admin.store.plugin.popup.delete.confirm.message: 您確定要刪除此外掛程式嗎？
+admin.store.authentication_setting.803: 店主商店
+admin.store.authentication_setting.804: 外掛程式驗證金鑰設定
+admin.store.authentication_setting.805: 驗證金鑰設定
+admin.store.authentication_setting.806: 驗證金鑰
+admin.store.authentication_setting.807: '※您可以從<a target="_blank" href="owners_store_url">EC-CUBE店主商店</a>取得驗證金鑰。'
+admin.store.authentication_setting.808: 設定
+admin.store.plugin.809: 已安裝外掛程式清單
+admin.store.plugin.810: 店主商店
+admin.store.plugin.811: 從店主商店新增
+admin.store.plugin.812: 店主商店的外掛程式
+admin.store.plugin.813: 上傳檔案新增
+admin.store.plugin.814: 使用者自訂外掛程式
+admin.store.plugin.815: 未註冊外掛程式
+admin.store.plugin.816: 外掛程式名稱
+admin.store.plugin.help: 由於無法連線到店主商店，因此無法取得詳細資訊。
+admin.store.plugin.install: 安裝
+admin.store.plugin.upgrade: 更新
+admin.store.plugin.price: 販售價格
+admin.store.plugin.detail.download: 下載數
+admin.store.plugin.detail.version: 外掛程式版本
+admin.store.plugin.detail.support: EC-CUBE支援版本
+admin.store.plugin.detail.public_date: 公開日期
+admin.store.plugin.detail.update_date: 最後更新日期
+admin.store.plugin.detail.size: 檔案大小
+admin.store.plugin.detail.size.format: 約 %size% KB
+admin.store.plugin.detail.license: 授權
+admin.store.plugin.detail.develop: 開發者
+admin.store.plugin_confirm.title.upgrade: 更新
+admin.store.plugin_confirm.title: 安裝確認
+admin.store.plugin_confirm.subtitle: 店主商店
+admin.store.plugin_confirm.header: 將安裝以下外掛程式
+admin.store.plugin_confirm.header.upgrade: 將更新以下外掛程式至最新版本
+admin.store.plugin_confirm.require.header: 「%name%」需要以下外掛程式。將同時安裝。
+admin.store.plugin_confirm_uninstall.823: 店主商店
+admin.store.plugin_confirm_uninstall.824: 外掛程式刪除
+admin.store.plugin_confirm_uninstall.825: 將刪除以下外掛程式。
+admin.store.plugin_confirm_uninstall.826: 刪除
+admin.store.plugin_confirm_uninstall.827: 返回
+admin.store.plugin_handler.828: 店主商店
+admin.store.plugin_handler.829: 進階設定
+admin.store.plugin_handler.830: 外掛程式名稱
+admin.store.plugin_handler.831: 處理程序名稱
+admin.store.plugin_handler.832: 優先順序
+admin.store.plugin_handler.833: 操作
+admin.store.plugin_handler.834: 上移
+admin.store.plugin_handler.835: 下移
+admin.store.plugin_handler.836: 外掛程式處理程序管理
+admin.store.plugin_handler.837: 找不到符合搜尋條件的資料
+admin.store.plugin_install.838: 店主商店
+admin.store.plugin_install.839: 上傳外掛程式
+admin.store.plugin_install.840: 上傳新外掛程式
+admin.store.plugin_install.841: 外掛程式<br>(zip、tar、tar.gz格式)
+admin.store.plugin_install.842: 上傳
+admin.store.plugin_owners_confirm.843: 價格
+admin.store.plugin_owners_confirm.844: 下載數
+admin.store.plugin_owners_confirm.845: 外掛程式版本
+admin.store.plugin_owners_confirm.846: 最後更新日期
+admin.store.plugin_owners_confirm.847: EC-CUBE支援版本
+admin.store.plugin_owners_confirm.848: "檔案大小<br>約 %size% KB"
+admin.store.plugin_owners_confirm.848.1: 檔案大小
+admin.store.plugin_owners_confirm.848.2: 約
+admin.store.plugin_owners_confirm.849: 授權
+admin.store.plugin_owners_confirm.850: "此外掛程式不支援 EC-CUBE %version%，因此可能無法正常運作。"
+admin.store.plugin_owners_confirm.851: "需要 %dependency%。將同時安裝。"
+admin.store.plugin_owners_confirm.852: "<strong>開發者</strong> : "
+admin.store.plugin_owners_install.853: 店主商店
+admin.store.plugin_owners_install.854: 已購買外掛程式
+admin.store.plugin_owners_install.855: 外掛程式清單
+admin.store.plugin_owners_install.856: 請設定驗證金鑰
+admin.store.plugin_owners_install.857: 前往驗證金鑰設定畫面
+admin.store.plugin_owners_panel.858: 推薦追加功能
+admin.store.plugin_owners_panel.859: 已安裝
+admin.store.plugin_owners_panel.860: 立即更新
+admin.store.plugin_owners_panel.861: 立即購買
+admin.store.plugin_owners_panel.862: 立即安裝
+admin.store.plugin_owners_panel.863: 外掛程式版本
+admin.store.plugin_owners_panel.864: 更新日期
+admin.store.plugin_owners_panel.865: EC-CUBE支援版本
+admin.store.plugin_owners_panel.866: "檔案大小<br>約 %size% KB"
+admin.store.plugin_owners_panel.867: "此外掛程式不支援 EC-CUBE %version%，因此可能無法正常運作。"
+admin.store.plugin_owners_panel.868: "<strong>提供商</strong> : "
+admin.store.plugin_owners_search.form.placeholder: 
+admin.store.plugin_owners_search.form.category: 類別
+admin.store.plugin_owners_search.form.price_type: 付費／免費
+admin.store.plugin_owners_search.form.price_type.fee: 付費
+admin.store.plugin_owners_search.form.price_type.free: 免費
+admin.store.plugin_owners_search.form.keyword: 關鍵字
+admin.store.plugin_owners_search.form.sort.new: 最新順
+admin.store.plugin_owners_search.form.sort.price: 價格最低優先
+admin.store.plugin_owners_search.form.sort.dl: 下載數
+admin.store.plugin_owners_search.search_button: 搜尋
+admin.store.plugin_owners_search.search_results: 搜尋結果（%number%／%total%筆）
+admin.store.plugin_owners_search.latest: 最新版本：
+admin.store.plugin_owners_search.dl: 下載數
+admin.store.plugin_owners_search.support: 支援版本
+admin.store.plugin_owners_search.detail: 詳細
+admin.store.plugin_owners_search.install.free: 取得
+admin.store.plugin_owners_search.install.fee: 購買
+admin.store.plugin_owners_search.install: 已安裝
+admin.store.plugin_owners_search.modal.header: 商品詳細
+admin.store.plugin_owners_search.modal.contact: 資料請求・お問い合わせ
+admin.store.plugin_owners_search.modal.manual: 手冊下載
+admin.store.plugin_owners_search.modal.note: "此外掛程式不支援 EC-CUBE %version%，因此可能無法正常運作。"
+admin.store.plugin_owners_search.modal.cancel: 返回清單
+admin.store.plugin_owners_search.modal.submit: 前往安裝確認
+admin.store.plugin_owners_search.modal.dependency: "需要 %dependency%。將同時安裝。"
+admin.store.plugin_search.884: 店主商店
+admin.store.plugin_search.885: 搜尋外掛程式
+admin.store.plugin_search.886: 搜尋結果
+admin.store.plugin_table.887: 外掛程式名稱
+admin.store.plugin_table.888: 版本
+admin.store.plugin_table.889: 代碼
+admin.store.plugin_table.890: 更新
+admin.store.plugin_table.891: 設定
+admin.store.plugin_table.892: (停止中)
+admin.store.plugin_table.893: 無效化
+admin.store.plugin_table.894: 有效化
+admin.store.plugin_table.895: 確定要刪除此外掛程式嗎？
+admin.store.plugin_table.896: 刪除
+admin.store.plugin_table.897: 顯示詳細資訊
+admin.store.plugin_table.898: 更新
+admin.store.plugin_table.900: 目前尚無安裝的外掛程式。
+admin.store.plugin_table.901: 狀態
+admin.store.plugin_table.902: 啟用
+admin.store.plugin_table.903: 停用
+admin.store.plugin_table_official.901: 外掛程式名稱
+admin.store.plugin_table_official.902: 外掛程式圖示
+admin.store.plugin_table_official.903: 外掛程式版本
+admin.store.plugin_table_official.904: 外掛程式代碼
+admin.store.plugin_table_official.905: 更新
+admin.store.plugin_table_official.906: 設定
+admin.store.plugin_table_official.907: 開發者
+admin.store.plugin_table_official.908: (停止中)
+admin.store.plugin_table_official.909: 無效化
+admin.store.plugin_table_official.910: 有效化
+admin.store.plugin_table_official.911: 刪除
+admin.store.plugin_table_official.912: 顯示詳細資訊
+admin.store.plugin_table_official.913: 上傳
+admin.store.plugin_table_official.914: 有新版本的外掛程式可用。
+admin.store.plugin_table_official.915: 可在停用狀態下使用
+admin.store.plugin_table_official.916: 更新
+admin.store.plugin_table_official.917: 外掛程式版本：%version%
+admin.store.plugin_table_official.918: EC-CUBE支援版本：%versions%
+admin.store.plugin_table_official.919: 更新日期：%update_date%
+admin.store.plugin_table_official.920: 沒有可更新的外掛程式。
+admin.store.plugin_table_official.921: 詳細資訊
+admin.store.plugin_table_official.924: 啟用
+admin.store.plugin_table_official.925: 停用
+admin.store.plugin_table_official.923: 目前尚無安裝的外掛程式。
+admin.store.unregistered_plugin_table.941: 外掛程式
+admin.store.unregistered_plugin_table.942: 版本
+admin.store.unregistered_plugin_table.943: 代碼
+admin.store.unregistered_plugin_table.944: 更新
+admin.store.unregistered_plugin_table.945: 設定
+admin.store.unregistered_plugin_table.946: 未知
+admin.store.unregistered_plugin_table.947: 未知
+admin.store.unregistered_plugin_table.948: 顯示詳細資訊
+admin.store.unregistered_plugin_table.949: 未知
+admin.store.unregistered_plugin_table.950: 設定
+admin.store.install.label: "外掛程式 (zip、tar、tar.gz格式)"
+
+#------------------------------------------------------------------------------------
+# 情報
+#------------------------------------------------------------------------------------
+
+admin.info: 情報
+admin.info.official_site: 公式サイト
+admin.info.community: 開発コミュニティ
+admin.info.document: ドキュメント
+
+#------------------------------------------------------------------------------------
+# QvA
+#--------------------
+
+admin.QvA.list: Q&A 類別清單
+admin.QvA.title: Q&A 類別清單
+admin.QvA.registe: Q&A 註冊
+admin.QvA.category_registe: Q&A 類別清單
+admin.QvA.sub_title: Q&A 管理
+
+
+#------------------------------------------------------------------------------------
+# filter
+#--------------------
+admin.filter.placeholder.category: 依類別名稱篩選
+
+#------------------------------------------------------------------------------------
+# ツールチップ
+#------------------------------------------------------------------------------------
+
+tooltip.product.multi_search_label: 可輸入資訊以縮小搜尋結果。如需指定更詳細的條件，請開啟「詳細搜尋」。
+tooltip.product.product_id: 商品的自動編號 ID。
+tooltip.product.sale_type: 適用於販售方式不一的商品，例如一般商品或數位下載商品。可在「主資料管理」中的 mtb_sale_type 編輯銷售類型清單。
+tooltip.product.image: 可拖放多張商品圖片進行註冊。
+tooltip.product.description_detail: 商品頁面顯示的說明文字。可使用 HTML 標籤。
+tooltip.product.description_list: 商品列表頁面顯示的商品說明文字。未設定時，商品列表頁面不會顯示說明。
+tooltip.product.normal_price: 若銷售價格為特殊價格，可同時顯示一般價格。
+tooltip.product.search_word: 網站內部搜尋使用的關鍵字。
+tooltip.product.product_code: 可自由設定的商品代碼。
+tooltip.product.sale_limit: 可限制購買者一次可購買的數量。
+tooltip.product.delivery_duration: 可為每個商品註冊預計出貨日期的範圍。
+tooltip.product.product_class: 可檢視並管理此商品設定的規格。
+tooltip.product.free_area: 商品詳細頁面會顯示輸入的內容。顯示位置因設計模板而異。
+tooltip.product.shop_memo: 商店專用備註欄。不會顯示於前台畫面。
+tooltip.product.backend_name: 可為管理員註冊別名（例如：規格名稱：尺寸　管理名稱：尺寸（服飾）、尺寸（鞋）等 ）。不會顯示於前台畫面。
+tooltip.product.csv_upload: 可使用指定格式的 CSV 資料一併註冊商品。
+tooltip.product.csv_format: 可下載範本檔案並進行編輯，以便輕鬆建立指定格式的 CSV 資料。
+tooltip.category.csv_upload: 可使用指定格式的 CSV 資料一併註冊類別。
+tooltip.category.csv_format: 下載範本檔案並進行編輯，以便輕鬆建立指定格式的 CSV 資料。
+tooltip.order.multi_search_label: 可輸入資訊以縮小搜尋結果。如需指定更詳細的條件，請開啟「詳細搜尋」。
+tooltip.order.order_search_status: 可依受注處理狀況進行縮小搜尋。括號內顯示待處理的受注數量。
+tooltip.order.bulk_actions: 針對已勾選的受注進行批次處理。請務必仔細確認後再執行。
+tooltip.order.order_info: 受注（訂單）的基本資訊。
+tooltip.order.order_no: 訂單建立時自動編號的管理序號。
+tooltip.order.order_status: 除全新受注登記外，可變更受注的處理狀況。若單一受注有多個出貨地址，所有地址都已出貨後，處理狀況將變更為「已出貨」。
+tooltip.order.customer_id: 會員的自動編號 ID。
+tooltip.order.shipping_info: 顯示出貨資訊。可新增出貨地址。若單一受注有多個出貨地址，可透過「編輯出貨地址」查看出貨地址詳細資訊。
+tooltip.order.shipping_info.tracking_number: 若有查詢編號（出貨單號），可在此輸入。也可從受注清單中整批輸入。
+tooltip.order.shipping_info.delivery_provider: 可變更配送業者及配送方式。變更後可能有變更運費，請注意。
+tooltip.order.shipping_info.shop_memo: 可儲存出貨人員及配送業者專用備註。可於出貨用 CSV 等檔案中查看。
+tooltip.order.product_info: 顯示購買商品資訊、運費、手續費及計算結果。若有新增商品或變更金額，請更新計算結果。
+tooltip.order.shop_memo: 可儲存店家專用備註。不會顯示於前台畫面。
+tooltip.order.mail_history: 可查看已發送的郵件或建立新郵件。
+tooltip.order.mail_destination_info: 可寄送郵件給訂購者。
+tooltip.order.mail_template: 選擇郵件模板。
+tooltip.order.mail_subject: 可修改郵件主旨。
+tooltip.shipping.csv_upload: 可使用指定格式的 CSV 資料一併註冊出貨資訊。
+tooltip.shipping.csv_format: 下載範本檔案並進行編輯，以便輕鬆建立指定格式的 CSV 資料。
+tooltip.customer.multi_search_label: 可輸入資訊以縮小搜尋結果。如需指定更詳細的條件，請開啟「詳細搜尋」。
+tooltip.customer.customer_id: 會員的自動編號 ID。
+tooltip.customer.customer_address: 此會員註冊的收貨地址。可在此畫面新增收貨地址。
+tooltip.customer.purchase_history: 顯示此會員的訂購紀錄。
+tooltip.customer.shop_memo: 店家專用備註欄。不會顯示於前台畫面。
+tooltip.content.news.url: 若有詳細內容的網頁，請輸入此新著資訊的網址。可使用外部網站的網址。
+tooltip.content.news.body: 可使用 HTML 標籤。
+tooltip.content.file.upload_file: 可拖曳多個檔案進行上傳。
+tooltip.content.layout_edit: 可在模板的不同區段中拖曳區塊進行配置。
+tooltip.content.page_file_name: 記載頁面內容的 twig 模板檔案名稱。
+tooltip.content.page_source_code: 編輯模板檔案。以 twig 語言撰寫。
+tooltip.content.page_layout: 選擇要套用於此頁面的佈景。
+tooltip.content.page_meta: 可指定頁面的 META 標籤內容。
+tooltip.content.page_meta_tags: 可自由新增 META 標籤。可使用 twig 內部變數。
+tooltip.content.css_source_code: 編輯自訂 CSS 檔案。以 CSS 語言撰寫。
+tooltip.content.js_source_code: 編輯自訂 JavaScript 檔案。以 JavaScript 語言撰寫。
+tooltip.content.block_name: 區塊的管理名稱。
+tooltip.content.block_file_name: 記載此區塊內容的 twig 模板檔案名稱。無法於管理畫面中變更。
+tooltip.content.block_source_code: 編輯模板檔案。以 twig 語言撰寫。
+tooltip.setting.shop.shop.email_from: 店家寄送電子郵件時使用的發件人電子郵件地址。
+tooltip.customer.multi_search_label: 可輸入資訊以縮小搜尋結果。如需指定更詳細的條件，請開啟「詳細搜尋」。
+tooltip.customer.customer_id: 會員的自動編號 ID。
+tooltip.customer.customer_address: 此會員註冊的收貨地址。可在此畫面新增收貨地址。
+tooltip.customer.purchase_history: 顯示此會員的訂購紀錄。
+tooltip.customer.shop_memo: 店家專用備註欄。不會顯示於前台畫面。
+tooltip.content.news.url: 若有詳細內容的網頁，請輸入此新著資訊的網址。可使用外部網站的網址。
+tooltip.content.news.body: 可使用 HTML 標籤。
+tooltip.content.file.upload_file: 可拖曳多個檔案進行上傳。
+tooltip.content.layout_edit: 可在模板的不同區段中拖曳區塊進行配置。
+tooltip.content.page_file_name: 記載頁面內容的 twig 模板檔案名稱。
+tooltip.content.page_source_code: 編輯模板檔案。以 twig 語言撰寫。
+tooltip.content.page_layout: 選擇要套用於此頁面的佈景。
+tooltip.content.page_meta: 可指定頁面的 META 標籤內容。
+tooltip.content.page_meta_tags: 可自由新增 META 標籤。可使用 twig 內部變數。
+tooltip.content.css_source_code: 編輯自訂 CSS 檔案。以 CSS 語言撰寫。
+tooltip.content.js_source_code: 編輯自訂 JavaScript 檔案。以 JavaScript 語言撰寫。
+tooltip.content.block_name: 區塊的管理名稱。
+tooltip.content.block_file_name: 記載此區塊內容的 twig 模板檔案名稱。無法於管理畫面中變更。
+tooltip.content.block_source_code: 編輯模板檔案。以 twig 語言撰寫。
+tooltip.setting.shop.shop.email_from: 店家寄送電子郵件時使用的發件人電子郵件地址。
+tooltip.setting.shop.tax_setting: 可設定商品共通的稅率。新增稅率可覆蓋基本稅率設定。
+tooltip.setting.shop.mail.mail_template: 請選擇現有的電子郵件模板。以下將顯示內容。
+tooltip.setting.shop.csv.csv_columns: 可透過 CSV 輸出各種資料。請在此設定欲輸出的項目。
+tooltip.setting.shop.csv.csv_type: 請指定欲設定的 CSV 類型。
+tooltip.setting.system.member.authority: 可選擇權限管理中設定的權限。
+tooltip.setting.system.member.work: 可暫時停用成員。若無需要，請從成員列表中刪除。
+tooltip.setting.system.security.admin_url: 請指定登入管理畫面的 URL。請指定不易猜測的 URL。
+tooltip.setting.system.security.ip_limit: 可限制登入管理畫面的連線來源 IP 地址。
+tooltip.setting.system.security.force_ssl: 可強制要求商店網站和管理畫面使用 SSL (https) 連線。
+tooltip.setting.system.log_display: 可查看存取記錄和錯誤狀況等記錄。
+tooltip.setting.system.master_data_management: 可管理各種主數據。
+tooltip.setting.system.system_info: 顯示此 EC-CUBE 相關的系統環境資訊。
+tooltip.setting.system.system.php_info: 顯示此 EC-CUBE 相關的 PHP 詳細資訊。
+
+#====================================================================================
+# インストール画面
+#====================================================================================
+
+install.next: 下一個
+install.back: 上一個
+install.update: 更新
+install.title: 歡迎 | EC-CUBE 安裝
+install.welcom: 歡迎
+install.check_permission: 權限檢查
+install.site_configuration: 網站設定
+install.database_configuration: 資料庫設定
+install.database_initalization: 資料庫初始化
+install.install_completed: 安裝完成
+install.start_eccube_installation: "<p>開始安裝 EC-CUBE。</p><p>請事先準備好要使用的資料庫資訊（例如 DB 名稱）。</p>"
+install.cooperation_of_providing_information: '為了改善和除錯 EC-CUBE 系統，請協助我們提供網站資訊。<br>我們不會將此資訊用於其他目的。<br><span class="small">（網站資訊：商店 URL、PHP 版本、DB 版本）</span>'
+install.accept_infomation_provision: 接受傳送
+install.permission_is_valid: 存取權限正常
+install.permission_is_invalid: 請賦予以下檔案或目錄寫入權限。
+install.system_requirement: 請確認系統需求
+install.required_extension_disabled: "[必備] %module% 擴充模組尚未啟用。"
+install.required_database_extension_disabled: "[必備] 請啟用 pdo_pgsql 或 pdo_mysql 擴充模組。"
+install.recommend_extension_disabled: "[建議] %module% 擴充模組尚未啟用。"
+install.mod_rewrite_unknown: 無法確定 mod_rewrite 是否啟用。
+install.mod_rewrite_disabled: "[必備] mod_rewrite 未啟用。"
+install.member_name: 管理者
+install.member_department:
+install.shop_name: 您的店名
+install.mail_address: 電子郵件地址（用於接收訂單電子郵件等）
+install.login_id: 管理畫面登入 ID（半角英數字%min%～%max%個字元）
+install.login_password: 管理畫面密碼（半角英數字%min%～%max%個字元）
+install.security_configuration: 安全性設定
+install.directory_name: 管理畫面的目錄名稱（半角英數字%min%～%max%個字元）
+install.directory_name_notice: 為確保安全性，請輸入不易猜測的目錄名稱
+install.https_only: 限制網站存取僅限 SSL（https）連線
+install.https_only_notice: 若非透過 https 連線，則無法設定 SSL 限制。
+install.ip_restriction: 限制管理畫面存取，僅限以下 IP 位址：
+install.ip_is_invalid: "%ip%不是 IPv4 位址。"
+install.mail_configuration: 電子郵件設定
+install.smtp_host: SMTP 主機
+install.smtp_port: SMTP 連接埠
+install.smtp_user: SMTP 使用者
+install.smtp_password: SMTP 密碼
+install.database_type: 資料庫類型
+install.database_pgsql: PostgreSQL
+install.database_mysql: MySQL
+install.database_sqlite: SQLite(供開發人員使用)
+install.database_host: 資料庫的主機名稱
+install.database_port: 資料庫的連接埠號碼
+install.database_name: 資料庫名稱
+install.database_user: 使用者名稱
+install.database_password: 密碼
+install.database_connection_error: 無法連線到資料庫。
+install.database_do_initialize: 將初始化資料庫。初始化可能會需要一些時間。<br>若已存在資料表等資料，則會中斷初始化。
+install.database_skip_notice: 若已安裝過舊版本，且不想刪除現有資訊，請勾選此選項
+install.database_skip: 不初始化資料庫
+install.completed: 安裝完成！
+install.access_admin_page: 請嘗試存取管理畫面
+install.perform_initial_setting: 請使用先前註冊的登入 ID 和密碼登入管理畫面。您可以編輯設計和註冊商品！
+install.go_to_admin_page: 顯示管理畫面
+
+#------------------------------------------------------------------------------------
+# エラー画面
+#------------------------------------------------------------------------------------
+
+exception.error_title: 發生系統錯誤。
+exception.error_message: 很抱歉造成您的不便，請聯絡網站管理員。
+exception.error_title_can_not_access: 無法存取。
+exception.error_message_can_not_access: 您所要找尋的頁面可能無法存取、已被移轉或刪除。
+exception.error_title_not_found: 找不到頁面。
+exception.error_message_not_found: 請確認網址是否正確。
+
+#------------------------------------------------------------------------------------
+# PurchaseFlow
+#------------------------------------------------------------------------------------
+
+purchase_flow.delivery_fee_update: 運費已更新。請確認金額。
+purchase_flow.charge_update: 手續費已更新。請確認金額。
+purchase_flow.over_customer_point: 使用點數超出可用點數。
+purchase_flow.over_payment_total: 使用點數超出應付金額。
+purchase_flow.over_stock: 「%name%」的庫存不足。
+
+#------------------------------------------------------------------------------------
+# Command
+#------------------------------------------------------------------------------------
+
+command.composer_require_already_installed.not_supported_plugin: %name% %plugin_version% 不相容於 EC-CUBE %eccube_version%。您要繼續嗎？
+
+#------------------------------------------------------------------------------------
+# PageCountdown
+#------------------------------------------------------------------------------------
+page_countdown.get_gift: 同意してショッピングを続けてください
+
+
+
+admin.nav.home: 首頁
+admin.nav.product: 商品管理
+admin.nav.product.list: 商品列表
+admin.nav.product.registration: 商品註冊
+admin.nav.product.sort: 商品排序
+admin.nav.product.specification: 規格管理
+admin.nav.product.category: 類別管理
+admin.nav.product.brand: 品牌管理
+admin.nav.product.tag: 標籤管理
+admin.nav.product.product_svg: 商品CSV註冊
+admin.nav.product.category_svg: 類別CSV註冊
+admin.nav.product.review: 評論管理
+admin.nav.product.item: 商品項目管理
+admin.nav.order: 訂單管理
+admin.nav.order.list: 訂單列表
+admin.nav.order.registration: 訂單註冊
+admin.nav.order.shipping_svg: 出貨CSV註冊
+admin.nav.order.promotion: 優惠碼
+admin.nav.order.payment_status: 支付狀態列表
+admin.nav.sales: 銷售統計
+admin.nav.sales.period: 期間別統計
+admin.nav.sales.product: 商品別統計
+admin.nav.sales.promotion: 優惠碼別統計
+admin.nav.sales.age: 年齡別統計
+admin.nav.recipe: 食譜管理
+admin.nav.news: 新聞管理
+admin.nav.member: 會員管理
+admin.nav.member.list: 會員列表
+admin.nav.member.registration: 會員註冊
+admin.nav.KG_Business: KG 業務管理
+admin.nav.KG_Business.telephone: 電話服務歷史記錄
+admin.nav.KG_Business.live: 直播服務歷史記錄
+admin.nav.KG_Business.ceo_daily_report_list: 董事會日報
+admin.nav.KG_Business.staff_daily_report_list: 成員日報
+admin.nav.KG_Business.store: 門市點數贈送
+admin.nav.salonaf: 會員管理
+admin.nav.salonaf.list: 會員管理
+admin.nav.mail: 電子報管理
+admin.nav.mail.distribution: 發送
+admin.nav.mail.setting: 模板設定
+admin.nav.mail.distribution_history: 發送歷史記錄
+admin.nav.KGPr: '#KGPro管理'
+admin.nav.QvA: 問與答管理
+admin.nav.QvA.category: 問與答類別管理
+admin.nav.video: 影片管理
+admin.nav.video.list: 影片列表
+admin.nav.video.category: 影片類別
+admin.nav.countdown: 影片類別
+admin.nav.countdown.manager: 影片類別管理
+admin.nav.content: 內容管理
+admin.nav.content.new_manager: 新進資訊管理
+admin.nav.content.file: 檔案管理
+admin.nav.content.layout: 佈局
+admin.nav.content.page: 頁面管理
+admin.nav.content.css: CSS 管理
+admin.nav.content.js: JavaScript 管理
+admin.nav.content.block: 區塊管理
+admin.nav.content.cache: 快取管理
+admin.nav.content.maintenance: 維護管理
+admin.nav.content.recommen: 推薦管理
+admin.nav.content.banner: 橫幅管理
+admin.nav.content.slider_pc: 幻燈片管理（PC)
+admin.nav.content.slider_sp: 幻燈片管理（SP)
+admin.nav.content.slider_cbd_pc: 幻燈片管理（CBD-PC)
+admin.nav.content.slider_cbd_sp: 幻燈片管理（CBD-SP)
+admin.nav.setting: 設定
+admin.nav.setting.store: 門市設定
+admin.nav.setting.store.basic: 基本設定
+admin.nav.setting.store.specific: 特定商取引法設定
+admin.nav.setting.store.terms: 使用條款設定
+admin.nav.setting.store.payment: 支付方式設定
+admin.nav.setting.store.shipping: 運送方式設定
+admin.nav.setting.store.tax: 稅率設定
+admin.nav.setting.store.mail: 電子郵件設定
+admin.nav.setting.store.csv: CSV 輸出項目設定
+admin.nav.setting.system: 系統設定
+admin.nav.setting.system.member: 會員管理
+admin.nav.setting.system.permisstion: 權限管理
+admin.nav.setting.system.security: 安全性管理
+admin.nav.setting.system.log: 紀錄顯示
+admin.nav.setting.system.master: 安全性管理
+admin.nav.setting.system.infomation: 系統資訊
+admin.nav.store: 系統資訊
+admin.nav.store.plugin: 外掛
+admin.nav.store.plugin.search: 搜尋外掛
+admin.nav.store.plugin.plugin: 外掛列表
+admin.nav.store.template: 樣板
+admin.nav.store.template.template: 樣板列表
+admin.nav.store.template.install: 上傳
+admin.nav.store.authentication_setting: 認證金鑰設定
+
+
+
+
+
+
+
+

@@ -1,0 +1,454 @@
+{% extends 'home_frame.twig' %}
+
+{% block main %}
+    <nav aria-label="breadcrumb" role="navigation">
+        <ol class="breadcrumb mb-2 p-0">
+            <li class="breadcrumb-item">
+                <a href="{{ url('homepage') }}">
+                    {{ 'TOP'|trans }}
+                </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                <a>按類別搜尋</a>
+            </li>
+        </ol>
+    </nav>
+
+    <div class="search-category-contents">
+        <div class="search-category-main">
+            <h1 class="search-title">按類別搜尋</h1>
+
+            <div class="search-category" style="padding: 0 7px">
+                <div class="btn-expand">
+                    <button class="btn-expand-all">全部關閉</button>
+                    <button class="btn-search-category">按類別搜尋</button>
+                </div>
+            </div>
+
+            <div class="result-category">
+
+            </div>
+
+            <div class="on-top">
+                <svg width="18" height="9" viewBox="0 0 18 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0 9L9 0L18 9H0Z" fill="black"/>
+                </svg>
+                <p>頁面頂部</p>
+
+                    
+            </div>
+        </div>
+    </div>
+    
+
+    <style>
+
+        .search-category-contents{
+            max-width: 1100px !important;
+            width: 100%;
+            margin: 0 auto;
+        }
+        .search-category-main{
+            width:80%;
+            margin: auto;
+        }
+
+        .disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .search-title{
+            font-size: 20px;
+            text-align: center;
+            font-weight: 600;
+            margin-top: 38px;
+            margin-bottom: 20px;
+        }
+
+        .on-top{
+            text-align: center;
+            cursor: pointer;
+            width: fit-content;
+            margin: 32px auto 0px auto;
+        }
+
+        .search-category .search-btn{
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        
+        .search-category .search-btn .search-btn-line:last-child{
+            margin-bottom: 0px;
+        }
+
+        .search-category .search-btn button.disable{
+            border-color: #C8C8C8!important;
+            color: #C8C8C8!important;
+        }
+
+        .search-category .search-btn button{
+            width: 60px;
+            height: 60px;
+            border: 1px solid #000000;
+            background: transparent;
+
+            font-size: 20px;
+            font-weight: 500;
+            font-family: Cabin;
+            color: #000;
+            margin-top: 15px;
+        }
+
+        .search-category .btn-expand-all{
+            border: 1px solid #000000;
+            background: transparent;
+
+            font-size: 20px;
+            font-weight: 500;
+            font-family: Cabin;
+            color: #000;
+
+            width:100%;
+            height: 60px;
+            margin-top:33px;
+            border-radius: 10px;
+        }
+        .search-category .btn-search-category{
+            border: 0;
+            background: #D9D9D9;
+
+            font-size: 20px;
+            font-weight: 500;
+            font-family: Cabin;
+            color: #E73253;
+
+            width:100%;
+            height: 60px;
+            margin-top:20px;
+            border-radius: 10px;
+        }
+        .result-category{
+            margin: 22px auto 0 auto;
+        }
+        .result-category .result-category-item .collapse-btn{
+            border-bottom: 1px solid #fff;
+            background: #322927;
+            
+
+            display: flex;
+            padding: 19px 21px 22px 21px;
+            justify-content: space-between;
+            align-items: center;
+            width:100%;
+        }
+
+        .result-category .result-category-item .collapse-btn label{
+            color:#fff;
+            font-size:20px;
+            font-weight: 500;
+            margin-bottom:0;
+        }
+
+        .result-category .result-category-item .collapse-btn.disable label{
+            color:#C8C8C8;
+        }
+
+        .result-category .result-category-item .collapse .collapse-item{
+
+        }
+
+        .result-category .result-category-item .collapse .collapse-item .collapse-title{
+            background:#fff;
+            border-bottom:1px solid #322927;
+            border-left:1px solid #322927;
+            border-right:1px solid #322927;
+            padding:19px 21px 22px 21px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .result-category .result-category-item .collapse .collapse-item .collapse-title:hover{
+            opacity: 0.6;
+            cursor: pointer;
+        }
+        .result-category .result-category-item .collapse .collapse-item .collapse-title label{
+            color:#000;
+            font-size:20px;
+            font-weight:500;
+            line-height:18.84px;
+            font-family:Cabin;
+        }
+        .result-category .result-category-item .collapse .collapse-item .resual-item{
+            border-bottom:1px solid #322927;
+        }
+        .result-category .result-category-item .collapse .collapse-item .resual-item a{
+            background:#FFFFFF;
+            display:flex;
+            justify-content:space-between;
+            padding:0 17px 0 40px;
+            height:60px;
+            width:100%;
+        }
+        .result-category .result-category-item .collapse .collapse-item .resual-item label{
+            color:#000;
+            font-size:14px;
+            font-weight:500;
+            line-height:24px;
+            font-family:Cabin;
+        }
+        .result-category .result-category-item .collapse .collapse-item .resual-item .resual-info{
+            display: flex;
+            align-items: center;
+        }
+        .result-category .result-category-item .collapse .collapse-item .resual-item .resual-arrow{
+            transform: rotate(270deg);
+            filter: brightness(0);
+        }
+
+        .ec-layoutRole__contents{
+            overflow:visible !important;
+        }
+        
+        .search-category .search-btn .search-btn-line{
+            display: flex;
+            width: 500px;
+            justify-content: space-around;
+            margin: auto;
+        }
+        {# ol[id*="resual"] {
+            box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.2);
+        } #}
+
+        @media screen and (max-width: 768px) {
+            .search-category-main{
+                width:100%;
+                margin: auto;
+            }
+            .result-category{
+                margin: 22px -10px 0 -10px;
+            }
+            .ec-layoutRole__mainWithColumn {
+                margin: 0;
+            }
+            .result-category .result-category-item .collapse-btn label{
+                font-size: 16px;
+            }
+            .result-category .result-category-item .collapse .collapse-item .collapse-title label{
+                font-size: 16px;
+            }
+            
+        }
+        @media screen and (max-width: 480px) {
+            .search-category .search-btn .search-btn-line{
+                display:contents;
+            }
+
+        }
+
+    </style>
+
+    <script>
+        var categories = {{ categories | json_encode | raw }};
+        console.log("🚀 ~ categories:", categories)
+        const listCategoriesAll = categories.reduce((acc, category) => {
+            if (category.hierarchy === 1) {
+                acc[category.name] = category.Children.map(child => ({
+                    name: child.name,
+                    id: child.id.toString()
+                }));
+            }
+            return acc;
+        }, {});
+        
+        //remove サロン様仕入れ category 
+        let { "サロン様仕入れ": removedKey, ...listCategories } = listCategoriesAll;
+
+        let keyName = Object.keys(listCategories);
+        keyName.map((name,index)=>{
+            let nameLine = listCategories[name];
+            const listChars = listCategories[name].map(item => item.name)
+            const categoriesGroup = categories.filter(category => listChars.includes(category.name))
+            let safeName = name.replace(/\./g, '_');
+            if(categoriesGroup.length == 0) {
+                $('#'+safeName).addClass('disabled');
+            }
+
+            let result = jQuery('<div>', {
+                id: `search-${safeName}-item`,
+                class: 'result-category-item',
+            });
+
+            if (categories[index].Children.length == 0) {
+                result.attr('onclick', `window.location.href='/category/${categories[index].id}';`); 
+            }
+
+            result.appendTo('.result-category');
+
+            let collapse =  jQuery('<div>', {
+                class: 'collapse-btn',
+                'data-toggle': 'collapse',
+                href: `#search-${safeName}`,
+                'aria-expanded': 'false',
+                'aria-controls': `search-${safeName}`,
+            }).appendTo(result);
+
+            if (categories[index].Children.length == 0) {
+                collapse.html(`<label>${name}</label>
+                <img style="transform: rotate(-90deg);" src="/html/user_data/assets/img/icon/i_collapse.svg"/>`); 
+            }else {
+                collapse.html(`<label>${name}</label>
+                <img src="/html/user_data/assets/img/icon/i_collapse.svg"/>`); 
+            }
+            
+
+            let collapseContent =  jQuery('<div>', {
+                class: 'collapse',
+                id: `search-${safeName}`,
+            }).appendTo(result);
+
+            let collapseContentOl =  jQuery('<ol>').appendTo(collapseContent);
+
+            nameLine.map((item)=>{
+                let collapseItem = jQuery('<li>', {
+                    id:`search-${item.id}`,
+                    class: 'collapse-item',
+                }).appendTo(collapseContentOl);
+
+                const categoryItem = categories.filter(category => category.id == item.id)
+  
+                if(categoryItem[0].Children.length == 0) {
+                    collapseItem.append(`<a href='/category/${item.id}'>
+                        <div class="collapse-title">
+                            <label>${item.name} (${categoryItem[0].product_count})</label>
+                        </div>
+                    </a>`);
+                }else {
+                    const total = categoryItem[0].Children.reduce((acc, child) => {
+                        const categoryChild = categories.find(category => category.id == child.id);
+                        return acc + (categoryChild ? categoryChild.product_count : 0);
+                    }, 0);
+                    collapseItem.append(`<div class="collapse-btn-level-2">
+                        <div class="collapse-title">
+                            <label>${item.name} (${total})</label>
+                            <img src="/html/user_data/assets/img/icon/i_collapse_black.svg"/>
+                        </div>
+                    </div>`);
+                }
+
+                
+
+                let collapseItemContent =  jQuery('<div>', {
+                    class: 'collapse',
+                    id: `search-${item.id}`,
+                }).appendTo(collapseItem);
+
+                let resualOl = jQuery('<ol>',{
+                    id:`resual-${item.id}`
+                }).appendTo(collapseItemContent);
+
+                
+               
+                categoryItem[0].Children.forEach(child => {
+                    const categoryChild = categories.find(category => category.id == child.id);
+                    
+                    if (categoryChild) {
+                        const { id, name, product_count = 0 } = categoryChild;
+
+                        const resualItem = jQuery('<li>', { class: "resual-item" }).appendTo(resualOl);
+                        const resualItemLink = jQuery('<a>', { href: `/category/${id}` }).appendTo(resualItem);
+
+                        resualItemLink.append(`
+                            <div class="resual-info">
+                                <label style="margin-bottom:0px;">${name}（${product_count}）</label>
+                            </div>
+                        `);
+                    }
+                });
+            })
+        })
+
+        const hasItemCollapseShow = ()=>{
+            let isHadShow = false;
+            keyName.map((key) => {
+                let safeKey = key.replace(/\./g, '_');
+                if($(`#search-${safeKey}`).length == 0) return;
+                isHadShow = isHadShow || ($(`#search-${safeKey}`).attr("aria-expanded") == "true")
+            });
+            return isHadShow;
+        }
+        const hasItemCollapseHide = ()=>{
+            let isHadHide = false;
+            keyName.map((key) => {
+                let safeKey = key.replace(/\./g, '_');
+                isHadHide = isHadHide || ($(`#search-${safeKey}`).attr("aria-expanded") != "true")
+            });
+            return isHadHide;
+        }
+
+        $(".collapse-btn" ).on("click", function() {
+            let idElement = $(this).attr('href');
+            {# $(this).toggleClass('disable'); #}
+            {# $([document.documentElement, document.body]).animate({
+                scrollTop: $(idElement+"-item")[0].offsetTop
+            }, 100); #}
+
+            $(idElement).collapse('show');
+        });
+
+        $(".btn-expand-all").on("click", function() {
+            let isHadHide = hasItemCollapseHide();
+            keyName.map((key) => {
+                let safeKey = key.replace(/\./g, '_');
+                $(`#search-${safeKey}`).collapse(isHadHide ? 'show':'hide');
+            });
+            $('.btn-expand-all').text(isHadHide ? '全部關閉' : '全部展開');
+        });
+
+
+
+        $('.on-top').on("click", ()=>{
+             $([document.documentElement, document.body]).animate({
+                scrollTop: 0
+            }, 100);
+        });
+
+        document.querySelectorAll('.collapse-btn-level-2').forEach(button => {
+            button.addEventListener('click', () => {
+                const collapseItem = button.closest('.collapse-item');
+                if (collapseItem) {
+                    const itemId = collapseItem.id;
+                    const collapseDiv = collapseItem.querySelector(`.collapse[id="${itemId}"]`);
+                    if (collapseDiv) {
+                        const isExpanded = collapseDiv.classList.contains('in');
+                        if (isExpanded) {
+                            collapseDiv.classList.remove('in');
+                        } else {
+                            collapseDiv.classList.add('in');
+                        }
+                    }
+                }
+            })
+        });
+        $(document).ready(function() {
+            
+            $("[id^='search-']").each(function() {
+                $(this).collapse('show');
+            });
+
+            $(".collapse-btn" ).on("click", function() {
+                setTimeout(()=>{
+                    let isHadHide = hasItemCollapseHide();
+                    $('.btn-expand-all').text(isHadHide ? 'すべて展開する' : 'すべて閉じる');
+                },100)
+                
+            })
+
+        });
+
+
+        
+        
+    </script>
+
+{% endblock %}

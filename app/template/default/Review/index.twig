@@ -1,0 +1,314 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+
+{% import _self as stars %}
+
+{# 星テキスト生成用マクロ #}
+{% macro stars(positive, negative) %}
+    {% set positive_stars = ["", "★", "★★", "★★★", "★★★★", "★★★★★"] %}
+    {% set negative_stars = ["", "☆", "☆☆", "☆☆☆", "☆☆☆☆", "☆☆☆☆☆"] %}
+    {{ positive_stars[positive] }}{{ negative_stars[negative] }}
+{% endmacro %}
+
+{% set body_class = "product_page" %}
+
+
+{% block javascript %}
+<script src="/html/template/default/assets/js/review.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ekko-lightbox/5.3.0/ekko-lightbox.min.js"></script>
+    <script>
+        $(document).on('click', '[data-toggle="lightbox"]', function(event) {
+                        event.preventDefault();
+                        $(this).ekkoLightbox();
+                    });
+        $(function() {
+
+            const yougo_area = document.getElementById('product_review_area');
+            const yougo_parts = document.getElementsByClassName('product_review_part');
+            const input = document.getElementById('product_review_word');
+
+            function setHightlight(){
+                const sword = input.value;
+                if(sword==''){return}
+                const regexp = new RegExp(`(?<=>)[^<>]*?(${sword})[^<>]*?(?=<)`,'gi');
+                const regexp2 = new RegExp(sword,'gi');
+                [...yougo_parts].forEach(part=>{
+                //console.log(part.textContent)
+                    if(part.textContent.indexOf(sword)==-1){
+                        part.classList.add('hide');
+                    }else{
+                        part.innerHTML=part.innerHTML.replace(regexp,function(){
+                            return arguments[0].replace(regexp2,`<span class="highlight">${sword}</span>`);
+                        });
+                    }
+                });
+            }
+
+            $('#product_review_word').change(function(){
+                reset();
+                return setHightlight();
+            })
+
+            input.addEventListener('input',()=>{
+                reset();
+                return setHightlight();
+            });
+
+            function reset(){
+            //console.log('reset');
+                [...document.getElementsByClassName('highlight')].forEach(el=>{
+                    el.outerHTML=el.textContent;
+                });
+                [...document.getElementsByClassName('hide')].forEach(el=>{
+                    el.classList.remove('hide');
+                });
+            }
+
+            setHightlight();
+
+            
+            
+
+            $('.orderby-link').click(function(){
+                var txt = $(this).text();
+                $('#orderby-name').text(txt)
+            })
+            $('.category-link').click(function(){
+                var txt = $(this).text();
+                $('#category-name').text(txt)
+            })
+
+        });
+
+        $('.ec-modal-overlay, .ec-modal .ec-inlineBtn--cancel').on('click', function() {
+            $('.ec-modal').hide()
+        });
+
+
+    </script>
+{% endblock %}
+
+{% block main %}
+    
+
+    <article id="new-review-page" class="info_item_review">
+
+        <div class="mlr10">
+            <h2 class="review-header-title">商品レビュー/一覧</h2>                  
+
+                <hr class="solid"></hr>
+
+                <div class="review-form-row">
+                    <span class="review-form-label" >並び順：</span>
+                    <div class="review-form-orderby dropdown">
+                        <button class="review-form-btn btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                            <span class="dropdown-label" id="orderby-name">
+                            {{ orderby_name }}                            
+                            </span>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li role="presentation"><a class="orderby-link" href="?orderby=1&category_id={{ category_id }}&keyword={{ keyword }}">新着順</a></li>
+                            <li role="presentation"><a class="orderby-link" href="?orderby=2&category_id={{ category_id }}&keyword={{ keyword }}">評価の高い順</a></li>
+                            <li role="presentation"><a class="orderby-link" href="?orderby=3&category_id={{ category_id }}&keyword={{ keyword }}">評価の低い順</a></li>
+                            <li role="presentation"><a class="orderby-link" href="?orderby=4&category_id={{ category_id }}&keyword={{ keyword }}">参考になったの多い順</a></li>
+                        </ul>
+                    </div>
+                    <div class="review-form-filter dropdown">
+                        <button class="review-form-btn btn btn-default dropdown-toggle review-form-filter-btn" type="button" data-toggle="dropdown">
+                            <span class="dropdown-label" id="category-name">{{ category_name }}</span>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                            <li role="presentation"><a class="category-link" href="?category_id=&orderby={{orderby}}&keyword={{ keyword }}">すべて</a></li>
+                            {% for cate in categories %}
+                                <li role="presentation"><a class="category-link" href="?category_id={{ cate.id }}&orderby={{orderby}}&keyword={{ keyword }}">{{ cate.name }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+
+            <form action="/review_list">
+                <input type="hidden" name="category_id" value="{{ category_id }}">
+                <input type="hidden" name="orderby" value="{{ orderby }}">
+                <div class="review-form-row">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="product_review_word" name="keyword" placeholder="キーワードを入力して検索" value="{{ keyword }}">
+                        <span class="input-group-btn">
+                            <button type="submit" class="btn btn-defaul review-form-search-btn" style="height:33px;width:44px;"><i class="fas fa-search"></i></button>
+                        </span>
+                    </div>
+                </div>
+
+            </form>
+
+        <hr style="border-style:dashed">
+
+        <section>
+
+                <div class="reviewbox" id="product-review-area">
+
+
+                {% for Review in pagination %}
+                    {% set Product = Review.Product %}
+                    <div class="product_review_part">           
+                        <div class="review-box review-flexbox">
+                            <div class="review-prod-img">
+                            <a href="{{ url('product_detail', {'id': Product.id}) }}">
+                                <p class="ec-shelfGrid__item-image">
+                                    <img src="{{ asset(Product.main_list_image|no_image_product, 'save_image') }}">
+                                </p>
+                            </a>
+                            </div>
+                            <div class="review-prod-doc">
+                                <a href="{{ url('product_detail', {'id': Product.id}) }}">
+                                    <h3>{{ Review.Product.name }}</h3>
+                                </a>
+                                <p>
+                                {% set counter=0 %}
+                                {% for product_category in Product.productCategories %}
+                                    {% if product_category.Category.id in category_map %}
+                                    {% if counter > 0 %}/{% endif %} <a href="?category={{ product_category.Category.id }}">{{ product_category.Category.name }}</a> {% set counter = counter + 1 %} 
+                                    {% endif %}
+                                {% endfor %}
+                                <p>
+                                <p><a href="{{ url('product_detail', {'id': Product.id}) }}">{{ ReviewCntList[Product.id] }}件</a>のレビューがあります</p>
+                                <p>総合評価 
+                                {% set positive_star = ReviewAveList[Product.id] %}
+                                {% set nagative_star = 5 - positive_star %}
+                                <span class="star">{{ stars.stars(positive_star, nagative_star) }}</span>
+                                </p>
+                            </div>
+                        </div>         
+                        <div class="review-box">
+                            <span class="recommend_star">
+                                {% set positive_star = Review.recommend_level %}
+                                {% set nagative_star = 5 - positive_star %}
+                                {{ stars.stars(positive_star, nagative_star) }}
+                            </span>
+                            
+                            <span class="recommend_date">{{ Review.create_date|date_format('','Y/m/d') }}</span>
+                            
+                            <span class="recommend_name">{{ Review.reviewer_name }} 先生</span>                    
+                        </div>
+
+                        <div class="rebiew-box">
+                            <p class="review-title">{{ Review.title }}</p>
+                            <p class="review-comm">{{ Review.comment|nl2br }}</p>
+                        </div>
+
+                        <div class="review-box row">
+                            {% if Review.pic1 %}
+                            <div class="col-xs-3 review-user-img"><a href="{{ Review.pic1 }}" target="_blank" data-toggle="lightbox"><img src="{{ Review.pic1 }}"></a></div>
+                            {% endif %}
+
+                            {% if Review.pic2 %}
+                            <div class="col-xs-3 review-user-img"><a href="{{ Review.pic2 }}" target="_blank" data-toggle="lightbox"><img src="{{ Review.pic2 }}"></a></div>
+                            {% endif %}
+                            
+                            {% if Review.pic3 %}
+                            <div class="col-xs-3 review-user-img"><a href="{{ Review.pic3 }}" target="_blank" data-toggle="lightbox"><img src="{{ Review.pic3 }}"></a></div>
+                            {% endif %}
+                            
+                            {% if Review.pic4 %}
+                            <div class="col-xs-3 review-user-img"><a href="{{ Review.pic4 }}" target="_blank" data-toggle="lightbox"><img src="{{ Review.pic4 }}"></a></div>
+                            {% endif %}
+                        </div>
+
+                        <div class="review-bottom">
+                            
+                            <div class="review-ref-msg ref_msg{{ Review.id }}" style="{% if Review.ref_count > 0 %}  {% else %} display:none {% endif %}"><strong id="ref_count{{ Review.id }}" target="_blank" data-ref="{{ Review.ref_count }}">{{ Review.ref_count }}</strong>有人回覆說這對他們有幫助！</div>
+
+					<div class="row">
+						<div class="col-xs-6">
+                            {% if is_granted('ROLE_USER') %}
+                                {% if user_id in Review.getRefUsers() %}
+                                    <button type="button" class="review-ref-button review-ref-pushed" disabled="disabled" data-rid="{{ Review.id }}"><span>有幫助！</span></button>                                
+                                {% else %}
+                                    <button type="button" class="review-ref-button" data-rid="{{ Review.id }}"><span>有幫助！</span></button>
+                                {% endif %}
+                            {% else %}
+                                <a href="{{ url('mypage_login') }}" class="review-ref-button"><span>有幫助！</span></a>                                
+                            {% endif %}
+						</div>
+						<div class="col-xs-6 thank-btn-div" style="padding-top:7px">
+							<button class="btn btn-secondary thank-btn" type="button">舉報違規</button>
+							<span class="icon-thank-msg"><i class="bi bi-check"></i>感謝您提供反饋意見</span>
+						</div>
+				</div>
+
+                        <hr class="review-bar">
+                    </div>
+                {% endfor %}
+                    
+                {# % for Review in ProductReviews %}
+                    <div>           
+                        <div class="review-box">
+
+                        </div>         
+                        <div class="review-box">
+                            <span class="recommend_level"> ★×{{ Review.recommend_level }}</span>
+                            
+                            <span class="recommend_date">{{ Review.create_date|date_format('','Y/m/d') }}</span>
+                            
+                            <span class="recommend_name">{{ Review.reviewer_name }} さん</span>                    
+                        </div>
+
+                        <div class="rebiew-box">
+                            <p class="review-title">{{ Review.title }}</p>
+                            <p class="review-comm">{{ Review.comment|nl2br }}</p>
+                        </div>
+
+                        <div class="review-bottom">
+                            <span>11</span>人が参考になったと回答しました！
+                            <button><span>参考になった！</span></button>
+                        </div>
+                    </div>
+                {% endfor % #}
+
+                </div>
+
+                <div class="ec-pagerRole">
+                    {% include "pager.twig" with {'pages': pagination.paginationData} %}
+                </div>
+        </section>
+    </article>
+
+
+    {# {% include "Product/category.twig" %} #}
+
+    {#
+    <div class="category-list">
+        <p class="title">ジャンル</p>
+        <div class="inr">
+            <ul>
+                <li class="c01"><a href="{{ url('product_list') }}?category_id=7">カラーシャンプー</a></li>
+                <li class="c02"><a href="{{ url('product_list') }}?category_id=18">ヒト幹細胞ヘアケア</a></li>
+                <li class="c03"><a href="{{ url('product_list') }}?category_id=8">カラー剤<br>ブリーチ剤</a></li>
+                <li class="c04"><a href="{{ url('product_list') }}?category_id=12"> トリートメント<br>(インバス)</a></li>
+                <li class="c05"><a href="{{ url('product_list') }}?category_id=17">トリートメント<br>(アウトバス)</a></li>
+                <li class="c06"><a href="{{ url('product_list') }}?category_id=11">ヘアケア</a></li>
+                <li class="c07"><a href="{{ url('product_list') }}?category_id=9">ヘアカラー関連</a></li>
+                <li class="c08"><a href="{{ url('product_list') }}?category_id=19">サロン関連</a></li>
+                <li class="c09"><a href="{{ url('product_list') }}?category_id=15">教材</a></li>
+                <li class="c10"><a href="{{ url('product_list') }}?category_id=16">公式通販限定</a></li>
+                <li class="c11"><a href="{{ url('product_list') }}?category_id=20">タイムセール</a></li>
+                <li class="c12"><a href="{{ url('product_list') }}?category_id=21">コーム</a></li>
+                <li class="c13"><a href="{{ url('product_list') }}?category_id=10">書籍</a></li>
+                <li class="c14"><a href="{{ url('product_list') }}?category_id=22">CBD</a></li>
+            </ul>
+        </div>
+    </div>
+    #}
+
+{% endblock %}

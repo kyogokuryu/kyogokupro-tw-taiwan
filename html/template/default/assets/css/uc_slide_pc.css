@@ -1,0 +1,11 @@
+.slider {
+    display: none;
+}
+.slider.slick-initialized {
+    display: block;
+}
+.slider-height .top-mv {
+    margin: 0 auto;
+    width: 70%;
+    aspect-ratio: 1440 / 500;
+}

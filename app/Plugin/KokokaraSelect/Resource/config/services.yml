@@ -1,0 +1,95 @@
+services:
+  Plugin\KokokaraSelect\Service\PlgConfigService\ConfigService:
+    arguments:
+      - '@Plugin\KokokaraSelect\Repository\PlgConfigRepository'
+      - '@Plugin\KokokaraSelect\Repository\PlgConfigOptionRepository'
+  kokokara_select.plg_migration:
+    class: Plugin\KokokaraSelect\Service\PlgMigrationService
+    public: true
+  kokokara_select.config_migration:
+    class: Plugin\KokokaraSelect\Service\PlgConfigService\ConfigMigrationService
+    public: true
+
+  Plugin\KokokaraSelect\Doctrine\EventListener\CartEventListener:
+    autowire: true
+    tags:
+      - name: 'doctrine.orm.entity_listener'
+        event: 'prePersist'
+        entity: 'Eccube\Entity\Cart'
+      -
+        name: 'doctrine.orm.entity_listener'
+        event: 'postLoad'
+        entity: 'Eccube\Entity\Cart'
+      -
+        name: 'doctrine.orm.entity_listener'
+        event: 'preRemove'
+        entity: 'Eccube\Entity\Cart'
+  Plugin\KokokaraSelect\Doctrine\EventListener\CartItemEventListener:
+    autowire: true
+    tags:
+      -
+        name: 'doctrine.orm.entity_listener'
+        event: 'postLoad'
+        entity: 'Eccube\Entity\CartItem'
+  Plugin\KokokaraSelect\Doctrine\EventListener\OrderItemEventListener:
+    autowire: true
+    tags:
+      -
+        name: 'doctrine.orm.entity_listener'
+        event: 'postLoad'
+        entity: 'Eccube\Entity\OrderItem'
+      -
+        name: 'doctrine.orm.entity_listener'
+        event: 'prePersist'
+        entity: 'Eccube\Entity\OrderItem'
+      -
+        name: 'doctrine.orm.entity_listener'
+        event: 'postPersist'
+        entity: 'Eccube\Entity\OrderItem'
+      -
+        name: 'doctrine.orm.entity_listener'
+        event: 'preUpdate'
+        entity: 'Eccube\Entity\OrderItem'
+  Plugin\KokokaraSelect\Doctrine\EventListener\OrderEventListener:
+    autowire: true
+    tags:
+      -
+        name: 'doctrine.orm.entity_listener'
+        event: 'postLoad'
+        entity: 'Eccube\Entity\Order'
+      -
+        name: 'doctrine.orm.entity_listener'
+        event: 'prePersist'
+        entity: 'Eccube\Entity\Order'
+  Plugin\KokokaraSelect\Doctrine\EventListener\ShoppingEventListener:
+    autowire: true
+    tags:
+      -
+        name: 'doctrine.orm.entity_listener'
+        event: 'postLoad'
+        entity: 'Eccube\Entity\Shipping'
+  Plugin\KokokaraSelect\Doctrine\EventListener\KsOrderItemExEventListener:
+    autowire: true
+    tags:
+      -
+        name: 'doctrine.orm.entity_listener'
+        event: 'postLoad'
+        entity: 'Plugin\KokokaraSelect\Entity\KsOrderItemEx'
+  Plugin\KokokaraSelect\Doctrine\EventListener\ProductClassEventListener:
+    autowire: true
+    tags:
+      -
+        name: 'doctrine.orm.entity_listener'
+        event: 'postLoad'
+        entity: 'Eccube\Entity\ProductClass'
+      -
+        name: 'doctrine.orm.entity_listener'
+        event: 'preUpdate'
+        entity: 'Eccube\Entity\ProductClass'
+  Plugin\KokokaraSelect\Doctrine\EventListener\KsSelectItemGroupEventListener:
+    autowire: true
+    tags:
+      -
+        name: 'doctrine.orm.entity_listener'
+        event: 'postLoad'
+        entity: 'Plugin\KokokaraSelect\Entity\KsSelectItemGroup'

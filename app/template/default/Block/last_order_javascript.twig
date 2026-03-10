@@ -1,0 +1,15 @@
+<script>
+    $(document).ready(function () {
+        let mailContainer = $('.last-buy');
+        let lastScroll = mailContainer.innerHeight();
+        setInterval(() => {
+            if (mailContainer[0].scrollHeight > lastScroll) {
+                lastScroll = lastScroll + 18;
+                mailContainer.animate({ scrollTop: '+=18px' }, 'slow');
+            } else {
+                    lastScroll = 0;
+                mailContainer.animate({ scrollTop: '0px' }, 'slow');
+               }
+        }, 3000);
+    });
+</script>

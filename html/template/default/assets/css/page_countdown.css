@@ -1,0 +1,255 @@
+.page_countdown_box {
+  z-index: 10;
+  position: relative;
+  text-align: center;
+  font-size: 14px;
+  max-width: 1100px !important;
+  left: calc((100% - 1100px) / 2);
+  font-weight: bold; }
+  .page_countdown_box .box_de_active {
+    display: none; }
+    @media screen and (max-width: 480px) {
+      .page_countdown_box {
+        position: static !important; }
+      .page_countdown_box .box_de_active {
+        display: block; }
+        .page_countdown_box .box_de_active.show .b-content {
+          display: block; } }
+    .page_countdown_box .box_de_active .b-content {
+      display: none;
+      padding: 4px;
+      background: #b1b1b1; }
+    .page_countdown_box .box_de_active .time-text {
+      font-size: 16px; }
+    .page_countdown_box .box_de_active .time-p {
+      color: #f73b3b;
+      font-size: 16px;
+      font-weight: bold; }
+  .page_countdown_box .box_active {
+    display: none;
+    margin-top: 5px;
+    color: #000;
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    padding: 5px;
+    border: 5px solid #fff;
+    background: linear-gradient(to right, #fafafa, #fafafa, #fafafa);
+    box-shadow: 0px 4px 10px -2px rgba(0, 0, 0, 0.3);
+    border-radius: 12px; }
+    .page_countdown_box .box_active .time-text {
+      font-size: 16px; }
+    .page_countdown_box .box_active .time-p {
+      color: #f73b3b;
+      font-size: 16px;
+      font-weight: bold; }
+    .page_countdown_box .box_active .cd_box {
+      background: #ED3F3F;
+      padding: 10px 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 0 0 12px 12px;
+      border-bottom: 1px solid #fff; }
+      .page_countdown_box .box_active .cd_box .cd_title {
+        margin-right: 5px;
+        border-right: 1px solid #fff;
+        color: #fff;
+        font-size: 20px;
+        padding: 5px; }
+    .page_countdown_box .box_active .dt_box {
+      padding: 10px 0; }
+      .page_countdown_box .box_active .dt_box a {
+        color: #fff !important;
+        font-size: 16px !important;
+        font-weight: bold; }
+    .page_countdown_box .box_active .cd_text {
+      display: none; }
+    @media screen and (max-width: 480px) {
+      .page_countdown_box .box_active {
+        position: relative;
+        width: auto;
+        border-radius: 0;
+        border: 0;
+        border-bottom: 3px solid #fff;
+        bottom: 0;
+        right: 0;
+        padding: 4px;
+        padding-bottom: 4;
+        margin-top: 0px; }
+        .page_countdown_box .box_active .time-p {
+          font-size: 14px; }
+        .page_countdown_box .box_active .time-text {
+          font-size: 14px; }
+        .page_countdown_box .box_active .dt_box {
+          display: inline-block;
+          padding: 0; }
+          .page_countdown_box .box_active .dt_box a {
+            color: #379fff !important;
+            font-size: 14px !important; }
+            .page_countdown_box .box_active .dt_box a:hover {
+              text-decoration: transparent; }
+        .page_countdown_box .box_active .cd_text {
+          display: inline-block; } }
+  .page_countdown_box.sticky-top {
+    position: fixed;
+    top: 0;
+    left: calc((100% - 1100px) / 2);
+    width: 100%;
+    max-width: 1100px !important; }
+    .page_countdown_box.sticky-top .box_active {
+      margin-top: 0;
+      padding: 10px; }
+    @media screen and (max-width: 480px) {
+      .page_countdown_box.sticky-top {
+        position: inherit;
+        left: 0;
+        transform: none; }
+        .page_countdown_box.sticky-top .box_active {
+          padding: 5px; } }
+
+.coundown-modal .coundown-dialog {
+  margin: center;
+  margin: auto;
+  background: #ED3F3F;
+  border-radius: 20px;
+  padding: 6px;
+  padding-bottom: 0;
+  text-align: center;
+  box-shadow: 0px 0px 35px black;
+  position: relative; }
+  .coundown-modal .coundown-dialog .gift-box {
+    padding: 20px;
+    background: #fff;
+    border-radius: 20px; }
+    .coundown-modal .coundown-dialog .gift-box p {
+      margin: 10px;
+      cursor: default; }
+    .coundown-modal .coundown-dialog .gift-box .title-top {
+      font-size: 24px;
+      font-weight: bold; }
+    .coundown-modal .coundown-dialog .gift-box .text-value {
+      font-size: 62px;
+      color: #e12121;
+      font-weight: bold; }
+    .coundown-modal .coundown-dialog .gift-box .title-bottom {
+      font-size: 20px; }
+  .coundown-modal .coundown-dialog .btn-get-gift {
+    width: 100%;
+    color: #fff;
+    font-weight: bold;
+    font-size: 20px;
+    padding: 10px;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    display: block; }
+  .coundown-modal .coundown-dialog .gift-box-close {
+    font-weight: bold;
+    position: absolute;
+    right: 0;
+    top: -45px;
+    border-radius: 50%;
+    border: 2px solid #e0d0d0;
+    height: 34px;
+    width: 34px; }
+    .coundown-modal .coundown-dialog .gift-box-close::after {
+      content: "";
+      position: absolute;
+      width: 3px;
+      height: 24px;
+      background-color: #e0d0d0;
+      top: 50%;
+      left: 50%;
+      transform: rotate(45deg) translate(-9px, -7px); }
+    .coundown-modal .coundown-dialog .gift-box-close::before {
+      content: "";
+      position: absolute;
+      width: 3px;
+      height: 24px;
+      background-color: #e0d0d0;
+      top: 50%;
+      left: 50%;
+      transform: rotate(-45deg) translate(7px, -9px); }
+  @media screen and (max-width: 480px) {
+    .coundown-modal .coundown-dialog .gift-box {
+      padding: 14px; }
+      .coundown-modal .coundown-dialog .gift-box .title-top {
+        font-size: 14px; }
+      .coundown-modal .coundown-dialog .gift-box .text-value {
+        font-size: 48px; }
+      .coundown-modal .coundown-dialog .gift-box .title-bottom {
+        font-size: 16px; }
+    .coundown-modal .coundown-dialog .btn-get-gift {
+      font-size: 16px; } }
+.coundown-modal.ec-modal input:checked ~ .ec-modal-overlay {
+  background-color: rgba(0, 0, 0, 0.8); }
+
+.page_countdown_history table {
+  width: calc(100% - 32px);
+  margin: 16px;
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.4);
+  border-radius: 16px; }
+.page_countdown_history th {
+  line-height: 1.3;
+  background: #dcd6da;
+  padding: 5px; }
+  .page_countdown_history th:first-child {
+    border-top-left-radius: 16px; }
+  .page_countdown_history th:last-child {
+    border-top-right-radius: 16px; }
+.page_countdown_history table, .page_countdown_history th, .page_countdown_history td {
+  text-align: center; }
+.page_countdown_history td {
+  border-bottom: 1px solid #ccc;
+  font-size: 14px;
+  padding: 4px;
+  border: 1px solid #ccc; }
+  .page_countdown_history td td:first-child {
+    border-left: 0; }
+  .page_countdown_history td td:last-child {
+    border-right: 0; }
+.page_countdown_history .td-odd {
+  background: #FFF; }
+.page_countdown_history .td-point {
+  color: #FF9431;
+  font-weight: bold; }
+.page_countdown_history tr:last-child td {
+  border-bottom: 0; }
+.page_countdown_history tr:last-child td:first-child {
+  border-bottom-left-radius: 16px; }
+.page_countdown_history tr:last-child td:last-child {
+  border-bottom-right-radius: 16px; }
+.page_countdown_history .ec-searchnavRole__infos {
+  margin: 0 16px; }
+@media screen and (max-width: 480px) {
+  .page_countdown_history table {
+    margin-bottom: 30px;
+    border-radius: 8px; }
+  .page_countdown_history th {
+    font-size: 14px;
+    padding: 5px;
+    border-left: 1px solid #b1b1b1; }
+    .page_countdown_history th:first-child {
+      border-top-left-radius: 8px;
+      border-left: 0px; }
+    .page_countdown_history th:last-child {
+      border-top-right-radius: 8px; } }
+
+.countdown_pickdate {
+  border-radius: 20px;
+  border: #39393a 2px solid;
+  width: 150px;
+  font-size: 14px;
+  padding: 5px;
+  text-align: center;
+  position: relative; }
+  .countdown_pickdate::placeholder {
+    font-size: 14px;
+    color: #000; }
+
+.ec-navlistRole__navlist.mypage-header-navlist .ec-navlistRole__item .mypage-link-btn a {
+  width: calc(100% - 49px);
+  padding-left: 1.5em;
+  text-indent: 0;
+  line-height: 120%; }

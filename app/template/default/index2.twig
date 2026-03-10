@@ -1,0 +1,107 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+
+{% import _self as stars %}
+
+{# 星テキスト生成用マクロ #}
+{% macro stars(positive, negative) %}
+    {% set positive_stars = ["", "★", "★★", "★★★", "★★★★", "★★★★★"] %}
+    {% set negative_stars = ["", "☆", "☆☆", "☆☆☆", "☆☆☆☆", "☆☆☆☆☆"] %}
+    {{ positive_stars[positive] }}{{ negative_stars[negative] }}
+{% endmacro %}
+
+{% set body_class = 'front_page' %}
+
+{% block main %}
+
+	<div class="top-content01"><a href="{{ url('user_data', {'route': 'point'}) }}">
+		新規会員登録でポイントプレゼント中<br><span>￥1,000TWD分</span>プレゼント
+	</a></div>
+	<div class="top-news">{{ php_file_get_contents('http://kyogokupro.com/wp-news.php') }}</div>
+	<div class="top-banner">{{ include('Block/uc_banner_block.twig') }}</div>
+	<div class="top-sale">{{ include('Block/category_product01.twig') }}</div>
+	<div class="top-product">{{ include('Block/recommend_product_block.twig') }}</div>
+	<div class="top-category">
+		<div class="box">
+			<a href="{{ url('product_list') }}?category_id=8">
+				<div class="image"><h2><img src="{{ asset('assets/img/top/category-img01.jpg','user_data') }}" alt="美容師がおすすめする市販のカラー剤"></h2></div>
+				<div class="title">ヘアカラー剤</div>
+			</a>
+		</div>
+		<div class="box">
+			<a href="{{ url('product_list') }}?category_id=9">
+				<div class="image"><h2><img src="{{ asset('assets/img/top/category-img02.jpg','user_data') }}" alt="美容師愛用おすすめの専用商品一覧"></h2></div>
+				<div class="title">ヘアカラー関連</div>
+			</a>
+		</div>
+		<div class="box">
+			<a href="{{ url('product_list') }}?category_id=12">
+				<div class="image"><h2><img src="{{ asset('assets/img/top/category-img03.jpg','user_data') }}" alt="美容師がおすすめするヘアケア"></h2></div>
+				<div class="title">ヘアケア</div>
+			</a>
+		</div>
+	</div>
+
+	<div class="top-slide new">
+		{{ include('Block/uc_newitems_block.twig') }}
+	</div>
+
+	<div class="top-slide best">
+		<p class="title">ベストセラー</p>
+		<ul>
+		{% for Product in Products %}
+			<li>
+				<a href="{{ url('product_detail', {'id': Product.id}) }}">
+					<div class="image"><img src="{{ asset(Product.main_list_image|no_image_product, 'save_image') }}"></div>
+					<div class="info">
+						<h2 class="name">{{ Product.name }}</h2>
+						<p class="price">
+						{% if Product.hasProductClass %}
+							{% if Product.getPrice02Min == Product.getPrice02Max %}
+								{{ Product.getPrice02IncTaxMin|price }}
+							{% else %}
+								{{ Product.getPrice02IncTaxMin|price }} ～ {{ Product.getPrice02IncTaxMax|price }}
+							{% endif %}
+						{% else %}
+							{{ Product.getPrice02IncTaxMin|price }}
+						{% endif %}
+						</p>
+					</div>
+				</a>
+			</li>
+		{% endfor %}
+		</ul>
+	</div>
+
+	<div class="top-navi">
+		<div class="upper">
+			<ul>
+				<li><a href="{{ url('homepage') }}/note/special/">特集一覧</a></li>
+				<li><a href="{{ url('homepage') }}/note/recipe/">カラーレシピ</a></li>
+			</ul>
+		</div>
+		<div class="middle">
+			<ul>
+                <li><a href="https://lin.ee/28rac17" target="_blank">
+                	<span><b>今すぐ友達追加</b>便利でお得な情報をゲット</span>
+                </a></li>
+			</ul>
+		</div>
+		<div class="bottom">
+			<ul>
+				<li><a href="https://kyogokusalon.com/" target="_blank"><img src="/images/banner01.png" alt="FLAGSHIP PARTNER"></a></li>
+				<li><a href="https://kyogokupro.com/academy/"><img src="/images/banner02.png" alt="KYOGOKU ACADEMY"></a></li>
+			</ul>
+		</div>
+	</div>
+
+{% endblock %}

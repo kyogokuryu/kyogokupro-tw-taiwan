@@ -1,0 +1,97 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) Takashi Otaki All Rights Reserved.
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+<style type="text/css">
+.slide-wrap {
+    margin-bottom: 20px;
+    overflow-y: hidden;
+    overflow-x: scroll;
+    display: flex;
+    -webkit-overflow-scrolling: touch;
+    overflow-scrolling: touch;
+
+}
+@media only screen and (max-width: 767px) {
+    .side-box {
+      flex: 0 0 40%;
+      padding: 0 8px;
+    }
+}
+@media only screen and (min-width: 768px) {
+    .side-box {
+      flex: 0 0 18%;
+      padding: 0 8px;
+    }
+}
+.inner, .inner img {
+    max-width: 100%;
+}
+.ni-pageHeader {
+    padding: 0px 8px;
+}
+.ni-pageHeader h3 {
+    border-top: none;
+    border-bottom: 1px solid #ccc;
+    padding: 8px;
+}
+</style>
+
+{% if NewItem is not empty %}
+    {% if Config.newitem_title != "" %}
+    <div class="ni-pageHeader">
+        <h3>{{ Config.newitem_title }}</h3>
+    </div>
+    {% endif %}
+    <div class="slide-wrap">
+        {% for item in NewItem %}
+        <div class="side-box">
+            <div class="inner">
+                <a href="{{ url('product_detail', {'id': item.id}) }}">
+                {% if item.ProductImage[0] %}
+                    <img src="{{ asset(item.ProductImage[0], 'save_image') }}">
+                {% else %}
+                    <img src="{{ asset(''|no_image_product, 'save_image') }}"/>
+                {% endif %}
+                {% if Config.newitem_disp_title == 1 %}
+                    <p>{{ item.name }}</p>
+                {% endif %}
+                {% if Config.newitem_disp_price == 1 %}
+                    <p class="price02_default">
+                        {% if item.hasProductClass %}
+                            {% if item.getPrice02Min == item.getPrice02Max %}
+                                {{ item.getPrice02IncTaxMin|price }}
+                            {% else %}
+                                {{ item.getPrice02IncTaxMin|price }} ～ {{ item.getPrice02IncTaxMax|price }}
+                            {% endif %}
+                        {% else %}
+                            {{ item.getPrice02IncTaxMin|price }}
+                        {% endif %}
+                    </p>
+                {% endif %}
+                {% if Config.newitem_disp_code == 1 %}
+                    <p>{{ item.code_min }}{% if item.code_min != item.code_max %} ～ {{ item.code_max }}{% endif %}</p>
+                {% endif %}
+                {% if Config.newitem_disp_description_detail == 1 %}
+                    <p>{{ item.description_detail|raw|nl2br }}</p>
+                {% endif %}
+                </a>
+                {% if Config.newitem_disp_cat == 1 %}
+                    {% for ProductCategory in item.ProductCategories %}
+                        <p>{% for Category in ProductCategory.Category.path %}
+                            <a href="{{ url('product_list') }}?category_id={{ Category.id }}">{{ Category.name }}</a> {%- if loop.last == false %}
+                            <span>＞</span>{% endif -%}
+                        {% endfor %}
+                        </p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% endif %}

@@ -1,0 +1,75 @@
+{% set Config = repository('Plugin\\[code]\\Entity\\[code]Config').get %}
+
+{% block stylesheet %}
+<style>
+    .uic-footer-2 {
+        margin-top: 40px;
+    }
+    .uic-footer-2 .uic-footer__inner {
+        margin-top: 40px;
+        padding: 20px 0;
+        background: #000;
+    }
+    .uic-footer-2 .uic-footer__inner a {
+        color: #fff;
+    }
+    .uic-footer-2 .uic-footer__menu {
+        text-align: center;
+        font-size: 14px;
+    }
+    .uic-footer-2 .uic-footer__menu {
+        padding: 0;
+        list-style: none;
+    }
+    .uic-footer-2 .uic-footer__menu>li {
+        padding: 15px 0;
+    }
+    .uic-footer-2 .uic-footer__copyright {
+        margin-top: 15px;
+        text-align: center;
+        font-size: 14px;
+        color: #fff;
+    }
+    /* pc ~ */
+    @media only screen and (min-width: 768px){
+        .uic-footer-2 {
+            margin-top: 100px;
+        }
+        .uic-footer-2 .uic-footer__menu {
+            padding-left: 0;
+            margin-left: -5px;
+            list-style: none;
+        }
+        .uic-footer-2 .uic-footer__menu>li {
+            display: inline-block;
+            padding: 0 5px;
+        }
+    }
+</style>
+{% endblock %}
+
+<!-- [code] -->
+<div class="uic-footer-2">
+    <div class="uic-footer__inner">
+        <div class="ec-role">
+            <ul class="uic-footer__menu">
+                <li class="nav-link">
+                    <a href="{{ url('help_about') }}">{{ '当サイトについて'|trans }}</a>
+                </li>
+                <li class="nav-link">
+                    <a href="{{ url('help_privacy') }}">{{ 'プライバシーポリシー'|trans }}</a>
+                </li>
+                <li class="nav-link">
+                    <a href="{{ url('help_tradelaw') }}">{{ '基於特定商業交易法之描述'|trans }}</a>
+                </li>
+                <li class="nav-link">
+                    <a href="{{ url('contact') }}">{{ 'お問い合わせ'|trans }}</a>
+                </li>
+            </ul>
+            <div class="uic-footer__copyright">
+                copyright (c) {{ BaseInfo.shop_name }} all rights reserved.
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /[code] -->

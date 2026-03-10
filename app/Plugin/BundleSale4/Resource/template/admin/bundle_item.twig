@@ -1,0 +1,133 @@
+<script>
+    $(function () {
+        $('#plugin_bundle_product_bundle_product').appendTo('.c-contentsArea__primaryCol');
+        $('#plugin_bundle_product_bundle_product').removeClass('d-none');
+
+        $(document).on('click', 'button.BundleProduct-delete', function () {
+            var data = $(this).data();
+            $('#BundleItems_' + data.id + '_ProductClass').remove();
+            $('#BundleProductSearchResult').children().remove();
+        });
+
+        $(document).on("click", 'button.BundleProduct-search', function () {
+            dataId = $(this).attr("data-id");
+            $("#BundleItemNumber").val(dataId);
+            $("#BundleProductSearchResult").children().remove();
+        });
+
+        $("#BundleProductSearchButton").on("click", function () {
+            var formIdVal = $("#{{ searchForm.id.vars.id }}").val();
+            var formCatIdVal = $("#{{ searchForm.category_id.vars.id }}").val();
+            var data = {
+                id: formIdVal,
+                category_id: formCatIdVal,
+                product_id:{{ Product.id ? Product.id : 0 }}
+            };
+            $("#BundleProductSearchResult")
+                .children()
+                .remove();
+            $.ajax({
+                type: "POST",
+                url: "{{ url('admin_bundle_item_search') }}",
+                data: data,
+                success: function (data) {
+                    $("#BundleProductSearchResult").append(data);
+                },
+                error: function () {
+                    alert('product search failed.');
+                }
+            });
+        });
+
+        {% if form.BundleItems|length > 0 %}
+            $("a:contains('{{ 'admin.product.product_class__confirm_of_product'|trans }}')").closest(".card").hide();
+        {% endif %}
+
+        $('.add-another-collection-widget').click(function (e) {
+            var list = jQuery(jQuery(this).attr('data-list-selector'));
+            // Try to find the counter of the list or use the length of the list
+            var counter = list.data('widget-counter') | list.children().length;
+
+            if(!counter) { counter = list.children().length }
+
+            // grab the prototype template
+            var newWidget = list.attr('data-prototype');
+            // replace the "__name__" used in the id and name of the prototype
+            // with a number that's unique to your emails
+            // end name attribute looks like name="contact[emails][2]"
+            newWidget = newWidget.replace(/__name__/g, counter);
+            // Increase the counter
+            counter++;
+            // And store it, the length cannot be used if deleting widgets is allowed
+            list.data('widget-counter', counter);
+
+            // create a new list element and add it to the list
+            var newElem = $(list.attr('data-widget-tags')).html(newWidget);
+            newElem.appendTo(list);
+        });
+    });
+</script>
+
+<div id="plugin_bundle_product_bundle_product" class="d-none">
+    <div class="card rounded border-0 mb-4">
+        <div class="card-header">
+            <span class="card-title">{{ form.BundleItems.vars.label|trans }}</span>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col mb-2">
+                    {{ form_errors(form.BundleItems) }}
+                    <ul id="bundle-item-group"
+                        data-prototype="{% filter escape %}{{ include('@BundleSale4/admin/bundle_item_prototype.twig', {'form': form.BundleItems.vars.prototype}) }}{% endfilter %}"
+                        data-widget-tags="{{ '<li class="mb-2 bundle-item"></li>'|e }}"
+                        data-widget-counter="{{ form.BundleItems|length }}">
+                        {% for child in form.BundleItems %}
+                            {{ include('@BundleSale4/admin/bundle_item_prototype.twig', {'form': child, index: loop.index0}) }}
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col mb-2">
+                    <button type="button"
+                            class="btn btn-ec-conversion add-another-collection-widget"
+                            data-list-selector="#bundle-item-group">追加
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% form_theme searchForm '@admin/Form/bootstrap_4_horizontal_layout.html.twig' %}
+
+<div class="modal fade" id="BundleProductSearchProductModal" tabindex="-1" role="dialog"
+     aria-labelledby="BundleProductSearchProductModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ 'plugin.bundle_product.modal.product_search.title'|trans }}</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="BundleItemNumber" value="">
+                <div class="form-group">
+                    {{ form_widget(searchForm.id, { attr : { placeholder : 'plugin.bundle_product.modal.product_search.input_name' } } ) }}
+                </div>
+                <div class="form-group">
+                    {{ form_widget(searchForm.category_id) }}
+                </div>
+                <div class="form-group">
+                    <button type="button" id="BundleProductSearchButton" class="btn btn-primary">
+                        {{ 'admin.common.execute'|trans }}
+                    </button>
+                </div>
+                <div class="form-group" id="BundleProductSearchResult">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

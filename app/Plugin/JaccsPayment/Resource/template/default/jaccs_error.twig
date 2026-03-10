@@ -1,0 +1,48 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) LOCKON CO.,LTD. All Rights Reserved.
+
+http://www.lockon.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+
+{% set body_class = 'cart_page' %}
+
+{% block main %}
+    <div class="ec-cartCompleteRole">
+        <div class="ec-off3Grid ec-text-ac">
+            <div class="ec-off3Grid__cell">
+                <div class="ec-reportHeading">
+                    <h2>アトディーネ通信失敗</h2>
+                </div>
+
+                {% if JaccsPaymentError|length %}
+                    <div class="card-body">
+                        <p class="form-text font-weight-bold text-danger mb-0">
+                            {% for error in JaccsPaymentError %}
+                                {{ error }}<br/>
+                            {% endfor %}
+                        </p>
+                    </div>
+                {% endif %}
+
+                <p class="ec-reportDescription">{{'jaccs_payment.shopping.page.error'|trans}}</p>
+
+                <div class="ec-reportDescription">
+                    <p class="name">{{ BaseInfo.shop_name }}</p>
+                    <p>TEL：{{ BaseInfo.phone_number }} {% if BaseInfo.business_hour != "" %}（受付時間/{{ BaseInfo.business_hour }}）{% endif %}<br />
+                        E-mail：<a href="mailto:{{ BaseInfo.email02 }}">{{ BaseInfo.email02 }}</a>
+                    </p>
+                </div>
+
+                <div class="ec-off4Grid">
+                    <div class="ec-off4Grid__cell"><a class="ec-blockBtn--primary" href="{{ url('cart') }}">購入を続ける</a></div> {# TODO 未翻訳 #}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

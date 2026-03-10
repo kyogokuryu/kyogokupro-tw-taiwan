@@ -1,0 +1,413 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['kgmng', 'kgmng_clog'] %}
+{% set prime = ["一般", "高级会员", "轻成员"] %}
+{% set C_STATUS = {"0":"未設定","3":"不在", "5":"通話中", "6":"待處理", "10":"對應済み", "11":"取消"} %}
+
+{% block title %}電話對應履歷{% endblock %}
+{% block sub_title %}{{ 'admin.customer.kg_management'|trans }}{% endblock %}
+
+{% form_theme searchForm '@admin/Form/bootstrap_4_horizontal_layout.html.twig' %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" href="{{ asset('assets/css/tempusdominus-bootstrap-4.min.css', 'admin') }}">
+    <style type="text/css">
+        .datepicker-days th.dow:first-child,
+        .datepicker-days td:first-child {
+            color: #f00;
+        }
+
+        .datepicker-days th.dow:last-child,
+        .datepicker-days td:last-child {
+            color: #00f;
+        }
+    </style>
+{% endblock stylesheet %}
+
+{% block javascript %}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+    <script>
+        function search_form(c_staff){
+            console.log(c_staff);
+            $('#admin_search_customer_c_cate').val("")
+            $('#admin_search_customer_c_staff').val(c_staff)
+            $('#search_form').submit();
+        }
+
+        $(function() {
+            // 假設的數據 (假設為staffSalesData)
+            var staffSalesData = {{ staffSalesData|json_encode|raw }};
+            console.log(staffSalesData);
+
+            const staffSales = {};
+            const now = new Date();
+            const lastYear = now.getFullYear() - 1;
+
+            // 列出最近1年的月份
+            const months = Array.from({length: 12}, (_, i) => {
+                const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                return `${date.getFullYear()}-${String(date.getMonth() + 1)}`;
+            }).reverse()
+
+            // 整理數據
+            var structuredData = {};
+            staffSalesData.forEach(item => {
+                if (!structuredData[item.c_staff]) {
+                    structuredData[item.c_staff] = {};
+                }
+                const monthKey = `${item.year}-${item.month}`;
+                structuredData[item.c_staff][monthKey] = parseFloat(item.total_sales);
+            });
+
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            const colors = [
+                'rgba(255, 99, 132, 0.2)',   // 紅色
+                'rgba(54, 162, 235, 0.2)',   // 藍色
+                'rgba(255, 206, 86, 0.2)',   // 黃色
+                'rgba(75, 192, 192, 0.2)'    // 青色
+            ];
+
+            // 轉換為Chart.js的數據
+            var labels = months//[...new Set(staffSalesData.map(item => `${item.year}-${item.month}`))].sort()  // 反向時間序列
+            console.log(structuredData, labels)
+            var colorIndex = 0;  // 當前顏色的索引
+            const datasets = Object.keys(structuredData).map((staff, index) => {
+                return {
+                    label: staff,
+                    data: months.map(label => structuredData[staff][label] || 0),  // 這一行保持原樣
+                    backgroundColor: colors[index % colors.length]
+                };
+            })
+
+
+            console.log(datasets)
+
+
+            const chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: months,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            if ($('[type="date"]').prop('type') != 'date') {
+                // 檢查input type屬性是否可以使用date（不支援日曆顯示的瀏覽器對應）
+                $.when(
+                    $.getScript("{{ asset('assets/js/vendor/moment.min.js', 'admin') }}"),
+                    $.getScript("{{ asset('assets/js/vendor/moment-with-locales.min.js', 'admin') }}"),
+                    $.getScript("{{ asset('assets/js/vendor/tempusdominus-bootstrap-4.min.js', 'admin') }}")
+                ).done(function() {
+                    $('input[id$=_date_start]').datetimepicker({
+                        locale: '{{ eccube_config.locale }}',
+                        format: 'YYYY-MM-DD',
+                        useCurrent: false,
+                        buttons: {
+                            showToday: true,
+                            showClose: true
+                        }
+                    });
+
+                    $('input[id$=_date_end]').datetimepicker({
+                        locale: '{{ eccube_config.locale }}',
+                        format: 'YYYY-MM-DD',
+                        useCurrent: false,
+                        buttons: {
+                            showToday: true,
+                            showClose: true
+                        }
+                    });
+
+                    $('#admin_search_customer_birth_start').datetimepicker({
+                        locale: '{{ eccube_config.locale }}',
+                        format: 'YYYY-MM-DD',
+                        useCurrent: false,
+                        buttons: {
+                            showToday: true,
+                            showClose: true
+                        }
+                    });
+
+                    $('#admin_search_customer_birth_end').datetimepicker({
+                        locale: '{{ eccube_config.locale }}',
+                        format: 'YYYY-MM-DD',
+                        useCurrent: false,
+                        buttons: {
+                            showToday: true,
+                            showClose: true
+                        }
+                    });
+
+                    $('#admin_search_customer_last_buy_start').datetimepicker({
+                        locale: '{{ eccube_config.locale }}',
+                        format: 'YYYY-MM-DD',
+                        useCurrent: false,
+                        buttons: {
+                            showToday: true,
+                            showClose: true
+                        }
+                    });
+
+                    $('#admin_search_customer_last_buy_end').datetimepicker({
+                        locale: '{{ eccube_config.locale }}',
+                        format: 'YYYY-MM-DD',
+                        useCurrent: false,
+                        buttons: {
+                            showToday: true,
+                            showClose: true
+                        }
+                    });
+                });
+            }
+
+        });
+
+    </script>
+{% endblock javascript %}
+
+{% block main %}
+    <div class="c-contentsArea__cols" style="padding-bottom:0">
+       <div class="card rounded border-0 mb-4 d-block">
+            <div class="card-header">營業件數</div>
+            <div class="card-body p-0">
+                <table class="table">
+                    <thead>
+                    <tr>
+                    {% for clog in c_qb %}
+                        <th class="text-center"><a href="javascript:search_form('{{ clog.c_staff }}')">{{ clog.c_staff }}</a></th>
+                    {% endfor %}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                    {% for clog in c_qb %}
+                        <td class="text-center">{{ clog.count }}</td>
+                    {% endfor %}
+                    </tr>
+                    <tr>
+                    {% for clog in c_qb %}
+                        {% set last_month_value = c_qb_comparison[clog.c_staff].last_month|default(0) %}
+                        {% set this_month_value = c_qb_comparison[clog.c_staff].this_month|default(0) %}
+                        {% set difference = c_qb_comparison[clog.c_staff].difference|default(0) %}
+                        {% set percentage_change = last_month_value != 0 ? (difference / last_month_value) * 100 : 0 %}
+                        <td class="text-left">
+                            上個月 : {{last_month_value}} 件<br>
+                            本月 : {{this_month_value}} 件<br>
+                            與上月相比 : {{ percentage_change|round(2) }}%
+                        </td>
+                    {% endfor %}
+                    </tr>
+                    </tbody>
+                </table>
+                <div style="
+                            width:  calc(100% - 40px);
+                            height: 300px;
+                            overflow: hidden;
+                            margin:20px;">
+                    <canvas id="salesChart" ></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <form name="search_form" id="search_form" method="post" action="" >
+        {{ form_widget(searchForm._token) }}
+        <div class="c-outsideBlock">
+            <div class="c-outsideBlock__contents">
+                <div class="row justify-content-start">
+                    <div class="col-3">
+                        <div class="mb-2">
+                            <label class="col-form-label" data-tooltip="true" data-placement="top" >關鍵字搜尋</label>
+                            {{ form_widget(searchForm.multi) }}
+                            {{ form_errors(searchForm.multi) }}
+                        </div>
+                    </div>
+
+                    <div class="col-3">
+                        <div class="form-row">
+                            <div class="col-12">
+                                <p class="col-form-label">營業種別</p>
+                                {{ form_widget(searchForm.c_cate, { 'label_attr': { 'class': 'checkbox-inline'}}) }}
+                                {{ form_errors(searchForm.c_cate) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-3">
+                        <div class="form-row">
+                            <div class="col-12">
+                                <p class="col-form-label">狀態</p>
+                                {{ form_widget(searchForm.c_status, { 'label_attr': { 'class': 'checkbox-inline'}}) }}
+                                {{ form_errors(searchForm.c_status) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-3">
+                        <div class="mb-2">
+                            <label class="col-form-label" data-tooltip="true" data-placement="top" >{{ 'admin.clog.c_staff'|trans }}</label>
+                            {{ form_widget(searchForm.c_staff) }}
+                            {{ form_errors(searchForm.c_staff) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="c-outsideBlock__contents">
+            <button type="submit" class="btn btn-ec-conversion px-5">{{ 'admin.common.search'|trans }}</button>
+            {% if pagination %}
+                <span class="font-weight-bold ml-2">{{ 'admin.common.search_result'|trans({'%count%':pagination.totalItemCount}) }}</span>
+            {% endif %}
+        </div>
+
+
+    <div class="row">
+        <div class="offset-10 col-2 text-center">
+            <a href="/mastercontrol/customer/new?clog=1" class="btn btn-info" style="margin-bottom:1em">新規會員登錄</a>
+        </div>
+    </div>
+
+        <div class="c-outsideBlock__contents mb-5" style="display:none">
+            {{ include('@admin/search_items.twig', { 'form': searchForm }, ignore_missing = true) }}
+        </div>
+        <div class="c-contentsArea__cols">
+            <div class="c-contentsArea__primaryCol">
+                <div class="c-primaryCol">
+                    {% if pagination and pagination.totalItemCount %}
+                        <div class="row justify-content-between mb-2">
+                            <div class="col-6"></div>
+
+                            <div class="col-5 text-right" style="display:none">
+                                {#Dropdown page count#}
+                                <div class="d-inline-block mr-2">
+                                    <select class="custom-select" onchange="location = this.value;">
+                                        {% for pageMax in pageMaxis %}
+                                            <option {% if pageMax.name == page_count %} selected {% endif %}
+                                                    value="{{ path('admin_customer_page', {'page_no': 1, 'page_count': pageMax.name }) }}">
+                                                {{ 'admin.common.count'|trans({ '%count%': pageMax.name }) }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <div class="d-inline-block" style="display:none">
+                                    <div class="btn-group" role="group">
+                                        <a class="btn btn-ec-regular" href="{{ url('admin_customer_export') }}"><i class="fa fa-cloud-download mr-1 text-secondary"></i><span>{{ 'admin.common.csv_download'|trans }}</span></a>
+                                        <a class="btn btn-ec-regular" href="{{ url('admin_setting_shop_csv', { id : constant('\\Eccube\\Entity\\Master\\CsvType::CSV_TYPE_CUSTOMER') }) }}"><i class="fa fa-cog mr-1 text-secondary"></i><span>{{ 'admin.setting.shop.csv_setting'|trans }}</span></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card rounded border-0 mb-4 d-block">
+                            <div class="card-body p-0">
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th class="border-top-0 pt-2 pb-3 nowrap">營業種別</th>
+                                        <th class="border-top-0 pt-2 pb-3 nowrap">狀態</th>
+                                        <th class="border-top-0 pt-2 pb-3 pl-3 text-nowrap">ID/{{ 'admin.common.name'|trans }}</th>
+                                        <th class="border-top-0 pt-2 pb-3 nowrap">擔當者</th>
+                                        <th class="border-top-0 pt-2 pb-3 nowrap">詢問日</th>
+                                        <th class="border-top-0 pt-2 pb-3 nowrap">今日的引導內容</th>
+                                        <th class="border-top-0 pt-2 pb-3 nowrap">下次提案內容</th>
+                                        <th class="border-top-0 pt-2 pb-3 nowrap">客戶需求</th>
+                                        <th class="border-top-0 pt-2 pb-3 nowrap">備考欄</th>
+                                        <th class="border-top-0 pt-2 pb-3 nowrap">訂單號碼</th>
+                                        <th class="border-top-0 pt-2 pb-3 nowrap">應對時間</th>
+                                        <th class="border-top-0 pt-2 pb-3 pr-3">更新日時</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for Customer in pagination %}
+                                        <tr id="ex-customer-{{ Customer.id }}">
+                                            <td class="align-middle">{{ Customer.c_cate == 1 ? 'JOBVR' : 'KG' }}</th>
+                                            <td class="align-middle">{{ C_STATUS[Customer.c_status] }}</td>
+                                            <td class="align-middle pl-3">
+                                            <a href="{{ url('admin_customer_edit', { 'id': Customer.customer_id}) }}">{{ Customer.customer_id }}<br>
+                                            {{ Customer.Customer.name01 }}&nbsp;{{ Customer.Customer.name02 }}
+                                            </a>
+                                            </td>
+                                            
+                                            <td class="align-middle">{{ Customer.c_staff }}</td>
+                                            <td class="align-middle">{{ Customer.c_date|date('Y/m/d') }}</td>
+                                            <td class="align-middle"><pre style="white-space: pre-line;">{{ Customer.today_msg }}</pre></td>
+                                            <td class="align-middle"><pre style="white-space: pre-line;">{{ Customer.next_msg }}</pre></td>
+                                            <td class="align-middle"><pre style="white-space: pre-line;">{{ Customer.c_needs }}</pre></td>
+                                            <td class="align-middle"><pre style="white-space: pre-line;">{{ Customer.memo }}</pre></td>
+                                            <td class="align-middle">
+                                                {% if Customer.rakuten_user_id is defined %}
+                                                    {% if(Customer.RakutenPurchaseLog) %}
+                                                        <a id="clog_order_id" href="{{ url('rakuten_edit', { 'id': Customer.rakuten_user_id}) }}">{{ Customer.RakutenPurchaseLog.id }}</a>
+                                                        <div>{{ Customer.RakutenPurchaseLog.product_id }}</div>
+                                                    {% endif %}
+                                                {% else %}
+                                                    {% if(Customer.Order) %}
+                                                        <a id="clog_order_id" href="{{ url('admin_order_edit', { 'id': Customer.Order.id}) }}">{{ Customer.Order.id }}</a>
+                                                        <div>{{ Customer.Order.total|price }}</div>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </td>
+                                            <td class="align-middle"><pre style="white-space: pre-line;">{% if(Customer.c_time > 0) %} {{ Customer.c_time }} 分鐘{% endif %}</pre></td>
+                                            <td class="align-middle">{{ Customer.update_date|date('Y/m/d H:i') }}</td>
+
+
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                <div class="row justify-content-md-center mb-4">
+                                    {% if pagination.totalItemCount > 0 %}
+                                        {% include "@admin/pager.twig" with { 'pages' : pagination.paginationData, 'routes' : 'admin_customer_cloglist_page' } %}
+                                    {% endif %}
+                                </div>
+                                <br>
+                            </div>
+                        </div>
+                    {% elseif has_errors %}
+                        <div class="card rounded border-0">
+                            <div class="card-body p-4">
+                                <div class="text-center text-muted mb-4 h5">{{ 'admin.common.search_invalid_condition'|trans }}</div>
+                                <div class="text-center text-muted">{{ 'admin.common.search_try_change_condition'|trans }}</div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="card rounded border-0">
+                            <div class="card-body p-4">
+                                <div class="text-center text-muted mb-4 h5">{{ 'admin.common.search_no_result'|trans }}</div>
+                                <div class="text-center text-muted">{{ 'admin.common.search_try_change_condition'|trans }}</div>
+                                <div class="text-center text-muted">{{ 'admin.common.search_try_advanced_search'|trans }}</div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+
+
+
+
+        </div>
+    </form>
+
+{% endblock %}

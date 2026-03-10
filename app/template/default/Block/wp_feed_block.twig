@@ -1,0 +1,20 @@
+{% set item = get_wp_feed(cate) %}
+<div class="top-wp review-form-complete">
+    <div class="row review-form-complete-wp">
+
+        <a href="{{ item.link}}">
+            <div class="col-xs-4">
+                <img src="{{ item.src }}">
+            </div>
+            <div class="col-xs-8">
+                <h3 class="complete-h4">{{ item.title }}</h3>
+                <p class="complete-p">{{ item.summary }}</p>
+            </div>
+        </a>
+    </div>
+    <div class="wp-icons">
+        <img class="wp-icon-ribon" src="/html/template/default/assets/img/wp/ribon.png">
+        <img class="wp-icon-book" src="/html/template/default/assets/img/wp/akar-icons_book.png">
+        <img class="wp-icon-read" src="/html/template/default/assets/img/wp/readable.png">
+    </div>
+</div>

@@ -1,0 +1,319 @@
+
+{% if(Customer and Customer.id) %}
+{% set C_STATUS = {"0":"未設定","3":"不在", "5":"営業中", "6":"保留中", "10":"已處理", "11":"取消"} %}
+
+
+<!-- , "3"=>"不在", "5"=>"営業中", "6"=>"保留中", "10"=>"已處理", "11"=>"取消"]  -->
+<script>
+    $(function () {
+        // 移動到頁面最下方
+        $('#clog-info').appendTo($('#customer_form > div.c-contentsArea__cols > div > div'));
+    });
+</script>
+<div class="d-none">
+  <div id="clog-info" class="card rounded border-0 mb-4"  style="max-height:500px;overflow:scroll;">
+    <div class="card-header">
+      <div class="row">
+        <div class="col-8">
+          <span class="card-title">處理履歷</span>
+        </div>
+        <div class="col-4 text-right">
+          <a data-toggle="collapse" href="#gmo_payment_gateway-info__body" aria-expanded="false" aria-controls="gmo_payment_gateway-info__body">
+            <i class="fa fa-angle-up fa-lg"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="collapse show ec-cardCollapse" id="gmo_payment_gateway-info__body">
+      <div class="card-body">
+        <button type="button" class="btn btn-info" id="c_log_new_btn" style="margin-bottom:1em">新規註冊</button>
+        <a href="{{ url('admin_homepage_customer') }}?none_clog=1" class="">
+            <button type="button" class="btn btn-light" style="margin-left:1em; margin-bottom:1rem;">無電話應對清單</button>
+        </a> 
+
+<!-- Clog -->
+        <table class="table">
+            <tr>
+                <th></th>
+                <th>營業類別</th>
+                <th>狀態</th>
+                <th>負責人</th>
+                <th>詢問日期</th>
+                <th>今日說明內容</th>
+                <th>下次提案內容</th>
+                <th>客戶需求</th>
+                <th>備註欄</th>
+                <th>訂單編號</th>
+                <th>應對時間</th>
+                <th>更新日期時間</th>
+            </tr>
+        {% for row in Clog %}
+            <tr>
+                <td><button type="button" class="btn btn-success clog-edit-btn" data-id="{{ row.id }}">編集</button></td>
+                <td id="c_cate_{{ row.id }}" data-value="{{ row.c_cate }}">{{ getClogCategoryName(row.c_cate) }}</td>
+                <td id="c_status_{{ row.id }}" data-value="{{ row.c_status }}">{{ C_STATUS[row.c_status] }}</td>
+                <td id="c_staff_{{ row.id }}">{{ row.c_staff }}</td>
+                <td id="c_date_{{ row.id }}">{{ row.c_date|date('Y/m/d') }}</td>
+                <td style="max-width:33%"><pre id="today_msg_{{ row.id }}" style="white-space: pre-line;">{{ row.today_msg }}</pre></td>
+                <td style="max-width:33%"><pre id="next_msg_{{ row.id }}" style="white-space: pre-line;">{{ row.next_msg }}</pre></td>
+                <td style="max-width:33%"><pre id="c_needs_{{ row.id }}" style="white-space: pre-line;">{{ row.c_needs }}</pre></td>
+                <td style="max-width:33%"><pre id="memo_{{ row.id }}" style="white-space: pre-line;">{{ row.memo }}</pre></td>
+                <td style="text-align:center">
+                  {% if(row.Order) %}
+                    <a id="clog_order_id_{{ row.id }}" href="{{ url('admin_order_edit', { 'id': row.Order.id}) }}">{{ row.Order.id }}</a>
+                    <div>{{ row.Order.total|price }}</div>
+                  {% endif %}
+                </td>
+                <td id="c_time_{{ row.id }}" data-value="{{ row.c_time }}">{% if(row.c_time > 0) %}{{ row.c_time }}分{% endif %}</td>
+                <td>{{ row.update_date|date('Y/m/d H:i') }}</td>
+            </tr>
+        {% endfor %}
+        </table>
+      </div>
+      <div class="card-footer">
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal-default" data-izimodal-title="対応履歴入力" style="margin-left:auto;margin-right:auto;display:none;max-height: 80vh">
+  <form action="{{ url('admin_homepage_clog_save', { id : Customer.id }) }}" method="post" id="clog_save">
+    
+    <div class="card rounded border-0 mb-4" style="min-width:500px;min-heght:500px;">
+      <div class="card-header">
+        <div class="row">
+            <div class="col-8">
+                <span class="card-title">請輸入處理履歷</span>
+            </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="row mt-3">
+            <div class="col-4">
+                <label class="form-label">營業類別</label>
+            </div>
+            <div class="col-2">
+              <select name="c_cate" class="form-control" id="c_cate">
+                {% set cate_array = getClogCategories() %}
+                {% for key, value in cate_array %}
+                  {% if value is not same as("") %}
+                    <option value="{{value}}">{{key}}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+            </div>
+        </div>
+        
+        <div class="row mt-3">
+            <div class="col-4">
+                <label class="form-label">狀態</label>
+            </div>
+            <div class="col-2">
+              <select name="c_status" class="form-control" id="c_status">
+                <option value="0">未設定</option>
+                <option value="3">不在</option>
+                <option value="5">通話中</option>
+                <option value="6">待處理</option>
+                <option value="10">已處理</option>
+                <option value="11">取消</option>
+              </select>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-4">
+                <label class="form-label">負責人</label>
+            </div>
+            <div class="col-8">
+                <input id="c_staff" type="text" name="c_staff" value="" class="form-control" required style="max-width:200px">
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-4">
+                <label class="form-label">詢問日期</label>
+            </div>
+            <div class="col-8">
+                <input id="c_date" type="date" name="c_date" value="" class="form-control" required style="max-width:200px">
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-4">
+                <label class="form-label">今日說明內容</label>
+            </div>
+            <div class="col-8">
+                <textarea id="today_msg" name="today_msg" value="" class="form-control" style="height:10em;" required></textarea>
+            </div>
+        </div>
+
+
+        <div class="row mt-3">
+            <div class="col-4">
+                <label class="form-label">下次提案內容</label>
+            </div>
+            <div class="col-8">
+                <textarea id="next_msg" name="next_msg" value="" class="form-control" style="height:10em;"></textarea>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-4">
+                <label class="form-label">客戶需求</label>
+            </div>
+            <div class="col-8">
+                <textarea id="c_needs" name="c_needs" value="" class="form-control" style="height:10em;"></textarea>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-4">
+                <label class="form-label">備註內容</label>
+            </div>
+            <div class="col-8">
+                <textarea id="memo" name="memo" value="" class="form-control" style="height:10em;"></textarea>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-4">
+                <label class="form-label">訂單編號</label>
+            </div>
+            <div class="col-8">
+              <select name="order_id" class="form-control" id="clog_order_id">
+                <option value="">請選擇</option>
+              {% for Order in Customer.Orders %}
+                <option value="{{ Order.id }}">{{ Order.id }}  {{ Order.total|price }}</option>
+              {% endfor %}
+              </select>
+              <!--
+                <input id="clog_order_id" name="order_id" type="tel" pattern="[0-9]{5,7}" value="" class="form-control" maxlength="7" style="max-width:10em;">
+              -->
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-4">
+                <label class="form-label">應對時間</label>
+            </div>
+            <div class="col-8">
+              <select name="c_time" class="form-control" id="c_time">
+                <option value="0">請選擇</option>
+                <option value="5">5 分</option>
+                <option value="10">10 分</option>
+                <option value="15">15 分</option>
+                <option value="20">20 分</option>
+                <option value="30">30 分</option>
+                <option value="40">40 分</option>
+                <option value="50">50 分</option>
+                <option value="60">60 分</option>
+                <option value="70">70 分</option>
+                <option value="80">80 分</option>
+                <option value="90">90 分</option>
+                <option value="100">100 分</option>
+              </select>
+            </div>
+        </div>
+
+      </div>
+
+      <div class="card-footer text-center">
+        <button type="submit" id="clog_save_btn" class="btn btn-info clog_save_btn" style="width:200px;">保存</button>
+        <input id="clog_id" type="hidden" name="clog_id" value="">
+      </div>
+    </div>
+
+  </form>
+</div>
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/izimodal/1.5.1/css/iziModal.min.css">
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/izimodal/1.5.1/js/iziModal.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+
+<script type="text/javascript">
+window.addEventListener('load', function(){
+    function formatDate(dt) {
+      var y = dt.getFullYear();
+      var m = ('00' + (dt.getMonth()+1)).slice(-2);
+      var d = ('00' + dt.getDate()).slice(-2);
+      return (y + '-' + m + '-' + d);
+    }
+
+    $('#c_log_new_btn,.clog-edit-btn').on('click', function(){
+        var hiduke = new Date(); 
+        hd = formatDate(hiduke) 
+
+        let id = $(this).data('id');
+        $('#c_staff').val("");
+        $('#c_date').val("");
+
+        $('#today_msg').val("");
+        $('#next_msg').val("");
+        $('#c_needs').val("");
+        $('#memo').val("");
+        $('#clog_id').val("");
+        $('#clog_order_id').val("");
+        $('#c_cate').val("");
+        $('#c_status').val("");
+        $('#c_time').val("");
+
+        setTimeout(function(){
+          if(id){
+
+            $('#c_staff').val( $('#c_staff_' + id).text() );
+            $('#c_date').val( $('#c_date_' + id).text().replaceAll('/','-') );
+
+            $('#today_msg').val( $('#today_msg_' + id).text() );
+            $('#next_msg').val( $('#next_msg_' + id).text() );
+            $('#c_needs').val( $('#c_needs_' + id).text() );
+            $('#memo').val( $('#memo_' + id).text() );
+            $('#clog_order_id').val($('#clog_order_id_' + id).text());
+            $('#clog_id').val(id);
+
+            $('#c_cate').val( $("#c_cate_" + id).data('value'));
+            $('#c_status').val( $("#c_status_" + id).data('value'));
+            $('#c_time').val( $("#c_time_" + id).data('value'));
+
+          }else{
+            var c_staff = $.cookie('c_staff');
+            $('#c_staff').val(c_staff ? c_staff : "");
+            $('#c_date').val(hd);
+
+            $('#today_msg').val("");
+            $('#next_msg').val("");
+            $('#memo').val("");
+            $('#c_needs').val("");
+            $('#clog_id').val("");
+            $('#clog_order_id').val("");
+
+            $('#c_status').val("0");
+            $('#c_cate').val("0");
+            $('#c_time').val("0");
+          }
+        }, 500);
+        
+        $("#modal-default").iziModal({
+            autoOpen: true,
+            headerColor: "#26A69A",
+            width: "80%",
+            overlayColor: "rgba(0, 0, 0, 0.5)",
+            fullscreen: false,
+            transitionIn: "fadeInUp",
+            transitionOut: "fadeOutDown",
+            overlayClose: false
+        });
+    });
+
+    var el = $('#clog_save_btn').on('click',function(){
+      console.log("click save_btn2");
+
+      $(this).prop('disabled',true);
+      var c_staff = $('#c_staff').val();
+      $.cookie('c_staff', c_staff, {"secure": true, "expires": 360} );
+      $('#clog_save').submit();
+    })
+});
+
+</script>
+{% endif %}

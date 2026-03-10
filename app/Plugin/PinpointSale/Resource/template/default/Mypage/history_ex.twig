@@ -1,0 +1,14 @@
+{% set pinpointSaleIndex = 0 %}
+
+{% for Shipping in Order.Shippings %}
+    <div>
+        {% for orderItem in Shipping.productOrderItems %}
+            {{ include('@PinpointSale/history_parts.twig', {'orderItem': orderItem}, ignore_missing=true) }}
+            {% set pinpointSaleIndex = pinpointSaleIndex + 1 %}
+        {% endfor %}
+    </div>
+{% endfor %}
+
+<P id="pinpoint_sale_message" class="pinpoint-sale-ec-color-accent">
+    <strong>※{{ discountName }}の状態が変更されている商品があるため、再注文時はご注意ください。</strong>
+</P>

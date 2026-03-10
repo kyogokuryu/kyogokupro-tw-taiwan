@@ -1,0 +1,18 @@
+#flash messages
+uc_newitems.admin.config.save.complete: 已儲存。
+
+#config
+uc_newitems.admin.config.title: UC新產品
+uc_newitems.admin.config.config_title: 設定
+uc_newitems.admin.config.conversion.save: 儲存
+uc_newitems.admin.config.conversion.back: 插件列表
+
+uc_newitems.admin.config.label_title: 標題
+uc_newitems.admin.config.label_block_type: 區塊類型
+uc_newitems.admin.config.label_display_order: 顯示順序
+uc_newitems.admin.config.label_display_num: 顯示數量
+uc_newitems.admin.config.label_category_id: 分類
+uc_newitems.admin.config.label_tag_id: 標籤
+uc_newitems.admin.config.label_item_name: 顯示商品名稱
+uc_newitems.admin.config.label_item_price: 顯示商品價格
+uc_newitems.admin.config.label_item_description: 顯示商品描述（列表）

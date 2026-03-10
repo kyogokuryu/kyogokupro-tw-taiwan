@@ -1,0 +1,52 @@
+{#切り替えボタン#}
+<button id="{{ titleTargetKey }}" class="btn btn-ec-regular ml-2" type="button">
+    {{ titleButtonName|trans }}
+</button>
+
+{#エラーメッセージ#}
+<span id="{{ messageTargetKey }}" class="invalid-feedback d-block">
+    <span class="d-block">
+        <span class="form-error-icon badge badge-danger text-uppercase">
+            {{ 'エラー'|trans }}
+        </span>
+        <span class="form-error-message">
+            {{ titleButtonName~'にエラーがあります。'|trans }}
+        </span>
+    </span>
+</span>
+
+{#追加テーブル情報#}
+<table>
+    {#タイトル部#}
+    <thead id="{{ tableTitleTargetKey }}" class="d-none">
+        <th class="pt-2 pb-2 pl-3"></th>
+        <th class="pt-2 pb-2">{{ ClassName1 ? ClassName1.name }}</th>
+        {% if ClassName2 %}
+            <th class="pt-2 pb-2">{{ ClassName2 ? ClassName2.name }}</th>
+        {% endif %}
+        {{ include(userAreaTemplateTitle) }}
+    </thead>
+    {% for product_class_form in form.product_classes %}
+        <tr class="{{ rowTargetKey }} d-none"
+            id="{{ rowTargetKey }}{{ product_class_form.vars.name }}"
+            data-{{ nameTargetKey }}="{{ product_class_form.vars.name }}"
+            {% if prototype is not null %}
+                data-prototype="{% filter escape %}{{ include(prototype, {'plgForm': product_class_form[plgRootFormName].vars.prototype, 'key1': '__class__', 'key2': '__name__'}) }}{% endfilter %}"
+            {% endif %}
+            >
+            <td class="align-middle pl-3">
+                {% set active_check_key = rootTargetKey~product_class_form.checked.vars.id %}
+                <input type="checkbox" disabled="disabled" id="{{ active_check_key }}" {% if product_class_form.checked.vars.data %}checked="checked"{% endif %}>
+            </td>
+            <td class="align-middle">
+                {{ product_class_form.vars.value.ClassCategory1 }}
+            </td>
+            {% if ClassName2 %}
+                <td class="align-middle">
+                    {{ product_class_form.vars.value.ClassCategory2 }}
+                </td>
+            {% endif %}
+            {{ include(userAreaTemplate) }}
+        </tr>
+    {% endfor %}
+</table>

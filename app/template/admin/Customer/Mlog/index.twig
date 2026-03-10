@@ -1,0 +1,613 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['kgmng', 'kgmng_mlog'] %}
+{% set prime = ["一般", "高级会员", "轻成员"] %}
+
+{% block title %}董事會日報{% endblock %}
+{% block sub_title %}{% endblock %}
+
+{% form_theme searchForm '@admin/Form/bootstrap_4_horizontal_layout.html.twig' %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" href="{{ asset('assets/css/tempusdominus-bootstrap-4.min.css', 'admin') }}">
+    <style type="text/css">
+        .datepicker-days th.dow:first-child,
+        .datepicker-days td:first-child {
+            color: #f00;
+        }
+
+        .datepicker-days th.dow:last-child,
+        .datepicker-days td:last-child {
+            color: #00f;
+        }
+    </style>
+{% endblock stylesheet %}
+
+{% block javascript %}
+    <script>
+        {% if logged_in == false %}
+            $(function(){
+                $('.login_mlog').click();
+            });
+        {% endif %}
+
+        function search_form(c_staff){
+            console.log(c_staff);
+            //$('#admin_search_customer_c_cate').val("")
+            $('#admin_search_customer_c_staff').val(c_staff)
+            $('#search_form').submit();
+        }
+
+        $(function() {
+            if ($('[type="date"]').prop('type') != 'date') {
+                // input type属性でdateが利用できるかどうか(カレンダー表示できないブラウザ対応)
+                $.when(
+                    $.getScript("{{ asset('assets/js/vendor/moment.min.js', 'admin') }}"),
+                    $.getScript("{{ asset('assets/js/vendor/moment-with-locales.min.js', 'admin') }}"),
+                    $.getScript("{{ asset('assets/js/vendor/tempusdominus-bootstrap-4.min.js', 'admin') }}")
+                ).done(function() {
+                    $('input[id$=_date_start]').datetimepicker({
+                        locale: '{{ eccube_config.locale }}',
+                        format: 'YYYY-MM-DD',
+                        useCurrent: false,
+                        buttons: {
+                            showToday: true,
+                            showClose: true
+                        }
+                    });
+
+                    $('input[id$=_date_end]').datetimepicker({
+                        locale: '{{ eccube_config.locale }}',
+                        format: 'YYYY-MM-DD',
+                        useCurrent: false,
+                        buttons: {
+                            showToday: true,
+                            showClose: true
+                        }
+                    });
+
+                    $('#admin_search_customer_birth_start').datetimepicker({
+                        locale: '{{ eccube_config.locale }}',
+                        format: 'YYYY-MM-DD',
+                        useCurrent: false,
+                        buttons: {
+                            showToday: true,
+                            showClose: true
+                        }
+                    });
+
+                    $('#admin_search_customer_birth_end').datetimepicker({
+                        locale: '{{ eccube_config.locale }}',
+                        format: 'YYYY-MM-DD',
+                        useCurrent: false,
+                        buttons: {
+                            showToday: true,
+                            showClose: true
+                        }
+                    });
+
+                    $('#admin_search_customer_last_buy_start').datetimepicker({
+                        locale: '{{ eccube_config.locale }}',
+                        format: 'YYYY-MM-DD',
+                        useCurrent: false,
+                        buttons: {
+                            showToday: true,
+                            showClose: true
+                        }
+                    });
+
+                    $('#admin_search_customer_last_buy_end').datetimepicker({
+                        locale: '{{ eccube_config.locale }}',
+                        format: 'YYYY-MM-DD',
+                        useCurrent: false,
+                        buttons: {
+                            showToday: true,
+                            showClose: true
+                        }
+                    });
+                });
+            }
+
+        });
+
+    </script>
+{% endblock javascript %}
+
+{% block main %}
+    {% if logged_in %}
+        <form name="search_form" id="search_form" method="post" action="" >
+            {{ form_widget(searchForm._token) }}
+            <div class="c-outsideBlock">
+                <div class="c-outsideBlock__contents">
+
+                    <div class="row">
+                        <div class="offset-10 col-2 text-center">
+                            <button type="button" class="btn btn-info" id="c_log_new_btn" style="margin-bottom:1em">新規登録</button>
+                        </div>
+                    </div>
+
+
+                    <div class="row justify-content-start">
+                        <div class="col-3">
+                            <div class="mb-2">
+                                <label class="col-form-label" data-tooltip="true" data-placement="top" >日付</label>
+                                {{ form_widget(searchForm.c_date) }}
+                                {{ form_errors(searchForm.c_date) }}
+                            </div>
+                        </div>
+                        
+                        <div class="col-3">
+                            <div class="mb-2">
+                                <label class="col-form-label" data-tooltip="true" data-placement="top" >{{ 'admin.clog.c_staff'|trans }}</label>
+                                
+                                <select class="form-control" name="admin_search_customer_mlog[c_staff]">
+                                    <option value="">請選擇</option>
+                                    {% for mlog in m_qb %}
+                                        <option value="{{ mlog.c_staff }}" {% if searchData.c_staff == mlog.c_staff %} selected {% endif %}>{{ mlog.c_staff }}</option>
+                                    {% endfor %}
+                                </select>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="c-outsideBlock__contents mb-5">
+                <button type="submit" class="btn btn-ec-conversion px-5">{{ 'admin.common.search'|trans }}</button>
+                {% if pagination %}
+                    <span class="font-weight-bold ml-2">{{ 'admin.common.search_result'|trans({'%count%':pagination.totalItemCount}) }}</span>
+                {% endif %}
+            </div>
+            <div class="c-outsideBlock__contents mb-5" style="display:none">
+                {{ include('@admin/search_items.twig', { 'form': searchForm }, ignore_missing = true) }}
+            </div>
+            <div class="c-contentsArea__cols">
+                <div class="c-contentsArea__primaryCol">
+                    <div class="c-primaryCol">
+                        {% if pagination and pagination.totalItemCount %}
+                            <div class="row justify-content-between mb-2">
+                                <div class="col-6"></div>
+
+                                <div class="col-5 text-right" style="display:none">
+                                    {#Dropdown page count#}
+                                    <div class="d-inline-block mr-2">
+                                        <select class="custom-select" onchange="location = this.value;">
+                                            {% for pageMax in pageMaxis %}
+                                                <option {% if pageMax.name == page_count %} selected {% endif %}
+                                                        value="{{ path('admin_customer_page', {'page_no': 1, 'page_count': pageMax.name }) }}">
+                                                    {{ 'admin.common.count'|trans({ '%count%': pageMax.name }) }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                    <div class="d-inline-block" style="display:none">
+                                        <div class="btn-group" role="group">
+                                            <a class="btn btn-ec-regular" href="{{ url('admin_customer_export') }}"><i class="fa fa-cloud-download mr-1 text-secondary"></i><span>{{ 'admin.common.csv_download'|trans }}</span></a>
+                                            <a class="btn btn-ec-regular" href="{{ url('admin_setting_shop_csv', { id : constant('\\Eccube\\Entity\\Master\\CsvType::CSV_TYPE_CUSTOMER') }) }}"><i class="fa fa-cog mr-1 text-secondary"></i><span>{{ 'admin.setting.shop.csv_setting'|trans }}</span></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card rounded border-0 mb-4 d-block">
+                                <div class="card-body p-0">
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th class="border-top-0 pt-2 pb-3 nowrap edit-col">&nbsp;</th>
+                                            <th class="border-top-0 pt-2 pb-3 nowrap day-col">日付</th>
+                                            <th class="border-top-0 pt-2 pb-3 nowrap name-col" style="min-width:100px;">名前</th>
+                                            <th class="border-top-0 pt-2 pb-3 nowrap business-content-col" style="min-width:400px;">業務内容</th>
+                                            <th class="border-top-0 pt-2 pb-3 nowrap problem-col" style="min-width:300px;">發現與問題，以及進行這項工作的理由</th>
+                                            <th class="border-top-0 pt-2 pb-3 nowrap remarks-col" style="min-width:300px;">備考</th>
+                                            <th class="border-top-0 pt-2 pb-3 nowrap comment-col" style="min-width:150px;">コメント</th>
+                                            <th class="border-top-0 pt-2 pb-3 nowrap comment-manager-col">責任者</th>
+                                            <th class="border-top-0 pt-2 pb-3 nowrap comment-edit-col"></th> {#コメント編集ボタン用 #}
+                                            <th class="border-top-0 pt-2 pb-3 nowrap require-time-col">所要時間</th>
+                                            <th class="border-top-0 pt-2 pb-3 pr-3 update-time-col">更新日時</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for Customer in pagination %}
+                                            <tr id="ex-customer-{{ Customer.id }}">
+                                                
+                                                <td><button type="button" class="btn btn-success clog-edit-btn" data-id="{{ Customer.id }}">編集</button></td>
+                                                <td class="align-middle" id="c_date_{{ Customer.id }}">{{ Customer.c_date|date('Y/m/d') }}</td>
+                                                <td class="align-middle" id="c_staff_{{ Customer.id }}">{{ Customer.c_staff }}</td>
+                                                <td class="align-middle"><pre id="today_msg_{{ Customer.id }}" style="white-space: pre-line;">{{ Customer.today_msg }}</pre></td>
+                                                <td class="align-middle"><pre id="next_msg_{{ Customer.id }}" style="white-space: pre-line;">{{ Customer.next_msg }}</pre></td>
+                                                <td class="align-middle"><pre id="memo_{{ Customer.id }}"  style="white-space: pre-line;">{{ Customer.memo }}</pre></td>
+                                                <td class="align-middle"><pre id="comm_{{ Customer.id }}"  style="white-space: pre-line;color:brown;font-weight:bold">{{ Customer.comm }}</pre></td>
+                                                <td class="align-middle"><pre id="comm_manager_{{ Customer.id }}"  style="white-space: pre-line;color:brown;font-weight:bold">{{Customer.comm_manager}}</pre></td>
+                                                <td class="align-middle">
+                                                    <pre id="comm_edit_{{ Customer.id }}"  style="white-space: pre-line;color:brown;font-weight:bold">
+                                                        <button type="button" class="btn btn-success comment-edit-btn" data-id="{{ Customer.id }}" style="border: 1px solid #7349D3; background-color: transparent; width:35px; height:35px;">
+                                                        <img style="width: 15px; height: 15px;" src="{{ asset('assets/img/edit_icon.png') }}">
+                                                        </button>
+                                                    </pre>
+                                                </td>
+                                                <td class="align-middle"><pre id="c_time_{{ Customer.id }}" data-value="{{ Customer.c_time }}" style="white-space: pre-line;">{% if(Customer.c_time > 0) %} {{ Customer.c_time }}時間{% endif %}</pre></td>
+                                                <td class="align-middle">{{ Customer.update_date|date('Y/m/d H:i') }}</td>
+
+
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    <div class="row justify-content-md-center mb-4">
+                                        {% if pagination.totalItemCount > 0 %}
+                                            {% include "@admin/pager.twig" with { 'pages' : pagination.paginationData, 'routes' : 'admin_customer_mloglist_page' } %}
+                                        {% endif %}
+                                    </div>
+                                    <br>
+                                </div>
+                            </div>
+                        {% elseif has_errors %}
+                            <div class="card rounded border-0">
+                                <div class="card-body p-4">
+                                    <div class="text-center text-muted mb-4 h5">{{ 'admin.common.search_invalid_condition'|trans }}</div>
+                                    <div class="text-center text-muted">{{ 'admin.common.search_try_change_condition'|trans }}</div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="card rounded border-0">
+                                <div class="card-body p-4">
+                                    <div class="text-center text-muted mb-4 h5">{{ 'admin.common.search_no_result'|trans }}</div>
+                                    <div class="text-center text-muted">{{ 'admin.common.search_try_change_condition'|trans }}</div>
+                                    <div class="text-center text-muted">{{ 'admin.common.search_try_advanced_search'|trans }}</div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div id="modal-default" data-izimodal-title="日報入力" style="margin-left:auto;margin-right:auto;display:none;">
+        <form action="{{ url('admin_homepage_mlog_save') }}" method="post" id="clog_save">
+
+        <div class="card rounded border-0 mb-4" style="min-width:500px;min-heght:500px;">
+            <div class="card-header">
+            <div class="row">
+                <div class="col-8">
+                    <span class="card-title">新規登録はオートセーブにしてます</span>
+                </div>
+            </div>
+            </div>
+            <div class="card-body">
+
+
+            <div class="row mt-3">
+                <div class="col-4">
+                    <label class="form-label">名前</label>
+                </div>
+                <div class="col-8">
+                    <input id="c_staff" type="text" name="c_staff" value="" class="form-control" required style="max-width:200px">
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-4">
+                    <label class="form-label">日付</label>
+                </div>
+                <div class="col-8">
+                    <input id="c_date" type="date" name="c_date" value="" class="form-control" required style="max-width:200px">
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-4">
+                    <label class="form-label">業務内容</label>
+                </div>
+                <div class="col-8">
+                    <textarea id="today_msg" name="today_msg" value="" class="form-control" style="height:10em;" required></textarea>
+                </div>
+            </div>
+
+
+            <div class="row mt-3">
+                <div class="col-4">
+                    <label class="form-label">發現與問題，以及進行這項工作的理由</label>
+                </div>
+                <div class="col-8">
+                    <textarea id="next_msg" name="next_msg" value="" class="form-control" style="height:10em;" required></textarea>
+                </div>
+            </div>
+
+
+            <div class="row mt-3">
+                <div class="col-4">
+                    <label class="form-label">備考</label>
+                </div>
+                <div class="col-8">
+                    <textarea id="memo" name="memo" value="" class="form-control" style="height:10em;"></textarea>
+                </div>
+            </div>
+
+
+            {# <div class="row mt-3">
+                <div class="col-4">
+                    <label class="form-label">コメント</label>
+                </div>
+                <div class="col-8">
+                    <textarea id="comm" name="comm" value="" class="form-control" style="height:10em;"></textarea>
+                </div>
+            </div> #}
+
+            <div class="row mt-3">
+                <div class="col-4">
+                    <label class="form-label">所要時間</label>
+                </div>
+                <div class="col-8">
+                    <select name="c_time" class="form-control" id="c_time">
+                    <option value="0">請選擇</option>
+                    <option value="1">1 時間</option>
+                    <option value="2">2 時間</option>
+                    <option value="3">3 時間</option>
+                    <option value="4">4 時間</option>
+                    <option value="5">5 時間</option>
+                    <option value="6">6 時間</option>
+                    <option value="7">7 時間</option>
+                    <option value="8">8 時間</option>
+                    </select>
+                </div>
+            </div>
+
+            </div>
+
+            <div class="card-footer text-center">
+            <button type="submit" id="clog_save_btn" class="btn btn-info clog_save_btn" style="width:200px;">保存</button>
+            <button type="button" id="clear_btn" class="btn btn-danger clear_btn" style="width:200px;">クリア</button>
+            <input id="mlog_id" type="hidden" name="mlog_id" value="">
+            <input id="is_ceo" type="hidden" name="is_ceo" value="{{ is_ceo }}">
+            </div>
+        </div>
+
+        </form>
+        </div>
+
+        {# コメント編集用のモーダル #}
+        <div id="modal-default-comment" data-izimodal-title="コメント返信" style="margin-left:auto;margin-right:auto;display:none;">
+        <form action="{{ url('admin_homepage_comment_save') }}" method="post" id="comment_save">
+            
+            <div class="card rounded border-0 mb-4" style="min-width:300px;min-heght:500px;">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-8">
+                        <span class="card-title">コメントを入力してください</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row mt-3">
+                    <div class="col-4">
+                        <label class="form-label">責任者</label>
+                    </div>
+                    <div class="col-8">
+                        <input id="manager-edit" name="manager-edit" type="text">
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-4">
+                        <label class="form-label">コメント</label>
+                    </div>
+                    <div class="col-8">
+                        <textarea id="comm-edit" name="comm-edit" value="" class="form-control" style="height:10em;"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer text-center">
+                <button type="submit" id="comment_save_btn" class="btn btn-info comment_save_btn" style="width:200px;">保存</button>
+                <input id="comm_mlog_id" type="hidden" name="mlog_id" value="">
+            </div>
+            </div>
+
+        </form>
+        </div>
+
+
+
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/izimodal/1.5.1/css/iziModal.min.css">
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/izimodal/1.5.1/js/iziModal.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+
+        <script type="text/javascript">
+
+        const localKeyStaffName = 'staff_name_value'
+        const localKeyCdate = 'c_date_value'
+        const localKeyTodayMsg = 'today_msg_value'
+        const localKeyNextMsg = 'next_msg_value'
+        const localKeyMemo = 'memo_value'
+        const localKeyCtime = 'c_time_value'
+
+
+        window.addEventListener('load', function(){
+            function attachInputEvent(selector, localKey, id) {
+                selector.on('input', function () {
+                    if (!id) {
+                        let text = selector.val();
+                        localStorage.setItem(localKey, text);
+                    }
+                });
+            }
+
+            function attachChangeEvent(selector, localKey, id) {
+                selector.on('change', function () {
+                    if (!id) {
+                        let selectedValue = selector.val();
+                        console.log(selectedValue)
+                        localStorage.setItem(localKey, selectedValue);
+                    }
+                });
+            }
+
+            function formatDate(dt) {
+            var y = dt.getFullYear();
+            var m = ('00' + (dt.getMonth()+1)).slice(-2);
+            var d = ('00' + dt.getDate()).slice(-2);
+            return (y + '-' + m + '-' + d);
+            }
+
+            $('#c_log_new_btn,.clog-edit-btn').on('click', function(){
+                let id = $(this).data('id');
+                var editId = ""
+                setTimeout(function(){
+                //編集モード
+                if(id){
+                    $('#mlog_id').val("");
+
+                    $('#c_staff').val("");
+                    $('#c_date').val("");
+                    $('#today_msg').val("");
+                    $('#next_msg').val("");
+                    $('#memo').val("");
+                    $('#comm').val("");
+                    $('#c_time').val("");
+
+                    $('#mlog_id').val(id);
+                    $('#c_staff').val( $('#c_staff_' + id).text() );
+                    $('#c_date').val( $('#c_date_' + id).text().replaceAll('/','-') );
+                    $('#today_msg').val( $('#today_msg_' + id).text() );
+                    $('#next_msg').val( $('#next_msg_' + id).text() );
+                    $('#memo').val( $('#memo_' + id).text() );
+                    $('#comm').val( $('#comm_' + id).text() );
+                    $('#c_time').val( $("#c_time_" + id).data('value'));
+
+                    $('#clear_btn').hide();
+                }else{
+                    let localStaffName = localStorage.getItem(localKeyStaffName);
+                    let localCdate = localStorage.getItem(localKeyCdate)
+                    let localTodayMsg = localStorage.getItem(localKeyTodayMsg);
+                    let localNextMsg = localStorage.getItem(localKeyNextMsg);
+                    let localMemo = localStorage.getItem(localKeyMemo);
+                    let localCtime = localStorage.getItem(localKeyCtime);
+
+                    $('#c_staff').val(localStaffName);
+                    if (localCdate) {
+                        $('#c_date').val(localCdate);
+                    }else{
+                        let now = new Date(); 
+                        let nowFormat = formatDate(now) 
+                        $('#c_date').val(nowFormat);
+                    }
+                    $('#today_msg').val(localTodayMsg);
+                    $('#next_msg').val(localNextMsg);
+                    $('#memo').val(localMemo);
+                    $('#mlog_id').val("");
+                    $('#c_time').val(localCtime);
+
+                    $('#clear_btn').show();
+                }
+                }, 500);
+
+                $("#modal-default").iziModal({
+                    autoOpen: true,
+                    headerColor: "#26A69A",
+                    width: "80%",
+                    overlayColor: "rgba(0, 0, 0, 0.5)",
+                    fullscreen: false,
+                    transitionIn: "fadeInUp",
+                    transitionOut: "fadeOutDown",
+                    overlayClose: false
+                });
+
+                let staffName = $("#c_staff");
+                attachInputEvent(staffName, localKeyStaffName, id);
+
+                let dateInput = $('#c_date');
+                attachInputEvent(dateInput, localKeyCdate, id);
+
+                let todayMsgTextarea = $("#today_msg");
+                attachInputEvent(todayMsgTextarea, localKeyTodayMsg, id);
+
+                let nextMsg = $("#next_msg");
+                attachInputEvent(nextMsg, localKeyNextMsg, id);
+
+                let memo = $("#memo");
+                attachInputEvent(memo, localKeyMemo, id);
+
+                let timeSelect = $('#c_time');
+                attachChangeEvent(timeSelect, localKeyCtime, id);
+
+                $('#clear_btn').click(function() {
+                    let confirmation = window.confirm('本当に内容を消しますか？');
+                    // ユーザーの選択に応じた処理を行う
+                    if (confirmation) {
+                        let now = new Date(); 
+                        let nowFormat = formatDate(now) 
+                        $('#c_date').val(nowFormat);
+                        $('#today_msg').val('')
+                        $('#next_msg').val('')
+                        $('#memo').val('')
+                        $('#mlog_id').val('')
+                        $('#c_time').val('')
+                        localStorage.removeItem(localKeyStaffName);
+                        localStorage.removeItem(localKeyCdate);
+                        localStorage.removeItem(localKeyTodayMsg);
+                        localStorage.removeItem(localKeyNextMsg);
+                        localStorage.removeItem(localKeyMemo);
+                        localStorage.removeItem(localKeyCtime);
+                    }
+                });
+            });
+
+            //コメント編集用
+            $('.comment-edit-btn').on('click', function(){
+                let id = $(this).data('id');
+                $('#manager-edit').val("");
+                $('#comm-edit').val("");
+
+                setTimeout(function(){
+                    $('#comm_mlog_id').val(id);
+                    $('#comm-edit').val($('#comm_' + id).text());
+                    $('#manager-edit').val($('#comm_manager_' + id).text());
+                }, 500);
+
+                $("#modal-default-comment").iziModal({
+                    autoOpen: true,
+                    headerColor: "#26A69A",
+                    width: "80%",
+                    overlayColor: "rgba(0, 0, 0, 0.5)",
+                    fullscreen: false,
+                    transitionIn: "fadeInUp",
+                    transitionOut: "fadeOutDown",
+                    overlayClose: false
+                });
+            });
+
+            //通常の編集保存
+            var el = $('#clog_save_btn').on('click',function(){
+            console.log("click save_btn2");
+
+            $(this).prop('disabled',true);
+            var c_staff = $('#c_staff').val();
+            $('#clog_save').submit();
+            })
+
+            //コメント編集保存
+            var el = $('#comment_save_btn').on('click',function(){
+            console.log("click save_btn3");
+
+            $(this).prop('disabled',true);
+            var c_staff = $('#c_staff').val();
+            $('#comment_save').submit();
+            })
+
+        });
+        </script>
+    {% else %}
+        {% include '@admin/Customer/Mlog/modal_password.twig' with {
+			modal_id: 'cost_management_index',} %}
+    {% endif %}
+{% endblock %}

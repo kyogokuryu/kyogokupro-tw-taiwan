@@ -1,0 +1,41 @@
+
+.iapp_header_title{
+    display: none;
+}
+@media screen and (max-width: 480px){
+    .isShowPC {
+        display:none
+    }
+    .not-show-sp{
+        display: none !important;
+    }
+    .ec-alert-warning{
+        margin: 10px;
+        width: calc(100% - 20px);
+    }
+    .ec-headerNaviRole .bottom{
+      //  display: none;
+    }
+
+    .iapp_header_title{
+        display: block;
+        background:#f8eff0;
+        text-align:center;
+        padding:1px;
+        position:relative;
+        h2{
+            font-weight:bold;
+            margin-top: 9px;
+            margin-bottom: 9px;
+            font-size: 24px;
+          //  padding: 10px;
+        }
+        .back{
+            position:absolute;
+            top:50%;
+            left:10px;
+            transform:translateY(-50%);
+            height: 24px;
+        }
+    }
+}

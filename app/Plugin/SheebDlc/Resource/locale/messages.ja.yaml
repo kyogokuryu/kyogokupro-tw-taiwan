@@ -1,0 +1,79 @@
+# 共通
+sheeb.dlc.common.video.support: "播放视频需要支持video标签的浏览器。"
+sheeb.dlc.common.audio.support: "播放音频需要支持audio标签的浏览器。"
+
+# 管理画面
+## Config
+sheeb.dlc.admin.config.title: "下载内容销售插件"
+sheeb.dlc.admin.config.sub_title: "设置页面"
+sheeb.dlc.admin.config.download.card_title: "内容获取条件设置"
+sheeb.dlc.admin.config.order_status: "订单处理状态"
+sheeb.dlc.admin.config.order_status.tooltip: "例如，设置为“已支付”，则仅当订单管理中的处理状态为“已支付”时，购买者才能获取内容。"
+sheeb.dlc.admin.config.save.success: "保存成功"
+sheeb.dlc.admin.config.mode: "操作模式"
+sheeb.dlc.admin.config.mode.tooltip: "内容的存储位置和传送目标将会改变。如果中途更改了模式，则需要重新上传所有商品的内容。"
+sheeb.dlc.admin.config.mode.local: "EC-CUBE 本地服务器"
+sheeb.dlc.admin.config.mode.google_drive: "Google Drive"
+sheeb.dlc.admin.config.mode.google_drive.credential.exist: "文件已配置"
+sheeb.dlc.admin.config.mode.google_drive.credential.not_exist: "未设置认证文件"
+sheeb.dlc.admin.config.mode.google_drive.files.name: "名称"
+sheeb.dlc.admin.config.mode.google_drive.files.remove_button: "删除"
+sheeb.dlc.admin.config.mode.google_drive.files.all_remove_button: "全部删除"
+sheeb.dlc.admin.config.mode.google_drive.files.not_use: "待删除文件列表"
+sheeb.dlc.admin.config.mode.google_drive.files.not_use.tooltip: "这是存储在未使用商品信息的Google Drive上的文件列表。"
+
+sheeb.dlc.admin.config.google_drive.service_account: "服务账户JSON文件"
+sheeb.dlc.admin.config.google_drive.service_account.tooltip: "请参考操作说明书生成服务账户文件，并上传到此处。"
+sheeb.dlc.admin.config.google_drive.service_account.error.cannot_write: "请为目录授予写入权限。"
+
+## 商品
+sheeb.dlc.admin.product.detail.sheeb_dlc: "下载内容设置"
+sheeb.dlc.admin.product.detail.sheeb_download_content: "下载商品"
+sheeb.dlc.admin.product.detail.sheeb_download_content.upload: "拖拽或上传内容文件"
+
+sheeb.dlc.admin.product.detail.sheeb_dlc_download_due_days: "下载期限"
+sheeb.dlc.admin.product.detail.sheeb_dlc_download_due_days.tooltip: "购买者可以开始首次下载的期限。从购买日算起的几天？0表示无限期。"
+sheeb.dlc.admin.save.content_is_no_exist: "找不到内容文件。请重新上传并重试。"
+
+sheeb.dlc.admin.product.detail.sheeb_dlc_viewing_days: "再次获取时间"
+sheeb.dlc.admin.product.detail.sheeb_dlc_viewing_days.tooltip: "购买者从首次下载后可以再次下载的期限。从首次下载日算起的几天？0表示无限期。"
+
+sheeb.dlc.admin.product.detail.sheeb_dlc_downloadable_count: "可下载次数"
+sheeb.dlc.admin.product.detail.sheeb_dlc_downloadable_count.tooltip: "购买者可以下载的次数。指定几次？0表示无限次。"
+
+## 受注
+sheeb.dlc.admin.order.sheeb_first_download_datetime: "首次下载时间"
+sheeb.dlc.admin.order.sheeb_dlc_download_count: "下载次数"
+
+# 前端
+## 购买流程
+sheeb.dlc.purchase.sale_type.error: "无法同时购买下载内容和其他商品"
+sheeb.dlc.purchase.quantity.error: "只能购买一个下载内容"
+sheeb.dlc.purchase.purchased.error: "已从购物车中删除已购买的商品。您可以在我的页面中找到内容。"
+sheeb.dlc.purchase.already.purchased: "已购买"
+
+## 我的页面
+sheeb.dlc.mypage.purchased.items: "订单商品"
+sheeb.dlc.mypage.purchased.items.title: "已购买的下载商品列表"
+
+sheeb.dlc.mypage.button.to_download: "前往下载页面"
+
+sheeb.dlc.mypage.nothing: "当前没有可下载的商品。请等待支付确认后再次尝试。"
+sheeb.dlc.mypage.due_to_download: "下载期限"
+sheeb.dlc.mypage.notice.download_again: "再次获取时间"
+sheeb.dlc.mypage.notice.download_again_before: "从首次获取开始计算"
+sheeb.dlc.mypage.notice.download_again_after: "天"
+sheeb.dlc.mypage.downloadable_count: "剩余下载次数"
+sheeb.dlc.mypage.downloadable_count.unit: "次"
+sheeb.dlc.mypage.first_download_datetime: "首次获取时间"
+sheeb.dlc.mypage.dounload.button: "下载"
+
+## 逻辑
+sheeb.dlc.downloadable.error.not_product: "此OrderItem不是商品"
+sheeb.dlc.downloadable.error.saletype_is_not_dlc: "此OrderItem的SaleType不是下载内容"
+sheeb.dlc.downloadable.error.expired_first_download: "超出了可下载期限"
+sheeb.dlc.downloadable.error.expired_download_again: "超出了再次下载期限"
+sheeb.dlc.downloadable.error.over_count: "超出了可下载次数"
+sheeb.dlc.downloadable.error.yet_order_complete: "订单尚未完成"
+sheeb.dlc.downloadable.error.no_support_order_status: "请等待支付确认后再尝试下载。"
+sheeb.dlc.downloadable.error.content_not_found: "商品准备过程中出现问题。请联系客服。"

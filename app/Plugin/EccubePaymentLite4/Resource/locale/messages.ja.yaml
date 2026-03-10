@@ -1,0 +1,179 @@
+gmo_epsilon:
+  admin:
+    config:
+      title: Epsilon 結帳外掛程式
+      sub_title: 外掛設定
+      header: 基本設定
+      save: 儲存
+      required: 必填
+      back: 返回外掛列表
+      contract_code: 契約代碼
+      environmental_setting: 環境設定
+      credit_payment_setting: 信用卡結帳設定
+      use_payment: 使用結帳方式
+      use_convenience: 使用便利商店
+      card_expiration_notification_days: 信用卡過期通知天數
+      section_regular: 定期付款設定
+      regular: 定期付款功能
+      regular_order_notification_email: 定期訂單建立通知郵件地址
+      my_page_regular_settings: 我的頁面定期設定
+      next_delivery_date_changeable_range_days: 下次配送日期可變更範圍天數
+      first_delivery_days: 訂單日期後首次配送天數
+      next_delivery_days_at_regular_resumption: 定期恢復後的下次配送天數
+      next_delivery_days_after_re_payment: 重新結帳後的下次配送天數
+      regular_order_deadline: 定期訂單截止日期
+      regular_delivery_notification_email_days: 定期配送預先通知郵件發送天數
+      regular_stoppable_count: 可停止的定期次數
+      regular_cancelable_count: 可取消的定期次數
+      regular_resumable_period: 可恢復的定期期間
+      regular_point_magnification: 定期積分倍率
+      regular_message: '* 若要使用定期付款功能，需要啟用信用卡結帳。'
+      access_block: 非法訪問封鎖功能
+      access_block_message: 非法訪問封鎖功能適用於「信用卡結帳」、「使用已註冊的信用卡進行結帳」。 <br> 如果超出設定的訪問頻率上限，則將封鎖對信用卡信息輸入頁面的訪問，封鎖時間為設定的時間。 <br> 您可以使用白名單設定排除非法訪問目標的IP地址。
+      ip_black_list: IP黑名單功能
+      ip_black_list_message: 這是一個根據IP黑名單方式進行訪問限制的功能。
+      block_mode: 封鎖模式
+      access_frequency: 訪問頻率
+      access_frequency_message_1: 每秒訪問
+      access_frequency_message_2: 次即封鎖
+      block_time: 封鎖時間
+      block_time_message: 秒
+      white_list: 白名單
+      black_list: 黑名單
+      white_list_message: ※ 可以用逗號分隔多個指定
+      black_list_message: ※ 可以用逗號分隔多個指定
+      regular_specified_count_notification_mail: 指定定期次數通知
+      update_payment_block: 從Epsilon結帳外掛繼承支付方式
+      update: 更新
+    save:
+      success: 已儲存。
+      failed: 儲存失敗。
+      update_success: 已更新支付方式。
+    nav:
+      regular_order: 定期訂單管理
+      regular:
+        order: 定期訂單管理
+        cycle: 定期週期管理
+        is_regular_sale_type: 定期銷售類型設定
+    title:
+      regular:
+        order:
+          index: 定期訂單列表
+          detail: 定期訂單詳細
+        cycle: 定期週期設定
+        discount: 定期折扣
+    sub_title:
+      regular:
+        cycle:
+          index: 定期週期列表
+          edit: 定期週期編輯
+        discount: 指定定期次數管理
+    regular:
+      unsent: 未發送
+      table_head:
+        regular_cycle: 週期
+        day: 日期
+        week: 星期
+      cycle:
+        index: 定期週期列表
+      edit:
+        label:
+          regular_cycle_type: 定期週期類型
+          day: 日期
+          week: 星期
+    regular_order:
+      latest_status: 最新處理狀態
+      regular_status: 定期續訂狀態
+      first_order_date_start: 初次購買日期（起始）
+      first_order_date_end: 初次購買日期（結束）
+      next_delivery_date_start: 下次預定配送日期（起始）
+      next_delivery_date_end: 下次預定配送日期（結束）
+      buy_product_id: 購買商品ID
+      regular_order_id: 定期訂單ID
+      order_no: 訂單編號
+      card_change_request_mail_status: 信用卡更改請求郵件發送狀態
+      buy_product_name: 購買商品名稱
+      regular_count_start: 定期次數（起始）
+      regular_count_end: 定期次數（結束）
+      order_add: 批量創建訂單
+      table:
+        id: 定期訂單ID
+        name: 訂單者
+        regular_status: 定期續訂狀態
+        email: 電子郵件地址
+        regular_order_count: 定期次數
+        next_delivery_date: 下次預定配送日期
+        card_change_request_mail_send_date: 信用卡更改請求郵件發送日期
+        first_order_id: 初次訂單編號
+        last_order_id: 最新訂單編號
+        last_order_status: 最新處理狀況
+
+    regular_order_edit:
+      title: 定期訂單編輯
+      order_history: 定期歷史
+      table.number_no: 編號
+      table.order_number: 訂單編號
+      table.create_date: 創建日期
+      table.update_date: 更新日期
+      table.payment_date: 付款日期
+      table.shipping_date: 發貨日期
+      table.payment_method: 付款方式
+      table.status: 狀態
+    order:
+      payment_status: Epsilon結帳狀態
+      complete_payment: Epsilon結帳註冊
+      payment_status.sync: 結帳狀態同步確認
+      complete_payment.confirm: 結帳完成確認
+      complete_payment.button_text: 註冊結帳
+    complete_payment:
+      register: 註冊
+      cancel: 取消
+    setting:
+      shop:
+        delivery_company: 配送公司
+        is_regular_sale_type: 定期商品設定
+
+  message:
+    day:
+      not_blank: 日期為必填項目
+  common:
+    credit_card_number: 信用卡號碼
+    expiration_date: 到期日期
+    security_code: 安全碼
+    holder_name: 持卡人姓名
+  front:
+    shopping:
+      use_conveni_unselected: 請選擇便利商店。
+      use_conveni_not_fount: 無可用便利商店。
+      credit_card_for_token_payment: 輸入信用卡信息
+      regular_cycle: 定期配送周期
+      error: 系統錯誤。
+    mypage:
+      nav__credit_card: 信用卡信息（定期）編輯
+      nav__regular_index: 定期列表
+      edit_credit_card: 編輯信用卡（定期）
+      change_credit_card: 更改信用卡（定期）
+      create_credit_card: 註冊信用卡（定期）
+      regular_product_quantity: 更改商品數量
+      regular_next_delivery_date: 更改下次配送日期
+      regular_cycle: 更改定期周期
+      regular_skip: 跳過定期訂單
+      regular_shipping: 更改定期配送地址
+      regular_cancel: 暫停定期訂單
+      regular_resume: 恢復定期訂單
+      regular_suspend: 取消定期訂單
+      regular_complete: 完成定期訂單編輯
+      regular_nav__detail: 定期詳情
+      regular_nav__cycle: 更改配送周期
+      regular_nav__next_delivery_date: 更改下次配送日期
+      regular_nav__product_quantity: 更改商品數量
+      regular_nav__shipping: 更改配送地址
+      regular_nav__skip: 跳過
+      regular_nav__suspend: 暫停
+      regular_nav__cancel: 取消
+      regular_nav__resume: 恢復
+      nav__regular_list: 定期列表
+      regular_list: 定期列表
+      regular_detail: 定期購買詳情
+
+

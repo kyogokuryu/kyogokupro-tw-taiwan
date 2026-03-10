@@ -1,0 +1,59 @@
+<div class="popup-elm overlay"></div>
+<div class="popup-elm content">
+	<a href="" class="close ex"><i class="fas fa-times-circle"></i></a>
+	<a href="/products/list?category_id=16" class="ex"><img src="/html/user_data/popup02.png" alt=""></a>
+</div>
+
+{% block javascript %}
+<script>
+jQuery(function($){
+let hour = 24;//時間設定
+let period = hour*3600000;//1時間(3600000)
+let page = 'top-popup';
+let str_today = getNowDateWithString();
+let popup_flg = false;
+let trigger = '';
+let link = '';
+
+if(checkDisplayPopup(page, period)){
+	popup_flg = true;
+}
+
+if(popup_flg){
+	//ブラウザバックをトリガーにポップアップ表示
+	history.pushState(null, null, '/');//対象のページを設定
+	history.replaceState(null, document.getElementsByTagName('title')[0].innerHTML, null);
+	$(window).on('popstate',function(e){
+		$('.popup-elm').fadeIn('fast');
+		trigger = 'back';
+
+		//日付設定
+		localStorage.setItem(page, str_today);
+	});
+
+	//リンクからページ遷移をトリガーにポップアップ表示
+	// $('a:not(.ex)').on('click',function(){
+	// 	//日付設定
+	// 	localStorage.setItem(page, str_today);
+
+	// 	trigger = 'link';
+	// 	link = $(this).attr('href');
+	// 	$('.popup-elm').fadeIn('fast');
+	// 	return false;
+	// });
+
+	$('.close,.overlay,a.ex').on('click',function(){
+		$('.popup-elm').fadeOut('fast');
+
+		if(trigger == 'link'){
+			window.location.href = link;
+		}
+		else if(trigger == 'back'){
+			history.back();
+		}
+	});
+}
+
+});
+</script>
+{% endblock %}

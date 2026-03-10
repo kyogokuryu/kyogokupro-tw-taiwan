@@ -1,0 +1,90 @@
+{#
+[LINE管理]-[配信履歴]画面
+#}
+
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['plugin_line_integration', 'plugin_line_message_history'] %}
+
+{% block title %}LINE管理{% endblock %}
+{% block sub_title %}配信履歴{% endblock %}
+{% block javascript %}
+<script>
+    //メッセージが長い場合、もっと見るを表示
+    $(function(){
+        $(".full_message").each(function(){
+            var hideString = 26;
+            if($(this).text().length > hideString){
+                $(this).hide();
+                $(this).after('<td class="cut_message">'+ $(this).text().substr(0, hideString) + ' ... '
+                    +'<span class ="read_more">もっと見る</span></td>');
+            }
+        });
+        $('.read_more').click(
+            function () {
+                $(this).parent().hide();
+                $('.full_message').show();
+            }
+        );
+    });
+</script>
+{% endblock javascript%}
+
+{% block main %}
+<div class="c-contentsArea__cols">
+    <div class="c-contentsArea__primaryCol">
+        <div class="c-primaryCol">
+            {# 送信履歴がないとき #}
+            {% if histories|length == 0 %}
+                <p>
+                    該当するデータがありませんでした。
+                </p>
+            {# 送信履歴があるとき #}
+            {% else %}
+                <div class="card rounded border-0 mb-4">
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush mb-4 sortable-container">
+                            <li class="list-group-item">
+                                <div class="row justify-content-around">
+                                    <div class="col-2"><strong>作成日</strong></div>
+                                    <div class="col-1"><strong>送信対象</strong></div>
+                                    <div class="col"><strong>本文</strong></div>
+                                    <div class="col-2"><strong>画像</strong></div>
+                                </div>
+                            </li>
+                            {% for history in histories %}
+                                <li class="list-group-item sortable-item" data-id="{{ history.id }}">
+                                    <div class="row justify-content-around">
+                                        <div class="col-2 d-flex align-items-center">
+                                            {{ history.send_date|date("Y年m月d日 H時i分") }}
+                                        </div>
+                                        <div class="col-1 d-flex align-items-center">
+                                            {{ history.send_count }}
+                                        </div>
+                                        <div class="col d-flex align-items-center">
+                                        {% if history.message is null %}
+                                            なし
+                                        {% else %}
+                                            {{ history.message|get_base64_decode }}
+                                        {% endif %}
+                                        </div>
+                                        <div class="col-2 d-flex align-items-center">
+                                        {% if history.send_image is null %}
+                                            なし
+                                        {% else %}
+                                            <a href="{{ asset(history.send_image, 'save_image') }}" target="_blank">
+                                                <img class ="send_image" width="100px" height="100px" src={{ asset(history.send_image, 'save_image') }} alt="送信した画像" />
+                                            </a>
+                                        {% endif %}
+                                        </div>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

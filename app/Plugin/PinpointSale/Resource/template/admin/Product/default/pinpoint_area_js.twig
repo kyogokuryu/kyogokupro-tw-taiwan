@@ -1,0 +1,150 @@
+<script>
+    var TYPE_PRICE = "{{ constant('Plugin\\PinpointSale\\Entity\\Pinpoint::TYPE_PRICE') }}";
+    var TYPE_RATE = "{{ constant('Plugin\\PinpointSale\\Entity\\Pinpoint::TYPE_RATE') }}";
+    var TYPE_COMMON = "{{ constant('Plugin\\PinpointSale\\Entity\\Pinpoint::TYPE_COMMON') }}";
+
+    var REPEAT_OFF = "{{ constant('Plugin\\PinpointSale\\Entity\\PinpointRepeat::REPEAT_OFF') }}";
+    var REPEAT_ON = "{{ constant('Plugin\\PinpointSale\\Entity\\PinpointRepeat::REPEAT_ON') }}";
+
+    /**
+     * 初期処理
+     */
+    $(function () {
+
+        // セール種別の選択に合わせて切り替え
+        $('.pinpoint_type_radio').each(function() {
+            if($(this).prop('checked')) {
+                pinpointTypeRadioChange($(this));
+            }
+        });
+    });
+
+    /**
+     * 行追加
+     */
+    $(function() {
+
+        // prototype
+        var prototype = $('#pinpoint_area_body').data('prototype');
+
+        // 行追加
+        $('#pinpoint_add_btn').on('click', function () {
+
+            var newRowIndex = $('.pinpoint_area_row').length;
+
+            var newForm = prototype.replace(/__name__/g, newRowIndex);
+            var $lastPinpointAreaRow = $('.pinpoint_area_row:last');
+            $lastPinpointAreaRow.after(newForm);
+
+            // 初期選択設定
+            $('input[name="admin_product[class][productPinpoints][' + newRowIndex + '][pinpoint][sale_type]"]:eq(0)')
+                .prop('checked', true).trigger('change');
+
+            $('.pinpoint_tooltip').tooltip();
+
+            // datetimepicker設定
+            pinpointSaleSetDateTimePicker();
+        });
+    });
+
+    /**
+     * 行削除
+     */
+    $(function () {
+
+        $(document).on('click', '.pinpoint_del_btn', function() {
+
+            // 行非表示
+            var key = $(this).data('key');
+            $('#pinpoint_area_row_' + key).hide();
+
+            var del_flg_key = '#admin_product_class_productPinpoints_' + key + '_pinpoint_del_flg';
+            // del_flg = 1
+            $(del_flg_key).val(1);
+        });
+    });
+
+    /**
+     * 単価・割引率・共通切替
+     */
+    $(function () {
+
+        $(document).on('change', '.pinpoint_type_radio', function () {
+            pinpointTypeRadioChange($(this));
+        });
+
+    });
+
+    /**
+     * 繰り返し切替
+     */
+    $(function () {
+
+        // 初期処理
+        $('input[id^="admin_product_class_pinpoints_0_repeat_status_"]:checked').each(function () {
+            pinpointRepeatTypeRadioChange($(this));
+        });
+
+        $(document).on('change', '.pinpoint_repeat_type_radio', function () {
+            pinpointRepeatTypeRadioChange($(this));
+        });
+
+        function pinpointRepeatTypeRadioChange($checkObj) {
+            var index = $checkObj.parent().parent().data('index');
+
+            if($checkObj.val() == REPEAT_OFF) {
+                $('#pinpoint_repeat_area_' + index).addClass('d-none');
+
+            } else if($checkObj.val() == REPEAT_ON) {
+                $('#pinpoint_repeat_area_' + index).removeClass('d-none');
+            }
+        }
+    });
+
+    // 種別切り替え
+    function pinpointTypeRadioChange($checkObj) {
+        
+        var index = $checkObj.parent().parent().data('index');
+
+        if($checkObj.val() == TYPE_PRICE) {
+
+            showPinpointControl(['salePrice'], index);
+            hidePinpointControl(['saleRate', 'sale_rate_common'], index);
+
+            // 繰り返し復帰
+            $('.pinpoint_sale_product_' + index).removeClass('d-none');
+
+        } else if($checkObj.val() == TYPE_RATE) {
+
+            showPinpointControl(['saleRate'], index);
+            hidePinpointControl(['salePrice', 'sale_rate_common'], index);
+
+            // 繰り返し復帰
+            $('.pinpoint_sale_product_' + index).removeClass('d-none');
+
+        } else if($checkObj.val() == TYPE_COMMON) {
+
+            showPinpointControl(['sale_rate_common'], index);
+            hidePinpointControl(['saleRate', 'salePrice'], index);
+
+            // 繰り返し無効化
+            var keyName = "admin_product[class][productPinpoints][" + index + "][pinpoint][repeat_status]";
+            $('input[name="' + keyName + '"]:eq(0)').prop('checked', true).trigger('change');
+            $('.pinpoint_sale_product_' + index).addClass('d-none');
+
+        }
+    }
+
+    function showPinpointControl(showParams, index) {
+
+        showParams.forEach(function (showParam) {
+            $('#pinpoint_' + showParam + '_' + index).removeClass('d-none');
+        }, index);
+    }
+
+    function hidePinpointControl(hideParams, index) {
+        hideParams.forEach(function (hideParam) {
+            $('#pinpoint_' + hideParam + '_' + index).addClass('d-none');
+        }, index);
+    }
+</script>

@@ -1,0 +1,47 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% autoescape false %}
+{{ customer.name01 }} {{ customer.name02 }} 様
+
+{{ cartItemCount }}点の商品がカートの中に入ったままです。お買い忘れはありませんか？
+
+************************************************
+カート内の商品
+************************************************
+{% for item in cartItems %}
+    {% set productClass = item.ProductClass %}
+    {% set product = productClass.Product %}
+     - {{ product.name }}
+{% endfor %}
+
+{% set omittedItemCount = cartItemCount - maxCartItem %}
+{% if omittedItemCount > 0 %}
+    {{ omittedItemCount }}点の商品は省略されました
+{% endif %}
+次のURLからご確認ください
+{{ url('cart_force_login') }}
+
+{% if recommendedItems|length > 0 %}
+    ************************************************
+    その他、おすすめの商品
+    ************************************************
+    {% for item in recommendedItems %}
+        {% set product = item.Product %}
+         - {{ product.name }}
+    {% endfor %}
+{% endif %}
+
+============================================
+
+このメッセージはお客様へのお知らせ専用ですので、
+このメッセージへの返信としてご質問をお送りいただいても回答できません。
+ご了承ください。
+{% endautoescape %}

@@ -1,0 +1,134 @@
+{#
+ * This file is part of the Recommend Product plugin
+ *
+ * Copyright (C) 2016 LOCKON CO.,LTD. All Rights Reserved.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+#}
+
+<script type="text/javascript">
+    function fnSelectProduct(product_id, product_name, product_status,　product_price02_min) {
+        // get new sort_no
+        let sortNos = $('.list-group-item.sortable-item').children('input.sort_no').map(function (index, element) {
+            return element.value;
+        }).toArray();
+        let newSortNo = 1;
+        if (sortNos.length > 0) {
+            newSortNo = Math.max(...sortNos) + 1;
+        }
+
+        // get new CollectionProduct index
+        let collectionProducts = $('.list-group-item.sortable-item').children('input.sort_no').map(function (index , element) {
+            // extract index included in input's name
+            let result = /plugin_collection\[CollectionProducts\]\[(\d+)\]\[sort_no\]/.exec(element.name);
+            return result[1];
+        }).toArray();
+        let newIndex = 0;
+        if (collectionProducts.length > 0) {
+            newIndex = Math.max(...collectionProducts) + 1;
+        }
+
+        // get product's stock and price
+        // then create dom
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: `{{ url('admin_collection') }}/calculate/${ product_id }`,
+        }).done(function (data) {
+            let result = JSON.parse(data);
+            let newRow = `
+<li class="list-group-item sortable-item">
+    <div class="row justify-content-around mode-view">
+        <div class="col-auto d-flex align-items-center"><i class="fa fa-bars text-ec-gray"></i></div>
+        <div class="col-1 d-flex align-items-center">${ product_id }</div>
+        <div class="col-2 d-flex align-items-center">${ product_name }</div>
+        <div class="col-1 d-flex align-items-center">${ product_status }</div>
+        <div class="col-1 d-flex align-items-center">${ result['price'] }</div>
+        <div class="col-1 d-flex align-items-center">${ result['stock'] }</div>
+        <div class="col-1 d-flex align-items-center">
+            <a class="btn btn-ec-actionIcon mr-2 up disabled" href="" data-tooltip="true" data-placement="top" title="{{ 'admin.common.up'|trans }}">
+                <i class="fa fa-arrow-up fa-lg text-secondary"></i>
+            </a>
+            <a class="btn btn-ec-actionIcon mr-2 down" href="" data-tooltip="true" data-placement="top" title="{{ 'admin.common.down'|trans }}">
+                <i class="fa fa-arrow-down fa-lg text-secondary"></i>
+            </a>
+        </div>
+        <div class="col text-center">
+            <div id="tooltip" class="d-inline-block mr-2" data-tooltip="true"
+                data-placement="top" title="{{ 'admin.common.delete'|trans }}">
+                <a class="btn btn-ec-actionIcon remove">
+                    <i class="fa fa-close fa-lg text-secondary"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <input type="hidden" id="plugin_collection_CollectionProducts_${ newIndex }_sort_no" name="plugin_collection[CollectionProducts][${ newIndex }][sort_no]" class="sort_no" value="${ newSortNo }">
+    <input type="hidden" id="plugin_collection_CollectionProducts_${ newIndex }_product_id" name="plugin_collection[CollectionProducts][${ newIndex }][product_id]" value="${ product_id }">
+</li>
+`;
+
+            // add dom
+            let header = document.querySelector('.list-group-item');
+            header.insertAdjacentHTML('afterend', newRow);
+
+            // update allow's disabled attribute
+            var items = $('.sortable-item');
+            items.find('a.up').removeClass('disabled');
+            items.find('a.down').removeClass('disabled');
+            items.first().find('a.up').addClass('disabled');
+            items.last().find('a.down').addClass('disabled');
+
+            // モーダル閉じる.
+            $('#searchProductModal').modal('hide');
+            return false;
+        });
+    }
+
+    // 商品検索
+    $('div.box-footer a').on('click', function(event) {
+        var list = $('#searchProductModalList');
+        list.children().remove();
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: $(this).attr('href'),
+            success: function(data) {
+                $('#searchProductModalList').html(data);
+            },
+            error: function() {
+                alert('paginator failed.');
+            }
+        });
+        event.preventDefault();
+    });
+</script>
+<div class="table-responsive">
+    <table class="table">
+        <tbody>
+        {% for Product in pagination %}
+            <form name="product_form{{ Product.id }}">
+                <tr>
+                    <td>
+                        {{ Product.name }}
+                    </td>
+                    <td class="text-right">
+                        <button onclick="fnSelectProduct('{{ Product.id }}', '{{ Product.name|escape('js') }}','{{ Product.status }}','{{ Product.price02_min|price }}', '{{ url('admin_product_product_edit', { id : Product.id }) }}')" type="button" class="btn btn-default btn-sm">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                    </td>
+                </tr>
+            </form>
+        {% endfor %}
+
+        </tbody>
+    </table>
+    {% if pagination.totalItemCount > 0 %}
+    <div class="col box-footer">
+        <div class="row justify-content-md-center mb-4">
+            {% include "@admin/pager.twig" with {'pages': pagination.paginationData, 'routes': 'plugin_collection_search_product_page'} %}
+        </div>
+    </div>
+    {% endif %}
+</div>

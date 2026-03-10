@@ -1,0 +1,112 @@
+
+<article id="mypage" style="padding: 0px 15px;">
+	<section>
+    <div class="ec-layoutRole__main mypage_bk">
+
+        <div class="ec-mypageRole mypage-header">
+            {% include 'Mypage/navi-index.twig' %}
+        </div>
+
+
+        {# <div style="padding:10px">
+            <a href="https://cjsym1ka.autosns.app/cp/TgX3hHUPAZ/qyRFZk95qI" target="_blank"><img src="/html/template/default/assets/img/230625FV_banner.jpg"></a>
+        </div> #}
+
+        <div class="ec-mypageRole mypage-history">
+
+        {% if pagination.totalItemCount > 0 %}
+            
+            <h3 class="mypage-history-title">歷史訂單</h3>
+
+            {% for Order in pagination %}
+                <div class="row mypage-history-box">
+                    <div class="col-xs-12">
+                        <div class="row mypage-history-order">
+                            <div class="col-xs-8">
+                                <div class="mypage-history-order-date">{{ Order.order_date|date_sec }}</div>
+                                <div class="mypage-history-order-num"><span>訂單編號</span> <b>{{ Order.order_no }}</b> <!-- <span>{{ Order.CustomerOrderStatus }}</span> --></div>                            
+                            </div>
+                            <div class="col-xs-4 text-right">
+                                <a class="ec-inlineBtn" href="{{ url('mypage_history', {'order_no': Order.order_no}) }}">{{ '查看詳情'|trans }}</a>
+                            </div>
+                        </div>    
+                        
+                        {% for OrderItem in Order.MergedProductOrderItems %}
+                            <div class="row mypage-history-items">
+                                <div class="col-xs-3 mypage-history-image">
+                                    {% if OrderItem.Product is null %}
+                                        <img src="{{ asset(''|no_image_product, 'save_image') }}"/>
+                                    {% else %}
+                                        <img src="{{ asset(OrderItem.Product.MainListImage|no_image_product, 'save_image') }}">
+                                    {% endif %}
+                                </div>
+                                <div class="col-xs-9 mypage-history-detail">
+                                    <div class="mypage-history-itemname">{{ OrderItem.product_name }}</div>
+                                    <div class="mypage-history-itemprice">{{ OrderItem.price_inc_tax|price }} × {{ OrderItem.quantity }}</div>
+
+
+                        
+                                    {% set isDownloadContent = isExistDownloadContentByProduct(OrderItem.Product) %}
+                                    {% if isDownloadContent == true %}
+                                        {# ダウンロードボタン #}
+                                        <div class="row">
+                                            <div class="mypage-history-det-btn text-left">
+                                                <a class="ec-inlineBtn" target="_blank" href="{{ url('sheeb_dlc_download', {'order_item_id': Order.getOrderItemId( OrderItem.Product.id)}) }}" >
+                                                下载
+                                                </a>
+                                            </div>
+                                        </div>
+                                    {% else %}
+
+                                        <div class="row">
+                                        {% if OrderItem.Product.ProductClasses[0].SaleType.id == 1 %}
+                                            <div class="mypage-history-det-btn text-left"><a class="ec-inlineBtn" href="{{ url('mypage_reorder', {'order_no': Order.order_no ,'product_id': OrderItem.Product.id}) }}" {{ csrf_token_for_anchor() }} data-method="put" data-confirm="false">{{ '再訂一筆'|trans }}</a></div>
+                                        {% endif %}
+                                        </div>
+                                    {% endif %}
+
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+
+            <div class="ec-pagerRole">
+                {% include "pager.twig" with {'pages': pagination.paginationData} %}
+            </div>
+        {% else %}
+            <p class="ec-para-normal">{{ '沒有訂單歷史記錄'|trans }}</p>
+        {% endif %}
+        </div>
+        <br>
+        <a href="{{ url('logout') }}">登出</a>
+
+    </div>
+	</section>
+</article>
+
+{% if app.session.flashBag.has('add_login_point_success') %}
+
+    {% for msg in app.session.flashBag.get('add_login_point_success') %}
+        <div class="mypage-modal">
+            <div id="modal-default" data-izimodal-title="報到">
+                <p class="mypage-modal-content"><span class="mypage-modal-point">恭喜你獲得{{ app.user.getLoginPoint() }}</span> pt</p>
+            </div>
+        </div>
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/izimodal/1.5.1/css/iziModal.min.css">
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/izimodal/1.5.1/js/iziModal.min.js"></script>
+        <script type="text/javascript">
+            $("#modal-default").iziModal({
+                autoOpen: true,
+                headerColor: "linear-gradient(165deg, #F0D9DD, white)",
+                width: 400,
+                overlayColor: "rgba(0, 0, 0, 0.5)",
+                fullscreen: true,
+                transitionIn: "fadeInUp",
+                transitionOut: "fadeOutDown"
+            });
+        </script>
+    {% endfor %}
+
+{% endif %}

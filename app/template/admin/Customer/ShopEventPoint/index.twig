@@ -1,0 +1,195 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['kgmng', 'kgmng_shop_event_point'] %}
+{% set prime = ["一般", "高级会员", "轻成员"] %}
+{% set C_STATUS = {"0":"未設定","3":"不在", "5":"営業中", "6":"保留中", "10":"対応済み", "11":"キャンセル"} %}
+
+{% block title %}店舗付与ポイント{% endblock %}
+{% block sub_title %}{{ 'admin.customer.kg_management'|trans }}{% endblock %}
+
+{% form_theme searchForm '@admin/Form/bootstrap_4_horizontal_layout.html.twig' %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" href="{{ asset('assets/css/tempusdominus-bootstrap-4.min.css', 'admin') }}">
+    <style type="text/css">
+        .datepicker-days th.dow:first-child,
+        .datepicker-days td:first-child {
+            color: #f00;
+        }
+
+        .datepicker-days th.dow:last-child,
+        .datepicker-days td:last-child {
+            color: #00f;
+        }
+        .shop-col{
+            margin:10px;
+            display:flex;
+        }
+        .shop-col.form-inline input.form-control{
+           width:100px;
+
+        }
+    </style>
+{% endblock stylesheet %}
+
+{% block javascript %}
+    <script>
+        
+
+    </script>
+{% endblock javascript %}
+
+{% block main %}
+    <form action="{{ url('admin_homepage_shop_event_point_save') }}" method="post" >
+    <div class="c-contentsArea__cols" style="padding-bottom:0">
+       <div class="card rounded border-0 mb-4 d-block">
+            <div class="card-header">承認パスワード</div>
+            <div style="margin:10px;"><a href="{{ url('shop_event_point') }}" target="_blank">{{ url('shop_event_point') }}</a> <a class="btn btn-info" href="{{ url('admin_homepage_shop_event_point_camera_qr') }}" target="_blank">QRコード取得</a></div>
+            <div class="card-body p-0">
+                <table class="table">
+                    <tbody>
+                    <tr class="form-row">
+                        <td class="form-inline">開催日時：
+                            <input type="date" class="form-control form-inline-control" name="e_sdate" value="{{ c_qb.e_sdate|date('Y-m-d') }}">～<input class="form-control form-inline-control"  type="date" name="e_edate" value="{{ c_qb.e_edate|date('Y-m-d') }}">
+                        </td>
+                        <td class="text-center form-inline">承認パスワード：<input type="tel" name="e_pass" class="form-control form-inline-control"  value="{{ c_qb.e_pass }}"></td>
+{#
+                        <td>
+                            <div class="shop-col form-inline">ポイント設定1：<input type="text" class="form-control" style="display:inline" name="price1" value="{{ c_qb.price1 }}">TWD 以上 <input type="text" class="form-control" style="display:inline;margin-left:3em;" name="value1" value="{{ c_qb.value1 }}">% ポイント付与</div>
+                            <div class="shop-col form-inline">ポイント設定2：<input type="text" class="form-control" style="display:inline" name="price2" value="{{ c_qb.price2 }}">TWD 以上 <input type="text" class="form-control" style="display:inline;margin-left:3em;" name="value2" value="{{ c_qb.value2 }}">% ポイント付与</div>
+                            <div class="shop-col form-inline">ポイント設定3：<input type="text" class="form-control" style="display:inline" name="price3" value="{{ c_qb.price3 }}">TWD 以上 <input type="text" class="form-control" style="display:inline;margin-left:3em;" name="value3" value="{{ c_qb.value3 }}">% ポイント付与</div>
+                            <div class="shop-col form-inline">ポイント設定4：<input type="text" class="form-control" style="display:inline" name="price4" value="{{ c_qb.price4 }}">TWD 以上 <input type="text" class="form-control" style="display:inline;margin-left:3em;" name="value4" value="{{ c_qb.value4 }}">% ポイント付与</div>
+                            <div class="shop-col form-inline">ポイント設定5：<input type="text" class="form-control" style="display:inline" name="price5" value="{{ c_qb.price5 }}">TWD 以上 <input type="text" class="form-control" style="display:inline;margin-left:3em;" name="value5" value="{{ c_qb.value5 }}">% ポイント付与</div>
+                        
+                        </td>
+#}
+                        <td>
+                            <button class="btn btn-info clog_save_btn">保存</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+        <input id="shop_event_point_id" type="hidden" name="shop_event_point_id" value="{{ c_qb.id }}">
+    </form>
+
+    <div style="text-align:right;margin-right:1em;"><a href="{{ url('admin_homepage_shop_event_point_camera') }}" target="_blank" class="btn btn-info">読取カメラ</a></div>
+
+    <div class="c-contentsArea__cols">
+        <div class="c-contentsArea__primaryCol">
+            <div class="c-primaryCol">
+                {% if pagination and pagination.totalItemCount %}
+                    <div class="row justify-content-between mb-2">
+                        <div class="col-6"></div>
+
+                        <div class="col-5 text-right" style="display:none">
+                            {#Dropdown page count#}
+                            <div class="d-inline-block mr-2">
+                                <select class="custom-select" onchange="location = this.value;">
+                                    {% for pageMax in pageMaxis %}
+                                        <option {% if pageMax.name == page_count %} selected {% endif %}
+                                                value="{{ path('admin_customer_page', {'page_no': 1, 'page_count': pageMax.name }) }}">
+                                            {{ 'admin.common.count'|trans({ '%count%': pageMax.name }) }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="d-inline-block" style="display:none">
+                                <div class="btn-group" role="group">
+                                    <a class="btn btn-ec-regular" href="{{ url('admin_customer_export') }}"><i class="fa fa-cloud-download mr-1 text-secondary"></i><span>{{ 'admin.common.csv_download'|trans }}</span></a>
+                                    <a class="btn btn-ec-regular" href="{{ url('admin_setting_shop_csv', { id : constant('\\Eccube\\Entity\\Master\\CsvType::CSV_TYPE_CUSTOMER') }) }}"><i class="fa fa-cog mr-1 text-secondary"></i><span>{{ 'admin.setting.shop.csv_setting'|trans }}</span></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card rounded border-0 mb-4 d-block">
+                        <div class="card-body p-0">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th class="border-top-0 pt-2 pb-3 nowrap">ユーザ</th>
+                                    <th class="border-top-0 pt-2 pb-3 nowrap">ステータス</th>
+                                    <th class="border-top-0 pt-2 pb-3 nowrap">商品金額</th>
+                                    <th class="border-top-0 pt-2 pb-3 nowrap">チャージ金額</th>
+                                    <th class="border-top-0 pt-2 pb-3 nowrap">付与ポイント数</th>
+                                    <th class="border-top-0 pt-2 pb-3 pr-3">更新日時</th>
+                                    <th></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for Customer in pagination %}
+                                    <tr id="ex-customer-{{ Customer.id }}">
+                                        <td class="align-middle pl-3">
+                                        <a href="{{ url('admin_customer_edit', { 'id': Customer.customer_id}) }}">{{ Customer.customer_id }}<br>
+                                            {{ Customer.Customer.name01 }}&nbsp;{{ Customer.Customer.name02 }}
+                                        </a>
+                                        </td>
+                                        <td class="align-middle">
+                                            {% if Customer.status == 0 %}
+                                                <span style="color:red">承認待ち</span>
+                                            {% elseif Customer.status == 1 %}
+                                                <span style="color:green">承認済</span>
+                                            {% elseif Customer.status == -1 %}
+                                                <span style="color:gray">キャンセル</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="align-middle">{{ Customer.price|number_format }}</td>
+                                        <td class="align-middle">{{ (Customer.price * Customer.ptype)|number_format }}</td>
+                                        <td class="align-middle">{{ Customer.point|number_format }}</td>
+                                        <td class="align-middle">{{ Customer.update_date|date('Y/m/d H:i') }}</td>
+                                        <td class="align-middle">
+                                            {% if Customer.status == 0 %}
+                                                <a href="{{ url('admin_homepage_shop_event_point_save_status') }}?id={{ Customer.id }}&status=1" class="btn btn-success">承認する</a>
+                                                &nbsp;
+                                                <a href="{{ url('admin_homepage_shop_event_point_save_status') }}?id={{ Customer.id }}&status=-1" class="btn btn-secondary">キャンセル</a>
+                                            {% endif %}
+                                            
+
+                                        </td>
+
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            <div class="row justify-content-md-center mb-4">
+                                {% if pagination.totalItemCount > 0 %}
+                                    {% include "@admin/pager.twig" with { 'pages' : pagination.paginationData, 'routes' : 'admin_customer_cloglist_page' } %}
+                                {% endif %}
+                            </div>
+                            <br>
+                        </div>
+                    </div>
+                {% elseif has_errors %}
+                    <div class="card rounded border-0">
+                        <div class="card-body p-4">
+                            <div class="text-center text-muted mb-4 h5">{{ 'admin.common.search_invalid_condition'|trans }}</div>
+                            <div class="text-center text-muted">{{ 'admin.common.search_try_change_condition'|trans }}</div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="card rounded border-0">
+                        <div class="card-body p-4">
+                            <div class="text-center text-muted mb-4 h5">{{ 'admin.common.search_no_result'|trans }}</div>
+                            <div class="text-center text-muted">{{ 'admin.common.search_try_change_condition'|trans }}</div>
+                            <div class="text-center text-muted">{{ 'admin.common.search_try_advanced_search'|trans }}</div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}

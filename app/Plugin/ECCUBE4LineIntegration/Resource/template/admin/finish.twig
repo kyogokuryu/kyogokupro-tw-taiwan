@@ -1,0 +1,32 @@
+{#
+[LINE管理]-[配信]画面
+#}
+
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['plugin_line_integration', 'plugin_line_message_notification'] %}
+
+{% block title %}LINE管理{% endblock %}
+{% block sub_title %}配信{% endblock %}
+
+{% block stylesheet %}
+{% endblock stylesheet %}
+
+{% block javascript %}
+{% endblock javascript%}
+
+{% block main %}
+    <h1 class="page-heading">メッセージ送信完了</h1>
+    <div id="activate_box" class="container-fluid">
+        <div id="deliveradd_input" class="row">
+            <div id="activate_box__body" class="col-sm-10 col-sm-offset-1">
+                <div id="activate_box__message" class="complete_message">
+                    <h2 class="heading01">メッセージを送信しました</h2>
+                    <p>送信履歴は、配信履歴画面から確認可能です。</p>
+                </div>
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+
+    </div>
+
+{% endblock %}

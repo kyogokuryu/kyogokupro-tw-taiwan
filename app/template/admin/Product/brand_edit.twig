@@ -1,0 +1,260 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['product', 'class_brand'] %}
+
+{% block title %}{{ 'admin.product.brand_management'|trans }}{% endblock %}
+{% block sub_title %}{{ 'admin.product.product_management'|trans }}{% endblock %}
+
+{% form_theme form '@admin/Form/bootstrap_4_horizontal_layout.html.twig' %}
+
+{% block javascript %}
+    <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.core.min.js', 'admin') }}"></script>
+    <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.widget.min.js', 'admin') }}"></script>
+    <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.mouse.min.js', 'admin') }}"></script>
+    <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.sortable.min.js', 'admin') }}"></script>
+        <script src="{{ asset('assets/js/vendor/fileupload/jquery.fileupload.js', 'admin') }}"></script>
+    <script src="{{ asset('assets/js/vendor/fileupload/jquery.fileupload-process.js', 'admin') }}"></script>
+    <script src="{{ asset('assets/js/vendor/fileupload/jquery.fileupload-validate.js', 'admin') }}"></script>
+    <script>
+        $(function() {
+            //商品説明用の画像をアップロードする
+            $("#image-thumb").sortable({
+                cursor: 'move',
+                opacity: 0.7,
+                placeholder: 'ui-state-highlight',
+                update: function(event, ui) {
+                    updateSortNo();
+                }
+            });
+
+            var descriptio_proto_img = '<div class="c-form__fileUploadThumbnail" style="background-image:url(\'__path__\');">' +
+                '<a class="delete-image"><i class="fa fa-times" aria-hidden="true"></i></a>' +
+                '</div>';
+            var description_proto_add = '{{ form_widget(form.add_images.vars.prototype) }}';
+            var description_proto_del = '{{ form_widget(form.delete_images.vars.prototype) }}';
+
+            {% if Brand.image %}
+                var $img = $(descriptio_proto_img.replace(/__path__/g, '{{ asset(Brand.image, 'save_image') }}'));
+                var $widget = $('{{ form_widget(form.image) }}');
+                $widget.val('{{ Brand.image }}');
+                $("#image-thumb").append($img.append($widget));
+            {% endif %}
+
+            {% for add_image in form.add_images %}
+            var $img = $(descriptio_proto_img.replace(/__path__/g, '{{ asset(add_image.vars.value, 'temp_image') }}'));
+            var $widget = $('{{ form_widget(add_image) }}');
+            $widget.val('{{ add_image.vars.value }}');
+            $("#image-thumb").append($img.append($widget));
+            {% endfor %}
+            {% for delete_image in form.delete_images %}
+            $("#image-thumb").append('{{ form_widget(delete_image) }}');
+            {% endfor %}
+            var hideDescriptionThumbnail = function() {
+                if ($("#thumb div").length > 0) {
+                    $("#icon_no_image").css("display", "none");
+                    $('#message').html("{{ 'admin.common.drag_and_drop_description'|trans }}");
+                } else {
+                    $("#icon_no_image").css("display", "");
+                    $('#message').empty();
+                }
+            };
+            // Todo: fix update sort by drag&drop
+            var updateDescriptionSortNo = function() {
+                $("#image-thumb div").each(function(index) {
+                    $(this).find(".sort_no_images").remove();
+                    filename = $(this).find("input[type='hidden']").val();
+                    $sortNo = $('<input type="hidden" class="sort_no_images" name="sort_no_images[]" />');
+                    $sortNo.val(filename + '//' + parseInt(index + 1));
+                    $(this).append($sortNo);
+                });
+            };
+            hideDescriptionThumbnail();
+            updateDescriptionSortNo();
+            // Delete of images
+            var count_del = 0;
+            $("#image-thumb").on("click", '.delete-image', function() {
+                var $new_delete_image = $(description_proto_del.replace(/__name__/g, count_del));
+                var thumbnail = $(this).parents('div.c-form__fileUploadThumbnail');
+                var src = $(thumbnail).find('input').val();
+                $new_delete_image.val(src);
+                $("#image-thumb").append($new_delete_image);
+                $(thumbnail).remove();
+                hideDescriptionThumbnail();
+                updateDescriptionSortNo();
+                count_del++;
+            });
+            var count_add = {{ form.add_images|length|default(0) }};
+            console.log($('#{{ form.brand_iamge.vars.id }}'));
+            $('#{{ form.brand_iamge.vars.id }}').fileupload({
+            url: "{{ url('admin_brand_image_add') }}",
+            type: "post",
+            sequentialUploads: true,
+            dataType: 'json',
+            dropZone: $('#upload-zone'),
+            done: function(e, data) {
+                console.log($('#{{ form.brand_iamge.vars.id }}'))
+                console.log(data)
+                $('.brand .progress').hide();
+                $.each(data.result.files, function(index, file) {
+                    var path = '{{ asset('', 'temp_image') }}' + file;
+                    var $img = $(descriptio_proto_img.replace(/__path__/g, path));
+                    var $new_img = $(description_proto_add.replace(/__name__/g, count_add));
+                    $new_img.val(file);
+                    $child = $img.append($new_img);
+                    $('#image-thumb').empty();
+                    $('#image-thumb').append($child);
+                    count_add++;
+                });
+                hideDescriptionThumbnail();
+                updateDescriptionSortNo();
+            },
+            fail: function(e, data) {
+                alert("{{ 'admin.common.upload_error'|trans }}");
+            },
+            always: function(e, data) {
+                $('.brand .progress').hide();
+                $('.brand .progress .progress-bar').width('0%');
+            },
+            start: function(e, data) {
+                $('.brand .progress').show();
+            },
+            acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
+            maxFileSize: 10000000,
+            maxNumberOfFiles: 10,
+            progressall: function(e, data) {
+                var progress = parseInt(data.loaded / data.total * 100, 10);
+                $('.brand .progress .progress-bar').css(
+                    'width',
+                    progress + '%'
+                );
+            },
+            processalways: function(e, data) {
+                if (data.files.error) {
+                    alert("{{ 'admin.common.upload_error'|trans }}");
+                }
+            }
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block stylesheet %}
+    {#TODO: Move to css file#}
+    <style>
+        .c-directoryTree ul > li > ul li:not(:last-of-type) > label:before,
+        .c-directoryTree ul > li > ul li:last-of-type > label:before {
+            margin-right: 1.6em;
+        }
+    </style>
+{% endblock %}
+
+{% block main %}
+    <div class="c-contentsArea__cols">
+        <div class="c-contentsArea__primaryCol">
+            <div class="c-primaryCol">
+                <div class="card rounded border-0 mb-4">
+                    {# <div class="card-header"></div> #}
+
+                    <div class="card-body">
+                        <form role="form" name="form1" id="form1" method="post" action="" novalidate enctype="multipart/form-data">
+                            {{ form_widget(form._token) }}
+                            {{ form_widget(form.id, {'value' : Brand.id} ) }}
+                            <div class="collapse show ec-cardCollapse" id="basicConfig">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-3">
+                                            <div class="d-inline-block" data-tooltip="true" data-placement="top">
+                                                <span>{{ 'admin.product.brand.brand_name'|trans }}</span>
+                                                <span class="badge badge-primary ml-1">
+                                                    {{ 'admin.common.required'|trans }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="col mb-2">
+                                            {{ form_widget(form.name) }}
+                                            {{ form_errors(form.name) }}
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-3">
+                                            <div class="d-inline-block" data-tooltip="true" data-placement="top">
+                                                <span>{{ 'admin.product.brand.brand_description'|trans }}</span>
+                                                
+                                            </div>
+                                        </div>
+                                        <div class="col mb-2">
+                                            {{ form_widget(form.description) }}
+                                            {{ form_errors(form.description) }}
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-3">
+                                            <div class="d-inline-block" data-tooltip="true" data-placement="top">
+                                                <span>{{ 'admin.product.brand.brand_image'|trans }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="brand col mb-2">
+                                            <div class="progress" style="display: none;">
+                                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                            <div id="image-thumb" class="c-form__fileUploadThumbnails clearfix"></div>
+                                            <p id="message"></p>
+                                            <div id="upload-zone" class="media py-5 border-ec-dashed mb-2 rounded">
+                                                <div class="media-body">
+                                                    <i class="fa fa-cloud-upload fa-3x text-ec-lightGray mx-3 align-middle" aria-hidden="true"></i>
+                                                    {{ 'admin.common.drag_and_drop_image_description'|trans }}
+                                                    {{ form_widget(form.brand_iamge, { attr : { accept : 'image/*', style : 'display:none;', name: 'admin_brand_image'  } }) }}
+                                                    {{ form_errors(form.brand_iamge) }}
+                                                    <a class="btn btn-ec-regular mr-2" onclick="$('#{{ form.brand_iamge.vars.id }}').click()">
+                                                        {{ 'admin.common.file_select'|trans }}
+                                                    </a>
+                                                </div><!-- /.media-body -->
+                                            </div><!-- /.media -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="c-conversionArea">
+                                <div class="c-conversionArea__container">
+                                    <div class="row justify-content-between align-items-center">
+                                        <div class="col-6">
+                                            <div class="c-conversionArea__leftBlockItem">
+                                                <a class="c-baseLink" href="{{ path('admin_product_brand')}}"
+                                                data-action="confirm">
+                                                    <i class="fa fa-backward" aria-hidden="true"></i><span>{{ 'admin.product.brand_list'|trans }}</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div id="ex-conversion-action" class="row align-items-center justify-content-end">
+                                                <div class="col-auto">
+                                                    <button class="btn btn-ec-conversion px-5" type="submit">{{ 'admin.common.registration'|trans }}</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}

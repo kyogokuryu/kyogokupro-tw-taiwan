@@ -1,0 +1,58 @@
+{% set ProductClass = form.ProductClass.vars.value ? repository('Eccube\\Entity\\ProductClass').find(form.ProductClass.vars.value) : "" %}
+<div id="BundleItems_{% if index is not defined %}__name__{% else %}{{ index }}{% endif %}_ProductClass">
+    <div class="row">
+        <div class="col-3">
+            <button type="button"
+                    class="BundleProduct-search btn btn-ec-regular" data-toggle="modal"
+                    data-target="#BundleProductSearchProductModal"
+                    data-id="{% if index is not defined %}__name__{% else %}{{ index }}{% endif %}">
+                {{ 'plugin.bundle_product.select_product'|trans }}
+            </button>
+            <button type="button"
+                    class="BundleProduct-delete btn btn-ec-delete text-right"
+                    data-id="{% if index is not defined %}__name__{% else %}{{ index }}{% endif %}">
+                {{ 'plugin.bundle_product.remove_product'|trans }}
+            </button>
+        </div>
+        <div class="col-9">
+            <div class="row">
+                <div class="col-3">
+                    <a href="{% if ProductClass %}{{ url('admin_product_product_edit', { id : ProductClass.Product.id }) }}{% endif %}"
+                       id="BundleProduct-product_image_link">
+                        {% if ProductClass %}
+                            <img src="{{ asset(ProductClass.Product.mainFileName|no_image_product, 'save_image') }}"
+                                 id="BundleProduct-product_image_img"
+                                 style="max-width: 100px;margin-right: 10px;"/>
+                        {% else %}
+                            <img src=""
+                                 id="BundleProduct-product_image_img"
+                                 style="max-width: 100px;margin-right: 10px;"/>
+                        {% endif %}
+                    </a>
+                </div>
+                <div class="col">
+                    <span id="BundleProduct-product_name"
+                          style="margin-right: 10px;">
+                        {% if ProductClass %}
+                            {{ ProductClass.formattedProductName }}
+                        {% endif %}
+                    </span>
+                    {{ form_widget(form.ProductClass, { attr: { style: 'display: none' } }) }}
+                    <br>
+                    <span id="BundleProduct-product_code">
+                        {% if ProductClass %}
+                            商品コード：{{ ProductClass.code }}
+                        {% endif %}
+                    </span>
+                    <br>
+                    <span class="{% if index is not defined %}d-none{% endif %}">
+                        数量：
+                            {{ form_widget(form.quantity) }}
+                        {{ form_errors(form.quantity) }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<hr />

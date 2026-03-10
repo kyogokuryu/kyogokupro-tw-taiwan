@@ -1,0 +1,178 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+
+{% set body_class = "company_page" %}
+
+
+
+{% block stylesheet %}
+    <link rel="stylesheet" charset="utf-8" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.5.1/css/swiper.min.css" type="text/css" media="all" />
+
+    <style>
+        .company_link li{
+            margin:10px;
+        }
+        .company_link li a{
+            color:blue;
+        }
+/* 前へ次への矢印カスタマイズ */
+.swiper-button-prev:after,
+.swiper-button-next:after {
+  bottom: 0;
+  content: "";
+  height: 0;
+  margin: auto;
+  position: absolute;
+  top: 0;
+  width: 0;
+}
+.swiper-sub{
+  height:2em;
+  width:100%;
+  position:relative;
+
+    z-index: 1;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-transition-property: -webkit-transform;
+    transition-property: -webkit-transform;
+    -o-transition-property: transform;
+    transition-property: transform;
+    transition-property: transform,-webkit-transform;
+    -webkit-box-sizing: content-box;
+    box-sizing: content-box;
+
+}
+.swiper-sub .swiper-pagination{
+  width:100%;
+}
+/* 前への矢印カスタマイズ */
+.swiper-button-prev:after {
+  border-bottom: 10px solid transparent;
+  border-right: 20px solid #cccccc;
+  border-top: 10px solid transparent;
+}
+/* 次への矢印カスタマイズ */
+.swiper-button-next:after {
+  border-bottom: 10px solid transparent;
+  border-left: 20px solid #cccccc;
+  border-top: 10px solid transparent;
+}
+.swiper-button-prev,
+.swiper-button-next {
+    background-image: none;
+    top:50%;
+}
+.swiper-sub>.swiper-pagination-bullets .swiper-pagination-bullet {
+    margin: 0 4px;
+}
+    </style>
+{% endblock %}
+
+{% block javascript %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.5.1/js/swiper.min.js"></script>
+{% endblock %}
+
+{% block main %}
+
+
+
+<article id="term" {% if sale_time %}class="sale-item"{% endif %}>
+    <section>
+
+    <div class="ec-productRole">
+        <div class="ec-productRole__profile">
+        <h1 class="page-area-subtitle">会社概要</h1>
+
+        <div>
+        
+            <div class="swiper" style="overflow:hidden;position:relative;">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide"><img loading="lazy" src="/html/template/default/assets/img/company/2022/会社概要2022年-01.png"></div>
+                    <div class="swiper-slide"><img loading="lazy" src="/html/template/default/assets/img/company/2022/会社概要2022年-02.png"></div>
+                    <div class="swiper-slide"><img loading="lazy" src="/html/template/default/assets/img/company/2022/会社概要2022年-03.png"></div>
+                    <div class="swiper-slide"><img loading="lazy" src="/html/template/default/assets/img/company/2022/会社概要2022年-04.png"></div>
+                    <div class="swiper-slide"><img loading="lazy" src="/html/template/default/assets/img/company/2022/会社概要2022年-05.png"></div>
+                    <div class="swiper-slide"><img loading="lazy" src="/html/template/default/assets/img/company/2022/会社概要2022年-06.png"></div>
+                    <div class="swiper-slide"><img loading="lazy" src="/html/template/default/assets/img/company/2022/会社概要2022年-07.png"></div>
+                    <div class="swiper-slide"><img loading="lazy" src="/html/template/default/assets/img/company/2022/会社概要2022年-08.png"></div>
+                    <div class="swiper-slide"><img loading="lazy" src="/html/template/default/assets/img/company/2022/会社概要2022年-09.png"></div>
+                    <div class="swiper-slide"><img loading="lazy" src="/html/template/default/assets/img/company/2022/会社概要2022年-10.png"></div>
+                    <div class="swiper-slide"><img loading="lazy" src="/html/template/default/assets/img/company/2022/会社概要2022年-11.png"></div>
+                    <div class="swiper-slide"><img loading="lazy" src="/html/template/default/assets/img/company/2022/会社概要2022年-12.png"></div>
+                    <div class="swiper-slide"><img loading="lazy" src="/html/template/default/assets/img/company/2022/会社概要2022年-13.png"></div>
+                    <div class="swiper-slide"><img loading="lazy" src="/html/template/default/assets/img/company/2022/会社概要2022年-14.png"></div>
+                    <div class="swiper-slide"><img loading="lazy" src="/html/template/default/assets/img/company/2022/会社概要2022年-15.png"></div>
+                </div>
+            </div>
+            <div class="swiper-sub">
+                <!-- 必要に応じてページネーション -->
+                <div class="swiper-pagination"></div>
+                <!-- 必要に応じてナビボタン -->
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-button-next"></div>
+            </div>
+            <script>
+                jQuery(function(){
+                const swiper = new Swiper(".swiper", {
+                    // ページネーションが必要なら追加
+                    pagination: {
+                        el: ".swiper-pagination"
+                    },
+                    // ナビボタンが必要なら追加
+                    navigation: {
+                        nextEl: ".swiper-button-next",
+                        prevEl: ".swiper-button-prev"
+                    }
+                    });
+                    console.log("create swiper")
+                });
+            </script>
+
+            <ul class="company_link">
+                <li><a href="/html/user_data/会社概要2022年.pdf" target="_blank">会社概要2022年 PDF</a></li>
+            </ul>
+            
+        </div>
+
+        <div class="messagebox">
+                <dl>
+                    <dt>社名</dt>
+                    <dd>株式会社BuzzDrop</dd>
+                    <dt>法人番号</dt>
+                    <dd>
+                      <a style="color:blue;" href="https://www.houjin-bangou.nta.go.jp/henkorireki-johoto.html?selHouzinNo=5010501046453" target="_blank">5010501046453</a>
+                    </dd>
+                    <dt>所在地</dt>
+                    <dd>〒293-0021 <br class="sp">千葉県富津市富津５１-１０</dd>
+                    <dt>設立</dt>
+                    <dd>2020年11月5日</dd>
+                    <dt>資本金</dt>
+                    <dd>５００万TWD</dd>
+                    <dt>代表者</dt>
+                    <dd>田中美穂</dd>
+                    <dt>従業員数</dt>
+                    <dd>43名(業務委託契約含め)</dd>
+                    <dt>事業概要</dt>
+                    <dd style="padding:5px">ヘアカラー剤、ヘアスタイリング剤、シャンプー、ヘアトリートメント、 薬用発毛促進剤、スキンケア・メイクアップ化粧品の製造および販売（国内・輸出） オンラインアカデミー運営</dd>
+                    
+                </dl>
+            </div>
+
+        </div>
+    </div>
+    </section>
+</article>
+
+{% endblock %}

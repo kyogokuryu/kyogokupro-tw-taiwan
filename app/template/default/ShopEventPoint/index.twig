@@ -1,0 +1,799 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+
+{% block stylesheet %}
+<link rel="stylesheet" href="/html/template/default/assets/css/jsQR.css"/>
+<style>
+@media screen and (max-width: 768px){
+	.ec-layoutRole {
+    	padding-top: 0px !important;
+	}
+}
+
+@media (min-width: 768px){
+	.ec-grid2 .ec-grid2__cell {
+		margin:auto !important;
+		display:block;
+	}
+}
+
+
+.ec-shop-btn-green{
+  background-color: #00ca66;
+  color:white;
+  border-radius:20px;
+  padding:10px;
+  max-width:300px;
+  margin:auto;
+  border:none;
+}
+.ec-shop-border-green{
+  background-color: #ffffff;
+  color: black;
+  border-radius:20px;
+  padding:10px;
+  max-width:300px;
+  margin:auto;
+  border:2px solid #00ca66;
+  
+}
+
+.ec-shop-border-gray{
+  background-color :#c8c8c8;
+  border:none;
+  border-radius:20px;
+  padding:10px;
+  color: black;
+  border-radius:20px;
+  max-width:300px;
+  margin:auto;
+}
+.ec-shop-login-green{
+  background-color:#5abd48;
+  color:black;
+	border:none;
+	border-radius:20px;
+	font-weight:bold;
+	color:white;
+  max-width:300px;
+  width:100%;
+  padding:10px;
+}
+
+.ec-shop-ch-blue{
+	background-color:#bfecff;
+	color:black;
+	border:none;
+	border-radius:10px;
+	font-weight:bold;
+	padding:10px;
+}
+
+.ec-shop-ch-green{
+	background-color:#cdffb6;
+	color:black;
+	border:none;
+	border-radius:10px;
+	font-weight:bold;
+	padding:10px;
+}
+
+.ec-shop-text-pink{
+	color:#e2007e;
+	font-size:30px;
+}
+.ec-layoutRole{
+  background-color:white;
+}
+.ec-shop-header{
+  background-image:url('/html/template/default/assets/img/shop_event_point/header.png');
+  background-repeat:no-repeat;
+  background-size:contain;
+  background-position-y: top;
+  background-color:transparent;
+}
+
+.ec-shop-footer, .ec-layoutRole__main{
+  background-image:url('/html/template/default/assets/img/shop_event_point/footer.png');
+  background-repeat:no-repeat;
+  background-position:bottom;
+  background-size:contain;
+  background-position-y: bottom;
+  background-color:white;
+}
+.ec-layoutRole .ec-layoutRole__main {
+	min-height:100vh;
+}
+.ec-off2Grid {
+  display:block;
+}
+#login .ec-role .ec-login{
+  padding:10px 30px!important;
+}
+.ec-login__actions button{
+	margin:auto;
+}
+.ec-role .ec-login__input{
+	max-width:500px;
+	width:100%;
+	margin:auto;
+}
+.div_label{
+	display:flex;
+	padding-top:5px;
+	padding-bottom:5px;
+	border-bottom: 1px solid #ccc;
+}
+.span_label{
+	display:inline-block;
+	width:50%;
+}
+.span_yen{
+	display:inline-block;
+	text-align:right;
+	width:50%;
+	font-weight:bold;
+}
+#canvas2{
+    background-image: url('/html/template/default/assets/img/ok.png');
+    width: 200px;
+    height: 200px;
+    background-size: 50%;
+    background-repeat: no-repeat;
+    background-position: center;
+	margin:auto;
+	display:block;
+}
+
+.custom-radio{
+  width:100%;
+  height:24px;
+  font-size:14px;
+  display:block;
+}
+.ec-pageHeader{
+  
+}
+#logint .ec-trans{
+  background-color:transparent;
+}
+.staff-msg{
+  font-size:12px;
+  margin-top:10px;
+  margin-bottom:10px;
+  text-align:center;
+}
+</style>
+{% endblock %}
+
+{% set body_class = 'shop_event_point' %}
+
+{% block main %}
+
+
+				
+	<article id="login" class="ec-shop-header">
+		<section>
+
+			<div class="ec-role ec-trans" style="min-height:450px;background-color:transparent">
+			{#
+				<div class="ec-pageHeader" style="padding-top:10px!important;">
+					<h1>店頭ポイント付与サービス</h1>
+				</div>
+			#}
+{% if active %}
+				<div style="max-width:500px;margin:auto;display:none;" id="err-msg" class="alert alert-danger"></div>
+
+				<div id="block-select" class="ec-off2Grid" style="display:block;padding-bottom:2em;">
+
+					<div class="ec-login ec-trans" style="background-color:transparent;">
+
+						<div class="ec-login__icon">
+							<img src="/html/template/default/assets/img/shop_event_point/p1.png">
+						</div>
+					</div>
+			
+					<div class="ec-grid2" style="margin-top:20px;">
+						<div class="ec-grid2__cell">
+							<div class="ec-login__actions" style="text-align:center">
+								<button id="select1_btn" type="button" style="width:100%" class="ec-shop-btn-green">メールアドレスでログイン</button>
+							</div>
+							<div class="ec-login__actions" style="margin-top:20px;text-align:center;">
+								<button id="select2_btn" type="button" style="width:100%" class="ec-shop-border-green">新規登録</button>
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+
+				<div id="block-login" class="ec-off2Grid" style="display:none;padding-bottom:2em;padding-top:100px;">
+
+					<div class="ec-login" style="margin-top:50px;background-color:transparent">
+
+						<div class="ec-login__icon">
+							<h2>メールアドレスでログイン</h2>
+						</div>
+						<div class="ec-login__input">
+							<div class="ec-input">
+								<input type="email" id="login_email" name="login_email" required="required" max_length="255" style="ime-mode: disabled;" placeholder="メールアドレスまたはKyogoku ID、電話番号" autofocus="autofocus" class="form-control">
+								<input type="password" id="login_pass" name="login_pass" required="required" max_length="255" placeholder="パスワード" class="form-control">
+							</div>
+						</div>
+
+					</div>
+					<div class="ec-grid2">
+						<div class="ec-grid2__cell">
+							<div class="ec-login__actions" style="text-align:center">
+								<button id="login_btn" type="button" style="width:100%" class="ec-shop-border-gray">ログイン</button>
+							</div>
+						</div>
+					</div>
+
+					<div  style="margin:20px auto; _display:none;">
+						<a href="{{ url('shop_event_point') }}" class="ec_btn ec_btn-success" style="margin:auto;display:block;width:50%;max-width:200px;text-align:center;font-size:12px;">はじめに戻る</a>
+					</div>
+
+				</div>
+
+
+				<!-- 新規登録 -->
+				<div id="block-entry" class="ec-off2Grid" style="display:none;padding-bottom:2em;padding-top:100px;">
+
+					<div class="ec-login" style="margin-top:50px;background-color:transparent;">
+
+						<div class="ec-login__icon">
+							<h2>新規登録</h2>
+						</div>
+						<div class="ec-login__input">
+							<div class="ec-input">
+								<input type="text" id="entry_name01" name="name01" required="required" max_length="255" placeholder="姓" class="form-control">
+								<input type="text" id="entry_name02" name="name02" required="required" max_length="255" placeholder="名" class="form-control">
+								<input type="tel"  id="entry_phone" name="phone" required="required" max_length="15" placeholder="電話番号 （ハイフンなし）" class="form-control">
+							</div>
+						</div>
+					</div>
+					<div class="ec-grid2">
+						<div class="ec-grid2__cell">
+							<div class="ec-login__actions" style="text-align:center">
+								<button type="button" id="entry_btn" style="width:100%" class="ec-shop-border-gray">登録</button>
+							</div>
+						</div>
+					</div>
+
+					<div  style="margin:20px auto; _display:none;">
+						<a href="{{ url('shop_event_point') }}" class="ec_btn ec_btn-success" style="margin:auto;display:block;width:50%;max-width:200px;text-align:center;font-size:12px;">はじめに戻る</a>
+					</div>
+				</div>
+
+
+				<!-- 購入金額入力 -->
+				<div id="block-price" class="ec-off2Grid" style="display:none;padding-bottom:2em;padding-top:100px;">
+
+					<div class="ec-login">
+
+						<div class="ec-login__icon">
+							<h2>購入（チャージ）金額入力</h2>
+						</div>
+						<div class="ec-login__input">
+							<div class="ec-input">
+								<input type="tel" id="shop_event_point_price" name="price" required="required" max_length="255" style="ime-mode: disabled;" placeholder="商品金額を入力してください" class="form-control">
+							</div>
+						</div>
+
+					</div>
+
+					<div class="ec-grid2" style="margin-bottom:2em;">
+						<div class="ec-grid2__cell" id="ptype-cell">
+							<div class="" style="text-align:center" style="margin-top:1em;">
+								<label style="margin:20px;" class="btn ec-shop-ch-blue" for="ptype2">
+									<input id="ptype2" type="radio" name="ptype" class="custom-radio" value="2" autocomplete="off">
+									<p>購入金額の</p>
+									<b class="ec-shop-text-pink">2倍</b>
+									<p>チャージ</p>
+								</label>
+								
+								<label style="margin:20px;" class="btn ec-shop-ch-green" for="ptype3">
+									<input id="ptype3" type="radio" name="ptype" class="custom-radio" value="3" autocomplete="off">
+									<p>購入金額の</p>
+									<b class="ec-shop-text-pink">3倍</b>
+									<p>チャージ</p>
+								</label>
+							</div>
+						</div>
+					</div>
+
+					<div class="ec-grid2">
+						<div class="ec-grid2__cell">
+							<div class="ec-login__actions" style="text-align:center">
+								<button type="button" id="price_btn" style="width:100%" class="ec-shop-border-gray">次に進む</button>
+							</div>
+						</div>
+					</div>
+
+				</div>
+
+				<!-- 認証入力 -->
+				<div id="block-auth" class="ec-off2Grid" style="display:none;padding-bottom:2em;padding-top:100px;">
+
+					<div class="ec-login">
+
+						<div class="ec-login__icon">
+							<h2 id="fin-title">スタッフ確認</h2>
+							<p id="block-staff-msg" class="margin:10px;">この画面をスタッフに提示してください</p>
+						</div>
+
+						<div id="block-staff-price" style="margin:30px 0px 5px 0px; auto;max-width:400px;">
+							<div class="div_label"><span class="span_label">チャージ金額<span id="span_charge"></span></span> <span class="span_yen" id="buy-price">15,000 TWD</span></div>
+							<div class="div_label"><span class="span_label">商品代金<span id="span_pro"></span></span> <span  class="span_yen" id="buy-pro">0TWD</span></div>
+							<div class="div_label"><span class="span_label">残りポイント</span> <span  class="span_yen" id="buy-point">150 pt</span></div>
+						</div>
+
+						<p class="staff-msg">ポイントは「1pt = 1TWD」でKYOGOKU公式サイトでの<br>お買い物にご利用いただけます</p>
+
+						<div id="block-staff-auth" class="ec-login__input" style="margin:20px auto;">
+							<div class="ec-input">
+								<input type="password" style="width:100px;margin:auto;" id="shop_event_point_auth" name="auth" required="required" max_length="255" style="ime-mode: disabled;" placeholder="" class="form-control">
+							</div>
+						</div>
+
+					</div>
+					<div id="block-staff-btn" class="ec-grid2">
+						<div class="ec-grid2__cell">
+							<div class="ec-login__actions" style="text-align:center">
+								<button id="auth_btn" type="button" style="width:100%" class="ec-shop-border-gray">スタッフ確認</button>
+							</div>
+						</div>
+					</div>
+
+					<div id="qrarea" style="margin:auto;margin:20px auto;"><div id="qrcode" style="width:200px;height:200px;margin:auto;"></div></div>
+
+					{% if active %}
+
+						<div id="block-kyogokupro-msg" style="font-size:12px;margin:1em;margin:5px auto;width:100%;max-width:500px;text-align:center;display:none;color:#e2007e">新規登録の方は、ID,パスワードを<br>ご登録の電話番号に設定をしております。<br>ログイン後任意のパスワードに変更してください。</div>
+						<div id="block-kyogokupro" style="margin:15px auto;width:100%;max-width:500px;text-align:center;display:none">
+							<form action="{{ url('shop_event_point_login') }}" method="post" ><button class="ec-shop-login-green">ログイン</button>
+								<input type="hidden" name="c_id" value="" id="login_c_id">
+								<input type="hidden" name="c_pass" value="" id="login_c_pass">
+								
+							</form>
+						</div>
+
+
+					{% endif %}
+
+
+				</div>
+
+			</div>
+{% else %}
+				<div style="max-width:500px;margin:auto;" id="err-msg" class="alert alert-danger">現在はご利用いただけません</div>
+
+{% endif %}
+
+
+	<div id="block-start" style="margin:5px auto;display:none;">
+		<a href="{{ url('shop_event_point') }}" class="ec_btn ec_btn-success" style="margin:auto;display:block;width:50%;max-width:200px;text-align:center;font-size:12px;">はじめに戻る</a>
+	</div>
+
+	<br><br>
+
+		</section>
+
+	</article>
+
+{#
+		<form name="login_mypage" id="login_mypage" method="post" action="{{ url('shop_event_point_login') }}"><button class="ec-blockBtn--cancel">ログイン</button>
+			<input type="text" name="login_email" value="06612341234" id="short_login_email">
+			<input type="text" name="login_pass" value="06612341234" id="short_login_pass">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+			
+		</form>
+#}
+{#
+<div style="margin-bottom:3em;">
+	<div>Name01:<input id="entry_name01" type="text" name="name01" value="山田"></div>
+	<div>Name02:<input id="entry_name02" type="text" name="name02" value="太朗"></div>
+	<div>phone:<input id="entry_phone" type="text" name="phone" value="000-1111-3333"></div>
+	<button type="button" id="entry_btn" class="btn btn-info">新規登録</button>
+</div>
+
+<div style="margin-bottom:3em;">
+	<div>Login:<input id="login_email" type="text" name="login_id" value="ryuhairartist@gmail.com"></div>
+	<div>Pass:<input id="login_pass" type="text" name="login_pass" value="testtest"></div>
+	<button type="button" id="login_btn" class="btn btn-info">ログイン</button>
+</div>
+
+<div style="margin-bottom:3em;">
+	<div>購入金額<input id="shop_event_point_price" type="text" name="e_price" value="15000"></div>
+	<button id="price_btn" class="btn btn-info">金額入力</button>
+</div>
+
+
+<div style="margin-bottom:3em;">
+	<div>認証<input id="shop_event_point_auth" type="text" name="auth" value="1234"></div>
+	<button id="auth_btn" class="btn btn-info">承認</button>
+</div>
+
+<div style="margin-bottom:3em;">
+  <div id="qrcode" style="width:200px;height:200px;"></div>
+  <button id="qrbtn">QR</button>
+</div>
+
+<div></div>
+#}
+{#
+<div style="margin-bottom:3em;display:none;">
+<h3>debug</h3> 
+<pre id="output"></pre>
+</div>
+#}
+{#
+<hr>
+
+<form id="auth_form" action="{{ url('shop_event_point_auth') }}" method="post">
+	<div>Customer_id: <input id="customer_id" type="text" name="customer_id" value="11"></div>
+	<div>購入金額<input id="shop_event_point_price" type="text" name="e_price" value="15000"></div>
+	<div>PASS<input id="shop_event_point_e_pass" type="text" name="e_pass" value="1234"></div>
+	<div>Log ID<input id="shop_event_point_log_id" type="text" name="log_id" value="1"></div>
+
+	<button id="auth_btn" type="button" class="btn btn-info">承認</button>
+</form>
+#}
+{% if active %}
+		<script src="/html/template/default/assets/js/jsQR.js" defer></script>
+		<script src="/html/template/default/assets/js/qrcode.min.js" defer></script>
+<script>
+
+	let debug = true;
+	window.addEventListener('load', function(){
+{#
+		if(debug){
+			$('#login_email').val("ryuhairartist@gmail.com");
+			$('#login_pass').val("testtest");
+			$('#entry_name01').val("山田");
+			$('#entry_name02').val("太朗");
+			$('#entry_phone').val("090-1111-2222");
+			$('#shop_event_point_price').val("15000");
+			$('#shop_event_point_auth').val("1234");
+		//	$('#block-price').show()
+
+		}
+#}
+
+		let emsg = $('#err-msg');
+
+		function all_hide(){
+			$('#block-kyogokupro').hide()
+			$('#block-select').hide()
+			$('#block-login').hide()
+			$('#block-entry').hide()
+			$('#block-price').hide()
+			$('#block-auth').hide()
+			$('#err-msg').hide()
+		}
+
+		$('#select1_btn').on('click', function(){
+			all_hide();
+			$('#block-login').show()
+		//	$('#block-start').show()
+			
+		});
+		$('#select2_btn').on('click', function(){
+			all_hide();
+			$('#block-entry').show()
+		//	$('#block-start').show()
+			
+		});
+
+
+		let c_id = 0;
+		let s_id = 0;
+		let price = 0;
+		let point = 0;
+		let status = 0;
+		let timeid = 0;
+		let login_pass = "";
+
+		function output(){
+			//$('#output').text("c_id:"+c_id + " s_id:" + s_id + " price:" + price + " point:" + point + " status:" + status);
+		}
+		output();
+
+		// 新規登録
+		function post_entry(){
+			let url = "{{ url('shop_event_point_entry') }}";
+			let params = {
+			  'name01': $("#entry_name01").val(),
+			  'name02': $("#entry_name02").val(),
+			  'phone': $("#entry_phone").val()
+			}
+
+			if(params.name01 == ""){
+				emsg.text('姓を入力してください').show()
+				return false;
+			}
+			if(params.name02 == ""){
+				emsg.text('名を入力してください').show()
+				return false;
+			}
+			if(params.phone == ""){
+				emsg.text('電話番号を入力してください').show()
+				return false;
+			}
+			
+			$('#block-start').show()
+
+			$.ajax({
+				type:'post',
+				url:url,
+				dataType:'json',
+				data:params,
+			}).done(function(res){
+				c_id = res.c_id
+				login_pass = res.login_pass
+				console.log(res);
+				output();
+				if(res.err == 0){
+					$('#block-price').show()
+				}else{
+					$('#block-entry').show()
+					emsg.text(res.msg).show();
+				}
+			}).fail(function(){
+				alert('失敗しました');
+			});
+		}
+		$('#entry_btn').on('click', function(){
+			post_entry();
+			all_hide()
+		});
+
+
+		// 顧客情報取得
+		function post_customer(){
+			let url = "{{ url('shop_event_point_customer') }}";
+			let params = {
+			  'login_email': $("#login_email").val(),
+			  'login_pass': $("#login_pass").val()
+			}
+			if(params.login_email == ""){
+				emsg.text('メールアドレスを入力してください').show()
+				return false;
+			}
+			if(params.login_pass == ""){
+				emsg.text('パスワードを入力してください').show();
+				return false;
+			}
+			
+			$('#block-start').show()
+
+			$.ajax({
+				type:'post',
+				url:url,
+				dataType:'json',
+				data:params,
+			}).done(function(res){
+				c_id = res.c_id
+				console.log(res);
+				output();
+				if(res.err == 0){
+					$('#block-price').show()
+				}else{
+					$('#block-login').show()
+					emsg.text(res.msg).show();
+				}				
+			}).fail(function(){
+				$('#block-login').show()
+				alert('失敗しました');
+			});
+			return true;
+		}
+
+		$('#login_btn').on('click',function(){
+			if(post_customer()){			
+				all_hide()
+			}
+
+		});
+		
+		// 購入金額登録
+		function post_price(){
+			let url = "{{ url('shop_event_point_save') }}";
+			let params = {
+			  'c_id': c_id,
+			  'price': $("#shop_event_point_price").val(),
+			  'ptype': $('input[name=ptype]:checked').val()
+			}
+
+			if(params.price == ""){
+				emsg.text('購入金額を入力してください').show();
+				return false;
+			}
+			if(isNaN(params.price) == false && params.price > 0){
+			
+			}else{
+				emsg.text('購入金額を数字で入力してください').show()
+				return false;
+			}
+
+			if(isNaN(params.ptype) == false){
+			}else{
+			  emsg.text('チャージタイプを選択してください')
+			  return false;
+			}
+			console.log(params);
+
+			$.ajax({
+				type:'post',
+				url:url,
+				dataType:'json',
+				data:params,
+			}).done(function(res){
+				s_id = res.s_id
+				point = res.point
+				price = res.price
+				$('#buy-point').text(res.point_str + " pt")
+				$('#buy-price').text(res.point_price_val + " TWD")
+				$('#span_charge').text("（"+ res.ptype + "倍）")
+
+				if(res.ptype == "2"){
+					$('#span_pro').text("（半額）")
+    				$('#buy-pro').text("-" + res.discount + ' TWD')
+				}else if(res.ptype == "3"){
+				   $('#span_pro').text("（無料）")
+				   $('#buy-pro').text('0 TWD')
+				}
+
+				console.log(res);
+				output();
+				if(res.err == 0){
+					$('#block-auth').show()
+					makeQR(res.hash);
+					timeid = setInterval(function(){
+						check_status();
+					}, 3000);
+
+					$('#login_c_id').val(res.c_id)
+					$('#login_c_pass').val(res.c_pass)
+
+				}else{
+					$('#block-price').show()
+					emsg.text(res.msg).show();
+				}				
+			}).fail(function(){
+				alert('失敗しました');
+			});
+			return true;
+		}
+		$('#price_btn').on('click', function(){
+			if(post_price()){
+				all_hide()
+			}
+
+		});
+
+
+		// 承認
+		function post_auth(){
+			let url = "{{ url('shop_event_point_auth') }}";
+			let params = {
+				c_id:c_id,
+				s_id:s_id,
+				price:price,
+				point:point,
+				auth:$('#shop_event_point_auth').val(),
+			}
+
+			if(params.auth == ""){
+				emsg.text('スタッフの承認パスワードを入力してください').show()
+				return false;
+			}
+
+			$.ajax({
+				type:'post',
+				url:url,
+				dataType:'json',
+				data:params,
+			}).done(function(res){
+				status = res.status
+				console.log(res);
+				output();
+				if(res.err == 0){
+					$('#qrcode').html('<div id="canvas2"></div>');
+					$('#qrarea').hide()
+					$('#fin-title').html('手続き完了！');
+					$('#block-staff-msg').html("どうもありがとうございます！")
+					$('#block-staff-btn,#block-staff-auth').hide()
+					$('#block-auth').show();
+					$('#block-kyogokupro,#block-kyogokupro-msg').show();
+					clearInterval(timeid);
+				}else{
+					$('#block-auth').show()
+					emsg.text(res.msg).show();
+				}				
+			}).fail(function(){
+				alert('失敗しました');
+			});
+			
+			return true;
+		};
+
+		$('#auth_btn').on('click', function(){
+			if(post_auth()){
+				all_hide()
+			}
+
+		});
+
+
+		function check_status(){
+			let url = "{{ url('shop_event_point_status_check') }}";
+			let params = {
+				c_id:c_id,
+				s_id:s_id,
+				price:price,
+				point:point,
+			}
+
+			$.ajax({
+				type:'post',
+				url:url,
+				dataType:'json',
+				data:params,
+			}).done(function(res){
+				status = res.status
+				console.log(res);
+				if(status == "1"){
+					// OK
+					$('#qrcode').html('<div id="canvas2"></div>');
+					$('#block-staff-msg').html("手続きは完了しました。ありがとうございます。")
+					$('#block-staff-btn,#block-staff-auth').hide()
+					$('#block-auth').show();
+					$('#block-kyogokupro,#block-kyogokupro-msg').show();
+					clearInterval(timeid);
+				}else if(status == "2"){
+					alert('キャンセル');
+					clearInterval(timeid);
+				}else{
+
+				}
+
+				output();
+			}).fail(function(){
+				alert('失敗しました');
+			});
+		}
+
+
+		function makeQR(text){
+			document.getElementById("qrcode").innerHTML = "";// Clear
+			let qrcode = new QRCode("qrcode", {
+				text: text,
+				width: 128, height: 128,
+				colorDark: "#000000",
+				colorLight: "#ffffff",
+				correctLevel: QRCode.CorrectLevel.H
+			});
+
+
+		}
+
+		$('#qrbtn').on('click', function(){
+			makeQR("1,d6c35beb83a4bdeae9025c467828e9cb");
+		})
+
+	});
+
+</script>
+{% endif %}
+{% endblock %}

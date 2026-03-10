@@ -1,0 +1,84 @@
+{% set CategoryList = repository('Plugin\\[code]\\Entity\\[code]Config').getCategoryList %}
+{% set Config = repository('Plugin\\[code]\\Entity\\[code]Config').get %}
+
+{% block stylesheet %}
+<style>
+    .uic-menu .nav .nav {
+        padding-left: 15px;
+    }
+    .uic-menu a {
+        color: #525263;
+    }
+    .uic-menu a:hover {
+        text-decoration: none;
+    }
+    .uic-menu .uic-menu__item {
+        padding: 10px 15px;
+        display: flex;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        -ms-flex-align: center!important;
+        align-items: center!important;
+    }
+    .uic-menu .uic-menu__item:hover {
+        text-decoration: none;
+        background-color: #eee;
+    }
+    .uic-menu .uic-menu__toggle {
+        color: #020202;
+        border-radius: 50%;
+        padding: 4px 8px;
+    }
+    .uic-menu .uic-menu__toggle:hover {
+        background-color: #eee;
+    }
+</style>
+{% endblock %}
+
+{% macro tree(Category, Config) %}
+    {% from _self import tree %}
+    {% if Category.children|length == 0 %}
+        <a href="{{ url('product_list') }}?category_id={{ Category.id }}" class="nav-link">
+            {{ Category.name }}
+        </a>
+    {% endif %}
+    {% if Category.children|length > 0 %}
+        <div class="uic-menu__item">
+            <a href="{{ url('product_list') }}?category_id={{ Category.id }}" class="nav-link">
+                {{ Category.name }}
+            </a>
+            <span class="uic-menu__toggle btn btn-link btn-sm" role="button" data-toggle="collapse" href="#uic-menu__child-{{ Category.name }}">
+                <i class="fa fa-chevron-down"></i>
+            </span>
+        </div>
+        <ul class="nav collapse" id="uic-menu__child-{{ Category.name }}">
+            {% for ChildCategory in Category.children %}
+                <li>
+                    {{ tree(ChildCategory, Config) }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endmacro %}
+{% from _self import tree %}
+
+<!-- [code] -->
+<div class="ec-role uic-menu">
+    {% if Config.title %}
+        <div class="ec-secHeading">
+            <span class="ec-secHeading__en">{{ Config.title }}</span>
+        </div>
+    {% endif %}
+    {% if CategoryList != null %}
+        <div class="ec-secBody">
+            <ul class="nav">
+            {% for Category in CategoryList %}
+                <li>
+                    {{ tree(Category, Config) }}
+                </li>
+            {% endfor %}
+            <ul>
+        </div>
+    {% endif %}
+</div>
+<!-- /[code] -->

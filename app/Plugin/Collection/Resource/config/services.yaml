@@ -1,0 +1,22 @@
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        # automatically injects dependencies in your services
+        autowire: true
+        # automatically registers your services as commands, event subscribers, etc.
+        autoconfigure: true
+        # this means you cannot fetch services directly from the container via $container->get()
+        # if you need to do this, you can override this setting on individual services
+        public: false
+
+    Plugin\Collection\Service\CalculateService:
+        lazy: true
+        public: true
+
+twig:
+    globals:
+        stock_calculate: '@Plugin\Collection\Service\CalculateService'
+
+parameters:
+    collection_product_display_quantity: 3
+    collection_image_file_maxsize: 2000000

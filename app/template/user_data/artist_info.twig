@@ -1,0 +1,12 @@
+{% extends 'artist_frame.twig' %}
+
+{% block main %}
+
+	{% set targetno = '' %}
+	{% set queryParams = app.request.query.all %}
+    {% if queryParams.targetno is defined %}
+		{% set targetno = queryParams['targetno'] %}
+    {% endif %}
+    {{ get_artistinfo(targetno) }}
+
+{% endblock %}

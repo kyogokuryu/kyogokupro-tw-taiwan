@@ -1,0 +1,16 @@
+# 闪存消息
+ui_cube.admin.config.save.complete: 创建插件成功。
+ui_cube.admin.config.save.error: 该插件代码无法使用。
+
+# 配置
+ui_cube.admin.config.title: UICUBE
+ui_cube.admin.config.config_title: 配置
+ui_cube.admin.config.conversion.save: 保存
+ui_cube.admin.config.conversion.back: 插件列表
+
+ui_cube.admin.config.label_name: 插件名称
+ui_cube.admin.config.label_code: 插件代码
+ui_cube.admin.config.label_choised_plugin: 选择插件
+
+## 消息
+ui_cube.admin.config.message_code: ※ 只包含半角字母和数字（不与其他插件重复）

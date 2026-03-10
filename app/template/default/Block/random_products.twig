@@ -1,0 +1,270 @@
+
+{% set Products = get_random_products() %}
+{% set speed = 4000 %}
+
+{% block stylesheet %}
+<style>
+.random-box{
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 10px;
+    width: 100%;
+    height: 100%;
+    background: rgba(247,235,240, 0.8);
+    backdrop-filter: blur(3px);
+    opacity: 0;
+    z-index: -1;
+    transition: all .3s;
+}
+.random-box.on{
+    opacity: 1;
+    z-index: 9999;
+}
+.random{
+    padding: 20px 0;
+    text-align: center;
+    font-size: 30px;
+    font-weight: bold;
+}
+.close{
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    color: #000;
+    font-size: 30px;
+    opacity: 1;
+    cursor: pointer;
+}
+.slide-wrap{
+    margin: 0 auto;
+    padding: 0;
+    max-width: 800px;
+    height: 100%;
+}
+.slide-wrap>.slick-list{
+    height: 100vh!important;
+}
+.slick-vertical .slide-child{
+    height: 100vh!important;
+}
+.slick-vertical .slide-child>.inr{
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    transform: translateY(-50%);
+}
+.slide-item-image{
+    margin-bottom: 40px;
+}
+.slide-item-image span{
+    position: relative;
+    display: block;
+}
+.slide-item-image span:before{
+  content: '';
+  display: block;
+  padding-top: 100%;
+}
+.slide-item-image img{
+  position: absolute;
+  width: 100%!important;
+  height: 100%!important;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  object-fit: cover;
+}
+.slide-wrap .info{
+    padding: 15px 30px;
+    background: #fff;
+    border-radius: 10px;
+}
+.slide-wrap .info .name{
+    font-size: 18px;
+}
+.slide-wrap .info .price{
+    margin-bottom: 5px;
+    font-size: 20px;
+    font-weight: bold;
+}
+.slide-wrap .info .link a{
+    display: inline-block;
+    color: #000;
+    padding: 0 12px;
+    height: 30px;
+    line-height: 30px;
+    background: linear-gradient(146.65637352083513deg, rgba(231, 209, 212,1) 3.619559517566859%,rgba(239, 235, 236,1) 92.81725222863135%);
+    box-shadow: 3px 3px 16px -6px rgba(0,0,0,0.5);
+    border: #fff 2px solid;
+    border-radius: 7px;
+}
+.slide-wrap .slick-dots {
+    display: flex;
+    bottom: -20px;
+}
+.slide-wrap .slick-dots li{
+    position: relative;
+    margin: 0 2px;
+    overflow: hidden;
+}
+.slide-wrap .slick-dots li,
+.slide-wrap .slick-dots li button:before{
+    width: 100%;
+    height: 10px;
+    font-size: 0;
+    background: #fff;
+    border-radius: 3px;
+    opacity: 1;
+}
+.slide-wrap .slick-dots li button:after{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: #9E9896;
+    z-index: 99;
+    transition: all {{speed}}ms;
+}
+.slide-wrap .slick-dots li.on button:after{
+    left: 0;
+}
+.slide-wrap .slick-dots li.slick-active button:before {
+    opacity: 1;
+}
+.slide-wrap .slick-slide{
+    position: relative;
+}
+
+</style>
+{% endblock %}
+
+{% block javascript %}
+<script>
+
+$(function() {
+
+    if($('.random .slide-wrap').length == 0){
+        console.log("random length == 0");
+        return
+    }
+
+    let slider = $('.random .slide-wrap').slick({
+        arrows: false,
+        vertical: true,
+        verticalSwiping: true,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+    });
+    $('.slide-item-image').slick({
+        dots: true,
+        arrows: false,
+        speed: 300,
+        autoplaySpeed: {{speed}},
+        pauseOnHover: false,
+        pauseOnFocus: false,
+    });
+
+    $('.random .slide-wrap').on('afterChange', function() {
+        $('.slide-item-image').slick('slickPause');
+        $('.slick-current .slick-dots .slick-active').addClass('on');
+
+        let elm = $('.slick-current .slide-item-image');
+        if(elm.hasClass('multiple')){
+            elm.slick('slickPlay');
+            elm.on('afterChange', function(event, slick, currentSlide) {
+                event.stopPropagation();
+                $('.slick-active', elm).addClass('on');
+                if (slick.$slides.length -1 == currentSlide) {
+                    setTimeout(function() {
+                        $('.slick-dots', elm).find('li').removeClass('on');
+                        $('.slide-wrap').slick('slickNext');
+                    }, {{speed}});
+                }
+            });
+        }
+        //画像が1枚の場合の処理
+        else{
+            setTimeout(function() {
+                $('.random .slide-wrap').slick('slickNext');
+            }, {{speed}});
+        }
+    });
+
+    $('.random-btn').on('click',function(){
+        $('.random-box').addClass('on');
+        slider.slick('setPosition');
+        $('.slick-current .slide-item-image.multiple').slick('slickPlay');
+        $('.slick-current .slick-dots .slick-active').addClass('on');
+        //画像が1枚の場合の処理
+        if(!$('.slick-current .slide-item-image').hasClass('multiple')){
+            setTimeout(function() {
+                $('.slide-wrap').slick('slickNext');
+            }, {{speed}});
+        }
+    });
+
+    $('.close').on('click',function(){
+        $('.random-box').removeClass('on');
+        $('.slick-current .slide-item-image').slick('slickPause');
+    });
+
+    let dots = '<ul class="slick-dots"><li class="slick-active"><button type="button">1</button></li></ul>';
+    $('.slide-item-image.single').append(dots);
+});
+
+</script>
+{% endblock %}
+
+{% if Products != null %}
+<div class="random">
+    <p class="_random"><a class="random-btn"><img src="{{ asset('assets/img/random-banner.jpg') }}"></a></p>
+    <div class="random-box">
+        <ul class="slide-wrap">
+        {% for Product in Products %}
+            <a href="{{ url('product_detail', {'id': Product.id}) }}">
+            <li class="slide-child">
+            <div class="inr">
+                {% set type = 'single' %}
+                {% if Product.ProductImage|length > 1 %}
+                    {% set type = 'multiple' %}
+                {% endif %}
+                <div class="slide-item-image {{ type }}">
+                {% for ProductImage in Product.ProductImage %}
+                    <span><img data-lazy="{{ asset(ProductImage, 'save_image') }}"  loading="lazy"></span>
+                {% else %}
+                    <span><img data-lazy="{{ asset(''|no_image_product, 'save_image') }}"  loading="lazy"></span>
+                {% endfor %}
+                </div>
+                <div class="info">
+                    <p class="name">{{ Product.name }}</p>
+                    {% if Product.description_list %}
+                        <p>{{ Product.description_list|raw|nl2br }}</p>
+                    {% endif %}
+                    <p class="price">
+                        {% if Product.hasProductClass %}
+                            {% if Product.getPrice02Min == Product.getPrice02Max %}
+                                {{ Product.getPrice02IncTaxMin|price }}
+                            {% else %}
+                                {{ Product.getPrice02IncTaxMin|price }} ～ {{ Product.getPrice02IncTaxMax|price }}
+                            {% endif %}
+                        {% else %}
+                            {{ Product.getPrice02IncTaxMin|price }}
+                        {% endif %}
+                    </p>
+<!--
+                    <p class="link"><a style="font-size:20px; padding:10px 20px;height:auto;" href="{{ url('product_detail', {'id': Product.id}) }}">商品ページへ</a></p>
+-->
+                </div>
+            </div></li></a>
+        {% endfor %}
+        </ul>
+        <div class="close"><i class="fas fa-times"></i></div>
+    </div>
+</div>
+{% endif %}

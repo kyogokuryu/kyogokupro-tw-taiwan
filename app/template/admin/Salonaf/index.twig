@@ -1,0 +1,215 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends '@admin/default_frame.twig' %}
+
+{% block title %}{{ 'admin.customer.customer_list'|trans }}{% endblock %}
+{% block sub_title %}{{ 'admin.customer.customer_management'|trans }}{% endblock %}
+
+{% form_theme searchForm '@admin/Form/bootstrap_4_horizontal_layout.html.twig' %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/bootstrap-datepicker@1.9.0/dist/css/bootstrap-datepicker3.css">
+    <style type="text/css">
+        .datepicker-dropdown{
+            transform: translateY(70px);
+        }
+        button#unpaid{
+            background: #DE5D50;
+        }
+    </style>
+{% endblock stylesheet %}
+
+{% block javascript %}
+    <script src="//cdn.jsdelivr.net/npm/bootstrap-datepicker@1.9.0/dist/js/bootstrap-datepicker.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/bootstrap-datepicker@1.9.0/dist/locales/bootstrap-datepicker.ja.min.js"></script>
+    <script>
+        //カレンダー入力
+        $('.datepicker').datepicker({
+            language: "ja",
+            format: "yyyy-mm",
+            minViewMode: 1,
+            maxViewMode: 2
+        });
+
+        let payment_date_start = $('input#admin_search_customer_payment_date_start');
+        let payment_date_end = $('input#admin_search_customer_payment_date_end');
+        $('.month.datepicker').on('change',function(){
+            $('.range.datepicker').val('');
+            let m = $(this).val();
+            payment_date_start.val(m);
+            payment_date_end.val(m);
+        });
+        $('.range.datepicker').on('change',function(){
+            $('.month.datepicker').val('');
+            let start = '';
+            let end = '';
+            let start_temp = $('[name="payment_range_start"]').val();
+            let end_temp = $('[name="payment_range_end"]').val();
+            if(start_temp && end_temp){
+                if(new Date(start_temp) > new Date(end_temp)){
+                    start = end_temp;
+                    end = start_temp;
+                }
+                else{
+                    start = start_temp;
+                    end = end_temp;
+                }
+                payment_date_start.val(start);
+                payment_date_end.val(end);
+            }
+        });
+
+        $('button#unpaid').on('click',function(){
+            let input = '<input type="hidden" name="mode" value="unpaid">';
+            $('#search_form').prepend(input);
+        });
+    </script>
+{% endblock javascript %}
+
+{% block main %}
+    <form name="search_form" id="search_form" method="post" action="">
+        {{ form_widget(searchForm._token) }}
+        <div class="c-outsideBlock">
+            <div class="c-outsideBlock__contents">
+
+                {{ form_widget(searchForm.payment_date_start,{ type : 'hidden' }) }}
+                {{ form_errors(searchForm.payment_date_start) }}
+                {{ form_widget(searchForm.payment_date_end,{ type : 'hidden' }) }}
+                {{ form_errors(searchForm.payment_date_end) }}
+                <div class="row justify-content-start">
+                    <div class="col-6">
+                        <div class="mb-2">
+                            <label>集計月</label>
+                            <div class="form-row align-items-center">
+                                <div class="col">
+                                    <input type="text" name="payment_month" class="month datepicker form-control">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row justify-content-start">
+                    <div class="col-6">
+                        <div class="mb-2">
+                            <label>集計期間</label>
+                            <div class="form-row align-items-center">
+                                <div class="col">
+                                    <input type="text" name="payment_range_start" class="range datepicker form-control">
+                                </div>
+                                <div class="col-auto text-center"><span>{{ 'admin.common.separator__range'|trans }}</span></div>
+                                <div class="col">
+                                    <input type="text" name="payment_range_end" class="range datepicker form-control">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="c-subContents ec-collapse collapse{{ has_errors ? ' show' }}" id="searchDetail">
+                {# エンティティ拡張の自動出力 #}
+                {% for f in searchForm if f.vars.eccube_form_options.auto_render %}
+                    {# TODO 1項目1行になるのを改善 #}
+                    <div class="row mb-2">
+                        {% if f.vars.eccube_form_options.form_theme %}
+                            {% form_theme f f.vars.eccube_form_options.form_theme %}
+                            {{ form_row(f) }}
+                        {% else %}
+                            <div class="col">
+                                <div class="mb-3">
+                                    <label>{{ f.vars.label|trans }}</label>
+                                    {{ form_widget(f) }}
+                                    {{ form_errors(f) }}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="c-outsideBlock__contents mb-5">
+            <button type="submit" class="btn btn-ec-conversion px-5">{{ 'admin.common.search'|trans }}</button>
+            <button type="submit" id="unpaid" class="btn btn-ec-conversion px-5 btn02">未払い検索</button>
+            {% if pagination %}
+                <span class="font-weight-bold ml-2">{{ unpaid_label }}{{ 'admin.common.search_result'|trans({'%count%':pagination.totalItemCount}) }}</span>
+            {% endif %}
+        </div>
+
+        <div class="c-contentsArea__cols">
+            <div class="c-contentsArea__primaryCol">
+                <p><strong>集計期間: {{ range_label }}　合計売上: {{ totalAmount.sales|price }}　　合計報酬: {{ totalAmount.reward|price }}</strong></p>
+                <div class="c-primaryCol">
+                    {% if pagination and pagination.totalItemCount %}
+                        <div class="row justify-content-between mb-2">
+                            <div class="col-6"></div>
+
+                            <div class="col-5 text-right">
+                                {#Dropdown page count#}
+                                <div class="d-inline-block mr-2">
+                                    <select class="custom-select" onchange="location = this.value;">
+                                        {% for pageMax in pageMaxis %}
+                                            <option {% if pageMax.name == page_count %} selected {% endif %}
+                                                    value="{{ path('admin_salonaf_page', {'page_no': 1, 'page_count': pageMax.name }) }}">
+                                                {{ 'admin.common.count'|trans({ '%count%': pageMax.name }) }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card rounded border-0 mb-4 d-block">
+                            <div class="card-body p-0">
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th class="border-top-0 pt-2 pb-3 pl-3 text-nowrap">{{ 'admin.customer.customer_id'|trans }}</th>
+                                        <th class="border-top-0 pt-2 pb-3">{{ 'admin.common.name'|trans }}</th>
+                                        <th class="border-top-0 pt-2 pb-3">売上 / 報酬</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for CustomerInfo in pagination %}
+                                        {% set Customer = CustomerInfo[0] %}
+                                        <tr id="ex-customer-{{ Customer.id }}">
+                                            <td class="align-middle pl-3">{{ Customer.id }}</td>
+                                            <td class="align-middle"><a href="{{ url('admin_salonaf_detail', { 'id': Customer.id}) }}">{{ Customer.name01 }}&nbsp;{{ Customer.name02 }}</a></td>
+                                            <td class="align-middle">{{ CustomerInfo['sales']|price }} / {{ CustomerInfo['reward']|price }} </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                <div class="row justify-content-md-center mb-4">
+                                    {% if pagination.totalItemCount > 0 %}
+                                        {% include "@admin/pager.twig" with { 'pages' : pagination.paginationData, 'routes' : 'admin_salonaf_page' } %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% elseif has_errors %}
+                        <div class="card rounded border-0">
+                            <div class="card-body p-4">
+                                <div class="text-center text-muted mb-4 h5">{{ 'admin.common.search_invalid_condition'|trans }}</div>
+                                <div class="text-center text-muted">{{ 'admin.common.search_try_change_condition'|trans }}</div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="card rounded border-0">
+                            <div class="card-body p-4">
+                                <div class="text-center text-muted mb-4 h5">{{ 'admin.common.search_no_result'|trans }}</div>
+                                <div class="text-center text-muted">{{ 'admin.common.search_try_change_condition'|trans }}</div>
+                                <div class="text-center text-muted">{{ 'admin.common.search_try_advanced_search'|trans }}</div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </form>
+{% endblock %}

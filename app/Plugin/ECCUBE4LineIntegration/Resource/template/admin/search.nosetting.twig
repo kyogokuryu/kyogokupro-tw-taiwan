@@ -1,0 +1,24 @@
+{#
+[LINE管理]-[配信]画面（アクセストークン未設定）
+#}
+
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['plugin_line_integration', 'plugin_line_message_notification'] %}
+
+{% block title %}LINE管理{% endblock %}
+{% block sub_title %}配信{% endblock %}
+
+{% block stylesheet %}
+{% endblock stylesheet %}
+
+{% block javascript %}
+{% endblock javascript%}
+
+{% block main %}
+<div class="c-outsideBlock">
+    <div class="c-outsideBlock__contents">
+        LINE管理→設定画面でアクセストークンを設定してください。
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+# flash messages
+uc_slide.admin.setting.save.complete: 设置已保存。
+uc_slide.admin.setting.delete.complete: 数据已删除。
+
+# config
+uc_slide.admin.config.title: UC幻灯片
+uc_slide.admin.config.config_title: 插件设置
+uc_slide.admin.config.edit_title: 编辑图片
+uc_slide.admin.config.image_title: 图片设置
+uc_slide.admin.config.no_image: 尚未上传图片。
+uc_slide.admin.config.conversion.save: 保存
+uc_slide.admin.config.conversion.add: 添加
+uc_slide.admin.config.conversion.back: 返回插件列表
+uc_slide.admin.config.conversion.top: 图片列表
+
+uc_slide.admin.config.label_block_type: 区块类型
+uc_slide.admin.config.label_slide_type: 幻灯片类型
+uc_slide.admin.config.label_img_url: 图片链接（必填）
+uc_slide.admin.config.label_img_alt: 图片Alt
+uc_slide.admin.config.label_link_url: 图片链接
+
+## messages
+uc_slide.admin.config.message_path: user_data/~

@@ -1,0 +1,139 @@
+
+#nav
+productoption.admin.nav.product.option: 選項管理
+productoption.admin.nav.product.option.category: 選項管理
+productoption.admin.nav.product.product.option: 商品註冊（選項）
+productoption.admin.nav.product.product.rank: 選項排序
+productoption.admin.nav.content.productoption: 商品選項設計管理
+productoption.admin.nav.content.productoption.option: 選項選擇部分
+productoption.admin.nav.content.productoption.description: 選項說明模式對話框
+productoption.admin.nav.content.productoption.css: 選項CSS
+
+#twig
+productoption.common.delivery_free: 免運費
+productoption.admin.common.save: 保存此內容
+productoption.admin.common.up: 上移
+productoption.admin.common.down: 下移
+productoption.admin.common.new: 新增
+productoption.admin.common.product_name: 商品名稱
+productoption.admin.common.option: 選項
+productoption.admin.product.list.option.label.assign: 分配
+productoption.admin.product.list.option.label.sort: 排序
+productoption.admin.product.product_option__card_title: 選項分配資訊
+productoption.tooltip.product.product_option: 檢查此商品所分配的選項。
+productoption.admin.product.product_option__confirm_of_product: 確認此商品的選項分配
+productoption.admin.product.product_option_rank__confirm_of_product: 確認此商品的選項排序
+productoption.admin.product.option.backend_name: 選項管理名稱
+productoption.admin.product.option.name: 選項顯示標題
+productoption.admin.product.option.description: 說明文字
+productoption.admin.product.option.type: 類型
+productoption.admin.product.option.description_flg: 選項說明
+productoption.admin.product.option.require: 必要條件
+productoption.admin.product.option.require_num: 必要選擇數
+productoption.admin.product.option.pricedisp_flg: 顯示價格/免運費條件
+productoption.admin.product.option.is_required: 必要核取
+productoption.admin.product.option.require_min: 必要選擇數（下限）
+productoption.admin.product.option.require_max: 必要選擇數（上限）
+productoption.admin.product.option.edit: 編輯選項
+productoption.admin.product.option.sortable: 選項順序可透過拖放方式進行更改。
+productoption.admin.product.option.no_item: 沒有選項。
+productoption.admin.product.option.copy: 複製管理名稱
+productoption.admin.product.option.input_range: 輸入範圍
+productoption.admin.product.option.info: 選項資訊
+productoption.admin.product.option.category.list: 選項列表
+productoption.admin.product.option.category.sortable: 選項順序可透過拖放方式進行更改。
+productoption.admin.product.option.category.no_item: 沒有選項。
+productoption.admin.product.option.category.name: 選項名稱
+productoption.admin.product.option.category.description: 說明文字
+productoption.admin.product.option.category.image: 圖片
+productoption.admin.product.option.category.disable_flg: 未選設定
+productoption.admin.product.option.category.disable_disp: 未選項
+productoption.admin.product.option.category.init_flg: 初始設定
+productoption.admin.product.option.category.init_disp: 初始值
+productoption.admin.product.option.category.price: 金額
+productoption.admin.product.option.category.delivery_free_flg: 免運費
+productoption.admin.product.option.category.placeholder: 說明文字（placeholder）
+productoption.admin.product.option.category.multiple: 數量金額反映
+productoption.admin.product.option.category.detail: 詳細設定
+productoption.admin.product.option.option.disp: 說明畫面
+productoption.admin.product.option.option.rank.assign: 選項分配
+productoption.admin.product.option.option.rank.sort: 選項排序
+productoption.admin.product.option.modal.header: 刪除選項
+productoption.admin.product.option.modal.body: 選項將從列表（主檔）中刪除，但不會從交易等資料中刪除。此操作無法撤銷。您確定要刪除此選項嗎？
+productoption.admin.product.option.category.modal.header: 刪除選項
+productoption.admin.product.option.category.modal.body: 選項將從列表（主檔）中刪除，但不會從交易等資料中刪除。此操作無法撤銷。您確定要刪除此選項嗎？
+productoption.admin.content.design.reset: 恢復原始值
+productoption.admin.content.option.title: 編輯選項選擇部分模板
+productoption.admin.content.description.title: 編輯選項說明對話框模板
+productoption.admin.content.css.title: 編輯選項CSS
+productoption.admin.content.label.option: 選項選擇部分設計
+productoption.admin.content.label.description: 選項說明對話框設計
+productoption.admin.content.label.css: 選項CSS
+productoption.admin.content.design.description.option: 如果商品列表和商品詳細頁面未顯示選項，請在您希望的位置插入以下標籤。
+productoption.admin.content.design.description.description: 如果商品列表和商品詳細頁面未顯示說明模式，請在您希望的位置插入以下標籤。
+productoption.admin.config.title: 插件設置
+productoption.admin.config.subtitle: 商品選項設置
+productoption.admin.config.label.range: 免運費判定
+productoption.admin.config.label.range.all: 對所有商品進行判定
+productoption.admin.config.label.range.shipping: 按交貨地點進行判定
+
+productoption.product.option.description.title: 詳細說明
+productoption.product.option.description.price: 價格
+productoption.product.option.description.select: 選擇
+productoption.product.option.description.add_tax: + 稅
+productoption.product.option.description.inc_tax: (含稅)
+productoption.product.option.price_header: 選項價格：¥
+
+productoption.csv.common.label: 選項資訊
+productoption.csv.product.label.id: 選項分配資訊
+productoption.csv.product.label.name: 選項分配資訊（名稱）
+
+productoption.admin.product.product_csv.product_assign_description: 輸入以逗號分隔的選項ID
+productoption.admin.product.product_csv.not_correct: 第%line%行的%name%輸入不正確。
+
+#表單
+productoption.option.type.select: 下拉式選單
+productoption.option.type.radio: 單選按鈕
+productoption.option.type.checkbox: 多選按鈕
+productoption.option.type.text: 文本框
+productoption.option.type.textarea: 文本區
+productoption.option.type.date: 日期
+productoption.option.type.number: 數字輸入
+productoption.option.disp.off: 不顯示
+productoption.option.disp.on: 顯示
+productoption.option.category.delivery_free.off: 未設置
+productoption.option.category.delivery_free.on: 免運費設置
+productoption.option.category.multiple.off: 不反映
+productoption.option.category.multiple.on: 反映
+
+#快閃消息
+admin.product.option.up.complete: 選項已上移。
+admin.product.option.up.error: 無法將選項上移。
+admin.product.option.down.complete: 選項已下移。
+admin.product.option.down.error: 無法將選項下移。
+admin.product.option.save.complete: 選項已保存。
+admin.product.option.save.error: 無法保存選項。
+admin.product.option.delete.complete: 選項已刪除。
+admin.product.option.delete.error: 無法刪除選項。
+admin.product.option_category.up.complete: 選擇肢已上移。
+admin.product.option_category.up.error: 無法將選擇肢上移。
+admin.product.option_category.down.complete: 選擇肢已下移。
+admin.product.option_category.down.error: 無法將選擇肢下移。
+admin.product.option_category.save.complete: 選擇肢已保存。
+admin.product.option_category.save.error: 無法保存選擇肢。
+admin.product.option_category.delete.complete: 選擇肢已刪除。
+admin.product.option_category.delete.error: 無法刪除選擇肢。
+admin.product.option_text_category.save.complete: 詳細已保存。
+admin.product.option_text_category.save.error: 無法保存詳細。
+admin.product.product_option.complete: 選項已註冊。
+admin.setting.productoption.save.complete: 設置已保存。
+admin.content.productoption.save.complete: 完成註冊。
+
+#驗證
+productoption.type.range.invalid: 請正確設置範圍。
+productoption.type.minus.invalid: 請指定大於或等於0。
+productoption.type.image.path.error: 圖片路徑無效。
+productoption.option.cart.error.check: 未勾選。
+productoption.option.cart.error.min: 請選擇%num%個。
+productoption.option.cart.error.max: 請選擇%num%個或更多。
+productoption.option.cart.error.limit: 可選擇數量最多為%num%個。

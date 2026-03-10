@@ -1,0 +1,102 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+
+{% import _self as stars %}
+
+{# 星テキスト生成用マクロ #}
+{% macro stars(positive, negative) %}
+    {% set positive_stars = ["", "★", "★★", "★★★", "★★★★", "★★★★★"] %}
+    {% set negative_stars = ["", "☆", "☆☆", "☆☆☆", "☆☆☆☆", "☆☆☆☆☆"] %}
+    {{ positive_stars[positive] }}{{ negative_stars[negative] }}
+{% endmacro %}
+
+{% set body_class = 'product_page' %}
+{% set Categories = repository('Eccube\\Entity\\Category').getList() %}
+
+{% block main %}
+	<article id="best-of-the-best">
+		<section>
+
+            {% if Category is not null %}
+			<div id="category_menu">
+				<ul class="menubox">
+				{% for ListCategory in Categories %}
+					<li>
+						<a href="{{ url('product_list') }}?category_id={{ ListCategory.id }}" {% if Category.path[0].id == ListCategory.id %} class="active" {% endif %}><span>{{ ListCategory.name }}<span></a>
+					</li>
+				{% endfor %}
+				</ul>
+			</div>
+            {% else %}
+			<h1 class="page-area-title">BEST OF THE BEST</h1>
+            {% endif %}
+            <!--p style="margin:30px 0 0;text-align:center;"><a href="/user_data/maintenance" style="color:#f00;font-size:large;border-bottom:1px solid #f00;">【お知らせ】KYOGOKU PROFESSIONALシステムメンテナンスのお知らせ</a></p-->
+			<ul class="itembox">
+
+			{% if search_form.category_id.vars.errors|length > 0 %}
+				<div class="ec-searchnavRole">
+					<p class="errormsg text-danger">{{ 'ご指定のカテゴリは存在しません'|trans }}</p>
+				</div>
+			{% else %}
+				{% if pagination.totalItemCount > 0 %}
+                    {% for Product in pagination %}
+				<li>
+					<a href="{{ url('product_detail', {'id': Product.id}) }}">
+						<div class="itemimg"><img src="{{ asset(Product.main_list_image|no_image_product, 'save_image') }}"></div>
+						<div class="itemtext">
+							<h2>{{ Product.name }}</h2>
+							<p>
+								{% if Product.hasProductClass %}
+									{% if Product.getPrice02Min == Product.getPrice02Max %}
+										{# {{ Product.getPrice02IncTaxMin|price }}（税込）<br> #}
+									{% else %}
+										{# {{ Product.getPrice02IncTaxMin|price }} ～ {{ Product.getPrice02IncTaxMax|price }}（税込）<br> #}
+									{% endif %}
+								{% else %}
+									{# {{ Product.getPrice02IncTaxMin|price }}（税込）<br> #}
+								{% endif %}
+								{% set positive_star = ReviewAveList[Product.id] %}
+								{% set nagative_star = 5 - positive_star %}
+								{{ stars.stars(positive_star, nagative_star) }} {{ ReviewCntList[Product.id] }}<br>
+							</p>
+						</div>
+					</a>
+				</li>
+                    {% endfor %}
+			    {% endif %}
+		    {% endif %}
+
+			</ul>
+
+		</section>
+	</article>
+
+	{% if false %}
+		{% if Category is null %}
+		<article id="category">
+			<section>
+				<h1 class="page-area-title">CATEGORY</h1>
+				<ul class="itembox">
+				{% for ListCategory in Categories %}
+					<li>
+						<div class="morearea">
+							<a class="linebtn" href="{{ url('product_list') }}?category_id={{ ListCategory.id }}"><span>{{ ListCategory.name }}<span></a>
+						</div>
+					</li>
+				{% endfor %}
+				</ul>
+			</section>
+		</article>
+		{% endif %}
+	{% endif %}
+
+{% endblock %}

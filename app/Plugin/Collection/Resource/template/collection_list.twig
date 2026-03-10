@@ -1,0 +1,36 @@
+ {% if app.request.query.get('collecion') is defined and app.request.query.get('pageno') < 2 %}
+    {% set Collection = repository('Plugin\\Collection\\Entity\\Collection').findOneBy({'collection_code' : app.request.query.get('collection') }) %}
+    <div id="collection_area" class="">
+        {% if Collection and Collection.visible and not Collection.deleted and (Collection.displayfrom is null or Collection.displayfrom|date('Y-m-d H:i:s') <= "today"|date('Y-m-d H:i:s')) and (Collection.displayto is null or Collection.displayto|date('Y-m-d H:i:s')  >= "today"|date('Y-m-d H:i:s')) %}
+            <script>
+                $(function () {
+                    $('title').html('{{ BaseInfo.shop_name }}/{{ Collection.name }}');
+                });
+
+            </script>
+            <div class="collection_name ec-headingTitle">
+                    <div class="text-center">{{ Collection.name }}</div>
+            </div>
+            <div class="collection_image">
+                {% if Collection.fileName is not empty %}
+                    <img src="{{ asset(Collection.fileName, 'save_image') }}" style="max-width: 65%" class="img-thumbnail center-block">
+                {% endif%}
+            </div>
+             <div class="collection_description" style="padding-top: 20px">
+                 {% if Collection.description is defined %}
+                     <div class="text-center ec-productRole__description" >{{ Collection.description }}</div>
+                 {% endif %}
+             </div>
+        {% endif %}
+    </div>
+ {% endif %}
+
+    <script>
+        $(function () {
+            //　ショップ名下に移動
+            $('#collection_area').prependTo($('.ec-searchnavRole'));
+        });
+    </script>
+
+
+

@@ -1,0 +1,424 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+
+{% import _self as stars %}
+
+{# 星テキスト生成用マクロ #}
+{% macro stars(positive, negative) %}
+    {% set positive_stars = ["", "★", "★★", "★★★", "★★★★", "★★★★★"] %}
+    {% set negative_stars = ["", "☆", "☆☆", "☆☆☆", "☆☆☆☆", "☆☆☆☆☆"] %}
+    {{ positive_stars[positive] }}{{ negative_stars[negative] }}
+{% endmacro %}
+
+{% if Category and ( Category.id == 22 or Category.id == 27 or Category.id == 28 ) %}
+    {% set body_class = "cbd product_page c#{ Category.id }" %}
+
+{% elseif Category %}
+    {% set body_class = "product_page c#{ Category.id }" %}
+{% else %}
+    {% set body_class = "product_page" %}
+{% endif %}
+
+
+
+{% set Categories = repository('Eccube\\Entity\\Category').getList() %}
+
+{% block javascript %}
+    <script>
+        eccube.productsClassCategories = {
+            {% for Product in pagination %}
+            "{{ Product.id|escape('js') }}": {{ class_categories_as_json(Product)|raw }}{% if loop.last == false %}, {% endif %}
+            {% endfor %}
+        };
+
+        $(function() {
+
+            // 表示件数を変更
+            $('.disp-number').change(function() {
+                var dispNumber = $(this).val();
+                $('#disp_number').val(dispNumber);
+                $('#pageno').val(1);
+                $("#form1").submit();
+            });
+
+            // 並び順を変更
+            $('.order-by').change(function() {
+                var orderBy = $(this).val();
+                $('#orderby').val(orderBy);
+                $('#pageno').val(1);
+                $("#form1").submit();
+            });
+
+            $('.add-cart').on('click', function(e) {
+                var $form = $(this).parents('li').find('form');
+
+                // 個数フォームのチェック
+                var $quantity = $form.parent().find('.quantity');
+                if ($quantity.val() < 1) {
+                    $quantity[0].setCustomValidity('{{ '1以上で入力してください。'|trans }}');
+                    setTimeout(function() {
+                        loadingOverlay('hide');
+                    }, 100);
+                    return true;
+                } else {
+                    $quantity[0].setCustomValidity('');
+                }
+                e.preventDefault();
+                $.ajax({
+                    url: $form.attr('action'),
+                    type: $form.attr('method'),
+                    data: $form.serialize(),
+                    dataType: 'json',
+                    beforeSend: function(xhr, settings) {
+                        // Buttonを無効にする
+                        $('.add-cart').prop('disabled', true);
+                    }
+                }).done(function(data) {
+                    // レスポンス内のメッセージをalertで表示
+                    $.each(data.messages, function() {
+                        $('#ec-modal-header').html(this);
+                    });
+
+                    $('#ec-modal-checkbox').prop('checked', true);
+
+                    // カートブロックを更新する
+                    $.ajax({
+                        url: '{{ url('block_cart') }}',
+                        type: 'GET',
+                        dataType: 'html'
+                    }).done(function(html) {
+                        $('.ec-headerRole__cart').html(html);
+                    });
+                }).fail(function(data) {
+                    alert('{{ 'カートへの追加に失敗しました。'|trans }}');
+                }).always(function(data) {
+                    // Buttonを有効にする
+                    $('.add-cart').prop('disabled', false);
+                });
+            });
+        });
+
+        $('.ec-modal-overlay, .ec-modal .ec-inlineBtn--cancel').on('click', function() {
+            $('.ec-modal').hide()
+        });
+
+        //送り先メールアドレスのデフォルト値を設定 20220818 kikuzawa
+        let email = '';
+        {% if is_granted('ROLE_USER') %}
+            email = '{{ app.user.email }}';
+        {% endif %}
+
+        let e = $('[name="productoption1"]');
+        let options = $('[name^="productoption"]').closest('.ec-input');
+
+        $('.ec-shelfGrid__item').each(function(){
+            if($(this).find(options).length){
+                let v = e.val();
+                if(!v) e.val(email);
+                {% if is_granted('ROLE_USER') %}
+                    let selectElm = '<div class="email-select">' +
+                                        '<label class="select"><input type="radio" name="email_select" value="self" checked>自分用</label>' +
+                                        '<label><input type="radio" name="email_select" value="present">プレゼント</label>' +
+                                    '</div>';
+                    options.hide();
+                {% else %}
+                    let selectElm = '<div class="email-select">' +
+                                        '<label class="select"><input type="radio" name="email_select" value="present" checked>プレゼント</label>' +
+                                    '</div>';
+                {% endif %}
+                $(this).find('.ec-productRole__actions.option').prepend(selectElm);
+            }
+        });
+
+        $('[name="email_select"]').on('click',function(){
+            let parent = $(this).closest('.ec-productRole__actions.option');
+            let v = $(this).val();
+            if(v == 'self'){
+                parent.find('[name^="productoption"]').val('');
+                parent.find(e).val(email);
+                parent.find(options).hide();
+            }
+            else if(v == 'present'){
+                parent.find(e).val('');
+                parent.find(options).show();
+            }
+        });
+    </script>
+{% endblock %}
+
+{% block main %}
+
+    {% if search_form.category_id.vars.errors|length > 0 %}
+        <div class="ec-searchnavRole">
+            <p class="errormsg text-danger">{{ 'ご指定のカテゴリは存在しません'|trans }}</p>
+        </div>
+    {% else %}
+
+        <div class="ec-searchnavRole">
+            <form name="form1" id="form1" method="get" action="?">
+                {% for item in search_form %}
+                    <input type="hidden" id="{{ item.vars.id }}"
+                           name="{{ item.vars.full_name }}"
+                           {% if item.vars.value is not empty %}value="{{ item.vars.value }}" {% endif %}/>
+                {% endfor %}
+            </form>
+            <div class="ec-searchnavRole__topicpath">
+                <ol class="ec-topicpath">
+                    <li class="ec-topicpath__item"><a href="{{ url('product_list') }}">{{ '全部'|trans }}</a>
+                    </li>
+                    {% if Category is not null %}
+                        {% for Path in Category.path %}
+                            <li class="ec-topicpath__divider">|</li>
+                            <li class="ec-topicpath__item{% if loop.last %}--active{% endif %}"><a
+                                        href="{{ url('product_list') }}?category_id={{ Path.id }}">{{ Path.name }}</a>
+                            </li>
+                        {% endfor %}
+
+                        {% if Category.rsortchildren|length > 0 %} 
+
+                            {% for sub_category in Category.rsortchildren %}
+                                {% for sc in sub_category.path %}
+                                    {% if sc.hierarchy == 2 %}
+                                        {% if sc.id == search_form.sub_category_id.vars.value %}
+                                            <li class="ec-topicpath__divider">|</li>
+                                            <li class="ec-topicpath__item--active"><a
+                                                        href="{{ url('product_list') }}?category_id={{ Category.id }}&sub_category_id={{ sc.id }}">{{ sc.name }}</a>
+                                            </li>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endfor %}
+
+                        {% endif %}
+
+                    {% endif %}
+                    {% if search_form.vars.value and search_form.vars.value.name %}
+                        <li class="ec-topicpath__divider"> &nbsp; </li>
+                        <li class="ec-topicpath__item">{{ '「%name%」的搜尋結果'|trans({ '%name%': search_form.vars.value.name }) }}</li>
+                    {% endif %}
+                </ol>
+            </div>
+
+            {% if Category is not null %}
+                {% if Category.rsortchildren|length > 0 %}
+                <ol class="ec-topicpath-cate">
+                {% for sub_category in Category.rsortchildren %}
+                    {% for sc in sub_category.path %}
+                        {% if sc.hierarchy == 2 %}
+                            <li class="ec-topicpath__item{% if sc.id == search_form.sub_category_id.vars.value %}--active{% endif %}"><a href="{{ url('product_list') }}?category_id={{ Category.id }}&sub_category_id={{ sc.id }}">{{ sc.name }}</a></li>
+                            <li class="ec-topicpath__divider">&nbsp;</li>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+                </ol>
+                {% endif %}
+            {% endif %}
+
+            <div class="ec-searchnavRole__infos" {% if Category and Category.rsortchildren|length > 0 %} style="border:none" {% endif%} >
+
+                <div class="ec-searchnavRole__counter">
+                    {% if pagination.totalItemCount > 0 %}
+                        {{ '<span class="ec-font-bold">%count%產品</span>'|trans({ '%count%': pagination.totalItemCount })|raw }}
+                    {% else %}
+                        <span>{{ '未找到您正在寻找的产品。'|trans }}</span>
+                    {% endif %}
+                </div>
+                {% if pagination.totalItemCount > 0 %}
+                    <div class="ec-searchnavRole__actions">
+                        <div class="ec-select">
+                            {{ form_widget(disp_number_form, {'id': '', 'attr': {'class': 'disp-number'}}) }}
+                            {{ form_widget(order_by_form, {'id': '', 'attr': {'class': 'order-by'}}) }}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if pagination.totalItemCount > 0 %}
+            <div class="ec-shelfRole">
+                <ul class="ec-shelfGrid">
+                    {% for Product in pagination %}
+                        <li class="ec-shelfGrid__item">
+                            <a href="{{ url('product_detail', {'id': Product.id}) }}">
+                                <p class="ec-shelfGrid__item-image">
+                                    <img src="{{ asset(Product.main_list_image|no_image_product, 'save_image') }}">
+                                </p>
+                                <p class="name">{{ Product.name }}</p>
+                            </a>
+                            <a href="{{ url('product_detail', {'id': Product.id}) }}">
+
+                                {% set positive_star = ReviewAveList[Product.id] %}
+                                {% set nagative_star = 5 - positive_star %}
+                                <span class="star">{{ stars.stars(positive_star, nagative_star) }}<i>({{ ReviewCntList[Product.id] }})</i></span>
+                                {% if false %}
+	                                {% if Product.description_list %}
+	                                    <p>{{ Product.description_list|raw|nl2br }}</p>
+	                                {% endif %}
+                                {% endif %}
+
+                                
+                                {% set reg_rate = get_regular_discount(Product.id) %}
+                                {% if reg_rate > 0 %}
+							        <div style="position:relative;white-space:nowrap;padding-top:8px">
+                                        {% if reg_rate > 0 %}
+                                            <div style="margin:0;padding:0;position:absolute;top:-8px"><span style="font-size:9px">【定期】</span>
+								                <b id="discount-per" style="color:red;font-size:9px;">初回{{ reg_rate }} ％OFF</b>
+                                            </div>
+                                        {% endif %}
+
+                                        {% set reg_price = 0 %}
+                                        {% if Product.hasProductClass %}
+                                            {% set reg_price = Product.getPrice02IncTaxMin %}
+                                        {% else %}
+                                            {% set reg_price = Product.getPrice02IncTaxMin %}
+                                        {% endif %}
+
+                                        {% if reg_rate > 0 %}
+                                            <span class="ec-price__price"><span class="price02-default">{{ (reg_price - reg_price * reg_rate / 100)|price }}</span><span style="font-size:13px"> ← </span><s style="font-size:13px"><b>{{ reg_price|price }}</b></s></span>
+                                        {% else %}
+                                            <span class="ec-price__price price02-default"><b>{{ reg_price|price }}</b></span>
+                                        {% endif %}  
+                                    </div>
+                                {% else %}
+
+                                    <p class="price02-default">
+                                        {% if Product.hasProductClass %}
+                                            {% if Product.getPrice02Min == Product.getPrice02Max %}
+                                                {{ Product.getPrice02IncTaxMin|price }}
+                                            {% else %}
+                                                {{ Product.getPrice02IncTaxMin|price }} ～ {{ Product.getPrice02IncTaxMax|price }}
+                                            {% endif %}
+                                        {% else %}
+                                            {{ Product.getPrice02IncTaxMin|price }}
+                                        {% endif %}
+                                    </p>
+
+                                {% endif %}
+                            </a>
+
+                            {% if Product.stock_find %}
+                                {% set form = forms[Product.id] %}
+                                <form name="form{{ Product.id }}" id="productForm{{ Product.id }}" action="{{ url('product_add_cart', {id:Product.id}) }}" method="post">
+                                    <div class="ec-productRole__actions option" style="position:relative">
+                                        {% if form.classcategory_id1 is defined %}
+                                            <div class="ec-select">
+                                                {{ form_widget(form.classcategory_id1) }}
+                                                {{ form_errors(form.classcategory_id1) }}
+                                            </div>
+                                            {% if form.classcategory_id2 is defined %}
+                                                <div class="ec-select">
+                                                    {{ form_widget(form.classcategory_id2) }}
+                                                    {{ form_errors(form.classcategory_id2) }}
+                                                </div>
+                                            {% endif %}
+                                        {% endif %}
+
+                                        {% set sc = get_product_sell_count(Product.id) %}
+                                        {% if sc %}
+                                        <div class="sell_count_wrap">
+                                            <span class="sell_count">{{ sc }}</span><span class="sell_count_unit">個</span><br><span class="sell_count_label"> 累計販売数</span>
+                                        </div>
+                                        {% endif %}
+
+                                        <div class="ec-numberInput"><span>{{ '數量'|trans }}</span>
+                                            {{ form_widget(form.quantity, {'attr': {'class': 'quantity'}}) }}
+                                            {{ form_errors(form.quantity) }}
+                                        </div>
+
+                                    </div>
+                                    {{ form_rest(form) }}
+                                </form>
+
+                        
+                                {% if is_urank_product(app.user, Product) == 1 %}
+                                
+                                {% else %}
+                                    <!-- DL -->
+                                    {% set isDownloadContent = isExistDownloadZeroContentByProduct(Product) %}
+                                    {% if isDownloadContent == true %}
+                                        <div class="ec-productRole__btn">
+                                            <a href="{{ url('sheeb_dlc_freedownload', {id:Product.id}) }}" target="_blank" class="ec-blockBtn--action _add-cart" >
+                                                {{ 'ダウンロード' }} 
+                                            </a>
+                                        </div>
+
+                                    {% else %}
+                                        <div class="ec-productRole__btn">
+                                            <button type="submit" class="ec-blockBtn--action add-cart" data-cartid="{{ Product.id }}" form="productForm{{ Product.id }}">
+                                                {{ '新增到購物車'|trans }}
+                                            </button>
+                                        </div>
+                                    {% endif %}
+
+                                {% endif %}
+                            
+                            {% else %}
+                                <div class="ec-productRole__btn">
+                                    <button type="button" class="ec-blockBtn--action" disabled="disabled">
+                                        {{ 'SOLD OUT'|trans }}
+                                    </button>
+                                </div>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="ec-modal">
+                <input type="checkbox" id="ec-modal-checkbox" class="checkbox">
+                <div class="ec-modal-overlay">
+                    <label for="ec-modal-checkbox" class="ec-modal-overlay-close"></label>
+                    <div class="ec-modal-wrap">
+                        <label for="ec-modal-checkbox" class="ec-modal-close"><span class="ec-icon"><img src="{{ asset('assets/icon/cross-dark.svg') }}" alt=""/></span></label>
+                        <div id="ec-modal-header" class="text-center">{{ '已新增到購物車'|trans }}</div>
+                        <div class="ec-modal-box">
+                            <div class="ec-role">
+                                <label for="ec-modal-checkbox" class="ec-inlineBtn--cancel">{{ '繼續選購'|trans }}</label>
+                                <a href="{{ url('cart') }}" class="ec-inlineBtn--action cart-url">{{ '前往購物車'|trans }}</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ec-pagerRole">
+                {% include "pager.twig" with {'pages': pagination.paginationData} %}
+            </div>
+        {% endif %}
+    {% endif %}
+
+    {# {% include "Product/category.twig" %} #}
+
+    {#
+    <div class="category-list">
+        <p class="title">ジャンル</p>
+        <div class="inr">
+            <ul>
+                <li class="c01"><a href="{{ url('product_list') }}?category_id=7">カラーシャンプー</a></li>
+                <li class="c02"><a href="{{ url('product_list') }}?category_id=18">ヒト幹細胞ヘアケア</a></li>
+                <li class="c03"><a href="{{ url('product_list') }}?category_id=8">カラー剤<br>ブリーチ剤</a></li>
+                <li class="c04"><a href="{{ url('product_list') }}?category_id=12"> トリートメント<br>(インバス)</a></li>
+                <li class="c05"><a href="{{ url('product_list') }}?category_id=17">トリートメント<br>(アウトバス)</a></li>
+                <li class="c06"><a href="{{ url('product_list') }}?category_id=11">ヘアケア</a></li>
+                <li class="c07"><a href="{{ url('product_list') }}?category_id=9">ヘアカラー関連</a></li>
+                <li class="c08"><a href="{{ url('product_list') }}?category_id=19">サロン関連</a></li>
+                <li class="c09"><a href="{{ url('product_list') }}?category_id=15">教材</a></li>
+                <li class="c10"><a href="{{ url('product_list') }}?category_id=16">公式通販限定</a></li>
+                <li class="c11"><a href="{{ url('product_list') }}?category_id=20">タイムセール</a></li>
+                <li class="c12"><a href="{{ url('product_list') }}?category_id=21">コーム</a></li>
+                <li class="c13"><a href="{{ url('product_list') }}?category_id=10">書籍</a></li>
+                <li class="c14"><a href="{{ url('product_list') }}?category_id=22">CBD</a></li>
+            </ul>
+        </div>
+    </div>
+    #}
+{% endblock %}

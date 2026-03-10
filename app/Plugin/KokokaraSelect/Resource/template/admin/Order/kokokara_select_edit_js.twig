@@ -1,0 +1,120 @@
+<script>
+
+    window.addEventListener('DOMContentLoaded', function () {
+
+        $('.kokokara_select_item_ex_btn').each(function () {
+
+            var targetName = $(this).data('target_name');
+            $('#order_OrderItems_' + targetName + '_quantity').addClass('d-none');
+            $('#order_OrderItems_' + targetName + '_quantity').after('<div>' + $(this).data('quantity') + '<div style="font-size:9px;color:red;">※ピックアップは、選択商品参照</div></div>');
+        });
+
+        $('.kokokara_select_direct_select_child').each(function () {
+
+            var targetName = $(this).data('target_name');
+            $('#order_OrderItems_' + targetName + '_quantity').addClass('d-none');
+            $('#order_OrderItems_' + targetName + '_quantity').after('<div>' + $(this).data('quantity') + '<div style="font-size:9px;color:red;">※ピックアップは、選択商品参照</div></div>');
+
+            // 削除ボタン無効化
+            var $targetTd = $('#delete_order_OrderItems_' + targetName).parents('td');
+            var $target = $targetTd.find('a:first');
+            $target.addClass('disabled');
+        });
+    });
+
+    $(function () {
+        // 商品削除追加時のindexズレ修正
+        while ($('#order_OrderItems_' + (index + 1) + '_ProductClass').length) {
+            index = index + 1;
+        }
+        if(index < {{ ksFormIndexCount }}) {
+            index = {{ ksFormIndexCount }};
+            while ($('#order_OrderItems_' + (index + 1) + '_ProductClass').length) {
+                index = index + 1;
+            }
+        }
+    })
+
+    $(function () {
+
+        var saveProductClassId = "";
+
+        // 複数配送無効化
+        {% if KsSelectOrder %}
+        $('#shipping-add').addClass('d-none');
+        {% endif %}
+
+        // リスト表示時に検索
+        $('#addKokokaraSelectProduct').on('show.bs.modal', function (e) {
+
+            var productClassId = $(e.relatedTarget).data('product_class_id');
+            var targetName = $(e.relatedTarget).data('target_name');
+
+            // 追加用Number生成
+            $('#kokokara_select_group > option').remove();
+
+            var quantity = $(e.relatedTarget).data('quantity');
+
+            for (var i = 1; i <= quantity; i++) {
+                console.log(i);
+                $('#kokokara_select_group').append($('<option>').html(i).val(i));
+            }
+
+            $('#kokokara_select_group').append($('<option>').html('新規追加').val(i++));
+
+            if(saveProductClassId == productClassId) {
+                return;
+            }
+
+            saveProductClassId = productClassId;
+
+            // リスト読み込み
+            findKokokaraSelectProduct(productClassId)
+        });
+
+        function findKokokaraSelectProduct(productClassId) {
+
+            var list = $('#searchKokokaraSelectProductModalList');
+            list.children().remove();
+            list.text('読込中...')
+
+            $.ajax({
+                url: '{{ url('admin_order_search_kokokara_select_product') }}',
+                type: 'POST',
+                dataType: 'html',
+                data: {
+                    'productClassId': productClassId
+                }
+            }).done(function (data) {
+                $('#searchKokokaraSelectProductModalList').html(data);
+            }).fail(function (data) {
+                alert('search product failed.');
+            });
+        }
+
+    });
+
+    //cardCollapseIconChange　カードコンポーネントのcollapseと連動するアイコン変化
+    var cardCollapseIconDown = function () {
+        $(function () {
+            $(document).on('hidden.bs.collapse', '.ks-cardCollapse', function () {
+                var id = $(this).attr('id');
+                var icon = $('[href="#' + id + '"]').find('i');
+                icon.removeClass('fa-angle-up');
+                icon.addClass('fa-angle-down');
+            })
+        })
+    };
+    cardCollapseIconDown();
+
+    var cardCollapseIconUp = function () {
+        $(function () {
+            $(document).on('shown.bs.collapse', '.ks-cardCollapse', function () {
+                var id = $(this).attr('id');
+                var icon = $('[href="#' + id + '"]').find('i');
+                icon.addClass('fa-angle-up');
+            })
+        })
+    };
+    cardCollapseIconUp();
+</script>

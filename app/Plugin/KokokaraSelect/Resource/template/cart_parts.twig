@@ -1,0 +1,56 @@
+{% set CartItemProductClass = CartItem.ProductClass %}
+{% set CartItemProduct = CartItemProductClass.Product %}
+{% if kokokaraSelectIndex is defined %}
+    {% set suffix = kokokaraSelectIndex %}
+    {% set suffix2 = kokokaraSelectIndex2 %}
+{% else %}
+    {% set suffix = '_d_'~ProductClass.id %}
+    {% set suffix2 = '_d_'~ProductClass.id %}
+{% endif %}
+<div id="kokokara_select_group_{{ suffix }}">
+    {% if ksDirectSelect %}
+        <div style="margin-top: 10px;">
+            {{ get_kokokara_select_direct_select_name() }} {{ CartItem.quantity }}点の{{ 'kokokara_select.admin.pdf.direct_select.suffix'|trans }}：
+        </div>
+        {% set ksMargeItems = get_kokokara_select_marge_items(CartItem) %}
+        {% for ksMargeItem in ksMargeItems %}
+            <div style="margin-bottom: 5px;">
+                {{ ksMargeItem.viewProductName }} × {{ ksMargeItem.quantity }}
+            </div>
+        {% endfor %}
+    {% else %}
+        {% for KsCartSelectItemGroup in CartItem.KsCartSelectItemGroups %}
+            <div style="margin-top: 10px;">
+                <a href="{{ url('kokokara_select_list_edit', {'id': CartItemProduct.id, 'editId': KsCartSelectItemGroup.id}) }}">{{ get_kokokara_select_name() }}内訳({{ loop.index }})</a>
+                <a href="{{ url('kokokara_select_list_delete', {'id': CartItemProductClass.id, 'editId': KsCartSelectItemGroup.id}) }}" {{ csrf_token_for_anchor() }} data-method="put" data-message="選択商品をカートから商品を削除してもよろしいですか?">
+                    {{ '[削除]'|trans }}
+                </a>
+                {% set isCartSelectItemGroupQuantity = is_kokokara_select_cart_group_quantity(CartItemProduct, KsCartSelectItemGroup) %}
+                {% if isCartSelectItemGroupQuantity == false %}
+                    <div class="ec-color-accent">{{ '数量が適切ではありません。'|trans }}</div>
+                {% endif %}
+            </div>
+            {% if ksDirectSelect %}
+                {% for KsCartSelectItem in KsCartSelectItemGroup.KsCartSelectItems %}
+                    <div style="margin-bottom: 5px;">
+                        {{ viewProductName }} × {{ quantity }}
+                    </div>
+                {% endfor %}
+            {% else %}
+                {% for KsCartSelectItem in KsCartSelectItemGroup.KsCartSelectItems %}
+                    {% set quantity = KsCartSelectItem.quantity %}
+                    {% set KsSelectItem = KsCartSelectItem.KsSelectItem %}
+                    {% set ProductClass = KsSelectItem.ProductClass %}
+                    {% set Product = ProductClass.Product %}
+                    {% set viewProductName = get_kokokara_select_product_name(ProductClass) %}
+                    {% if quantity > 0 %}
+                        {% set isKsCartSelectItemStock = is_kokokara_select_cart_item_stock(KsCartSelectItem) %}
+                        <div style="margin-bottom: 5px;" class="{% if isKsCartSelectItemStock == false %}ec-color-accent{% endif %}">
+                            {{ viewProductName }} × {{ quantity }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+</div>

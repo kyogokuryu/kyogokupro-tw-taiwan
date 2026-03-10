@@ -1,0 +1,30 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+{% block _entry_line_notification_flg_row %}
+    {% if form|length > 0 %}
+        <div>
+        <dl>
+            <dt>
+            {{ form_label(form, '接收LINE通知', {'label_attr': {'class': 'ec-label'}}) }}
+            </dt>
+            <dd>
+                {% if form.vars.value == 1 %}
+                    同意
+                {% elseif form.vars.value == 0 %}
+                    不同意
+                {% endif %}
+                {{ form_widget(form, { type: 'hidden'}) }}
+            </dd>
+        </dl>
+        </div>
+    {% endif %}
+{% endblock _entry_line_notification_flg_row %}

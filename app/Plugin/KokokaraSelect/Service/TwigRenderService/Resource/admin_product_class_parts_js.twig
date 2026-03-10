@@ -1,0 +1,68 @@
+<script>
+
+    // 入力フォーム切り替え
+    $(function () {
+
+        var plg_input = false;
+
+        var bnt_plg_msg = "{{ titleButtonName|trans }}";
+        var btn_default_msg = "{{ titleButtonDefaultName|trans }}";
+
+        {% if mainInputValid == true
+            and plgInputValid == false %}
+
+            plgInputChange();
+        {% endif %}
+
+        // 入力フォーム切り替えボタン
+        $('#{{ titleTargetKey }}').on('click', function () {
+            plgInputChange();
+        });
+
+        // 選択規格の表示
+        $('input[id$=_checked]').change(function () {
+
+            var check_key = $(this).attr('id');
+            var row_check = $(this).prop("checked");
+            $('#{{ rootTargetKey }}' + check_key).prop('checked', row_check);
+        });
+
+        function plgInputChange() {
+
+            // 全て非表示にする
+            $('#ex-product_class').find('table > thead').addClass('d-none');
+            $('#ex-product_class').find('table > tbody > tr').addClass('d-none');
+
+            if(plg_input) {
+
+                plg_input = false;
+
+                // 通常に戻す
+                $('#ex-product_class').find('[id^="ex-product_class-"]').removeClass('d-none');
+                $('.{{ rowTargetKey }}').addClass('d-none');
+                $('#{{ titleTargetKey }}').text(bnt_plg_msg);
+
+
+                $('#ex-product_class').find('table > thead').eq(0).removeClass('d-none');
+                $('#{{ tableTitleTargetKey }}').addClass('d-none');
+
+                // 1行目コピーボタン再表示
+                $('#copy').removeClass('d-none');
+
+            } else {
+                // タイムセールON
+                $('#ex-product_class').find('[id^="ex-product_class-"]').addClass('d-none');
+                $('.{{ rowTargetKey }}').removeClass('d-none');
+
+                $('#{{ titleTargetKey }}').text(btn_default_msg);
+                plg_input = true;
+
+                $('#ex-product_class').find('table > thead').addClass('d-none');
+                $('#{{ tableTitleTargetKey }}').removeClass('d-none');
+
+                // 1行目コピーボタン非表示
+                $('#copy').addClass('d-none');
+            }
+        }
+    });
+</script>

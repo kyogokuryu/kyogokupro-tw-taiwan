@@ -1,0 +1,39 @@
+<div id="carousel_column___name__" class="row">
+    <div class="col-4 image-upload">
+        <div class="progress" style="display: none;">
+            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0"
+                 aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <div class="thumb c-form__fileUploadThumbnails clearfix"></div>
+        <div class="upload-zone media py-5 border-ec-dashed rounded">
+            <div class="media-body">
+                <i class="fa fa-cloud-upload fa-3x text-ec-lightGray mx-3 align-middle" aria-hidden="true"></i>
+                {{ form_widget(form.image_name, { attr : { class: 'image-url' } }) }}
+                {{ form_errors(form.image_name) }}
+                {{ form_widget(form.image_file, { attr : { class: 'image-file', accept : 'image/*', style : 'display:none;' } }) }}
+                {{ form_errors(form.image_file) }}
+                <a class="file_upload btn btn-ec-regular mr-2">
+                    {{ 'admin.common.file_select'|trans }}
+                </a>
+            </div><!-- /.media-body -->
+        </div><!-- /.media -->
+    </div>
+    <div class="col column-options">
+        <label for="{{ form.link_url.vars.id }}">
+            画像のリンク先URL (httpsから始まるURL、最大1000文字)
+        </label>
+        {{ form_widget(form.link_url, { attr : { class: 'link-url', onkeydown: 'if(event.keyCode == 13) return false;' } }) }}
+        {{ form_errors(form.link_url) }}
+
+        <label for="{{ form.label.vars.id }}" style="margin-top: 16px;">
+            画像に表示するラベル (最大12文字)
+        </label>
+        {{ form_widget(form.label, { attr : { class: 'carousel-label', onkeydown: 'if(event.keyCode == 13) return false;' } }) }}
+        {{ form_errors(form.label) }}
+    </div>
+    <div class="col-1">
+        <button type="button" class="btn btn-danger btn-block delete-column">
+            <i class="fa fa-remove"></i>
+        </button>
+    </div>
+</div>

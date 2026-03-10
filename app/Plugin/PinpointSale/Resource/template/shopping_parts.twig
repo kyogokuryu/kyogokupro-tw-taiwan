@@ -1,0 +1,13 @@
+{% set ProductClass = orderItem.ProductClass %}
+{% set PinpointSaleItem = ProductClass.PinpointSaleItem %}
+{% if PinpointSaleItem is not null and PinpointSaleItem.active %}
+    {% if pinpointSaleIndex is defined %}
+        {% set suffix = pinpointSaleIndex %}
+    {% else %}
+        {% set suffix = '_d_'~ProductClass.id %}
+    {% endif %}
+    <div id="pinpoint_sale_price_{{ suffix }}" class="ec-color-accent" >
+        {% set subTotal = PinpointSaleItem.DiscountPriceIncTax * orderItem.quantity %}
+        【{{ discountName }}{{ ' 小計'|trans }}：-{{ subTotal|number_format }}TWD】
+    </div>
+{% endif %}

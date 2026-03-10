@@ -1,0 +1,27 @@
+#flash messages
+uc_banner_cbd01.admin.setting.save.complete: 已儲存設定。
+uc_banner_cbd01.admin.setting.delete.complete: 已刪除資料。
+
+#config
+uc_banner_cbd01.admin.config.title: UC橫幅 CBD01
+uc_banner_cbd01.admin.config.config_title: 插件設定
+uc_banner_cbd01.admin.config.edit_title: 圖片編輯
+uc_banner_cbd01.admin.config.image_title: 圖片設定
+uc_banner_cbd01.admin.config.no_image: 尚未註冊圖片。
+uc_banner_cbd01.admin.config.conversion.save: 註冊
+uc_banner_cbd01.admin.config.conversion.add: 新增
+uc_banner_cbd01.admin.config.conversion.back: 插件列表
+uc_banner_cbd01.admin.config.conversion.top: 圖片列表
+
+uc_banner_cbd01.admin.config.label_title: 標題
+uc_banner_cbd01.admin.config.label_display_title: 顯示標題
+uc_banner_cbd01.admin.config.label_display_description: 顯示說明文字
+uc_banner_cbd01.admin.config.label_img_url: 圖片URL（必填）
+uc_banner_cbd01.admin.config.label_img_alt: 圖片Alt
+uc_banner_cbd01.admin.config.label_img_description: 圖片說明文字（可使用HTML）
+uc_banner_cbd01.admin.config.label_link_url: 圖片連結
+uc_banner_cbd01.admin.config.label_column_xs: 列數（手機）
+uc_banner_cbd01.admin.config.label_column_lg: 列數（電腦）
+
+#messages
+uc_banner_cbd01.admin.config.message_path: user_data/~

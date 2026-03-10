@@ -1,0 +1,30 @@
+
+{% set link_product_id =814 %}
+{% if is_debug() %}
+    {% set link_product_id =814 %}
+{% endif %}
+<div style="min-height:5000px">
+    <div class="row">
+        <div class="col-12"><img height="" loading="lazy"  src="/html/template/default/assets/img/complete/kg_light1.png"></div>
+    </div>
+    <div class="row">
+        <div class="col-12"><a href="/cm_direct_order/{{ link_product_id }}?pre_order_id={{ Order.orderNo}}"><img height="" loading="lazy"  src="/html/template/default/assets/img/complete/kg_light2.png"></a></div>
+    </div>
+    <div class="row">
+        <div class="col-12"><img height="" loading="lazy"  src="/html/template/default/assets/img/complete/kg_light3.png"></div>
+    </div>
+    <div class="row">
+        <div class="col-12"><img height="" loading="lazy"  src="/html/template/default/assets/img/complete/kg_light4.png"></div>
+    </div>
+    <div class="row">
+        <div class="col-12"><img height="" loading="lazy"  src="/html/template/default/assets/img/complete/kg_light5.png"></div>
+    </div>
+    <div class="row">
+        <div class="col-12"><img height="" loading="lazy"  src="/html/template/default/assets/img/complete/kg_light6.png"></div>
+    </div>
+    <div class="row">
+        <div class="col-12"><a href="/cm_direct_order/{{ link_product_id }}?pre_order_no={{ Order.orderNo }}"><img height="" loading="lazy"  src="/html/template/default/assets/img/complete/kg_light7.png"></a></div>
+    </div>
+
+</div>
+

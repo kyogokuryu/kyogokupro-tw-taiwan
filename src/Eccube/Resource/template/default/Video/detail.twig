@@ -1,0 +1,450 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+
+{% set body_class = 'video_page ' %}
+
+{% block stylesheet %}
+    <style type="text/css">
+        .video-detail-category {
+            border-radius: 25px;
+            background: rgba(231, 200, 204,1);
+            display: inline-block;
+            font-weight: normal;
+            color: #39393A;
+            padding: 5px 15px;
+            font-size: 16px;
+            padding:4px 14px;
+        }
+
+        .video-detail-category:focus,
+        .video-detail-category:hover {
+                text-decoration: none;
+        }
+
+        @media screen and (max-width: 480px) {
+            .video-detail-category {
+                padding: 2px 10px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block javascript %}
+<script>
+var videoYoutubeId = "{{ video.getVideoYoutubeId }}"
+var second = "{{ permission? video.getVideoPointSetting.getSecond  :-1 }}"
+var point = "{{ video.getVideoPointSetting.getPoint }}"
+var curpoint = "{{ customer.point }}"
+var checkTime
+var player;
+
+var tag = document.createElement('script');
+
+tag.src = "https://www.youtube.com/iframe_api";
+var firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+function onYouTubeIframeAPIReady() {
+player = new YT.Player('iframe_video', {
+    height: '390',
+    width: '640',
+    videoId: videoYoutubeId,
+    playerVars: {
+        'playsinline': 1,
+        'autoplay': 0,
+    },
+    events: {
+        'onReady': onPlayerReady,
+        'onStateChange': onPlayerStateChange
+    }
+})
+}
+
+function onPlayerReady(event) {
+    document.getElementById("loading-video").style.display = "none";
+
+   // event.target.playVideo()
+    //startInterval(second)
+}
+    function startInterval(second) {
+        $(function () {
+             $.ajax({
+                    url: "{{ url('video_new_point')}}",
+                    type: 'POST',
+                    data: {
+                        video_id: "{{ video.getId }}"
+                    }
+             }).done(function (data) {
+                let point = data;
+                $(".progress_circle").css("display","none")
+                $(".tag_received").css("display","block")
+                if(point>0){
+                    $("#BundleProductSearchProductModal").modal("show");
+                    $("#mess-dialog").html(point);
+              //      $(".point-box").css("font-size",newPoint>=1000?'20px':'24px')
+                }
+                if(point<0) point =0;
+               
+               
+                
+                
+            })
+        })
+    }
+var time_cds =  second; 
+var time_cd =time_cds;
+var time_check =50;
+var intervalID = null;
+function onPlayerStateChange(event) {
+    let video_duration = player.getDuration()-1.5; // tranh MAC kieu 9.1 / 10s
+    if (event.data == YT.PlayerState.PLAYING && !intervalID) {
+        // done = true;
+        if(time_cd<=0)
+            return;
+        
+        intervalID = setInterval((dt)=>{
+            time_cd-=time_check/1000;
+            if(time_cd<0)
+                time_cd =0;
+         //   console.log("time_cd",time_cd,dt);
+            
+            document.getElementById("v_timce_cd").innerHTML=  (time_cd).toFixed(0)
+            let v_progress =Math.floor(251*(time_cd/time_cds)); 
+            $('#progress_timce_cd').css('stroke-dashoffset', v_progress);
+            
+    
+
+            if(time_cd<=0){
+                startInterval(second)
+                clearInterval(intervalID);
+                document.getElementById("list_product").style.display = "block";
+            }else{
+                let video_cur_time = player.getCurrentTime();
+                if(video_duration<=video_cur_time){
+                    clearInterval(intervalID);
+                    intervalID = null
+                }
+            }
+        }, time_check);
+    }else{
+        clearInterval(intervalID);
+        intervalID = null
+    }
+
+
+}
+
+
+function getSiblings (e) {
+            // for collecting siblings
+            let siblings = []; 
+            // if no parent, return no sibling
+            if(!e.parentNode) {
+                return siblings;
+            }
+            // first child of the parent node
+            let sibling  = e.parentNode.firstChild;
+            // collecting siblings
+            while (sibling) {
+                if (sibling.nodeType === 1 && sibling !== e) {
+                    siblings.push(sibling);
+                }
+                sibling = sibling.nextSibling;
+            }
+            return siblings;
+};
+
+$(document).ready(()=>{
+     $('.img-product').on("click",(event)=>{
+                    let element = event.delegateTarget;
+                    let pId = element.getAttribute('pId');
+                    let e_price =  element.querySelector('.price');
+                    let e_name =  element.querySelector('.p_name');
+                    let e_code =  element.querySelector('.p_code');
+                    let p_point =  element.querySelector('.p_point');
+                    let product_detail_url = element.getAttribute('data-product-url')
+                    element.classList.add("select");
+                    let siblings = getSiblings(element.parentElement);  //box-item .img-product
+                    for(let i=0;i<siblings.length;i++){
+                        siblings[i].querySelector('.img-product').classList.remove("select");
+                    }
+                    $('#product_preview .p_name').text(e_name.textContent);
+                    $('#product_preview .p_name').attr('href', product_detail_url)
+                    $('#product_preview .p_price').text(e_price.textContent);
+                    $('#product_preview .a_detail').attr('href',element.getAttribute('data-product-url'));
+                    $('#product_preview .add-cart').attr('data-cartid', pId);
+                    $('#product_preview_image img').attr("src", element.querySelector('img').getAttribute('src'));
+
+                    $('#product_preview').css("display", "block");
+                    $('#product_preview .dialog').addClass("dialog_show");
+                    $('#product_preview .p_code').text( e_code.textContent);
+                    $('#product_preview .p_point').text( `（Pt ${ p_point?p_point.textContent:''} ）` );
+                    document.getElementById("list_product").scrollIntoView();
+                })
+                $('#product_preview .dialog').on("click",(event)=>{
+                    event.stopPropagation();
+                })
+                $('#product_preview').on("click",()=>{
+                    $('#product_preview').css("display", "none");
+                    $('#product_preview .dialog').removeClass("dialog_show");
+                })
+                $('.close-footer').on("click",()=>{
+                    $('#product_preview').css("display", "none");
+                    $('#product_preview .dialog').removeClass("dialog_show");
+                })
+})
+
+let isShow_cart = false;
+    $('.add-cart').on("click",(e)=>{
+                let element = e.delegateTarget;
+                var $form =  $('#productForm' +  element.getAttribute('data-cartid') )
+                e.preventDefault();
+                $.ajax({
+                    url: $form.attr('action'),
+                    type: $form.attr('method'),
+                    data: $form.serialize(),
+                    dataType: 'json',
+                    beforeSend: function(xhr, settings) {
+                        // Buttonを無効にする
+                        $('.add-cart').prop('disabled', true);
+                    }
+                }).done(function(data) {
+                    // レスポンス内のメッセージをalertで表示
+                    $.each(data.messages, function() {
+                        $('#ec-modal-header').html(this);
+                    });
+
+                    if(!isShow_cart){
+                        $('#ec-modal-checkbox').prop('checked', true);
+                        isShow_cart = true;
+                    }
+                    
+
+                    // カートブロックを更新する
+                    $.ajax({
+                        url: '{{ url('block_cart') }}',
+                        type: 'GET',
+                        dataType: 'html'
+                    }).done(function(html) {
+                        $('.ec-headerRole__cart').html(html);
+                    });
+                 //   alert('{{ '已添加到购物车。'|trans }}');
+                }).fail(function(data) {
+                    alert('{{ 'カートへの追加に失敗しました。'|trans }}');
+                }).always(function(data) {
+                    // Buttonを有効にする
+                    $('.add-cart').prop('disabled', false);
+                });
+                })
+</script>
+{% endblock javascript%}
+
+{% block main %}
+    {% set videoPoint = video.getVideoPointSetting.getPoint %}
+    <div class="iapp_header_title" style="height: 40px">
+        <a href="{{url('video_list') }}" class="back"><i class="material-icons" aria-hidden="true">arrow_back</i></a>
+    </div>
+
+    <div  class="iframe-fake">
+        <div id="iframe_video"></div>
+        <div  id="loading-video" class="lds-spinner node-load"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    </div>
+    <div class="edu_body">
+        <div>
+            <p class="video-detail-name" style="word-break: break-word;">{{ video.name }}</p>
+        </div>
+
+        {% if video.VideoCategory %}
+            <div>
+                <a href="{{ url('video_list') }}?category={{ video.VideoCategory.id }}" class="video-detail-category">{{ video.VideoCategory }}</a>
+            </div>
+        {% endif %}
+
+        {% set timeCD = video.getVideoPointSetting.getSecond %}
+        {% if not permission %}
+            {% set timeCD = 0 %}
+        {% endif %}
+
+        <div id="d-point" style="display: flex;justify-content: space-between;align-items: center;">
+
+            <div>
+                <div class="point-box" style="font-size:{{customer.point>=1000?'20px':'24px'}}"><p>ポイント：<span>{{videoPoint|number_format}}</span>pt</p></div>
+            </div>
+            
+            <div class="tag_received" style="{{timeCD <= 0 ?'display:block;':''}}" >
+                <svg class="border_progress" height="100" width="100">
+                    <defs>
+                        <linearGradient id="grad1" x1="100%" y1="0%" x2="0%" y2="0%">
+                        <stop offset="0%" style="stop-color:#97743F;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#EABD7D;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="50" cy="50" r="40" stroke="url(#grad1)" stroke-width="2" fill="#33333300" />
+                </svg>
+                <p class="progress_text">獲得<br>済み</span></p>
+            </div>
+            <div class="progress_circle" style="{{timeCD <= 0 ?'display:none;':''}}">
+                <svg class="border_progress" height="100" width="100">
+                
+                    <circle cx="50" cy="50" r="40" stroke="#333333" stroke-width="2" fill="#33333300" />
+                </svg>
+                <svg id="progress_timce_cd" class="progress_cir" height="100" width="100">
+                    <defs>
+                        <linearGradient id="grad2" x1="100%" y1="0%" x2="0%" y2="0%">
+                        <stop offset="0%" style="stop-color:#97743F;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#EABD7D;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="50" cy="50" r="40" stroke="url(#grad2)" stroke-width="3" fill="#33333300" />
+                </svg>
+                <p class="progress_text"> <span id="v_timce_cd">{{video.getVideoPointSetting.getSecond}}</span>s</p>
+            </div>
+        </div>
+        <div id="list_product">
+            <p class="tip">このアイテムを見ている人におすすめ</p>
+            <div class="dx"> 
+                {% for videoProduct in video.getVideoRelativeProducts %}
+                    {% set product = videoProduct.getProduct %}
+                        {# <p>{{ product.name }}</p>  #}
+                        <div class="box-item">
+                            <div class="img-product" data-product-url="{{ url('product_detail', {'id': product.id}) }}" pId={{product.id}}>
+                                <img src="{{ asset(product.main_list_image|no_image_product, 'save_image') }}">
+                                <p class="p_name">
+                                    {{product.name}}
+                                </p>
+                                <p class="price" style="display:none">
+                                    {% if product.hasProductClass %}
+                                        {% if product.getPrice02Min == product.getPrice02Max %}
+                                            {{ product.getPrice02IncTaxMin|price }}
+                                        {% else %}
+                                            {{ product.getPrice02IncTaxMin|price }} ～ {{ product.getPrice02IncTaxMax|price }}
+                                        {% endif %}
+                                    {% else %}
+                                        {{ product.getPrice02IncTaxMin|price }}
+                                    {% endif %}
+                                </p>
+                                <p class="p_code" style="display:none">{{product.ProductClasses[0]?product.ProductClasses[0].code:""}}</p>
+                                
+                                {% set reg_rate = get_regular_discount(product.id) %}
+                                {% set price_s = 0 %}
+                                
+                                {% if reg_rate > 0 %}
+                                    {% set reg_price = 0 %}
+                                    {% if product.hasProductClass %}
+                                        {% set reg_price = product.getPrice02IncTaxMin %}
+                                    {% else %}
+                                        {% set reg_price = product.getPrice02IncTaxMin %}
+                                    {% endif %}
+                                    {% set price_s = reg_price %}
+                                {% else %}
+                                    {% set price_s = product.getPrice02IncTaxMin %}
+                                {% endif %}
+                            
+                                {% if is_prime() %}
+                                    <p class="p_point" style="display:none">{{get_point(price_s, true)}}</p>
+                                {% else %}
+
+                                {% endif %}
+                                
+                                
+                                
+                                <form name="form{{ product.id }}" id="productForm{{ product.id }}" action="{{ url('product_add_cart', {id:product.id}) }}" method="post">
+                                    <input type="hidden" id="product_id{{ product.id }}" name="product_id" value="{{ product.id }}">
+                                    <input type="hidden" id="ProductClass{{ product.id }}" name="ProductClass" value="{{ product.ProductClasses[0].id }}">
+                                    <input type="hidden" id="quantity{{ product.id }}" name="quantity" value="1">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('_token') }}">
+                                </form>
+                                {# <div id="productImage{{ product.id }}" style="display:none">
+                                    {% for ProductImage in product.ProductImage %}
+                                        <img src="{{ asset(ProductImage, 'save_image') }}">
+                                    {% else %}
+                                        <img src="{{ asset(''|no_image_product, 'save_image') }}"/>
+                                    {% endfor %}
+                                </div> #}
+                            </div>
+                        </div>
+
+                {% endfor %}
+            </div>
+                
+        </div>
+
+        <div id="product_preview" class="product_preview">
+            <div class="dialog">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <button class="btn close-footer">x</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6" id="product_preview_image">
+                        <img src="">
+                    </div>
+                    <div class="col-xs-6">
+                        <div>
+                            <a class="p_name"></a>
+                        </div>
+                        {# <div>
+                            
+                            <strong><span class="p_price"></span><span>税込</span></strong>
+                        </div> #}
+                        <div class="ec-prime"><i class="fa fa-check "></i><a href="{{ url('product_detail', {'id': 522}) }}">ファミリー会員特典 送料無料<span class="p_point">（Pt）</span></a></div>
+                        <p>商品コード：<span class="p_code">kg4</span></p>
+                        {# <a class="a_detail">Detatil</a> #}
+                    </div>
+                </div>
+                
+                
+                <div style="margin-top:10px">
+                    <button class="add-cart" data-cartid="">買い物カートに追加</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal fade" id="BundleProductSearchProductModal" tabindex="-1" role="dialog"
+        aria-labelledby="BundleProductSearchProductModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header modal-header-video border-bottom-0">
+                    <h5 class="modal-title"></h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body modal-body-video">
+                    <p class="text-mess"> <span id="mess-dialog"></span>ポイントが付与されました！ </p>
+                    <button class="btn btn-close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">{{ 'common.close'|trans }}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ec-modal">
+                <input type="checkbox" id="ec-modal-checkbox" class="checkbox">
+                <div class="ec-modal-overlay">
+                    <label for="ec-modal-checkbox" class="ec-modal-overlay-close"></label>
+                    <div class="ec-modal-wrap">
+                        <label for="ec-modal-checkbox" class="ec-modal-close"><span class="ec-icon"><img src="{{ asset('assets/icon/cross-dark.svg') }}" alt=""/></span></label>
+                        <div id="ec-modal-header" class="text-center">{{ '已新增到購物車'|trans }}</div>
+                        <div class="ec-modal-box">
+                            <div class="ec-role">
+                                <label for="ec-modal-checkbox" class="ec-inlineBtn--cancel">{{ '繼續選購'|trans }}</label>
+                                <a href="{{ url('cart') }}" class="ec-inlineBtn--action cart-url">{{ '前往購物車'|trans }}</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% if Product.stock_find %}
+    {% if is_kokokara_select_product(Product) %}
+        <div class="ec-productRole__btn">
+            <button class="ec-blockBtn--action" onclick="location.href='{{ url('product_detail', {'id': Product.id}) }}'">
+                {{ '商品を選択する'|trans }}
+            </button>
+        </div>
+        <div class="ec-productRole__btn" style="display: none">
+    {% else %}
+        <div class="ec-productRole__btn">
+    {% endif %}
+{% else %}
+    <div class="ec-productRole__btn">
+{% endif %}

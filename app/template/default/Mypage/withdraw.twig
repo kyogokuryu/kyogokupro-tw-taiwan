@@ -1,0 +1,58 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+
+{% set mypageno = 'withdraw' %}
+
+{% set body_class = 'mypage' %}
+
+{% block main %}
+<article id="mypage">
+	<section>
+    <div class="ec-layoutRole__main">
+        <div class="ec-mypageRole">
+
+            {% include 'Mypage/navi-change.twig' %}
+        
+        </div>
+        <div class="ec-withdrawRole">
+            <form method="post" action="{{ url('mypage_withdraw') }}">
+                {{ form_widget(form._token) }}
+                <div class="ec-off3Grid">
+                    <div class="ec-off3Grid__cell">
+                        <div style="font-size:100px;text-align:center;">
+                            <div class="ec-icon"><img src="{{ asset('assets/icon/exclamation.svg') }}" alt=""></div>
+                        </div>
+                        <p class="ec-withdrawRole__title">{{ '在退訂程序完成前，請確認以下事項'|trans }}
+                        </p>
+                        <p class="ec-withdrawRole__description">{{ '當退訂程序完成後，您目前保存的購買記錄和收貨地址等資訊將全部被刪除，請您注意。'|trans }}
+                        </p>
+                    </div>
+                </div>
+                <div class="ec-off4Grid">
+                    <div class="ec-off4Grid__cell">
+                        <button type="submit" class="ec-blockBtn--cancel" name="mode"
+                                value="confirm">{{ '退訂程序'|trans }}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="ec-role row mt60">
+            <div class="col-xs-8">
+                <a href="{{ url('mypage') }}" class="mypage-back">{{ '我的帳號'|trans }}</a>
+            </div>
+        </div>
+
+    </div>
+	</section>
+</article>
+{% endblock %}

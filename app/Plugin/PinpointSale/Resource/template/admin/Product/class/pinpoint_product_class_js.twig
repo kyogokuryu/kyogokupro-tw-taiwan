@@ -1,0 +1,338 @@
+<script>
+
+    var TYPE_PRICE = "{{ constant('Plugin\\PinpointSale\\Entity\\Pinpoint::TYPE_PRICE') }}";
+    var TYPE_RATE = "{{ constant('Plugin\\PinpointSale\\Entity\\Pinpoint::TYPE_RATE') }}";
+    var TYPE_COMMON = "{{ constant('Plugin\\PinpointSale\\Entity\\Pinpoint::TYPE_COMMON') }}";
+
+    /**
+     * 初期処理
+     */
+    $(function () {
+
+        // セール種別の選択に合わせて切り替え
+        $('.pinpoint_type_radio').each(function() {
+            if($(this).prop('checked')) {
+                pinpointTypeRadioChange($(this));
+            }
+        });
+    });
+
+    /**
+     * 行追加
+     */
+    $(function () {
+
+        $('.pinpoint_sale_add_btn').on('click', function () {
+
+            var key1 = $(this).data('key1');
+            // 行追加
+            addPinpointRow(key1);
+        });
+    });
+
+    /**
+     * 行削除
+     */
+    $(function () {
+
+        $(document).on('click', '.pinpoint_del_btn', function () {
+
+            // 行非表示
+            var key1 = $(this).data('key1');
+            var key2 = $(this).data('key2');
+
+            var key = key1 + '_' + key2;
+
+            // 該当行の非表示
+            $('#pinpoint_row_' + key).addClass('d-none');
+
+            // del_flg=1セット
+            var $delOjb = $('#product_class_matrix_product_classes_' + key1 + '_productPinpoints_' + key2 + '_pinpoint_del_flg');
+            $delOjb.val(1);
+        });
+
+    });
+
+    /**
+     * タイムセール入力切り替え
+     */
+    $(function () {
+
+        var pinpoint_input = false;
+
+        var btn_pinpoint_msg = "{{ 'pinpoint_sale.admin.pinpoint_area_title'|trans }}";
+        var btn_default_msg = "{{ 'pinpoint_sale.admin.product_class.btn_default'|trans }}";
+
+        {% if pinpointInputValidOther == true
+            and pinpointInputValid == false %}
+            pinpointInputChange();
+        {% endif %}
+
+        // 入力フォーム切り替えボタン
+        $('#pinpoint_sale_change').on('click', function () {
+            pinpointInputChange();
+        });
+
+        // 選択規格の表示
+        $('input[id$=_checked]').change(function () {
+
+            var check_key = $(this).attr('id');
+            var row_check = $(this).prop("checked");
+            $('#pinpoint_sale_' + check_key).prop('checked', row_check);
+        });
+
+        function pinpointInputChange() {
+
+            // 全て非表示にする
+            $('#ex-product_class').find('table > thead').addClass('d-none');
+            $('#ex-product_class').find('table > tbody > tr').addClass('d-none');
+
+            if(pinpoint_input) {
+
+                pinpoint_input = false;
+
+                // 通常に戻す
+                $('#ex-product_class').find('[id^="ex-product_class-"]').removeClass('d-none');
+                $('.product_class_pinpoint_sale_target').addClass('d-none');
+                $('#pinpoint_sale_change').text(btn_pinpoint_msg);
+
+
+                $('#ex-product_class').find('table > thead').eq(0).removeClass('d-none');
+                $('#pinpoint_sale_thead').addClass('d-none');
+
+                // 1行目コピーボタン再表示
+                $('#copy').removeClass('d-none');
+
+            } else {
+                // タイムセールON
+                $('#ex-product_class').find('[id^="ex-product_class-"]').addClass('d-none');
+                $('.product_class_pinpoint_sale_target').removeClass('d-none');
+
+                $('#pinpoint_sale_change').text(btn_default_msg);
+                pinpoint_input = true;
+
+                $('#ex-product_class').find('table > thead').addClass('d-none');
+                $('#pinpoint_sale_thead').removeClass('d-none');
+
+                // 1行目コピーボタン非表示
+                $('#copy').addClass('d-none');
+            }
+        }
+    });
+
+    /**
+     * 単価・割引率切替
+     */
+    $(function () {
+
+        $(document).on('change', '.pinpoint_type_radio', function () {
+            pinpointTypeRadioChange($(this));
+        });
+    });
+
+    /**
+     * 繰り返し切替
+     */
+    $(function () {
+
+        var REPEAT_OFF = "{{ constant('Plugin\\PinpointSale\\Entity\\PinpointRepeat::REPEAT_OFF') }}";
+        var REPEAT_ON = "{{ constant('Plugin\\PinpointSale\\Entity\\PinpointRepeat::REPEAT_ON') }}";
+
+        $(document).on('change', '.pinpoint_repeat_type_radio', function () {
+            pinpointRepeatTypeRadioChange($(this));
+        });
+
+        function pinpointRepeatTypeRadioChange($checkObj) {
+            var key1 = $checkObj.parent().parent().data('key1');
+            var key2 = $checkObj.parent().parent().data('key2');
+            var key = key1 + '_' + key2;
+
+            if($checkObj.val() == REPEAT_OFF) {
+                $('#pinpoint_repeat_area_' + key).addClass('d-none');
+
+            } else if($checkObj.val() == REPEAT_ON) {
+                $('#pinpoint_repeat_area_' + key).removeClass('d-none');
+            }
+        }
+    });
+
+    /**
+     * 1行目コピー
+     */
+    $(function () {
+
+        $('#pinpoint_sale_copy').on('click', function () {
+
+            console.log('start');
+
+            var target_id = '#product_class_matrix_product_classes_0_productPinpoints_';
+            var PRODUCT_CLASS_COUNT = {{ form.product_classes|length }};
+            var index = 0;
+
+            // アクティブな1行目取得
+            $('.pinpoint_row_0').each(function () {
+
+                var key2 = $(this).data('key2');
+
+                if (!$(this).hasClass('d-none')) {
+                    // アクティブ
+                    for (var i = 1; i < PRODUCT_CLASS_COUNT; i++) {
+                        var pinpoint_row = "#pinpoint_row_" + i + "_" + index;
+                        if (!$(pinpoint_row).length) {
+                            // 行追加
+                            addPinpointRow(i);
+                        } else {
+                            $(pinpoint_row).removeClass('d-none');
+                        }
+                    }
+
+                    var sale_type_name = "product_class_matrix[product_classes][0][productPinpoints][" + key2 + "][pinpoint][sale_type]";
+
+                    var sale_type = $("[name='" + sale_type_name + "']:checked").val();
+                    var seqNo = 2;
+                    if (sale_type == TYPE_PRICE) {
+                        seqNo = 0;
+                    } else if (sale_type == TYPE_RATE) {
+                        seqNo = 1;
+                    }
+                    $("[id$='" + key2 + "_pinpoint_sale_type_" + seqNo + "']").prop('checked', true).trigger('change');
+
+                    $("[id$='" + key2 + "_pinpoint_salePrice']").val($(target_id + key2 + "_pinpoint_salePrice").val());
+                    $("[id$='" + key2 + "_pinpoint_saleRate']").val($(target_id + key2 + "_pinpoint_saleRate").val());
+                    $("[id$='" + key2 + "_pinpoint_sale_rate_common']").val($(target_id + key2 + "_pinpoint_sale_rate_common").val());
+
+                    $("[id$='" + key2 + "_pinpoint_start_time_custom_date']").val($(target_id + key2 + "_pinpoint_start_time_custom_date").val());
+                    $("[id$='" + key2 + "_pinpoint_end_time_custom_date']").val($(target_id + key2 + "_pinpoint_end_time_custom_date").val());
+
+                    $("[id$='" + key2 + "_pinpoint_start_time_custom_time_hour']").val($(target_id + key2 + "_pinpoint_start_time_custom_time_hour").val());
+                    $("[id$='" + key2 + "_pinpoint_start_time_custom_time_minute']").val($(target_id + key2 + "_pinpoint_start_time_custom_time_minute").val());
+                    $("[id$='" + key2 + "_pinpoint_end_time_custom_time_hour']").val($(target_id + key2 + "_pinpoint_end_time_custom_time_hour").val());
+                    $("[id$='" + key2 + "_pinpoint_end_time_custom_time_minute']").val($(target_id + key2 + "_pinpoint_end_time_custom_time_minute").val());
+
+                    var repeat_name = "product_class_matrix[product_classes][0][productPinpoints][" + key2 + "][pinpoint][repeat_status]";
+                    var repeat = $("[name='" + repeat_name + "']:checked").val();
+
+                    if (repeat == 1) {
+                        $("[id$='" + key2 + "_pinpoint_repeat_status_1']").prop('checked', true).trigger('change');
+
+                        $("[id$='" + key2 + "_pinpoint_PinpointRepeat_start_time_hour']").val($(target_id + key2 + "_pinpoint_PinpointRepeat_start_time_hour").val());
+                        $("[id$='" + key2 + "_pinpoint_PinpointRepeat_start_time_minute']").val($(target_id + key2 + "_pinpoint_PinpointRepeat_start_time_minute").val());
+
+                        $("[id$='" + key2 + "_pinpoint_PinpointRepeat_end_time_hour']").val($(target_id + key2 + "_pinpoint_PinpointRepeat_end_time_hour").val());
+                        $("[id$='" + key2 + "_pinpoint_PinpointRepeat_end_time_minute']").val($(target_id + key2 + "_pinpoint_PinpointRepeat_end_time_minute").val());
+
+                        for (var week = 0; week <= 6; week++) {
+                            var weekCheck = $(target_id + key2 + "_pinpoint_PinpointRepeat_week_check_" + week).prop('checked');
+                            $("[id$='" + key2 + "_pinpoint_PinpointRepeat_week_check_" + week + "']").prop('checked', weekCheck);
+                        }
+                    } else {
+                        $("[id$='" + key2 + "_pinpoint_repeat_status_0']").prop('checked', true).trigger('change');
+                    }
+
+                } else {
+
+                    for (var i = 1; i < PRODUCT_CLASS_COUNT; i++) {
+                        var pinpoint_row = "#pinpoint_row_" + i + "_" + index;
+                        if (!$(pinpoint_row).length) {
+                            // 行追加
+                            addPinpointRow(i);
+                        }
+                        $(pinpoint_row).addClass('d-none');
+                        $("[id$='" + key2 + "pinpoint_del_flg']").val($(target_id + key2 + "_pinpoint_del_flg").val());
+                    }
+                }
+
+                index++;
+            });
+        });
+    });
+
+    // 行追加
+    function addPinpointRow(key1) {
+
+        // prototype
+        var prototype = $('#product_class_pinpoint_sale_target_' + key1).data('prototype');
+
+        var pinpointRow = '.pinpoint_row_' + key1;
+        var newRowIndex = $(pinpointRow).length;
+
+        var newForm = prototype.replace(/__class__/g, key1);
+        newForm = newForm.replace(/__name__/g, newRowIndex);
+
+        var $lastPinpointAreaRow = $(pinpointRow + ':last');
+        $lastPinpointAreaRow.after(newForm);
+
+        // 初期選択設定
+        $('input[name="product_class_matrix[product_classes][' + key1 + '][productPinpoints][' + newRowIndex + '][pinpoint][sale_type]"]:eq(0)')
+            .prop('checked', true).trigger('change');
+
+        $('.pinpoint_tooltip').tooltip();
+
+        // datetimepicker設定
+        pinpointSaleSetDateTimePicker();
+    }
+
+    // 種別切り替え
+    function pinpointTypeRadioChange($checkObj) {
+
+        var key = $checkObj.parent().parent().data('key');
+
+        var saleTypeBase = '#' + 'pinpoint_sale_product_class_' + key;
+        var price_id = saleTypeBase + '_price_view_area';
+        var rate_id = saleTypeBase + '_rate_view_area';
+        var common_id = saleTypeBase + '_common_view_area';
+
+        var keys = key.split('_');
+
+        if($checkObj.val() == TYPE_PRICE) {
+            // 単価
+            showPinpointControl([price_id]);
+            hidePinpointControl([rate_id, common_id]);
+
+            $('#pinpoint_sale_col1_' + key)
+                .removeClass('col-auto')
+                .addClass('col-4');
+
+            $('#pinpoint_sale_col2_' + key).removeClass('d-none');
+            $('#pinpoint_sale_col3_' + key).removeClass('d-none');
+
+        } else if($checkObj.val() == TYPE_RATE) {
+            // 割引率
+            showPinpointControl([rate_id]);
+            hidePinpointControl([price_id, common_id]);
+
+            $('#pinpoint_sale_col1_' + key)
+                .addClass('col-4');
+
+            $('#pinpoint_sale_col2_' + key).removeClass('d-none');
+            $('#pinpoint_sale_col3_' + key).removeClass('d-none');
+
+        } else if($checkObj.val() == TYPE_COMMON) {
+            // 共通設定
+            showPinpointControl([common_id]);
+            hidePinpointControl([price_id, rate_id]);
+
+            $('#pinpoint_sale_col1_' + key)
+                .removeClass('col-4');
+
+            $('#pinpoint_sale_col2_' + key).addClass('d-none');
+            $('#pinpoint_sale_col3_' + key).addClass('d-none');
+
+            // 繰り返し無効化
+            var keyName = "product_class_matrix[product_classes][" + keys[0] + "][productPinpoints][" + keys[1] + "][pinpoint][repeat_status]";
+            $('input[name="' + keyName + '"]:eq(0)').prop('checked', true).trigger('change');
+        }
+    }
+
+    function showPinpointControl(showParams) {
+        showParams.forEach(function (showParam) {
+            $(showParam).removeClass('d-none');
+        });
+    }
+
+    function hidePinpointControl(hidParams) {
+        hidParams.forEach(function (hidParam) {
+            $(hidParam).addClass('d-none');
+        });
+    }
+</script>

@@ -1,0 +1,100 @@
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['store', 'plugin', 'plugin_list'] %}
+
+{% block title %}{{ 'ui_cube.admin.config.title'|trans }}{% endblock %}
+{% block sub_title %}{% endblock %}
+
+{% form_theme form '@admin/Form/bootstrap_4_horizontal_layout.html.twig' %}
+
+{% block stylesheet %}
+<style>
+.uic-doc-card {
+    transition: .3s;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+.uic-doc-card:hover {
+    box-shadow: none;
+    text-decoration: none;
+}
+</style>
+{% endblock %}
+{% block main %}
+    <form method="post" action="{{ url('ui_cube_admin_config') }}">
+        {{ form_widget(form._token) }}
+        <div class="c-contentsArea__cols">
+            <div class="c-contentsArea__primaryCol">
+                <div class="c-primaryCol">
+                    <div class="card rounded border-0 mb-4">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col-8">
+                                    <div class="d-inline-block" data-toggle="tooltip" data-placement="top"
+                                         title="Tooltip">
+                                        <span class="card-title">{{ 'ui_cube.admin.config.title'|trans }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-4 text-right">
+                                    <a data-toggle="collapse" href="#basicConfig" aria-expanded="false"
+                                       aria-controls="basicConfig">
+                                        <i class="fa fa-angle-up fa-lg"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="collapse show ec-cardCollapse" id="basicConfig">
+                            <div class="card-body">
+                                <div class="form-group row">
+                                    <label class="col-4 control-label">{{ 'ui_cube.admin.config.label_name'|trans }}</label>
+                                    <div class="col">
+                                        {{ form_widget(form.name) }}
+                                        {{ form_errors(form.name) }}
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-4 control-label">{{ 'ui_cube.admin.config.label_code'|trans }}</label>
+                                    <div class="col">
+                                        {{ form_widget(form.code) }}
+                                        {{ form_errors(form.code) }}
+                                        <span class="text-muted small mt-1 d-block">{{ 'ui_cube.admin.config.message_code'|trans }}</span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-4 control-label">{{ 'ui_cube.admin.config.label_choised_plugin'|trans }}</label>
+                                    <div class="col">
+                                        {{ form_widget(form.choised_plugin) }}
+                                        {{ form_errors(form.choised_plugin) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="https://homupedia.com/doc/uicube.html" target="_blank" class="uic-doc-card d-block col-3 card rounded border-0 mb-4 py-5 text-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 24 24"><path d="M4 22v-20h16v11.543c0 4.107-6 2.457-6 2.457s1.518 6-2.638 6h-7.362zm18-7.614v-14.386h-20v24h10.189c3.163 0 9.811-7.223 9.811-9.614zm-5-1.386h-10v-1h10v1zm0-4h-10v1h10v-1zm0-3h-10v1h10v-1z"></path></svg>
+                        <p class="mb-0 mt-3" style="font-size:24px;color: black;"><strong>取扱説明書</strong></p>
+                        <p class="mb-0" style="font-size:14px;color: black;"><strong>Document</strong></p>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="c-conversionArea">
+            <div class="c-conversionArea__container">
+                <div class="row justify-content-between align-items-center">
+                    <div class="col-6">
+                        <div class="c-conversionArea__leftBlockItem">
+                            <a class="c-baseLink" href="{{ url('admin_store_plugin') }}"><i class="fa fa-backward" aria-hidden="true"></i>
+                                <span>{{ 'ui_cube.admin.config.conversion.back'|trans }}</span></a>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="row align-items-center justify-content-end">
+                            <div class="col-auto">
+                                <button id="register-button" class="btn btn-ec-conversion px-5" type="submit">{{ 'ui_cube.admin.config.conversion.save'|trans }}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+{% endblock main %}

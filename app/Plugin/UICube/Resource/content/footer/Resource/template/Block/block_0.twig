@@ -1,0 +1,99 @@
+{% set Config = repository('Plugin\\[code]\\Entity\\[code]Config').get %}
+
+{% block stylesheet %}
+<style>
+    .uic-footer-1 {
+        margin-top: 40px;
+        padding: 40px 0;
+        background: #000;
+    }
+    .uic-footer-1 a {
+        color: #fff;
+    }
+    .uic-footer-1 .uic-footer__logo {
+        text-align: center;
+    }
+    .uic-footer-1 .uic-footer__logo a {
+        font-size: 28px;
+        font-weight: bold;
+    }
+    .uic-footer-1 .uic-footer__sns > li {
+        display: inline-block;
+        padding: 0 5px;
+    }
+    .uic-footer-1 .uic-footer__sns,
+    .uic-footer-1 .uic-footer__menu {
+        margin-top: 30px;
+        text-align: center;
+    }
+    .uic-footer-1 .uic-footer__menu {
+        padding: 0;
+        list-style: none;
+    }
+    .uic-footer-1 .uic-footer__menu>li {
+        padding: 15px 0;
+    }
+    .uic-footer-1 .uic-footer__menu>li>a {
+        font-size: 14px;
+    }
+    .uic-footer-1 .uic-footer__copyright {
+        margin-top: 45px;
+        text-align: center;
+        color: #fff;
+        font-size: 14px;
+    }
+    /* pc ~ */
+    @media only screen and (min-width: 768px){
+        .uic-footer-1 {
+            margin-top: 100px;
+        }
+        .uic-footer-1 .uic-footer__menu {
+            padding-left: 0;
+            margin-left: -5px;
+            list-style: none;
+        }
+        .uic-footer-1 .uic-footer__menu>li {
+            display: inline-block;
+            padding: 0 5px;
+        }
+    }
+</style>
+{% endblock %}
+
+<!-- [code] -->
+<div class="uic-footer-1">
+    <div class="ec-role">
+        <div class="uic-footer__logo">
+            <a href="{{ url('homepage') }}">{{ BaseInfo.shop_name }}</a>
+        </div>
+        <ul class="uic-footer__sns list-inline">
+            <li class="nav-link">
+                <a href="#"><i class="fab fa-facebook fa-lg fa-fw"></i></a>
+            </li>
+            <li class="nav-link">
+                <a href="#"><i class="fab fa-twitter fa-lg fa-fw"></i></a>
+            </li>
+            <li class="nav-link">
+                <a href="#"><i class="fab fa-instagram fa-lg fa-fw"></i></a>
+            </li>
+        </ul>
+        <ul class="uic-footer__menu">
+            <li class="nav-link">
+                <a href="{{ url('help_about') }}">{{ '当サイトについて'|trans }}</a>
+            </li>
+            <li class="nav-link">
+                <a href="{{ url('help_privacy') }}">{{ 'プライバシーポリシー'|trans }}</a>
+            </li>
+            <li class="nav-link">
+                <a href="{{ url('help_tradelaw') }}">{{ '基於特定商業交易法之描述'|trans }}</a>
+            </li>
+            <li class="nav-link">
+                <a href="{{ url('contact') }}">{{ 'お問い合わせ'|trans }}</a>
+            </li>
+        </ul>
+        <div class="uic-footer__copyright">
+            copyright (c) {{ BaseInfo.shop_name }} all rights reserved.
+        </div>
+    </div>
+</div>
+<!-- /[code] -->

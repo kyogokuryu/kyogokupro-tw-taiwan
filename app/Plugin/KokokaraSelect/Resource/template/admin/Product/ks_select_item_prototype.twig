@@ -1,0 +1,94 @@
+<li class="list-group-item sortable-item">
+    {% set productClassId = ksSelectItemForm.ProductClass.vars.value %}
+
+    {% if productClassId != "" %}
+        {% set KokokaraSelectProductClass = get_kokokara_select_product(productClassId) %}
+        {% set KokokaraSelectProduct = KokokaraSelectProductClass.Product %}
+
+        {% set prouctClassId = KokokaraSelectProductClass.id %}
+        {% set productImage = asset(KokokaraSelectProduct.mainFileName|no_image_product, 'save_image') %}
+        {% set statusName = KokokaraSelectProduct.Status.name %}
+        {% set productName = get_kokokara_select_product_name(KokokaraSelectProductClass) %}
+        {% set price02 = KokokaraSelectProductClass.price02|price %}
+        {% if KokokaraSelectProductClass.stock_unlimited %}
+            {% set stockName = 'admin.product.stock_unlimited__short'|trans %}
+        {% else %}
+            {% set stockName = KokokaraSelectProductClass.stock  %}
+        {% endif %}
+
+    {% else %}
+        {% set group_key = "__group_key__" %}
+        {% set key_name = "__item_key__" %}
+        {% set prouctClassId = "" %}
+        {% set productImage = "" %}
+        {% set statusName = "" %}
+        {% set productName = "" %}
+        {% set price02 = "" %}
+        {% set stockName = "" %}
+
+        {% set loopFirst = false %}
+        {% set loopLast = true %}
+    {% endif %}
+
+    <div class="row">
+        {{ form_widget(ksSelectItemForm.ProductClass) }}
+        {{ form_widget(ksSelectItemForm.sortNo) }}
+        <div class="col-auto d-flex align-items-center">
+            <i class="fa fa-bars text-ec-gray"></i>
+        </div>
+        <div class="col-1 d-flex align-items-center">
+            <img style="max-width: 50px;" id="kokokara_select_{{ group_key }}_{{ key_name }}_productImage" src="{{ productImage }}">
+        </div>
+        <div id="kokokara_select_{{ group_key }}_{{ key_name }}_productName" class="col-2 d-flex  align-items-center">
+            {% if KokokaraSelectProduct is defined %}
+                <a target="_blank" href="{{ url('admin_product_product_edit', {'id': KokokaraSelectProduct.id}) }}">{{ productName }}</a>
+            {% else %}
+                {{ productName }}
+            {% endif %}
+        </div>
+        <div id="kokokara_select_{{ group_key }}_{{ key_name }}_quantity" class="col-1 align-items-center ks_select_item_quantity_area">
+            <div class="">
+                {{ form_widget(ksSelectItemForm.quantity) }}
+                {{ form_errors(ksSelectItemForm.quantity) }}
+            </div>
+        </div>
+        <div id="kokokara_select_{{ group_key }}_{{ key_name }}_stockSelect" class="col-2 align-items-center">
+            <div class="form-row">
+                <div class="col-5">
+                    {{ form_widget(ksSelectItemForm.stock) }}
+                    {{ form_errors(ksSelectItemForm.stock) }}
+                </div>
+                <div class="col-auto">
+                    <div class="form-check form-check-inline">
+                        {{ form_widget(ksSelectItemForm.stockUnlimited, {'attr': {'data-group_key': group_key, 'data-key_name': key_name}}) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="kokokara_select_{{ group_key }}_{{ key_name }}_stockName" class="col-1 d-flex align-items-center">
+            {{ stockName }}
+        </div>
+        <div id="kokokara_select_{{ group_key }}_{{ key_name }}_price02" class="col-1 d-flex align-items-center">
+            {{ price02 }}
+        </div>
+        <div id="kokokara_select_{{ group_key }}_{{ key_name }}_statusName" class="col-1 d-flex align-items-center">
+            {{ statusName }}
+        </div>
+        <div class="col d-flex align-items-center justify-content-end">
+            <div>
+                <a class="btn btn-ec-actionIcon mr-2 action-up{% if loopFirst %} disabled{% endif %}" href="#" data-tooltip="true" data-placement="top" title="{{ 'admin.common.up'|trans }}">
+                    <i class="fa fa-arrow-up fa-lg text-secondary"></i>
+                </a>
+                <a class="btn btn-ec-actionIcon mr-2 action-down{% if loopLast %} disabled{% endif %}" href="#" data-tooltip="true" data-placement="top" title="{{ 'admin.common.down'|trans }}">
+                    <i class="fa fa-arrow-down fa-lg text-secondary"></i>
+                </a>
+                <div class="d-inline-block mr-2" data-tooltip="true"
+                     data-placement="top" title="{{ 'admin.common.delete'|trans }}">
+                    <a class="btn btn-ec-actionIcon action-delete">
+                        <i class="fa fa-close fa-lg text-secondary"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</li>

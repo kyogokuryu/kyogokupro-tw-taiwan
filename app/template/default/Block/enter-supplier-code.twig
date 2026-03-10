@@ -1,0 +1,30 @@
+{% block main %}
+    <div>
+        <a href="{{ url('homepage') }}"><strong>TOP</strong></a>　＞　<a style="color: gray" href="{{ url('salon-suppliers') }}">サロン仕入れ専用ページ</a>
+    </div>
+    <div class="salon-supplier">
+        <div class="salon-code">
+            <p class="salon-code-title">サロン仕入れ専用ページは<br>こちらから</p>
+            <p class="salon-code-tip">閲覧にはパスワードが必要です。</p>
+            <form action="{{ url('salon-suppliers') }}" method="post">
+                {{ form_widget(form._token) }}
+                
+                <div class="form-item">
+                    <p class="title">パスワード</p>
+                    {{ form_widget(form.supplier_code) }}
+                </div>
+                
+                {{ form_errors(form.supplier_code) }}
+                {% for error in app.session.flashbag.get('eccube.front.error') %}
+                    <div class="supplier_code_error">
+                        {{ error|trans|nl2br }}
+                    </div>         
+                {% endfor %}
+                <div>
+                    <button type="submit">閲覧する</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

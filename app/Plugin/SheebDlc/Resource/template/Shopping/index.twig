@@ -1,0 +1,17 @@
+{# 配送情報を非表示にする #}
+<script>
+    $(function() {
+        var targets = [
+            '.ec-orderDelivery .ec-rectHeading',
+            '.ec-orderDelivery__title',
+            '.ec-orderDelivery__address',
+            '.ec-orderDelivery__actions',
+            '.ec-orderDelivery__edit',
+        ];
+        $.each(targets, function (index, selector) {
+            $(selector).css('display', 'none');
+        });
+    });
+
+    //# sourceURL=SheebDlc/Shopping/index.js
+</script>

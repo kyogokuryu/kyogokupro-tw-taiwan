@@ -1,0 +1,170 @@
+{% set pinpointForm = productPinpointForm.pinpoint %}
+<li class="list-group-item pinpoint_area_row{% if pinpointForm.del_flg.vars.data == 1 %} d-none{% endif %}" id="pinpoint_area_row_{{ index }}">
+    {{ form_widget(pinpointForm.del_flg) }}
+
+    {#タイムセール設定#}
+    <div class="form-row mb-2">
+        <div class="col-3">
+            <div class="d-inline-block">
+                <span>{{ pinpointForm.sale_type.vars.label|trans }}</span>
+            </div>
+        </div>
+        <div class="col">
+            <div class="mb-2">
+                {{ form_widget(pinpointForm.sale_type, {'label_attr': {'class': 'radio-inline'}, 'attr': {'data-index': index}}) }}
+                {{ form_errors(pinpointForm.sale_type) }}
+            </div>
+            <div id="pinpoint_salePrice_{{ index }}" class="row col-auto mb-2">
+                <div class="form-inline">
+                    {{ form_widget(pinpointForm.salePrice) }}
+                    {{ form_errors(pinpointForm.salePrice) }}
+                </div>
+            </div>
+            <div id="pinpoint_saleRate_{{ index }}" class="row col-auto mb-2">
+                <div class="form-inline">
+                    <div class="input-group">
+                        {{ form_widget(pinpointForm.saleRate) }}
+                        <div class="input-group-append">
+                            <span class="input-group-text">%</span>
+                        </div>
+                    </div>
+                    {{ form_errors(pinpointForm.saleRate) }}
+                </div>
+            </div>
+            <div id="pinpoint_sale_rate_common_{{ index }}" class="mb-2">
+                {{ form_widget(pinpointForm.sale_rate_common) }}
+                {{ form_errors(pinpointForm.sale_rate_common) }}
+            </div>
+        </div>
+    </div>
+
+    {#開始日時#}
+    <div class="form-row mb-2 pinpoint_sale_product_{{ index }}">
+        <div class="col-3">
+            <div class="d-inline-block pinpoint_tooltip" data-tooltip="true" data-placement="top" title="{{ 'pinpoint_sale.pinpoint_start_time_help'|trans }}">
+                <span>{{ pinpointForm.start_time.vars.label|trans }}</span>
+                <i class="far fa-clock fa-lg ml-1"></i>
+            </div>
+        </div>
+        <div class="col">
+            <div class="row col-auto mb-2">
+                <div class="form-inline pinpoint_width">
+                    {{ form_widget(pinpointForm.start_time.custom_date, {'attr' : {'data-target' : '#'~pinpointForm.start_time.custom_date.vars.id}}) }}
+                    <div class="ml-1">
+                        {{ form_widget(pinpointForm.start_time.custom_time) }}
+                    </div>
+                    {{ form_errors(pinpointForm.start_time.custom_date) }}
+                    {{ form_errors(pinpointForm.start_time.custom_time) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {#終了日時#}
+    <div class="form-row mb-2 pinpoint_sale_product_{{ index }}">
+        <div class="col-3">
+            <div class="d-inline-block pinpoint_tooltip" data-tooltip="true" data-placement="top" title="{{ 'pinpoint_sale.pinpoint_end_time_help'|trans }}">
+                <span>{{ pinpointForm.end_time.vars.label|trans }}</span>
+                <i class="fas fa-clock fa-lg ml-1"></i>
+            </div>
+        </div>
+        <div class="col">
+            <div class="row col-auto mb-2">
+                <div class="form-inline pinpoint_width">
+
+                    {{ form_widget(pinpointForm.end_time.custom_date, {'attr' : {'data-target' : '#'~pinpointForm.end_time.custom_date.vars.id}}) }}
+                    <div class="ml-1">
+                        {{ form_widget(pinpointForm.end_time.custom_time) }}
+                    </div>
+                    {{ form_errors(pinpointForm.end_time.custom_date) }}
+                    {{ form_errors(pinpointForm.end_time.custom_time) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {#繰り返し#}
+    <div class="form-row mb-2 pinpoint_sale_product_{{ index }}">
+        <div class="col-3">
+            <div class="d-inline-block">
+                <span>{{ pinpointForm.repeat_status.vars.label|trans }}</span>
+            </div>
+        </div>
+        <div class="col">
+            <div class="row col-6 mb-2">
+                {{ form_widget(pinpointForm.repeat_status, {'label_attr': {'class': 'radio-inline'}, 'attr': {'data-index': index}}) }}
+                {{ form_errors(pinpointForm.repeat_status) }}
+            </div>
+        </div>
+    </div>
+
+    {#繰り返し#}
+    {% if pinpointForm.repeat_status.vars.data == constant('Plugin\\PinpointSale\\Entity\\PinpointRepeat::REPEAT_OFF') or pinpointForm.sale_type.vars.data == constant('Plugin\\PinpointSale\\Entity\\Pinpoint::TYPE_COMMON') %}
+        {% set repeatClass = 'd-none' %}
+    {% else %}
+        {% set repeatClass = '' %}
+    {% endif %}
+    <div class="pinpoint_sale_product_{{ index }}">
+        <div id="pinpoint_repeat_area_{{ index }}" class="{{ repeatClass }}" data-key="{{ index }}">
+
+            <div class="form-row mb-2">
+                <div class="col-3">
+                    <div class="d-inline-block pinpoint_tooltip" data-tooltip="true" data-placement="top" title="{{ 'pinpoint_sale.pinpoint_repeat_start_time_help'|trans }}">
+                        <span>{{ pinpointForm.PinpointRepeat.start_time.vars.label|trans }}</span>
+                        <i class="far fa-clock fa-lg ml-1"></i>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-inline pinpoint_width">
+                        {{ form_widget(pinpointForm.PinpointRepeat.start_time) }}
+                        {{ form_errors(pinpointForm.PinpointRepeat.start_time) }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row mb-2">
+                <div class="col-3">
+                    <div class="d-inline-block pinpoint_tooltip" data-tooltip="true" data-placement="top" title="{{ 'pinpoint_sale.pinpoint_repeat_end_time_help'|trans }}">
+                        <span>{{ pinpointForm.PinpointRepeat.start_time.vars.label|trans }}</span>
+                        <i class="fas fa-clock fa-lg ml-1"></i>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-inline pinpoint_width">
+                        {{ form_widget(pinpointForm.PinpointRepeat.end_time) }}
+                        {{ form_errors(pinpointForm.PinpointRepeat.end_time) }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row mb-2">
+                <div class="col-3">
+                    <div class="d-inline-block">
+                        <span>{{ pinpointForm.PinpointRepeat.week_check.vars.label|trans }}</span>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="row col-12 mb-2">
+                        {{ form_widget(pinpointForm.PinpointRepeat.week_check, {'label_attr': {'class': 'checkbox-inline'}}) }}
+                        {{ form_errors(pinpointForm.PinpointRepeat.week_check) }}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    {#削除#}
+    <div class="form-row mb-2">
+        <div class="col-3">
+        </div>
+        <div class="col">
+            <div class="row col-auto">
+                <a class="pinpoint_del_btn mr-2" data-key="{{ index }}">
+                    <i class="fa fa-close fa-lg mr-1"></i>
+                    <span>{{ 'pinpoint_sale.pinpoint_clear'|trans }}</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</li>

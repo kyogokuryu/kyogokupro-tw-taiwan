@@ -1,0 +1,131 @@
+{% extends 'default_frame.twig' %}
+
+{% import _self as stars %}
+
+{# 星テキスト生成用マクロ #}
+{% macro stars(positive, negative) %}
+	{% set positive_stars = ["", "★", "★★", "★★★", "★★★★", "★★★★★"] %}
+	{% set negative_stars = ["", "☆", "☆☆", "☆☆☆", "☆☆☆☆", "☆☆☆☆☆"] %}
+	{{ positive_stars[positive] }}{{ negative_stars[negative] }}
+{% endmacro %}
+
+{% set body_class = 'front_page' %}
+
+{% block main %}
+	<div style="display: flex; align-items: center; position: relative; padding-top: 20px;">
+		<a href="javascript:void(0);" onclick="window.history.back();" id="history-link" style="display: flex; align-items: center;">
+			<img style="width: 10px;" src="{{ asset('assets/img/icon/icon-arrow-left.svg') }}" alt="">
+		</a>
+		<span style="
+			position: absolute; 
+			left: 50%; 
+			transform: translateX(-50%);
+			font-family: 'Carbin', sans-serif; 
+			font-weight: 700; 
+			font-size: 20px;
+		">
+			瀏覽記錄
+		</span>
+	</div>
+
+	<div class="top-slide best" style="margin-top: 30px;">
+		<div style="display:flex; flex-wrap: wrap; justify-content: space-evenly; margin-top: 30px;">
+			{% for Product in Products %}
+				<div style="width:40%; margin-right: 10px; margin-left:10px; margin-bottom: 15px;">
+					<a href="{{ url('product_detail', {'id': Product.id}) }}">
+						<div class="image">
+							{% for ProductImage in Product.ProductImage %}
+								{% if ProductImage.category == 0 and ProductImage.sort_no == 1 %}
+									<div class="slide-item" data-index="{{ loop.index0 }}"><img loading="lazy" src="{{ asset(ProductImage, 'save_image') }}"></div>
+								{% endif %}
+							{% else %}
+								<div class="slide-item" data-index="{{ loop.index0 }}"><img loading="lazy" src="{{ asset(''|no_image_product, 'save_image') }}"/></div>
+							{% endfor %}
+						</div>
+						<div class="info ec-shelfGrid__item">
+							<h2 class="name">{{ Product.name }}</h2>
+
+							<p class="review" style="margin-top:5px; font-size: 14px;">
+								{% set positive_star = ReviewAveList[Product.id] %}
+								{% set nagative_star = 5 - positive_star %}
+								<span class="star">{{ stars.stars(positive_star, nagative_star) }}</span>
+								<span style="margin-left: 5px;color: #379fff;">({{ ReviewCntList[Product.id] }})</span> <br>
+								<span style="font-weight: bold;">累計已購買超過{{ get_product_sell_count(Product.id) }}件</span>
+							</p>
+							{# {{ include('Block/point_block.twig',{'price':Product.getPrice02IncTaxMin}) }} #}
+						</div>
+					</a>
+					<div class="sell-flex">
+						<a href="{{ url('product_detail', {'id': Product.id}) }}">
+							<p class="price02-default">
+								{% if Product.hasProductClass %}
+									{% if Product.getPrice02Min == Product.getPrice02Max %}
+										{{ Product.getPrice02IncTaxMin|price }}
+									{% else %}
+										{{ Product.getPrice02IncTaxMin }}
+										～
+										{{ Product.getPrice02IncTaxMax|price }}
+									{% endif %}
+								{% else %}
+									{{ Product.getPrice02IncTaxMin|price }}
+								{% endif %}
+							</p>
+						</a>
+
+						{# {% set sc = get_product_sell_count(Product.id) %}
+						{% if sc %}
+							<div class="sell_product_page sell_count_wrap">
+								<span class="sell_count">{{ sc }}</span>
+								<span class="sell_count_unit">個</span><br><span class="sell_count_label">
+									累計販売数</span>
+							</div>
+						{% endif %} #}
+
+					</div>
+				<div class="list-tag" style="display: flex; gap: 10px; flex-wrap: nowrap; justify-content: space-between; align-items: center;">
+					<div style="display: flex; gap: 10px; flex-wrap: wrap;">
+						{% for Tag in Product.Tags %}
+							<span class="tag" style="font-size: 10px;
+								font-weight: 700;
+								background: #FF9000;
+								color: #fff;
+								display: flex;
+								align-items: center;
+								justify-content: center;
+								padding: 2px 5px;
+								border-bottom-right-radius: 5px;
+								border-top-left-radius: 5px;">
+								{{ Tag }}
+							</span>
+						{% endfor %}
+					</div>
+					<div class="right block-add-cart">
+						{{ include('Block/add_cart_button.twig',{'product':Product}) }}
+					</div>
+				</div>
+				</div>
+			{% else %}
+				<p class="no-data">没有商品。</p>
+			{% endfor %}
+		</div>
+		{# </ul> #}
+	</div>
+
+	<div class="back-to-top">
+        <img src="{{asset('assets/img/vector.svg','user_data')}}">
+        <p>回到頁面頂部</p>
+    </div>
+	{% include "Block/add_cart_javascript.twig" %}
+	{% include "Block/toast_add_to_cart_success.twig" %}
+{% endblock %}
+
+{% block javascript %}
+<script>
+$(function(){
+    $(".back-to-top").click(function(e){
+        e.preventDefault();
+        $("html, body").animate({scrollTop: 0}, 1500);
+    });
+});
+</script>
+{% endblock %}

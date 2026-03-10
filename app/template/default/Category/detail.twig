@@ -1,0 +1,428 @@
+{% extends 'home_frame.twig' %}
+{% import _self as stars %}
+
+
+{# 星テキスト生成用マクロ #}
+{% macro stars(positive, negative) %}
+    {% set positive_stars = ["", "★", "★★", "★★★", "★★★★", "★★★★★"] %}
+    {% set negative_stars = ["", "☆", "☆☆", "☆☆☆", "☆☆☆☆", "☆☆☆☆☆"] %}
+    {{ positive_stars[positive] }}{{ negative_stars[negative] }}
+{% endmacro %}
+
+
+{% block main %}
+    <style>
+	.ec-layoutRole__contents {
+		overflow:visible !important;
+	}
+    .category {
+        padding: 20px 34px;
+        background:#fff;
+        margin:auto;
+        text-align: center;
+    }
+
+    .category img{
+        margin: 35px 0px;
+        max-height:400px;
+        width: 240px;
+        object-fit: cover;
+    }
+
+    .category .category-description {
+        font-family: Cabin;
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 17.01px;
+        text-align: left;
+        color: #000000;
+    }
+    .category-product{
+        margin:auto;
+    }
+    .category-product .header{
+        background: linear-gradient(90deg, rgba(231, 53, 84, 0.80) 0%, rgba(107, 197, 203, 0.80) 100%);
+        margin: 0;
+        padding: 22px 18px
+    }
+   
+    .category-product .header .title{
+        font-family: Cabin;
+        font-size: 18px;
+        font-weight: 600;
+        line-height: 16.95px;
+        text-align: left;
+        color: #FFFFFF;
+    }
+    .category-product .product{
+        position: relative;
+        background: #fff;
+        padding: 13px;
+    }
+    .category-product .product .product-info{
+        display: flex;
+        align-items: stretch;
+        justify-content: space-between;
+    }
+    .category-product .product .product-info .left{
+
+    }
+    .category-product .product .product-info .right{
+        width: 47px;
+        display: flex;
+        align-items: flex-end;
+    }
+    .top-slide .name {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        min-height: 44px;
+        margin-bottom: 0px;
+    }
+    .category-product .product .product-info .name{
+        font-family: Cabin;
+        font-size: 13px;
+        font-weight: 500;
+        line-height: 16px;
+        text-align: left;
+    }
+    .category-product .product .price{
+        font-family: Cabin;
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 20px;
+        text-align: left;
+        color: #FF7400;
+        margin: 0;
+    }
+    .category-product .product .price span{
+        font-family: Cabin;
+        font-size: 10px;
+        font-weight: 500;
+        line-height: 20px;
+        text-align: left;
+        color: #000;
+    }
+    .category-product .product .review .star{
+        font-family: Cabin;
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 20px;
+        text-align: left;
+    }
+    .category-product .product .rank{
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 23px;
+    }
+
+    .category-product .product .rank label{
+        position: absolute;
+        white-space: nowrap;
+        top: 50%;
+        left: calc(50% - 2px);
+        font-family: Cabin;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 14.58px;
+        text-align: center;
+        transform: translate(-50%, -50%);
+        margin: 0;
+        color: #fff;
+    }
+
+    .category-product ul{
+        margin: 0 -7.5px;
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .category-product ul li{
+        width: calc(50% - 15px);
+        margin: 10px 7.5px;
+    }
+
+    .category-product .more{
+        text-align: center;
+        margin: 45px auto;
+    }
+
+    .category-product .more label{
+        font-family: Cabin;
+        font-size: 18px;
+        font-weight: 400;
+        line-height: 16.95px;
+        text-align: center;
+        color: #1C7AD1;
+        cursor: pointer;
+    }
+
+    .on-top{
+        text-align: center;
+        cursor: pointer;
+    }
+
+    @media screen and (max-width: 768px) {
+        .ec-layoutRole{
+            background: #ffffff;
+            padding: 0px;
+        }
+        .breadcrumb{
+            background: #ffffff;
+        }
+        .category-product ul{
+            margin: 0 -10.5px;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .category{
+            width:100%;
+            margin: 0 auto;
+            padding: 20px 10px;
+        }
+        .category-product{
+            width:100%;
+        }
+        .category-product .header{
+            margin: 0 -10px;
+        }
+    }
+    @media screen and (max-width: 480px) {
+        .category-product ul{
+            background: #F0F0F0;
+        }
+
+        .breadcrumb>li{
+            font-size: 14px;
+            display: inline;
+            a {
+                margin-left: -6px;
+                margin-right: -6px;
+            }
+        }
+
+         .category img{
+            width: 185px;
+         }
+    }
+	</style>
+
+    <nav aria-label="breadcrumb" role="navigation">
+        <ol class="breadcrumb mb-2 p-0">
+            <li class="breadcrumb-item">
+                <a href="{{ url('homepage') }}">
+                    {{ 'TOP'|trans }}
+                </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                <a href="{{ url('categories_index') }}">按類別搜尋</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                <a>{{category.name}}</a>
+            </li>
+        </ol>
+    </nav>
+
+    <!-- category info -->
+    {# <div class="category">
+            <img class="category_image" src="{{ asset(category.image|no_image_product, 'save_image') }}" />
+            <p class="category-description">{{category.description}}</p>
+    </div> #}
+    
+    <div class="category-product">
+        <div class="header">
+            <label class="title">此類別的產品列表</label>
+        </div>
+        <div>
+            <ul id="top-product">
+            {% if products|length > 0 %}
+                {% for product in products %}
+                <li class="top-slide">
+                    <div class="product">
+                        <a href="{{ url('product_detail', {'id': product.id}) }}">
+                            <div class="image">
+                                <img loading="lazy"  src="{{ asset(product.main_list_image|no_image_product, 'save_image') }}">
+                            </div>
+                        </a>
+                        <a href="{{ url('product_detail', {'id': product.id}) }}">
+                            <h2 class="name">{{product.name}}</h2>
+                        </a>
+                        <div class="product-info">
+                            <a href="{{ url('product_detail', {'id': product.id}) }}">
+                                <div class="left">
+                                    {{ include('Block/last_order.twig',{'product':product}) }}
+                                    <p class="review" style="display: flex;align-items: center;">
+                                        {% set positive_star = ReviewAveList[product.id] %}
+                                        {% set nagative_star = 5 - positive_star %}
+                                        <span class="star">
+                                            {{ stars.stars(positive_star, nagative_star) }}
+                                        </span>
+                                        <span style="font-weight: 600">
+                                            ({{ ReviewCntList[product.id] }})
+                                        </span>
+                                    </p>    
+                                    <div class="sell-flex">
+                                        <p class="price02-default" style="color:#FF7400;font-weight:bold;">
+                                            {% if product.hasProductClass %}
+                                                {% if Product.getPrice02Min == product.getPrice02Max %}
+                                                    {{ product.getPrice02IncTaxMin|price }}
+                                                {% else %}
+                                                    {{ product.getPrice02IncTaxMin|price }} ～ {{ product.getPrice02IncTaxMax|price }}
+                                                {% endif %}
+                                            {% else %}
+                                                {{ product.getPrice02IncTaxMin|price }}
+                                            {% endif %}
+                                        </p>
+                                        {% set sc = get_product_sell_count(product.id) %}
+                                        {% if sc %}
+                                            <h2 class="price"><span>販売数 {{sc}}k</span></h2>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </a>
+                            <div class="right">
+                                {{ include('Block/add_cart_button.twig',{'product':product}) }}
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            {% endif %}
+            </ul>
+        </div>
+        {% if products.getPaginationData()['pageRange'] == 0 %}
+            <div class="more">
+                <label class="no-product" style="color: #000;"> 未找到您正在尋找的產品。</label>
+            </div>
+        {% elseif products.getPaginationData()['pageRange'] > 1 %}
+            <div class="more">
+                <label class="get-more" data-page="1"> もっと見る▼</label>
+            </div>
+        {% endif %}
+    </div>
+
+{% if products.getPaginationData()['pageRange'] > 0 %}
+    <div class="on-top">
+        <svg width="18" height="9" viewBox="0 0 18 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 9L9 0L18 9H0Z" fill="black"/>
+        </svg>
+        <p>ページトップへ</p>
+
+            
+    </div>
+   {% endif %}
+    <script>
+        function star(numstar){
+                let star ="";
+                for(let i =1; i<=5;i++){
+                star += i <= numstar ? '★' : '☆'
+            }
+            return star;
+        }
+
+        $('.get-more').on("click", function(){
+            let page = $('.get-more').attr('data-page');
+            $.ajax({
+                url: "{{ url('categories_detail', {'id': category.id}) }}",
+                type: 'GET',
+                data: {pageno: parseInt(page) + 1},
+                success: function(data) {
+                    if(data){
+                        $('.get-more').attr('data-page', parseInt(page) + 1)
+                        for(let i = 0; i < data.products.length; i++){
+                            let urlProduct = "{{ url('product_detail', {'id': 0}) }}";
+                            let urlAddCart = "{{ url('product_add_cart', {'id': 0}) }}";
+                            urlProduct = urlProduct.replace('0', data.products[i].id);
+                            urlAddCart = urlAddCart.replace('0', data.products[i].id);
+                            $('#top-product').append(`
+                            <li class="top-slide">
+                                <div class="product">
+                                    <a href="${urlProduct}">
+                                        <div class="image">
+                                            <img loading="lazy"  src="${data.products[i].image}">
+                                        </div>
+                                    </a>
+                                    <a href="${urlProduct}">
+                                        <h2 class="name">${data.products[i].name}</h2>
+                                    </a>
+                                    <div class="product-info">
+                                        <a href="${urlProduct}">
+                                    <div class="left">
+                                            <div class="last-buy">
+                                                    ${data.products[i].lastOrderCustomers ? `
+                                                        ${data.products[i].lastOrderCustomers.map((customer, index) => `
+                                                            <p class="last_customer_order ${index}">
+                                                                <span class="last_customer">${customer[0]}</span>
+                                                                <span style="line-height: 0;padding-top: 1px;min-width: max-content;">{{ '購入されました！'|trans }}</span>
+                                                            </p>
+                                                        `).join('')}
+                                                    ` : ``}
+                                                    ${data.products[i].lastOrderCustomers ? `
+                                                        ${data.products[i].lastOrderCustomers.map((customer, index) => `
+                                                            <p class="last_customer_order ${index}">
+                                                                <span class="last_customer">${customer[0]}</span>
+                                                                <span style="line-height: 0;padding-top: 1px;min-width: max-content;">{{ '購入されました！'|trans }}</span>
+                                                            </p>
+                                                        `).join('')}
+                                                    ` : ``}
+                                                </div>
+                                                <p class="review" style="display: flex;align-items: center;>
+                                                    <span class="star">${star(data.products[i].Review.recommend_avg)}</span>
+                                                    <span style="font-weight: 600">(${data.products[i].Review.review_count})</span>
+                                                </p>    
+                                                <div class="sell-flex">
+                                                    <p class="price02-default" style="color:#FF7400;font-weight:bold;">
+                                                        ￥${data.products[i].price02}
+                                                    </p>
+                                                    
+                                                </div>
+                                            </div>
+                                        </a>
+                                        <div class="right">
+                                            <div class="add-cart-block">
+                                                <form action="${urlAddCart}" method="post" id="form${data.products[i].id}" name="form${data.products[i].id}">
+                                                    <input type="hidden" name="product_id" value="${data.products[i].id}">
+                                                    <input type="hidden" name="quantity" value="1">
+                                                    <input type="hidden" name="ProductClass" value="${data.products[i].ProductClass}">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token(constant('Eccube\\Common\\Constant::TOKEN_NAME')) }}">
+                                                </form>
+                                                <button class="add-cart-${data.products[i].id}"  onclick="AddCart(${data.products[i].id})" data-id="${data.products[i].id}"><img style="width:25px" src="/html/user_data/assets/img/icon/i_add_cart.svg"/></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            `)
+                        }
+                        let mailContainer = $('.last-buy');
+                        let lastScroll = mailContainer.innerHeight();
+                        setInterval(() => {
+                            if (mailContainer[0].scrollHeight > lastScroll) {
+                                lastScroll = lastScroll + 18;
+                                mailContainer.animate({ scrollTop: '+=18px' }, 'slow');
+                            } else {
+                                    lastScroll = 0;
+                                mailContainer.animate({ scrollTop: '0px' }, 'slow');
+                            }
+                        }, 3000);
+                        
+                    }else{
+                        console.log("Hết rồi")
+                    }
+                }
+            })
+        });
+
+        $('.on-top').on("click", ()=>{
+             $([document.documentElement, document.body]).animate({
+                scrollTop: 0
+            }, 100);
+        });
+        
+    </script>
+    {% include "Block/last_order_javascript.twig" %}
+    {% include "Block/add_cart_success_modal.twig" %}
+    {% include "Block/add_cart_javascript.twig" %}
+{% endblock %}

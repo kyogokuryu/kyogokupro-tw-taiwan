@@ -1,0 +1,8 @@
+{% if Order.Payment.getMethodClass == 'Plugin\\Paidy4\\Service\\Method\\Paidy' %}
+    <script>
+        $(function () {
+            // 既存決済完了ボタンの文言変更
+            $('button.ec-blockBtn--action').text('あと払い（ペイディ）手続きへ進む');
+        });
+    </script>
+{% endif %}

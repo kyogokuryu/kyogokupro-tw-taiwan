@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://tw.kyogokupro.com/sitemap.xml
+Sitemap: https://tw.kyogokupro.com/feed/sitemap.xml

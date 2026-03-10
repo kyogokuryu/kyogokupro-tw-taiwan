@@ -1,0 +1,286 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+{% if IsApp %}
+	<div class="ec-headerNaviRole">
+		<div id="hinr">
+			<div class="bottom">
+				<ul>
+					<li><a href="{{url('product_list')}}">新/热门产品</a></li>
+					<li><a href="/category">按類別搜尋</a></li>
+					{# <li><a href="{{ url('product_list') }}?category_id=47">TikTok</a></li>
+					<li><a href="{{url('homepage')}}/note" target="_blank">阅读材料</a></li>
+					<li><a href="{{url('product_list')}}?category_id=16">仅限官方邮购</a></li>
+					<li><a href="{{url('user_data',{'route':'cbd'})}}">京极CBD</a></li> #}
+					{# <li><a href="{{url('video_list') }}" >赚取积分的视频</a></li> #}
+					{# <li><a href="https://kyogokupro.com/academy/" target="_blank">京极学园</a></li>
+					<li><a href="https://kyogokusalon.com/" target="_blank">京极沙龙</a></li>
+					<li><a href="https://kyogokucoin.com/" target="_blank">京极硬币</a></li>
+					<li><a href="https://jobvr.co.jp/" target="_blank">Job VR</a></li> #}
+				</ul>
+			</div>
+			{{ include('Block/page_countdown.twig') }}
+		</div>
+	</div>
+	
+
+{% elseif 'cbd' not in body_class %}
+
+	<div class="ec-headerNaviRole">
+		<div id="hinr">
+			{# <div class="trigger sp"> #}
+				{# <a class="menu-icon">
+					<img loading="lazy"  src="/images/icon/icon-search-thin.svg" alt="" class="open">
+				</a> #}
+			{# </div> #}
+			<div class="upper">
+				<div class="back-button">
+					<img src="{{ asset('assets/img/icon/icon-arrow-left.svg') }}" alt="Back">
+				</div>
+				<div
+					class="logo">
+					{# {% if Layout.ContentsTop %} #}
+					<h1>
+						<a href="{{ url('homepage') }}">
+							<img loading="lazy" src="{{ asset('assets/img/kyogoku.svg','user_data') }}" alt="Kyogokupro" witdh="100px">
+						</a>
+					</h1>
+
+				</div>
+				<div class="box-search">
+					<img loading="lazy" src="{{ asset('assets/img/icon/icon-search.svg') }}" alt="" class="search">
+
+					<form method="get" class="searchform flex" action="{{ path('homepage') }}" id="product-form" autocomplete="off">
+						<input type="text" name="name" placeholder="検索" id="box-search" autocomplete="off" value="{{ app.request.get('name') }}">
+						<button type="submit" class="btn-search">
+							<img loading="lazy" src="{{ asset('assets/img/icon/icon-search-white.svg') }}" alt="" class="search-white">
+						</button>
+					</form>
+				</div>
+				<div class="gnav">
+					<ul>
+						<li class="button-sidebar">
+							<a class="menu-icon">
+								<img loading="lazy" src="{{ asset('assets/icon/open_sidebar.svg') }}" alt="" class="open">
+							</a>
+						</li>
+						<li class="login" style="background-color: none;">
+							{% if is_granted('ROLE_USER') %}
+								<a href="{{ url('mypage') }}">
+								<img loading="lazy" src="{{ asset('assets/img/icon/user-icon.svg') }}" alt="" class="user">
+								</a>
+							{% else %}
+								<a href="{{ url('mypage_login') }}">
+									<img loading="lazy" src="{{ asset('assets/img/icon/user-icon.svg') }}" alt="" class="user">
+								</a>
+							{% endif %}
+						</li>
+
+						<li class="cart" style="align-items: center; display: flex;justify-content: end">
+							<div class="ec-headerRole__cart">
+							<a href="{{ path('cart') }}">{{ include('Block/cart.twig') }}</a>
+							</div>
+						</li>
+
+					</ul>
+				</div>
+			</div>
+
+			{# modal-suggestions #}
+			<div id="search-suggestions" class="search-suggestions" style="display: none;">
+				<div class="suggestion-section">
+					<h4>搜尋記錄</h4>
+					<div class="search-history-wrapper">
+						<div id="search-history" class="suggestion-list"><!-- Recent products will be loaded here --></div>
+					</div>
+				</div>
+				<div class="suggestion-section">
+					<h4>今人気の商品</h4>
+					<div
+						id="popular-products" class="suggestion-list"><!-- Popular products will be loaded here -->
+					</div>
+				</div>
+				<div class="suggestion-section">
+					<h4>
+						<a href="/products/history" id="history-link" style="display: flex; align-items: center;">瀏覽記錄
+							<img style="width: 10px; margin-left: 10px; margin-top: -2px;" src="{{ asset('assets/img/icon/icon-arrow-right.svg') }}" alt=""></a>
+					</h4>
+					<div
+						id="recent-products" class="suggestion-list"><!-- Recent products will be loaded here -->
+					</div>
+				</div>
+			</div>
+
+			<div class="container container-header">
+				<a class="icon-wrapper icon-search-brand" href="{{ url('brand_index') }}">
+					<img loading="lazy" src="{{ asset('assets/img/icon/i_banner_brand.svg','user_data') }}">
+					<span>品牌</span>
+				</a>
+				<a class="icon-wrapper" href="/mypage">
+					<img loading="lazy" src="{{ asset('assets/img/icon-cart.svg','user_data') }}">
+					<span>購買紀錄</span>
+				</a>
+				<a class="icon-wrapper" href="/mypage/favorite">
+					<img loading="lazy" src="{{ asset('assets/img/favorite.svg','user_data') }}">
+					<span>愛心收藏</span>
+				</a>
+
+			</div>
+
+			
+		</div>
+	</div>
+	{{ include('Block/page_countdown.twig') }}
+
+	{{ include('Block/siderbar_sp.twig') }}
+	{# CBD関連ページ #}
+{% else %}
+
+	<div class="ec-headerNaviRole">
+		<div id="hinr">
+			<div class="trigger sp">
+				<a class="p-2">
+					<img loading="lazy"  src="/images/icon/icon-search-thin.svg" alt="" class="open">
+				</a>
+			</div>
+			<div class="upper">
+				<div class="logo">
+					<a href="{{ url('user_data', {'route': 'cbd'}) }}">
+						<img loading="lazy"  src="{{ asset('assets/img/lower/logo-cbd.svg','user_data') }}" alt="银色洗发水满意度No.1【TAIWAN PROFESSIONAL】">
+					</a>
+				</div>
+				<div class="gnav">
+					<ul>
+						<li class="line">
+							<a href="https://lin.ee/28rac17" target="_blank">享受仅在官方线上提供的福利</a>
+						</li>
+						<li class="login">
+							{% if is_granted('ROLE_USER') %}
+								<a href="{{ url('logout') }}">登出</a>
+							{% else %}
+								<a href="{{ url('mypage_login') }}">登录</a>
+							{% endif %}
+						</li>
+						<li class="favorite">
+							{% if is_granted('ROLE_USER') %}
+							<a href="{{ url('mypage_favorite') }}"><img src="/images/icon/icon-heart-red.svg"></a>
+							{% else %}
+							<a href="{{ url('mypage_login') }}"><img src="/images/icon/icon-heart-red.svg"></a>
+							{% endif %}
+						</li>
+						<li class="cart" style="align-items: center; display: flex;justify-content: end">
+							<div class="ec-headerRole__cart">
+							<a href="{{ path('cart') }}">{{ include('Block/cart.twig') }}</a>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="bottom">
+				<ul>
+					<li><a href="{{url('product_list')}}?category_id=22">新/热门产品</a></li>
+					{# <li><a href="{{ url('product_list') }}?category_id=47">TikTok</a></li> #}
+					{# <li><a href="{{url('homepage')}}/note" target="_blank">阅读材料</a></li> #}
+					{# <li><a href="{{url('product_list')}}?category_id=28">仅限官方邮购</a></li> #}
+					{# <li><a href="{{url('homepage')}}">京极专业</a></li> #}
+					{# <li><a href="https://kyogokupro.com/academy/" target="_blank">京极学园</a></li> #}
+					{# <li><a href="https://kyogokusalon.com/" target="_blank">京极沙龙</a></li> #}
+				</ul>
+			</div>
+			<svg xmlns="http://www.w3.org/2000/svg" width="33" height="33" viewBox="0 0 33 33" fill="none">
+				<path d="M32 16.4993L28.8482 19.81L29.9242 24.2524L25.5375 25.5375L24.2524 29.9242L19.81 28.8482L16.4993 32L13.19 28.8482L8.74762 29.9242L7.46247 25.5375L3.07446 24.2524L4.15176 19.81L1 16.4993L4.15176 13.19L3.07446 8.74762L7.46247 7.46247L8.74762 3.07446L13.19 4.15176L16.4993 1L19.81 4.15176L24.2524 3.07446L25.5375 7.46247L29.9242 8.74762L28.8482 13.19L32 16.4993Z" stroke="#333333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+			</svg>
+			{{ include('Block/page_countdown.twig') }}
+		</div>
+	</div>
+
+{% endif %}
+
+{% block javascript %}
+	<script src="/html/template/default/assets/js/header.js"></script>
+{% endblock %}
+
+<script>
+	$(function () {
+	function closeSidebar() {
+		$('.siderbar-mobile').removeClass('show');
+        $('body').removeClass('no-scroll');
+        $('.ec-layoutRole__contentTop').show();
+	}
+    $('.button-sidebar').click(() => {
+        $('.siderbar-mobile').toggleClass('show');
+        if ($('.siderbar-mobile').hasClass('show')) {
+            $('body').addClass('no-scroll');
+            $('.ec-layoutRole__contentTop').hide();
+        } else {
+            closeSidebar()
+        }
+    });
+
+    $('.menu-siderbar-close').click(() => {
+        closeSidebar();
+    });
+
+	$(document).on('keyup', function (e) {
+        if (e.key === "Escape") {
+            closeSidebar();
+        }
+    })
+	 $(window).on('resize', function () {
+        if (window.innerWidth >= 768) {
+            closeSidebar();
+        }
+    })
+});
+</script>
+<script type="application/ld+json">
+	{
+	"@context": "https://schema.org",
+	"@type": "HairSalon",
+	"name": "ColourBar卡樂捌日本專業染護卡雅仕KG體驗勝利店",
+	"address": {
+		"@type": "PostalAddress",
+		"streetAddress": "勝利路89號",
+		"addressLocality": "潭子區",
+		"addressRegion": "台中市",
+		"postalCode": "427",
+		"addressCountry": "臺灣"
+	},
+	"telephone": "+886 4 2532 0179",
+	"openingHours": [
+		"週一～週六 11:00–21:00",
+		"週日 11:00–19:00"
+	],
+	"url": "https://tw.kyogokupro.com",
+	"sameAs": [
+		"https://www.instagram.com/colourbar_express",
+		"https://lin.ee/IoBaVux"
+	],
+	"description": "台灣首創的日本專業染護專門店，強調染髮不傷頭皮，依據客人髮質和需求提供日系低刺激、高營養的染髮與深層護髮服務。可透過 LINE 預約體驗。"
+	}
+</script>
+
+<style>
+	.container-header{
+		display: none;
+	}
+	body.no-scroll .container-header {
+		display: none !important;
+	}
+    html.no-scroll,
+    body.no-scroll {
+        overflow: hidden !important;
+        height: 100% !important;
+    }
+    body.no-scroll {
+        width: 100% !important;
+    }
+</style>

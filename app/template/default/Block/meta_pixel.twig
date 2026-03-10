@@ -1,0 +1,52 @@
+{% if app.environment == 'prod' and meta_pixel_id %}
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '{{ meta_pixel_id }}');
+fbq('track', 'PageView');
+
+{% set route_name = app.request.get('_route') %}
+
+{% if meta_pixel_event_name is defined and meta_pixel_event_name %}
+    {% if meta_pixel_event_params is defined and meta_pixel_event_params is not empty %}
+        fbq('track', '{{ meta_pixel_event_name }}', {{ meta_pixel_event_params|json_encode|raw }});
+    {% else %}
+        fbq('track', '{{ meta_pixel_event_name }}');
+    {% endif %}
+{% else %}
+    {% if ('product_detail' in route_name) and Product is defined and Product %}
+        fbq('track', 'ViewContent', {{ {
+            'content_ids': [Product.id],
+            'content_name': Product.name,
+            'content_type': 'product'
+        }|json_encode|raw }});
+    {% endif %}
+
+    {% if route_name == 'shopping' %}
+        fbq('track', 'InitiateCheckout');
+    {% endif %}
+
+    {% if route_name == 'shopping_confirm' %}
+        fbq('track', 'AddPaymentInfo');
+    {% endif %}
+
+    {% if ('shopping_complete' in route_name) and Order is defined and Order %}
+        fbq('track', 'Purchase', {{ {
+            'value': Order.payment_total|default(0),
+            'currency': Order.currency_code|default('TWD')
+        }|json_encode|raw }});
+    {% endif %}
+{% endif %}
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id={{ meta_pixel_id }}&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
+{% endif %}

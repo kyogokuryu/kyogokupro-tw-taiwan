@@ -1,0 +1,67 @@
+productplus.admin.nav.product.productitem: 商品項目管理
+productplus.admin.nav.product.productitem.option: 選擇項目編輯
+
+productplus.admin.common.new: 新增
+productplus.admin.common.save: 儲存此內容
+productplus.admin.common.back: 返回清單
+productplus.admin.common.up: 上移
+productplus.admin.common.down: 下移
+productplus.admin.product.productitem.list: 項目清單
+productplus.admin.product.productitem.edit: 編輯商品項目
+productplus.admin.product.productitem.no_item: 沒有商品項目。
+productplus.admin.product.productitem.edit.title: 編輯商品項目
+productplus.admin.product.productitem.option.no_item: 沒有選擇項目。
+productplus.admin.product.productitem.option.sortable: 選擇項目的順序可進行拖放更改。
+productplus.admin.product.productitem.option.edit: 編輯選擇項目
+productplus.admin.product.productitem.edit.form_tag.title: 表單標籤
+productplus.admin.product.productitem.edit.form_tag.label: 標籤
+productplus.admin.product.productitem.edit.form_tag.widget: 輸入表單
+productplus.admin.product.productitem.edit.form_tag.errors: 錯誤顯示
+productplus.admin.product.productitem.edit.form_tag.row: 標籤+輸入
+productplus.admin.product.productitem.edit.view_tag.title: 顯示標籤
+productplus.admin.product.productitem.edit.view_tag.example.title: 【使用範例】
+productplus.admin.product.productitem.edit.view_tag.example.description: 輸出值為陣列，請進行陣列處理後顯示。
+productplus.admin.product.product_plus__card_title: 附加項目
+
+#form
+productplus.form.productitem.label.name: 項目名稱
+productplus.form.productitem.label.input_type: 表單類型
+productplus.form.productitem.label.is_required: 必填檢查
+productplus.form.productitem.label.is_required_short: 必填
+productplus.form.productitem.choice.empty: 請選擇
+productplus.form.productitem.choice.text: 文本框
+productplus.form.productitem.choice.textarea: 文本區域
+productplus.form.productitem.choice.select: 下拉式選單
+productplus.form.productitem.choice.radio: 單選按鈕
+productplus.form.productitem.choice.checkbox: 複選框
+productplus.form.productitem.choice.image: 圖片
+productplus.form.productitem.choice.date: 日期
+productplus.form.productitem.option.label.text: 選擇項目名稱
+
+productplus.csv.common.name: (名稱)
+productplus.csv.common.id: (ID)
+productplus.admin.product.product_csv.product_plus.id_description: 設置大於等於0的數字。 如果要設置多個，請用逗號“,”分隔（如果是複選框類型）
+productplus.admin.product.product_csv.product_plus.image_description: 請輸入圖片名稱，然後將圖片置於相應的目錄中，例如使用FTP等方式。
+productplus.admin.product.product_csv.not_correct: 第%line%行的%name%輸入不正確。
+
+#modal
+productplus.admin.product.productitem.modal.header: 刪除商品項目
+productplus.admin.product.productitem.modal.body: 商品項目將從列表（主控）中刪除。 此操作無法撤銷。 確定要刪除此商品項目嗎？
+productplus.admin.product.productitem.option.modal.header: 刪除選擇項目
+productplus.admin.product.productitem.option.modal.body: 選擇項目將從列表（主控）中刪除。 此操作無法撤銷。 確定要刪除此選擇項目嗎？
+
+productplus.productitem.error.image.required: 尚未上傳圖片。
+productplus.type.image.path.error: 圖片路徑無效。
+
+admin.product.productitem.delete.complete: 商品項目已成功刪除。
+admin.product.productitem.delete.error: 無法刪除商品項目。
+admin.product.productitem.save.complete: 商品項目已成功註冊。
+admin.product.productitem.save.error: 無法註冊商品項目。
+admin.product.productitem.option.save.complete: 選擇項目已成功註冊。
+admin.product.productitem.option.save.error: 無法註冊選擇項目。
+admin.product.productitem.option.up.complete: 選項已成功移至上方。
+admin.product.productitem.option.up.error: 無法將選項移至上方。
+admin.product.productitem.option.down.complete: 選項已成功移至下方。
+admin.product.productitem.option.down.error: 無法將選項移至下方。
+admin.product.productitem.option.delete.complete: 選項已成功刪除。
+admin.product.productitem.option.delete.error: 無法刪除選項。

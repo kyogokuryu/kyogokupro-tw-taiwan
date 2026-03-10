@@ -1,0 +1,559 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+<nav>
+	<ul class="c-mainNavArea__nav">
+		<!-- ホーム -->
+		<li class="c-mainNavArea__navItem">
+			<a class="c-mainNavArea__navItemTitle" href="/mastercontrol/">
+				<i class="fa fa-home fa-fw" aria-hidden="true"></i>
+				<span>{{ 'admin.nav.home'|trans }}</span>
+			</a>
+		</li>
+		<li class="c-mainNavArea__navItem">
+			<a class="c-mainNavArea__navItemTitle{{ active_menus(menus)[0] != 'product' ? ' collapsed' }}" data-toggle="collapse" href="#nav-product" aria-expanded="{{ active_menus(menus)[0] == 'product' ? 'true' : 'false' }}" aria-controls="nav-product">
+				<i class="fa fa-cube fa-fw" aria-hidden="true"></i>
+				<span>{{ 'admin.nav.product'|trans }}</span>
+			</a>
+			<ul class="collapse {% if active_menus(menus)[0] == 'product' %} show{% endif %}" id="nav-product">
+				<li>
+					<a href="/mastercontrol/product"{{ active_menus(menus)[1] == 'product_master' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.product.list'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/product/product/new"{{ active_menus(menus)[1] == 'product_edit' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.product.registration'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/plugin/SortProduct/config"{{ active_menus(menus)[1] == 'SortProduct' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.product.sort'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/product/class_name"{{ active_menus(menus)[1] == 'class_name' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.product.specification'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/product/category"{{ active_menus(menus)[1] == 'class_category' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.product.category'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/product/brand"{{ active_menus(menus)[1] == 'class_brand' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.product.brand'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/product/tag"{{ active_menus(menus)[1] == 'product_tag' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.product.tag'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/product/product_csv_upload"{{ active_menus(menus)[1] == 'product_csv_import' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.product.product_svg'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/product/category_csv_upload"{{ active_menus(menus)[1] == 'category_csv_import' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.product.category_svg'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/product_review/"{{ active_menus(menus)[1] == 'product_review' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.product.review'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/product/productitem"{{ active_menus(menus)[1] == 'admin_product_productitem' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.product.item'|trans }}</span>
+					</a>
+				</li>
+			</ul>
+		</li>
+		<li class="c-mainNavArea__navItem">
+			<a class="c-mainNavArea__navItemTitle{{ active_menus(menus)[0] != 'order' ? ' collapsed' }}" data-toggle="collapse" href="#nav-order" aria-expanded="{{ active_menus(menus)[0] == 'order' ? 'true' : 'false' }}" aria-controls="nav-order">
+				<i class="fa fa-shopping-cart fa-fw" aria-hidden="true"></i>
+				<span>{{ 'admin.nav.order'|trans }}</span>
+			</a>
+			<ul class="collapse {% if active_menus(menus)[0] == 'order' %} show{% endif %}" id="nav-order">
+				<li>
+					<a href="/mastercontrol/order"{{ active_menus(menus)[1] == 'order_master' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.order.list'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/order/new"{{ active_menus(menus)[1] == 'order_edit' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.order.registration'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/order/shipping_csv_upload"{{ active_menus(menus)[1] == 'shipping_csv_import' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.order.shipping_svg'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/plugin/coupon"{{ active_menus(menus)[1] == 'plugin_coupon' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.order.promotion'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/gmo_payment_gateway/payment_status"{{ active_menus(menus)[1] == 'gmo_payment_gateway_admin_payment_status' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.order.payment_status'|trans }}</span>
+					</a>
+				</li>
+			</ul>
+		</li>
+		<li class="c-mainNavArea__navItem">
+			<a class="c-mainNavArea__navItemTitle{{ active_menus(menus)[0] != 'SalesReport4' ? ' collapsed' }}" data-toggle="collapse" href="#nav-SalesReport4" aria-expanded="{{ active_menus(menus)[0] == 'SalesReport4' ? 'true' : 'false' }}" aria-controls="nav-SalesReport4">
+				<i class="fa fa-chart-bar fa-fw" aria-hidden="true"></i>
+				<span>{{ 'admin.nav.sales'|trans }}</span>
+			</a>
+			<ul class="collapse {% if active_menus(menus)[0] == 'SalesReport4' %} show{% endif %}" id="nav-SalesReport4">
+				<li>
+					<a href="/mastercontrol/plugin/sales_report/term"{{ active_menus(menus)[1] == 'sales_report_admin_term' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.sales.period'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/plugin/sales_report/product"{{ active_menus(menus)[1] == 'sales_report_admin_product' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.sales.product'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/salesmaster/index.php?tk=SEGfhfdCmuSBss7vUfQttUXhA6gQuJwTEHzmD4u3&amp;sd=52b3db244b4cda1ff784e3e33eada3d2">
+						<span>{{ 'admin.nav.sales.promotion'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/plugin/sales_report/age"{{ active_menus(menus)[1] == 'sales_report_admin_age' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.sales.age'|trans }}</span>
+					</a>
+				</li>
+			</ul>
+		</li>
+		<li class="c-mainNavArea__navItem">
+			<a class="c-mainNavArea__navItemTitle{{ active_menus(menus)[0] != 'others' ? ' collapsed' }}" data-toggle="collapse" href="#others" aria-expanded="{{ active_menus(menus)[0] == 'others' ? 'true' : 'false' }}" aria-controls="others">
+				<i class="fa fa-info-circle fa-fw" aria-hidden="true"></i>
+				<span>{{ 'admin.nav.recipe'|trans }}</span>
+			</a>
+			<ul class="collapse {% if active_menus(menus)[0] == 'others' %} show{% endif %}" id="others">
+				<li>
+					<a href="/recipemaster/index.php?tk=SEGfhfdCmuSBss7vUfQttUXhA6gQuJwTEHzmD4u3&amp;sd=52b3db244b4cda1ff784e3e33eada3d2">
+						<span>{{ 'admin.nav.recipe'|trans }}</span>
+					</a>
+				</li>
+			</ul>
+		</li>
+		<li class="c-mainNavArea__navItem">
+			<a class="c-mainNavArea__navItemTitle{{ active_menus(menus)[0] != 'othersnews' ? ' collapsed' }}" data-toggle="collapse" href="#othersnews" aria-expanded="{{ active_menus(menus)[0] == 'othersnews' ? 'true' : 'false' }}" aria-controls="othersnews">
+				<i class="fa fa-info-circle fa-fw" aria-hidden="true"></i>
+				<span>{{ 'admin.nav.news'|trans }}</span>
+			</a>
+			<ul class="collapse {% if active_menus(menus)[0] == 'othersnews' %} show{% endif %}" id="othersnews">
+				<li>
+					<a href="/recipemaster/index.php?target=news&tk=SEGfhfdCmuSBss7vUfQttUXhA6gQuJwTEHzmD4u3&amp;sd=52b3db244b4cda1ff784e3e33eada3d2">
+						<span>{{ 'admin.nav.news'|trans }}</span>
+					</a>
+				</li>
+			</ul>
+		</li>
+		<li class="c-mainNavArea__navItem">
+			<a class="c-mainNavArea__navItemTitle {{ active_menus(menus)[0] != 'customer' ? ' collapsed' }}" data-toggle="collapse" href="#nav-customer" aria-expanded="{{ active_menus(menus)[0] == 'customer' ? 'true' : 'false' }}" aria-controls="nav-customer">
+				<i class="fa fa-users fa-fw" aria-hidden="true"></i>
+				<span>{{ 'admin.nav.member'|trans }}</span>
+			</a>
+			<ul class="collapse {% if active_menus(menus)[0] == 'customer' %} show{% endif %}" id="nav-customer">
+				<li>
+					<a href="/mastercontrol/customer"{{ active_menus(menus)[1] == 'customer_master' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.member.list'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/customer/new"{{ active_menus(menus)[1] == 'customer_edit' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.member.registration'|trans }}</span>
+					</a>
+				</li>
+			</ul>
+		</li>
+
+		<li class="c-mainNavArea__navItem">
+			<a class="c-mainNavArea__navItemTitle {{ active_menus(menus)[0] != 'kgmng' ? ' collapsed' }}" data-toggle="collapse" href="#nav-kgmng" aria-expanded="{{ active_menus(menus)[0] == 'kgmng' ? 'true' : 'false' }}" aria-controls="nav-salonaf">
+				<i class="fa fa-users fa-fw" aria-hidden="true"></i>
+				<span>{{ 'admin.nav.KG_Business'|trans }}</span>
+			</a>
+			<ul class="collapse  {% if active_menus(menus)[0] == 'kgmng' %} show{% endif %}" id="nav-kgmng">
+				<li>
+					<a href="/mastercontrol/cloglist" {{ active_menus(menus)[1] == 'kgmng_clog' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.KG_Business.telephone'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/liveloglist" {{ active_menus(menus)[1] == 'kgmng_livelog' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.KG_Business.live'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/mloglist" {{ active_menus(menus)[1] == 'kgmng_mlog' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.KG_Business.ceo_daily_report_list'|trans }}</span>
+					</a>
+				</li>
+
+				<li>
+					<a href="/mastercontrol/staffmloglist" {{ active_menus(menus)[1] == 'kgmng_staff_mlog' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.KG_Business.staff_daily_report_list'|trans }}</span>
+					</a>
+				</li>
+
+				<li>
+					<a href="/mastercontrol/shop_event_point" {{ active_menus(menus)[1] == 'kgmng_shop_event_point' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.KG_Business.store'|trans }}</span>
+					</a>
+				</li>
+			</ul>
+		</li>
+
+
+		<li class="c-mainNavArea__navItem">
+			<a class="c-mainNavArea__navItemTitle {{ active_menus(menus)[0] != 'salonaf' ? ' collapsed' }}" data-toggle="collapse" href="#nav-salonaf" aria-expanded="{{ active_menus(menus)[0] == 'salonaf' ? 'true' : 'false' }}" aria-controls="nav-salonaf">
+				<i class="fa fa-users fa-fw" aria-hidden="true"></i>
+				<span>{{ 'admin.nav.salonaf'|trans }}</span>
+			</a>
+			<ul class="collapse  {% if active_menus(menus)[0] == 'salonaf' %} show{% endif %}" id="nav-salonaf">
+				<li>
+					<a href="/mastercontrol/salonaf" {{ active_menus(menus)[1] == 'salonaf_af' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.salonaf.list'|trans }}</span>
+					</a>
+				</li>
+			</ul>
+		</li>
+
+		<li class="c-mainNavArea__navItem">
+			<a class="c-mainNavArea__navItemTitle{{ active_menus(menus)[0] != 'mailmagazine' ? ' collapsed' }}" data-toggle="collapse" href="#nav-mailmagazine" aria-expanded="{{ active_menus(menus)[0] == 'mailmagazine' ? 'true' : 'false' }}" aria-controls="nav-mailmagazine">
+				<i class="fa fa-envelope fa-fw" aria-hidden="true"></i>
+				<span>{{ 'admin.nav.mail'|trans }}</span>
+			</a>
+			<ul class="collapse {% if active_menus(menus)[0] == 'mailmagazine' %} show{% endif %}" id="nav-mailmagazine">
+				<li>
+					<a href="/mastercontrol/plugin/mail_magazine"{{ active_menus(menus)[1] == 'mailmagazine' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.mail.distribution'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/plugin/mail_magazine/template"{{ active_menus(menus)[1] == 'mailmagazine_template' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.mail.setting'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/plugin/mail_magazine/history"{{ active_menus(menus)[1] == 'mailmagazine_history' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.mail.distribution_history'|trans }}</span>
+					</a>
+				</li>
+			</ul>
+		</li>
+		<li class="c-mainNavArea__navItem">
+			<a class="c-mainNavArea__navItemTitle{{ active_menus(menus)[0] != 'othersartist' ? ' collapsed' }}" data-toggle="collapse" href="#othersartist" aria-expanded="{{ active_menus(menus)[0] == 'othersartist' ? 'true' : 'false' }}" aria-controls="othersartist">
+				<i class="fa fa-info-circle fa-fw" aria-hidden="true"></i>
+				<span>{{ 'admin.nav.KGPr'|trans }}</span>
+			</a>
+			<ul class="collapse {% if active_menus(menus)[0] == 'othersartist' %} show{% endif %}" id="othersartist">
+				<li>
+					<a href="/recipemaster/index.php?target=artist&tk=SEGfhfdCmuSBss7vUfQttUXhA6gQuJwTEHzmD4u3&amp;sd=52b3db244b4cda1ff784e3e33eada3d2">
+						<span>{{ 'admin.nav.KGPr'|trans }}</span>
+					</a>
+				</li>
+			</ul>
+		</li>
+		<li class="c-mainNavArea__navItem">
+			<a class="c-mainNavArea__navItemTitle{{ active_menus(menus)[0] != 'faq' ? ' collapsed' }}" data-toggle="collapse" href="#nav-faq" aria-expanded="{{ active_menus(menus)[0] == 'faq' ? 'true' : 'false' }}" aria-controls="nav-faq">
+				<i class="fa fa-info-circle fa-fw" aria-hidden="true"></i>
+				<span>{{ 'admin.nav.QvA'|trans }}</span>
+			</a>
+			<ul class="collapse {% if active_menus(menus)[0] == 'faq' %} show{% endif %}" id="nav-faq">
+				<li>
+					<a href="/mastercontrol/faq/category" {{ active_menus(menus)[1] == 'faq_category' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.QvA.category'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/faq" {{ active_menus(menus)[1] == 'faq' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.QvA'|trans }}</span>
+           </a>
+				</li>
+			</ul>
+		</li> 
+    	<li class="c-mainNavArea__navItem">
+			<a class="c-mainNavArea__navItemTitle{{ active_menus(menus)[0] != 'videoContent' ? ' collapsed' }}" data-toggle="collapse" href="#video-content" aria-expanded="{{ active_menus(menus)[0] == 'videoContent' ? 'true' : 'false' }}" aria-controls="othersartist">
+				<i class="fa fa-info-circle fa-fw" aria-hidden="true"></i>
+				<span>{{ 'admin.nav.video'|trans }}</span>
+			</a>
+			<ul class="collapse {% if active_menus(menus)[0] == 'videoContent' %} show{% endif %}" id="video-content">
+				<li>
+					<a href="/mastercontrol/content/video" {{ active_menus(menus)[1] == 'video' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.video.list'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/content/video/category" {{ active_menus(menus)[1] == 'category' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.video.category'|trans }}</span>
+					</a>
+				</li>
+			</ul>
+		</li>
+
+		<li class="c-mainNavArea__navItem">
+			<a class="c-mainNavArea__navItemTitle{{ active_menus(menus)[0] != 'countdown' ? ' collapsed' }}" data-toggle="collapse" href="#countdown-content" aria-expanded="{{ active_menus(menus)[0] == 'countdown' ? 'true' : 'false' }}" aria-controls="othersartist">
+				<i class="fa fa-solid fa-clock fa-fw" aria-hidden="true"></i>
+				<span>{{ 'admin.nav.countdown'|trans }}</span>
+			</a>
+			<ul class="collapse {% if active_menus(menus)[0] == 'countdown' %} show{% endif %}" id="countdown-content">
+				<li>
+					<a href="/mastercontrol/countdown" {{ active_menus(menus)[1] == 'countdown_list' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.countdown.manager'|trans }}</span>
+					</a>
+				</li>
+			</ul>
+		</li>
+
+		<li class="c-mainNavArea__navItem">
+			<a class="c-mainNavArea__navItemTitle{{ active_menus(menus)[0] != 'content' ? ' collapsed' }}" data-toggle="collapse" href="#nav-content" aria-expanded="{{ active_menus(menus)[0] == 'content' ? 'true' : 'false' }}" aria-controls="nav-content">
+				<i class="fa fa-file-text-o fa-fw" aria-hidden="true"></i>
+				<span>{{ 'admin.nav.content'|trans }}</span>
+			</a>
+			<ul class="collapse {% if active_menus(menus)[0] == 'content' %} show{% endif %}" id="nav-content" style="">
+				<li>
+					<a href="/mastercontrol/content/news"{{ active_menus(menus)[1] == 'news' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.content.new_manager'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/content/file_manager"{{ active_menus(menus)[1] == 'file' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.content.file'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/content/layout"{{ active_menus(menus)[1] == 'layout' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.content.new_manager'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/content/page"{{ active_menus(menus)[1] == 'page' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.content.layout'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/content/css"{{ active_menus(menus)[1] == 'css' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.content.css'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/content/js"{{ active_menus(menus)[1] == 'js' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.content.js'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/content/block"{{ active_menus(menus)[1] == 'block' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.content.block'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/content/cache"{{ active_menus(menus)[1] == 'cache' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.content.cache'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/content/maintenance"{{ active_menus(menus)[1] == 'maintenance' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.content.maintenance'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/plugin/recommend"{{ active_menus(menus)[1] == 'recommend' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.content.recommen'|trans }}</span>
+					</a>
+				</li>
+
+				<li>
+					<a href="/mastercontrol/uc_banner/config"{{ active_menus(menus)[0] == 'uc_slide_sp' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.content.banner'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/uc_slide/config"{{ active_menus(menus)[0] == 'uc_slide_sp' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.content.slider_pc'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/uc_slide_sp/config"{{ active_menus(menus)[0] == 'uc_slide_sp' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.content.slider_sp'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/uc_slide_cbd/config"{{ active_menus(menus)[0] == 'uc_slide_cbd_sp' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.content.slider_cbd_pc'|trans }}</span>
+					</a>
+				</li>
+				<li>
+					<a href="/mastercontrol/uc_slide_cbd_sp/config"{{ active_menus(menus)[0] == 'uc_slide_cbd_sp' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.content.slider_cbd_sp'|trans }}</span>
+					</a>
+				</li>
+				
+
+			</ul>
+		</li>
+		
+		<li class="c-mainNavArea__navItem">
+			<a class="c-mainNavArea__navItemTitle{{ active_menus(menus)[0] != 'setting' ? ' collapsed' }}" data-toggle="collapse" href="#nav-setting" aria-expanded="{{ active_menus(menus)[0] == 'setting' ? 'true' : 'false' }}" aria-controls="nav-setting">
+				<i class="fa fa-cog fa-fw" aria-hidden="true"></i>
+				<span>{{ 'admin.nav.setting'|trans }}</span>
+			</a>
+			<ul class="collapse {% if active_menus(menus)[0] == 'setting' %} show{% endif %}" id="nav-setting">
+				<li>
+					<a class="c-mainNavArea__navItemSubTitle{{ active_menus(menus)[1] != 'shop' ? ' collapsed' }}" data-toggle="collapse" href="#nav-shop" aria-expanded="{{ active_menus(menus)[1] != 'shop' ? 'true' : 'false' }}" aria-controls="nav-shop">
+						<span>{{ 'admin.nav.setting.store'|trans }}</span>
+					</a>
+					<ul class="collapse{{ active_menus(menus)[1] == 'shop' ? ' show' }}" id="nav-shop">
+						<li>
+							<a href="/mastercontrol/setting/shop"{{ active_menus(menus)[2] == 'shop_index' ? ' class="is-active"' }}>
+								<span>{{ 'admin.nav.setting.store.basic'|trans }}</span>
+							</a>
+						</li>
+						<li>
+							<a href="/mastercontrol/content/page/21/edit?return=tradelaw"{{ active_menus(menus)[2] == 'shop_tradelaw' ? ' class="is-active"' }}>
+								<span>{{ 'admin.nav.setting.store.specific'|trans }}</span>
+							</a>
+						</li>
+						<li>
+							<a href="/mastercontrol/content/page/19/edit?return=agreement"{{ active_menus(menus)[2] == 'shop_agreement' ? ' class="is-active"' }}>
+								<span>{{ 'admin.nav.setting.store.terms'|trans }}</span>
+							</a>
+						</li>
+						<li>
+							<a href="/mastercontrol/setting/shop/payment"{{ active_menus(menus)[2] == 'shop_payment' ? ' class="is-active"' }}>
+								<span>{{ 'admin.nav.setting.store.payment'|trans }}</span>
+							</a>
+						</li>
+						<li>
+							<a href="/mastercontrol/setting/shop/delivery"{{ active_menus(menus)[2] == 'shop_delivery' ? ' class="is-active"' }}>
+								<span>{{ 'admin.nav.setting.store.shipping'|trans }}</span>
+							</a>
+						</li>
+						<li>
+							<a href="/mastercontrol/setting/shop/tax"{{ active_menus(menus)[2] == 'shop_tax' ? ' class="is-active"' }}>
+								<span>{{ 'admin.nav.setting.store.tax'|trans }}</span>
+							</a>
+						</li>
+						<li>
+							<a href="/mastercontrol/setting/shop/mail"{{ active_menus(menus)[2] == 'shop_mail' ? ' class="is-active"' }}>
+								<span>{{ 'admin.nav.setting.store.mail'|trans }}</span>
+							</a>
+						</li>
+						<li>
+							<a href="/mastercontrol/setting/shop/csv"{{ active_menus(menus)[2] == 'shop_csv' ? ' class="is-active"' }}>
+								<span>{{ 'admin.nav.setting.store.csv'|trans }}</span>
+							</a>
+						</li>
+					</ul>
+				</li>
+				<li>
+					<a class="c-mainNavArea__navItemSubTitle{{ active_menus(menus)[1] != 'system' ? ' collapsed' }}" data-toggle="collapse" href="#nav-system" aria-expanded="{{ active_menus(menus)[1] != 'system' ? 'true' : 'false' }}" aria-controls="nav-system">
+						<span>{{ 'admin.nav.setting.system'|trans }}</span>
+					</a>
+					<ul class="collapse{{ active_menus(menus)[1] == 'system' ? ' show' }}" id="nav-system">
+						<li>
+							<a href="/mastercontrol/setting/system/member"{{ active_menus(menus)[2] == 'member' ? ' class="is-active"' }}>
+								<span>{{ 'admin.nav.setting.system.member'|trans }}</span>
+							</a>
+						</li>
+						<li>
+							<a href="/mastercontrol/setting/system/authority"{{ active_menus(menus)[2] == 'authority' ? ' class="is-active"' }}>
+								<span>{{ 'admin.nav.setting.system.permisstion'|trans }}</span>
+							</a>
+						</li>
+						<li>
+							<a href="/mastercontrol/setting/system/security"{{ active_menus(menus)[2] == 'security' ? ' class="is-active"' }}>
+								<span>{{ 'admin.nav.setting.system.security'|trans }}</span>
+							</a>
+						</li>
+						<li>
+							<a href="/mastercontrol/setting/system/log"{{ active_menus(menus)[2] == 'log' ? ' class="is-active"' }}>
+								<span>{{ 'admin.nav.setting.system.log'|trans }}</span>
+							</a>
+						</li>
+						<li>
+							<a href="/mastercontrol/setting/system/masterdata"{{ active_menus(menus)[2] == 'masterdata' ? ' class="is-active"' }}>
+								<span>{{ 'admin.nav.setting.system.master'|trans }}</span>
+							</a>
+						</li>
+						<li>
+							<a href="/mastercontrol/setting/system/system"{{ active_menus(menus)[2] == 'system' ? ' class="is-active"' }}>
+								<span>{{ 'admin.nav.setting.system.infomation'|trans }}</span>
+							</a>
+						</li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+		<li class="c-mainNavArea__navItem">
+			<a class="c-mainNavArea__navItemTitle{{ active_menus(menus)[0] != 'store' ? ' collapsed' }}" data-toggle="collapse" href="#nav-store" aria-expanded="{{ active_menus(menus)[0] == 'store' ? 'true' : 'false' }}" aria-controls="nav-store">
+				<i class="fa fa-plug fa-fw" aria-hidden="true"></i>
+				<span>{{ 'admin.nav.store'|trans }}</span>
+			</a>
+			<ul class="collapse {% if active_menus(menus)[0] == 'store' %} show{% endif %}" id="nav-store" style="">
+				<li>
+					<a class="c-mainNavArea__navItemSubTitle{{ active_menus(menus)[1] != 'plugin' ? ' collapsed' }}" data-toggle="collapse" href="#nav-plugin" aria-expanded="{{ active_menus(menus)[1] != 'plugin' ? 'true' : 'false' }}" aria-controls="nav-plugin">
+						<span>{{ 'admin.nav.store.plugin'|trans }}</span>
+					</a>
+					<ul class="collapse{{ active_menus(menus)[1] == 'plugin' ? ' show' }}" id="nav-plugin">
+						<li>
+							<a href="/mastercontrol/store/plugin/api/search"{{ active_menus(menus)[2] == 'plugin_owners_search' ? ' class="is-active"' }}>
+								<span>{{ 'admin.nav.store.plugin.search'|trans }}</span>
+							</a>
+						</li>
+						<li>
+							<a href="/mastercontrol/store/plugin"{{ active_menus(menus)[2] == 'plugin_list' ? ' class="is-active"' }}>
+								<span>{{ 'admin.nav.store.plugin.plugin'|trans }}</span>
+							</a>
+						</li>
+					</ul>
+				</li>
+				<li>
+					<a class="c-mainNavArea__navItemSubTitle{{ active_menus(menus)[1] != 'template' ? ' collapsed' }}" data-toggle="collapse" href="#nav-template" aria-expanded="{{ active_menus(menus)[1] != 'template' ? 'true' : 'false' }}" aria-controls="nav-template">
+						<span>{{ 'admin.nav.store.template'|trans }}</span>
+					</a>
+					<ul class="collapse{{ active_menus(menus)[1] == 'template' ? ' show' }}" id="nav-template">
+						<li>
+							<a href="/mastercontrol/store/template"{{ active_menus(menus)[2] == 'template_list' ? ' class="is-active"' }}>
+								<span>{{ 'admin.nav.store.template.template'|trans }}</span>
+							</a>
+						</li>
+						<li>
+							<a href="/mastercontrol/store/template/install"{{ active_menus(menus)[2] == 'template_install' ? ' class="is-active"' }}>
+								<span>{{ 'admin.nav.store.template.install'|trans }}</span>
+							</a>
+						</li>
+					</ul>
+				</li>
+				<li>
+					<a href="/mastercontrol/admin/store/plugin/authentication_setting"{{ active_menus(menus)[1] == 'authentication_setting' ? ' class="is-active"' }}>
+						<span>{{ 'admin.nav.store.authentication_setting'|trans }}</span>
+					</a>
+				</li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+<script>
+$(function(){
+    $('#nav-SalesReport4 li:nth-child(3) a').attr("href", "/salesmaster/index.php?tk=SEGfhfdCmuSBss7vUfQttUXhA6gQuJwTEHzmD4u3&sd=52b3db244b4cda1ff784e3e33eada3d2");
+});
+</script>

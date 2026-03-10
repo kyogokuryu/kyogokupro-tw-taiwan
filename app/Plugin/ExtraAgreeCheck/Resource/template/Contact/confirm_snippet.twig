@@ -1,0 +1,8 @@
+<script>
+    $(function () {
+        $('#eac-user-policy-hidden').insertBefore('.ec-RegisterRole__actions');
+    });
+</script>
+<div id="eac-user-policy-hidden">
+    {{ form_widget(form.user_policy_check, { type : 'hidden' }) }}
+</div>

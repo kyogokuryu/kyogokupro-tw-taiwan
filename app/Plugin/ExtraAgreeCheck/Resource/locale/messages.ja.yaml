@@ -1,0 +1,29 @@
+plugin.extra_agree_check.admin.save.complete: '已註冊。'
+plugin.extra_agree_check.admin.save.error: '註冊失敗。'
+
+plugin.extra_agree_check.admin.config.title: '同意檢查追加插件'
+plugin.extra_agree_check.admin.config.sub_title: '設定'
+plugin.extra_agree_check.admin.nonmember.title: '訪客購買表單'
+plugin.extra_agree_check.admin.contact.title: '聯繫表單'
+plugin.extra_agree_check.admin.auto_insert.title: '自動插入'
+plugin.extra_agree_check.admin.add_check.label: '添加同意檢查'
+plugin.extra_agree_check.admin.check_label.label: '勾選按鈕標籤'
+plugin.extra_agree_check.admin.check_label.description: '如果要自動插入模板，請輸入標籤。可以使用HTML標籤。'
+plugin.extra_agree_check.admin.check_label.error: '未輸入標籤'
+plugin.extra_agree_check.admin.auto_insert.label: '自動插入模板'
+plugin.extra_agree_check.admin.auto_insert.description: |
+如果您自定義了模板或使用自己的模板，自動插入可能不正常。
+在這種情況下，請取消選中框並編輯“非會員購買信息輸入”或“聯繫（輸入頁面）”模板，然後插入片段。
+請參考以下插入片段。
+plugin.extra_agree_check.admin.auto_insert.index_snippet: |
+<div class="ec-checkbox{{ has_errors(form.user_policy_check) ? ' error' }}">
+<label>
+{{ form_widget(form.user_policy_check) }}
+<a class="ec-link" href="%url%" target="_blank">同意使用條款</a>
+</label>
+{{ form_errors(form.user_policy_check) }}
+</div>
+plugin.extra_agree_check.admin.auto_insert.confirm_description: |
+如果要在聯繫表單中插入片段，請在“聯繫（確認頁面）”模板中插入以下片段。
+plugin.extra_agree_check.admin.auto_insert.confirm_snippet: |
+{{ form_widget(form.user_policy_check, { type : 'hidden' }) }}

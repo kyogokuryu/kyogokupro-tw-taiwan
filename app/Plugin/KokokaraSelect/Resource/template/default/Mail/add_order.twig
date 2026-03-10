@@ -1,0 +1,46 @@
+{% set ks_normal = is_normal_kokokara_select_order(Order) %}
+{% if ks_normal %}
+************************************************
+　{{ kokokara_select }}情報
+************************************************
+{% for shipping in Order.shippings %}
+{% for orderItem in shipping.productOrderItems %}
+{% set ksDirectSelect = is_kokokara_select_direct_select(orderItem.ProductClass) %}
+{% if ksDirectSelect == false %}
+{% set viewKsOrderItemGroups = get_kokokara_select_order_item_view(orderItem, ksDirectSelect) %}
+{% if viewKsOrderItemGroups|length > 0 %}
+商品名：{{ orderItem.product_name }}  {{ orderItem.classcategory_name1 }}  {{ orderItem.classcategory_name2 }}
+{% for groupId, viewKsOrderItemGroup in viewKsOrderItemGroups %}
+{{ get_kokokara_select_name() }}内訳({{ groupId }})
+{% for viewKsOrderItem in viewKsOrderItemGroup %}
+    {{ viewKsOrderItem.name }} × {{ viewKsOrderItem.quantity }}
+{% endfor %}
+{% endfor %}
+
+{% endif %}
+{% endif %}
+{% endfor %}
+{% endfor %}
+{% endif %}
+{% set ks_direct = is_direct_kokokara_select_order(Order) %}
+{% if ks_direct %}
+************************************************
+　{{ kokokara_select_direct_select }}情報
+************************************************
+{% for shipping in Order.shippings %}
+{% for orderItem in shipping.productOrderItems %}
+{% set ksDirectSelect = is_kokokara_select_direct_select(orderItem.ProductClass) %}
+{% if ksDirectSelect == true %}
+{% set viewKsOrderItemGroups = get_kokokara_select_order_item_view(orderItem, ksDirectSelect) %}
+{% if viewKsOrderItemGroups|length > 0 %}
+商品名：{{ orderItem.product_name }}  {{ orderItem.classcategory_name1 }}  {{ orderItem.classcategory_name2 }}
+{{ get_kokokara_select_direct_select_name() }}{{ 'kokokara_select.admin.pdf.direct_select.suffix'|trans }}
+{% for ksMargeItem in viewKsOrderItemGroups %}
+{{ ksMargeItem.viewProductName }} × {{ ksMargeItem.quantity }}
+{% endfor %}
+
+{% endif %}
+{% endif %}
+{% endfor %}
+{% endfor %}
+{% endif %}

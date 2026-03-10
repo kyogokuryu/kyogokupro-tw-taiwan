@@ -1,0 +1,99 @@
+{% set Category = repository("Eccube\\Entity\\Category").find(27) %}
+{%
+set products = repository("Eccube\\Entity\\Product")
+.getQueryBuilderBySearchData({'category_id':Category})
+.setMaxResults(15)
+.getQuery()
+.getResult()
+%}
+
+{% block javascript %}
+<script>
+jQuery(function($){
+$(window).on('load',function(){
+    $('.sale-time').each(function(){
+        let time = $(this).data('time');
+        if(time){
+            $(this).yycountdown({
+                endDateTime:time,
+                unit:{d: '日', h: '時', m: '分', s: '秒'},
+        });
+        }
+        else{
+            $(this).append('<span class="sub">終了しました</span>');
+        }
+    });
+});
+
+$('.time-sale.list .more a').on('click',function(){
+    let hidden = $('.time-sale.list .ec-shelfGrid__item:hidden').length;
+    if(hidden){
+        let visible = $('.time-sale.list .ec-shelfGrid__item:visible').length+3;
+        $('.time-sale.list .ec-shelfGrid__item:nth-of-type(-n+'+visible+')').fadeIn('fast');
+        // let hidden2 = $('.time-sale.list .ec-shelfGrid__item:hidden').length;
+        // if(!hidden2) $(this).text('xxx');
+        return false;
+    }
+});
+
+});
+</script>
+{% endblock %}
+
+{% if products %}
+    <div class="ec-shelfRole time-sale list"><div>
+        <p class="title" alt="p2">タイムセール</p>
+        <ul class="ec-shelfGrid">
+            {% for p in products %}
+                {% set regular_price = p.ProductClasses[0].pinpoint_sale_origin_price02_inc_tax %}
+                {% set sale_time = p.ProductClasses[0].ProductPinpoints[0].Pinpoint.endTime %}
+                {% if sale_time %}
+                    {% if sale_time > date() %}
+                        {% set sale_time = sale_time|date_format('', 'Y/m/d H:i') %}
+                    {% else %}
+                        {% set sale_time = '' %}
+                    {% endif %}
+                {% endif %}
+
+                <li class="ec-shelfGrid__item"><div>
+                    <a href="{{ url('product_detail', {'id': p.id}) }}">
+                        <p class="ec-shelfGrid__item-image">
+                            <img src="{{ asset(p.mainFileName|no_image_product, "save_image") }}"  loading="lazy">
+                        </p>
+                        <h2 class="name">{{ p.name }}</h2>
+                        {% if sale_time %}<p class="sub">残り</p>{% endif %}
+                        <p class="sale-time" data-time="{{ sale_time }}"></p>
+                    </a>
+                    <a href="{{ url('product_detail', {'id': p.id}) }}">
+                        <div class="sell-flex">
+                            <p class="price02-default">
+                                <b>
+                                {% if p.hasProductClass %}
+                                    {% if p.getPrice02Min == p.getPrice02Max %}
+                                        {{ p.getPrice02IncTaxMin|price }}
+                                    {% else %}
+                                        {{ p.getPrice02IncTaxMin|price }} ～ {{ p.getPrice02IncTaxMax|price }}
+                                    {% endif %}
+                                {% else %}
+                                    {{ p.getPrice02IncTaxMin|price }}
+                                {% endif %}
+                                </b>
+                                {% if sale_time %}<span class="regular-price">￥{{ regular_price }}</span>{% endif %}
+                            </p>
+						{% set sc = get_product_sell_count(p.id) %}
+                        {% if sc %}
+                        <div class="sell_product_page sell_count_wrap">
+                            <span class="sell_count">{{ sc }}</span><span class="sell_count_unit">個</span><br><span class="sell_count_label"> 累計販売数</span>
+                        </div>
+                        {% endif %}
+                        </div>
+                        <div class="ec-productRole__btn">
+                            <button class="ec-blockBtn--action">確認する</button>
+                        </div>
+                    </a>
+                </div></li>
+            {% endfor %}
+        </ul>
+        <div class="more"><a href="{{ url('product_list') }}?category_id=27">もっと見る</a></div>
+    </div></div>
+{% endif %}

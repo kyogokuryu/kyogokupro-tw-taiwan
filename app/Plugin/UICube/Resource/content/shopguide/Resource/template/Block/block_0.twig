@@ -1,0 +1,75 @@
+{% set Config = repository('Plugin\\[code]\\Entity\\[code]Config').get %}
+
+{% block stylesheet %}
+<style>
+    .uic-shopguide {
+        background: #F8F8F8;
+        padding: 40px 0;
+    }
+    .uic-shopguide .ec-role {
+        background: #fff;
+    }
+    .uic-shopguide .ec-shopguideRole {
+        padding: 30px 0;
+    }
+    .uic-shopguide .ec-shelfGrid__item {
+        border-right: 1px solid #eee;
+    }
+    .uic-shopguide .ec-shelfGrid__item:last-child {
+        border-right: none;
+    }
+    .uic-shopguide .shopiguide__title{
+        font-weight: bold;
+        margin-bottom: 16px;
+    }
+    .uic-shopguide .shopiguide__text{
+        margin-bottom: 16px;
+        font-size: 15px;
+        line-height: 1.6;
+    }
+    .shopiguide__link {
+        font-size: 14px;
+    }
+    .uic-shopguide .shopiguide__link i{
+        margin-left: 16px;
+    }
+</style>
+{% endblock %}
+
+<!-- [code] -->
+<div class="uic-shopguide">
+    <div class="ec-role">
+        <div class="ec-shopguideRole">
+            {% if Config.title %}
+                <div class="ec-secHeading">
+                    <span class="ec-secHeading__en">{{ Config.title }}</span>
+                </div>
+            {% endif %}
+            <div class="ec-secBody">
+                <div class="ec-shelfGrid">
+                    <div class="ec-shelfGrid__item">
+                        <p class="shopiguide__title">配送について</p>
+                        <p class="shopiguide__text">商品の配送サイズや配送エリアによって配送便・配送料が異なります。<br>ご購入金額の合計が5,000TWD(税込)以上になる場合､配送料は無料になります。</p>
+                        <a href="{{ url('help_tradelaw') }}" class="shopiguide__link">詳しくはこちら<i class="fa fa-chevron-right"></i></a>
+                    </div>
+                    <div class="ec-shelfGrid__item">
+                        <p class="shopiguide__title">お支払い方法について</p>
+                        <p class="shopiguide__text">「クレジットカード」、「代金引換」、「銀行振込み」をご利用いただけます。<br>※商品によって、お支払い方法が限定される場合があります。</p>
+                        <a href="{{ url('help_tradelaw') }}" class="shopiguide__link">詳しくはこちら<i class="fa fa-chevron-right"></i></a>
+                    </div>
+                    <div class="ec-shelfGrid__item">
+                        <p class="shopiguide__title">キャンセル・返品について</p>
+                        <p class="shopiguide__text">ご注文確定後、お客様のご都合によるキャンセルや商品変更・返品はお受け致しかねますのであらかじめご了承ください。</p>
+                        <a href="{{ url('help_tradelaw') }}" class="shopiguide__link">詳しくはこちら<i class="fa fa-chevron-right"></i></a>
+                    </div>
+                    <div class="ec-shelfGrid__item">
+                        <p class="shopiguide__title">お問い合わせ</p>
+                        <p class="shopiguide__text">当店に対するご意見ご感想、お問い合わせなど、下記リンク先のフォームよりお気軽にお尋ねください。</p>
+                        <a href="{{ url('contact') }}" class="shopiguide__link">詳しくはこちら<i class="fa fa-chevron-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /[code] -->

@@ -1,0 +1,170 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+
+{% set body_class = 'point_history' %}
+
+{% set mypageno = 'point_history' %}
+
+{% block stylesheet %}
+    <style type="text/css">
+        li.list-group-item {
+            z-index: inherit !important;
+        }
+
+        @media screen and (max-width: 480px) {
+
+            .not-show-sp {
+                display: none !important;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .edu_list li {
+                padding-top: 15px;
+            }
+        }
+
+        .category-title {
+            border-radius: 25px;
+            background: rgba(231, 200, 204,1);
+            color: #39393A;
+            font-size: 15px;
+            display: block;
+            padding: 1px 10px;
+            font-weight: normal;
+            width:fit-content;
+            white-space: nowrap;
+        }
+
+        .video-frame {
+            position: relative;
+        }
+    </style>
+{% endblock %}
+
+{% block javascript %}
+<script>
+var paramCategory={
+    s:null,//s = status
+    c:null,//c = category
+}
+$(document).ready(()=>{
+    $('.video-category-list li').on("click",(e)=>{
+        let type = e.currentTarget.getAttribute('type');
+        let value = e.currentTarget.getAttribute('value');
+        let urltarget =  window.location.href
+        if(type == 'c'){
+            paramCategory.c = paramCategory.c == value?null:value
+
+        }
+        var url = new URL(urltarget);
+        url.searchParams.delete('category');
+        if(paramCategory.c!=null)
+            url.searchParams.set('category', paramCategory.c);
+        window.location.href = url.href
+    })
+
+    function getDataCategory(){
+        let s = null;
+        let c = [];
+        const urlParams = new URLSearchParams(window.location.search);
+        s = urlParams.get('watched')
+        c = urlParams.get('category')
+        
+        return {
+            s,c
+        }
+    }
+
+    updateSelectedAttribute();
+    function updateSelectedAttribute(){
+        
+        paramCategory = getDataCategory();
+        if(paramCategory.s){
+            $(`.video-category-list li[type='s'][value=${paramCategory.s}]`).addClass('select')
+        }
+        
+        if(paramCategory.c){
+            $(`.video-category-list li[type='c'][value=${paramCategory.c}]`).addClass('select')
+        }
+    }
+})
+</script>
+{% endblock %}
+
+{% block main %}
+    <div class="ec-withdrawRole">
+        <h3 class="mypage-history-title text-left">{{ '動画視聴ポイント獲得履歴'|trans }}</h3>
+        <hr class="mypage-review-title">
+    </div>
+
+    {% if videoCategories %}
+        <div class="video-category-list">
+            <ul>
+                <p class="fil-name">カテゴリー</p>
+                {% for category in videoCategories %}
+                    <li type="c" value="{{ category.id }}">{{ category.name }}</li>
+                {% endfor %}
+            </ul>
+
+        </div>
+    {% endif%}
+
+    <div class="edu_list">
+        {% if pagination.totalItemCount > 0 %}
+            <ul>
+                {% for pointHistory in pagination %}
+                    {% set second = pointHistory.getVideoPointSetting.getSecond %}
+                    {% set point = pointHistory.getVideoPointSetting.getPoint %}
+                    {% set videoName = pointHistory.getVideo.getName %}
+                    {% set videoId = pointHistory.getVideo.getId %}
+                    {% set videoYoutubeId = pointHistory.getVideo.getVideoYoutubeId %}
+                    {% set videoCategoryName = pointHistory.getVideo.VideoCategory ? pointHistory.getVideo.getVideoCategory.getName : null %}
+                     <li class="video-item">
+                        <div class="video-frame">
+                            <a href="{{ url('video_detail', {id: videoId}) }}">
+                                <img src="https://img.youtube.com/vi/{{ videoYoutubeId }}/maxresdefault.jpg"></img>
+                                <p class="name_video">{{ videoName }}</p>
+                                <div style="display:flex; justify-content:space-between;align-items: flex-start;">
+                                    <div class="point-brown-gradial brown-gradial">
+                                        <div>
+                                            <img src="{{ asset('assets/icon/logo-icon.svg') }}" alt="">
+                                        </div>
+                                        <div class="box-title">
+                                            <p class="title">獲得できる<span> </span></p>
+                                            <p class="title">ポイント<span> </span></p>
+                                        </div>
+                                        <div>
+                                            <p class="point">{{pointHistory.getVideo.videoPointSetting.getPoint|number_format}}<span class="sub-name">P</span> </p>
+                                        </div>
+                                    </div>
+                                    <div class="video-list-right">
+                                        {% if pointHistory.getVideo.VideoCategory %}
+                                            <p class="category-title right-item" >{{ videoCategoryName }}</P>
+                                        {% endif %}
+                                    </div>
+                                    
+                                </div>
+                                
+                            </a>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        <div class="ec-pagerRole">
+            {% include "pager.twig" with {'pages': pagination.paginationData} %}
+        </div>
+        {% else %}
+            <div class="ec-favoriteRole__header" style="text-align:center">{{ '該当するデータが存在しません。'|trans }}</div>
+        {% endif %}
+    </div>
+{% endblock %}

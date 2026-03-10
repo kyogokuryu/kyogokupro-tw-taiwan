@@ -1,0 +1,57 @@
+{% set Config = repository('Plugin\\uc_banner_cbd01\\Entity\\uc_banner_cbd01Config').get %}
+{% set Images = repository('Plugin\\uc_banner_cbd01\\Entity\\uc_banner_cbd01Data').getImages %}
+
+{% block stylesheet %}
+<style>
+    .uic-image {
+        margin-bottom: 40px;
+    }
+    .uic-image__body{
+        margin-bottom: 20px;
+    }
+    .uic-image__body img {
+        max-width: 100% !important;
+    }
+    .uic-image__alt{
+        padding: 10px 0;
+    }
+    .row.display-flex {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .row.display-flex > [class*='col-'] {
+        display: flex;
+        flex-direction: column;
+    }
+</style>
+{% endblock %}
+
+<!-- uc_banner_cbd01 -->
+<div class="ec-role uic-image">
+    {% if Config.title %}
+        <div class="ec-secHeading">
+            <span class="ec-secHeading__en">{{ Config.title }}</span>
+        </div>
+    {% endif %}
+    <div class="ec-secBody">
+        {% if Images == null %}
+            <p>画像は見つかりませんでした。</p>
+        {% else %}
+            <div class="row">
+            {% for image in Images %}
+                <div class="col-xs-{{ image.column_xs }} col-md-{{ image.column_lg }}">
+                    <div class="uic-image__body">
+                        {% if image.link_url %}<a href="{{ image.link_url }}" class="uic-image__link">{% endif %}
+                            <img src="{{ url('homepage') }}html/user_data/{{ image.img_url }}" alt="{{ image.img_alt }}" class="img-responsive" />
+                        {% if image.link_url %}</a>{% endif %}
+                        {% if Config.display_description == 0 %}
+                            {{ image.img_description | raw }}
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+<!-- /uc_banner_cbd01 -->

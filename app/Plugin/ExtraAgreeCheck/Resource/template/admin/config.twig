@@ -1,0 +1,104 @@
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['store', 'plugin', 'plugin_list'] %}
+
+{% block title %}{{ 'plugin.extra_agree_check.admin.config.title'|trans }}{% endblock %}
+{% block sub_title %}{{ 'plugin.extra_agree_check.admin.config.sub_title'|trans }}{% endblock %}
+
+{% form_theme form '@admin/Form/bootstrap_4_horizontal_layout.html.twig' %}
+
+{% block stylesheet %}{% endblock stylesheet %}
+
+{% block javascript %}{% endblock javascript %}
+
+{% block main %}
+    <form role="form" method="post">
+
+        {{ form_widget(form._token) }}
+
+        <div class="c-contentsArea__cols">
+            <div class="c-contentsArea__primaryCol">
+                <div class="c-primaryCol">
+                    <div class="card rounded border-0 mb-4">
+                        <div class="card-header"><span>{{ 'plugin.extra_agree_check.admin.nonmember.title'|trans }}</span></div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label>
+                                    {{ form_widget(form.nonmember_add_check) }}
+                                </label>
+                                {{ form_errors(form.nonmember_add_check) }}
+                            </div>
+                            <div class="row">
+                                <label class="col-3 col-form-label"><span>{{ 'plugin.extra_agree_check.admin.check_label.label'|trans }}</span></label>
+                                <div class="col">
+                                    {{ form_widget(form.nonmember_check_label) }}
+                                    {{ form_errors(form.nonmember_check_label) }}
+                                    <div class="form-text text-muted">{{ 'plugin.extra_agree_check.admin.check_label.description'|trans }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card rounded border-0 mb-4">
+                        <div class="card-header"><span>{{ 'plugin.extra_agree_check.admin.contact.title'|trans }}</span></div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label>
+                                    {{ form_widget(form.contact_add_check) }}
+                                </label>
+                                {{ form_errors(form.contact_add_check) }}
+                            </div>
+                            <div class="row">
+                                <label class="col-3 col-form-label"><span>{{ 'plugin.extra_agree_check.admin.check_label.label'|trans }}</span></label>
+                                <div class="col">
+                                    {{ form_widget(form.contact_check_label) }}
+                                    {{ form_errors(form.contact_check_label) }}
+                                    <div class="form-text text-muted">{{ 'plugin.extra_agree_check.admin.check_label.description'|trans }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card rounded border-0 mb-4">
+                        <div class="card-header"><span>{{ 'plugin.extra_agree_check.admin.auto_insert.title'|trans }}</span></div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label>
+                                    {{ form_widget(form.auto_insert) }}
+                                </label>
+                                {{ form_errors(form.auto_insert) }}
+                            </div>
+                            <div class="mb-3">{{ 'plugin.extra_agree_check.admin.auto_insert.description'|trans|nl2br }}</div>
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <pre class="mb-0"><code>{{ 'plugin.extra_agree_check.admin.auto_insert.index_snippet'|trans({ '%url%': url('help_agreement') })|raw }}</code></pre>
+                                </div>
+                            </div>
+                            <div class="mb-3">{{ 'plugin.extra_agree_check.admin.auto_insert.confirm_description'|trans|nl2br }}</div>
+                            <div class="card">
+                                <div class="card-body">
+                                    <pre class="mb-0"><code>{{ 'plugin.extra_agree_check.admin.auto_insert.confirm_snippet'|trans({ '%url%': url('help_agreement') })|raw }}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="c-conversionArea">
+            <div class="c-conversionArea__container">
+                <div class="row justify-content-between align-items-center">
+                    <div class="col-6">
+                        <div class="c-conversionArea__leftBlockItem"></div>
+                    </div>
+                    <div class="col-6">
+                        <div class="row align-items-center justify-content-end">
+                            <div class="col-auto">
+                                <button class="btn btn-ec-conversion px-5"
+                                        type="submit">{{ 'admin.common.registration'|trans }}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+{% endblock %}

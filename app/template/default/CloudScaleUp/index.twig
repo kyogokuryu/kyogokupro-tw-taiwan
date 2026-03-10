@@ -1,0 +1,51 @@
+{% extends 'default_frame.twig' %}
+
+{% block main %}
+<div class="header">{{ include('Block/header.twig') }}</div>
+{# <div id="sidebar" style="display: none;">{{ include('Block/sidebar.twig') }}</div> #}
+
+<img src="/html/template/default/assets/img/cloudScaleUp/01.png" alt="画像1">
+<img src="/html/template/default/assets/img/cloudScaleUp/02.png" alt="画像2">
+<img src="/html/template/default/assets/img/cloudScaleUp/03.png" alt="画像3">
+<img src="/html/template/default/assets/img/cloudScaleUp/04.png" alt="画像4">
+<img src="/html/template/default/assets/img/cloudScaleUp/05.png" alt="画像5">
+<img src="/html/template/default/assets/img/cloudScaleUp/06.png" alt="画像6">
+<img src="/html/template/default/assets/img/cloudScaleUp/07.png" alt="画像7">
+<img src="/html/template/default/assets/img/cloudScaleUp/08.png" alt="画像8">
+<img src="/html/template/default/assets/img/cloudScaleUp/button.png" class="clickable" onclick="jumpToEntry()" alt="ボタン">
+<img src="/html/template/default/assets/img/cloudScaleUp/09.png" alt="画像9">
+<img src="/html/template/default/assets/img/cloudScaleUp/10.png" alt="画像10">
+<img src="/html/template/default/assets/img/cloudScaleUp/11.png" alt="画像11">
+<img src="/html/template/default/assets/img/cloudScaleUp/12.png" alt="画像12">
+<img src="/html/template/default/assets/img/cloudScaleUp/13.png" alt="画像13">
+<img src="/html/template/default/assets/img/cloudScaleUp/button.png" class="clickable" onclick="jumpToEntry()" alt="ボタン">
+<img src="/html/template/default/assets/img/cloudScaleUp/20.png" alt="画像20">
+<img src="/html/template/default/assets/img/cloudScaleUp/21.png" alt="画像21"> 
+<img src="/html/template/default/assets/img/cloudScaleUp/14.png" alt="画像14">
+<img src="/html/template/default/assets/img/cloudScaleUp/15.png" alt="画像15">
+<img src="/html/template/default/assets/img/cloudScaleUp/16.png" alt="画像16">
+<img src="/html/template/default/assets/img/cloudScaleUp/button.png" class="clickable" onclick="jumpToEntry()" alt="ボタン">
+<img src="/html/template/default/assets/img/cloudScaleUp/17.png" alt="画像17">
+<img src="/html/template/default/assets/img/cloudScaleUp/18.png" alt="画像18">
+<img src="/html/template/default/assets/img/cloudScaleUp/19.png" alt="画像19"> 
+
+<div class='footer'>{{ include('Block/footer.twig') }}</div>
+
+<script>
+    function jumpToEntry() {
+        window.location.href = '{{ url('entry') }}';
+    }
+</script>
+
+<script>
+    document
+        .getElementById('hinr')
+        .children[0]
+        .children[0]
+        .addEventListener('click', function () {
+            document.getElementById('sidebar').style.display 
+                = (document.getElementById('sidebar').style.display === 'none') ? 'inline-block' : 'none';
+        })
+</script>
+
+{% endblock main %}

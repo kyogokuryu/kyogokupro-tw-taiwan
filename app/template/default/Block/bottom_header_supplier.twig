@@ -1,0 +1,318 @@
+<style>
+	.page_countdown_box .salon_specific {
+		background-color: #fff;
+		padding: 12px;
+		display: none;
+		justify-content: space-between;
+		z-index: 101;
+	}
+	.page_countdown_box .salon_specific .title {
+		color: #000;
+		font-weight: 600;
+		font-size: 16px;
+	}
+	.page_countdown_box .salon_specific .customer_data {
+		font-size: 14px;
+	}
+	.page_countdown_box .salon_specific .customer_data .customer_point {
+		color: #EA7F31;
+	}
+
+	.page_countdown_box .salon_specific_bottom {
+		background-color: #FFEDD3;
+		padding: 12px;
+		display: none;
+		align-items: center;
+		justify-content: space-between;
+		box-shadow: 0 5px 40px 0 #00000040; /* Adjust this line */
+	}
+
+	.page_countdown_box .salon_specific_bottom a {
+		height: fit-content;
+	}
+
+	.page_countdown_box .salon_specific_bottom .total_cart {
+		font-size: 10px;
+		display: flex;
+		align-items: center;
+		gap: 3px;
+		height: fit-content;
+	}
+	.page_countdown_box .salon_specific_bottom .total_cart .total_cart_payment {
+		color: #000;
+		font-size: 18px;
+	}
+	.page_countdown_box .salon_specific_bottom .points_expected {
+		font-size: 15px;
+		height: fit-content;
+		display: flex;
+		align-items: center;
+		gap: 3px;
+	}
+	.page_countdown_box .salon_specific_bottom .points_expected .point {
+		color: #EA7F31;
+		font-size: 18px;
+	}
+	.page_countdown_box .salon_specific_bottom .btn_go_cart {
+		background-color: #EA7F31;
+		color: #fff;
+		font-size: 12px;
+		padding: 5px 10px;
+		border: none;
+		border-radius: 5px;
+	}
+	.page_countdown_box .sticky {
+		position: fixed;
+		top: 0;
+        width: 100%;
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+        max-width: 1100px;
+		transition: opacity 0.3s ease-in-out;
+	}
+    .page_countdown_box .header-salon {
+        display: none;
+    }
+	.page_countdown_box .header_salon.hidden-block{
+		display: none;
+	}
+
+	.show_cart_desktop .salon_specific {
+		background-color: #fff;
+		padding: 12px 12px 0 12px;
+		display: flex;
+		justify-content: space-between;
+		z-index: 101;
+	}
+	.show_cart_desktop .salon_specific .title {
+		color: #000;
+		font-weight: 600;
+		font-size: 16px;
+	}
+	.show_cart_desktop .salon_specific .customer_data {
+		font-size: 14px;
+	}
+	.show_cart_desktop .salon_specific .customer_data .customer_point {
+		font-size: 18px;
+		font-weight: 600;
+		color: #EA7F31;
+	}
+
+	.show_cart_desktop .salon_specific_bottom {
+		background-color: #FFFFFF;
+		padding: 13px 12px;
+	}
+
+	.show_cart_desktop .salon_specific_bottom .salon_specific_bottom_desktop{
+		border: 1px solid #000000;
+		padding: 7px 20px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.show_cart_desktop .salon_specific_bottom a {
+		height: fit-content;
+	}
+
+	.show_cart_desktop .salon_specific_bottom .total_cart {
+		font-size: 15px;
+		display: flex;
+		align-items: center;
+		gap: 3px;
+		height: fit-content;
+		color: #000;
+	}
+	.show_cart_desktop .salon_specific_bottom .total_cart .total_cart_payment {
+		color: #E12121;
+		font-size: 32px;
+		margin-left: 5px;
+		font-weight: 500;
+	}
+	.show_cart_desktop .salon_specific_bottom .points_expected {
+		font-size: 15px;
+		height: fit-content;
+		display: flex;
+		align-items: center;
+		gap: 3px;
+		color: #000;
+	}
+	.show_cart_desktop .salon_specific_bottom .points_expected .point {
+		color: #EA7F31;
+		font-size: 32px;
+		font-weight: 500;
+		margin-left: 5px;
+	}
+
+	.show_cart_desktop .salon_specific_bottom .count_cart {
+		font-size: 15px;
+		height: fit-content;
+		display: flex;
+		align-items: center;
+		gap: 3px;
+		color: #000;
+	}
+	.show_cart_desktop .salon_specific_bottom .count_cart .count {
+		color: #000000;
+		font-size: 32px;
+		font-weight: 500;
+		margin-left: 5px;
+	}
+
+	.show_cart_desktop .salon_specific_bottom .btn_go_cart {
+		background-color: #EA7F31;
+		color: #fff;
+		font-size: 15px;
+		padding: 10px 30px;
+		border: none;
+		border-radius: 9px;
+	}
+	.show_cart_desktop .sticky {
+		position: fixed;
+		top: 0;
+        width: 100%;
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+        max-width: 1100px;
+		transition: opacity 0.3s ease-in-out;
+	}
+   .show_cart_desktop  .header-salon {
+        display: block;
+    }
+	.show_cart_desktop .header_salon.hidden-block{
+		display: block;
+	}
+
+    @media (max-width: 768px) {
+		#hinr .trigger.sp{
+			display: none!important;
+		}
+		.page_countdown_box .salon_specific_bottom{
+			display:flex;
+		}
+		.page_countdown_box .salon_specific_bottom .salon_specific_bottom_desktop{
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			width: 100%;
+		}
+
+		.page_countdown_box .salon_specific_bottom .salon_specific_bottom_desktop .count_cart{
+			display: none;
+		}
+
+		.page_countdown_box .salon_specific{
+			display:flex;
+		}
+		.show_cart_desktop .salon_specific {
+			display: none;
+		}
+		.show_cart_desktop .salon_specific_bottom{
+			display: none;
+		}	
+        .header-salon {
+            display: none;
+        }
+		.header_salon.hidden-block{
+			display: none;
+		}
+		.sticky {
+			position: relative;
+			margin: 0 auto;
+			max-width: 1100px;
+		}
+		.salon_specific .title {
+			color: #000;
+			font-weight: 600;
+			font-size: 14px;
+		}
+		.salon_specific .customer_data{
+			font-size: 12px;
+		}
+		.ec-headerNaviRole #hinr .bottom{
+			display: none!important;
+		}
+    }
+	@media (max-width: 500px) {
+			.slider {
+				max-height: 350px;
+				height: fit-content;
+				overflow: hidden;
+			}
+			.products_supplier .ec-shelfGrid__item .image {
+				min-width: 100%;
+				height: 0;
+				padding-bottom: 100%;
+			}
+			.salon_specific_bottom .btn_go_cart {
+				padding: 5px;
+			}
+			.salon_specific_bottom .points_expected {
+				font-size: 10px!important;
+			}
+			.salon_specific_bottom .points_expected .point {
+				font-size: 14px!important;
+			}
+			.salon_specific_bottom .total_cart .total_cart_payment {
+				font-size: 14px!important;
+			}
+			.page_countdown_box .salon_specific_bottom .btn_go_cart {
+				font-size: 10px;
+			}
+		}
+</style>
+{% set isPrime = app.user ? app.user.prime_member > 0 : false %}
+{% set urank = app.user ? app.user.owner_rank  : 0 %}
+{% set totalCartPrice = 0 %}
+{% for Cart in Carts %}
+	{% set totalCartPrice = totalCartPrice + Cart.getTotalPrice %}
+{% endfor %}
+{% set totalQuantity = get_carts_total_quantity() %}
+<div class="salon_specific">
+	<span class="title">サロン様専用仕入れページ</span>
+	<div class="customer_data">
+		ポイント残高：
+		<span class="customer_point">{{ Customer ? Customer.getPoint : 0}}P</span>
+	</div>
+</div>
+<div class="salon_specific_bottom">
+	<div class="salon_specific_bottom_desktop">
+		<div class="total_cart">
+			カート内合計
+			<span class="total_cart_payment">
+				¥{{ totalCartPrice|number_format }}
+			</span>
+		</div>
+		<div class="count_cart">
+			数量
+			<span class="count" data-count="{{ totalQuantity|number_format }}">
+				{{ totalQuantity|number_format }}
+			</span>
+		</div>
+		<div class="points_expected">
+			獲得予定ポイント
+			<span class="point">{{ Carts ? get_point(totalCartPrice, isPrime, urank) : 0 }}P</span>
+		</div>
+		<a href="{{ url('cart') }}">
+			<button class="btn_go_cart">
+				カートを見る
+			</button>
+		</a>
+	</div>
+</div>
+ <script>
+    window.onscroll = function() {myFunction()};
+
+    // var header = document.querySelector('.header_salon');
+    // var sticky = header.offsetTop;
+
+    // function myFunction() {
+	//	if (window.pageYOffset > sticky) {
+	//		header.classList.add("sticky");
+	//	} else {
+	//		header.classList.remove("sticky");
+	//	}
+    // }
+</script>

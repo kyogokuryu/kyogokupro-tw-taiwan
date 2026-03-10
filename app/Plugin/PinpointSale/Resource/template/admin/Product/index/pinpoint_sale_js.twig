@@ -1,0 +1,47 @@
+<script>
+
+    var pinpointSale = [];
+    var pinpointSaleModalClass = $('#pinpointSaleModal');
+
+    $('.btn_pinpoint_sale_price').on('click', function () {
+
+        var btnClass = $(this);
+        btnClass.prop('disabled', true);
+
+        var productId = btnClass.data('pinpoint_sale_product_id');
+
+        if(pinpointSale[productId] != undefined) {
+            pinpointSaleModalView(pinpointSale[productId], btnClass);
+            return false;
+        }
+
+        $.ajax({
+            url: btnClass.data('pinpoint_sale_load'),
+            type: 'GET',
+        }).done(function(data) {
+            pinpointSale[productId] = data;
+            pinpointSaleModalView(pinpointSale[productId], btnClass);
+        }).fail(function() {
+            alert('Failed');
+        });
+
+        return false;
+    });
+
+    function pinpointSaleModalView(data, btnClass) {
+        $('div.modal-body', pinpointSaleModalClass).html(data);
+        $('h5.modal-title', pinpointSaleModalClass).text(btnClass.data('message'));
+        $('a.btn-ec-conversion', pinpointSaleModalClass).attr('href', btnClass.data('class-url'));
+
+        var hasProductClass = btnClass.data('has_product_class');
+
+        $('#pinpoint_sale_popup_product_class_btn').addClass('d-none');
+        if(hasProductClass == 1) {
+            $('#pinpoint_sale_popup_product_class_btn').removeClass('d-none');
+        }
+
+        pinpointSaleModalClass.modal('show');
+        btnClass.prop('disabled', false);
+    }
+
+</script>

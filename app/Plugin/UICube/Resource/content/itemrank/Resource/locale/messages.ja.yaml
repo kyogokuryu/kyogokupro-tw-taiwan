@@ -1,0 +1,17 @@
+# 闪存消息
+[code_lower].admin.config.save.complete: 已保存。
+
+# 配置
+[code_lower].admin.config.title: [code_name]
+[code_lower].admin.config.config_title: 设置
+[code_lower].admin.config.conversion.save: 保存
+[code_lower].admin.config.conversion.back: 插件列表
+
+[code_lower].admin.config.label_title: 标题
+[code_lower].admin.config.label_block_type: 区块类型
+[code_lower].admin.config.label_display_order: 显示顺序
+[code_lower].admin.config.label_display_num: 显示数量
+[code_lower].admin.config.label_category_id: 类别
+[code_lower].admin.config.label_item_name: 商品名称显示
+[code_lower].admin.config.label_item_price: 商品价格显示
+[code_lower].admin.config.label_item_description: 商品说明（列表）显示

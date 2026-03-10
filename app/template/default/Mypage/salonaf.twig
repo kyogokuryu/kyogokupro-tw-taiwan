@@ -1,0 +1,340 @@
+{% extends 'default_frame.twig' %}
+
+{% set body_class = 'mypage' %}
+
+{% set mypageno = 'salonaf' %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/bootstrap-datepicker@1.9.0/dist/css/bootstrap-datepicker3.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
+{% endblock stylesheet %}
+
+{% block javascript %}
+    <script src="//cdn.jsdelivr.net/npm/bootstrap-datepicker@1.9.0/dist/js/bootstrap-datepicker.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/bootstrap-datepicker@1.9.0/dist/locales/bootstrap-datepicker.ja.min.js"></script>
+    <script src="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
+    <script>
+        //カレンダー入力
+        $('.range .datepicker').datepicker({
+            weekStart: 1,
+            language: "ja",
+            format: "yyyy-mm-dd"
+        });
+        $('.month .datepicker,.comparison .datepicker').datepicker({
+            language: "ja",
+            format: "yyyy-mm",
+            minViewMode: 1,
+            maxViewMode: 2
+        });
+
+        $('.month .datepicker').on('change',function(){
+            $('[name="startDate"]').val('');
+            $('[name="endDate"]').val('');
+            $('.range .datepicker').val('');
+            let month = $(this).val();
+            if(month){
+                let arrayMonth = month.split('-');
+                let lastDay = new Date(arrayMonth[0], arrayMonth[1], 0).getDate();
+                let startDate = month+'-01';
+                let endDate = month+'-'+lastDay;
+                $('[name="startDate"]').val(startDate);
+                $('[name="endDate"]').val(endDate);
+            }
+        });
+        $('.range .datepicker').on('change',function(){
+            $('[name="startDate"]').val('');
+            $('[name="endDate"]').val('');
+            $('.month .datepicker').val('');
+            let s = $('.range .datepicker.start').val();
+            let e = $('.range .datepicker.end').val();
+            $('[name="startDate"]').val(s);
+            $('[name="endDate"]').val(e);
+        });
+        $('.comparison .datepicker').on('change',function(){
+            let month = $(this).val();
+            if($(this).hasClass('m1')){
+                $('[name="m1"]').val(month);
+            }
+            else{
+                $('[name="m2"]').val(month);
+            }
+        });
+
+        $('.datepicker-btn').on('click',function(){
+            let m1 = $('[name="m1"]').val();
+            let m2 = $('[name="m2"]').val();
+            let startDate = $('[name="startDate"]').val();
+            let endDate = $('[name="endDate"]').val();
+            let message = '';
+
+            if(!startDate || !endDate){
+                $('[name="startDate"]').val('');
+                $('[name="endDate"]').val('');
+            }
+            else{
+                if(new Date(startDate) > new Date(endDate)){
+                    message = '期間を正しく設定してください';
+                }
+                else{
+                    let s = new Date(startDate);
+                    let e = new Date(endDate);
+                    let days = (e - s) / (86400000);
+                    if(90 < days){
+                        message = '期間は90日以下に設定してください';
+                    }
+                }
+            }
+            if(message){
+                alert(message);
+            }
+            else{
+                window.location.href = location.origin+location.pathname+'?startDate='+startDate+'&endDate='+endDate+'&m1='+m1+'&m2='+m2;
+            }
+        });
+
+        //チャート(メイン)
+        let startDate = $('[name="startDate"]').val();
+        let endDate = $('[name="endDate"]').val();
+        let arrSeriesJson = JSON.parse('{{ monthlyAmount|json_encode|raw }}');
+        if(!startDate || !endDate){
+            startDate = '{{ totalInfo.startDate }}';
+            endDate = '{{ totalInfo.endDate }}';
+        }
+        createChart('.main-chart', startDate, endDate, arrSeriesJson);
+
+        //チャート(比較)
+        let m1 = $('[name="m1"]').val();
+        let m2 = $('[name="m2"]').val();
+        if(m1 && m2){
+            let arrayMonth = m1.split('-');
+            let lastDay = new Date(arrayMonth[0], arrayMonth[1], 0).getDate();
+            let startDate = m1+'-01';
+            let endDate = m1+'-'+lastDay;
+            let arrSeriesJson = JSON.parse('{{ comparison|json_encode|raw }}');
+            createChart('.sub-chart', startDate, endDate, arrSeriesJson, m2);
+        }
+
+        function createChart(elm, startDate, endDate, arrSeriesJson, comparison = false){
+            let start = new Date(startDate);
+            let end = new Date(endDate);
+            let arrLabels = [];
+            let arrSeries = [];
+            let arrSeries2 = [];
+            let labelCheck = [5,10,15,20,25,30];
+
+            for(let d = start; d <= end; d.setDate(d.getDate()+1)) {
+                let label = '';
+                let series = '';
+                let series2 = '';
+                let month = d.getFullYear()+'-'+(('0'+(d.getMonth()+1))).slice(-2);
+                let day = d.getFullYear()+'-'+(('0'+(d.getMonth()+1))).slice(-2)+'-'+('0'+d.getDate()).slice(-2);
+                if(labelCheck.indexOf(d.getDate()) !== -1){
+                    label = (d.getMonth()+1)+'月'+d.getDate()+'日';
+                    if(elm == '.sub-chart'){
+                        label = d.getDate()+'日';
+                    }
+                }
+                if(month in arrSeriesJson && day in arrSeriesJson[month]){
+                    series = arrSeriesJson[month][day]['sales'];
+                }
+                //比較月用
+                if(comparison){
+                    month = comparison;
+                    day = comparison+'-'+('0'+d.getDate()).slice(-2);
+                    if(month in arrSeriesJson && day in arrSeriesJson[month]){
+                        series2 = arrSeriesJson[month][day]['sales'];
+                    }
+                }
+                arrLabels.push(label);
+                arrSeries.push(series);
+                if(comparison) arrSeries2.push(series2);
+            }
+
+            let data = {
+                labels: arrLabels,
+                series: [arrSeries]
+            };
+            if(comparison) data['series'].push(arrSeries2);
+
+            let options = {
+                seriesBarDistance: 10
+            };
+
+            let responsiveOptions = [
+                ['screen and (max-width: 640px)', {
+                    seriesBarDistance: 5,
+                    // axisX: {
+                    //     labelInterpolationFnc: function (value) {
+                    //         return value[0];
+                    //     }
+                    // }
+                }]
+            ];
+            new Chartist.Bar(elm, data, options, responsiveOptions);
+        }
+    </script>
+{% endblock javascript %}
+
+{% block main %}
+    <input type="hidden" name="startDate" value="{{ app.request.query.get('startDate') }}">
+    <input type="hidden" name="endDate" value="{{ app.request.query.get('endDate') }}">
+    <input type="hidden" name="m1" value="{{ app.request.query.get('m1') }}">
+    <input type="hidden" name="m2" value="{{ app.request.query.get('m2') }}">
+    <div class="ec-layoutRole__main">
+        <div class="ec-mypageRole">
+            <div class="ec-navlistRole mypage-top-navi">
+                <h1>af売上集計</h1>
+            </div>
+            {% include 'Mypage/navi.twig' %}
+        </div>
+        <div class="ec-mypageRole salonaf">
+            <div class="ec-editRole">
+                <div class="ec-off1Grid">
+                    <div class="ec-off1Grid__cell">
+
+                        <div class="period box">
+                            <h2>集計期間をお選びください。</h2>
+                            <div class="inr ec-input">
+                                <div class="month">
+                                    <p>月ごとに検索</p>
+                                    <div class="box-inr">
+                                        <span class="input-wrap"><input type="text" class="datepicker"></span><button class="datepicker-btn"><i class="far fa-search"></i></button>
+                                    </div>
+                                </div>
+                                <div class="range">
+                                    <p>期間で検索<span>(最大90日)</span></p>
+                                    <div class="box-inr">
+                                        <span class="input-wrap"><input type="text" class="datepicker start" value="{{ app.request.query.get('startDate') }}">
+                                        <input type="text" class="datepicker end" value="{{ app.request.query.get('endDate') }}"></span><button class="datepicker-btn"><i class="far fa-search"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chart box">
+                            <div class="af-label"><b>集計期間: <span>{{totalInfo.range_label }}</span></b></div>
+                            <div class="main-chart"></div>
+                        </div>
+
+                        <div class="info box">
+                            <dl>
+                                <dt><h2>登録者数</h2><span>(紹介特典IDを入力した人数)</span></dt>
+                                <dd><dl><dt></dt><dd>{{ totalInfo.member_count }}<span>人</span></dd></dl></dd>
+                            </dl>
+                            <dl>
+                                <dt><h2>集計期間成果</h2></dt>
+                                <dd>
+                                    <dl><dt>成果報酬</dt><dd>{{ totalInfo.total_reward|number_format  }}<span>TWD</span></dd></dl>
+                                    <dl><dt>売上件数</dt><dd>{{ totalInfo.total_order_count }}<span>件</span></dd></dl>
+                                    <dl><dt>売上金額</dt><dd>{{ totalInfo.total_sales|number_format  }}<span>TWD</span></dd></dl>
+                                </dd>
+                            </dl>
+                        </div>
+
+                        {% if memberOrder is not empty %}
+                            <div class="box result">
+                                <h2>購入実績</h2>
+                                <div class="inr">
+                                    <div class="order">
+                                        <dl><dt>購入日</dt></dl>
+                                        <dl><dt>売上</dt></dl>
+                                        <dl><dt>受注詳細</dt></dl>
+                                    </div>
+                                    {% for m, month in memberOrder %}
+                                        {% for d, date in month %}
+                                            {% for o, order in date %}
+                                            <div class="order">
+                                                <dl><dd>{% if o < 1 %}{{ d }}{% endif %}</dd></dl>
+                                                <dl><dd>{% if o < 1 %}{{ monthlyAmount[m][d].sales|price }}{% endif %}</dd></dl>
+                                                <dl><dd>
+                                                {% for item in order.OrderItems %}
+                                                    {% if item.Product is not empty %}
+                                                        <p>{{ item.product_name }} / {{ item.quantity }}</p>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                </dd></dl>
+                                            </div>
+                                            {% endfor %}
+                                        {% endfor %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <div class="comparison box">
+                            <h2>月比較</h2>
+                            <p>集計期間をお選びください。</p>
+                            <div class="upper ec-input"><div class="upper-inr">
+                                <div>
+                                    <span>月(1)</span>
+                                    <input type="text" class="m1 datepicker" value="{{ app.request.query.get('m1') }}">
+                                </div>
+                                <div>
+                                    <span>月(2)</span>
+                                    <input type="text" class="m2 datepicker" value="{{ app.request.query.get('m2') }}">
+                                </div>
+                                <button class="datepicker-btn"><i class="far fa-search"></i></button>
+                            </div></div>
+                            {% if app.request.query.get('m1') is not empty and app.request.query.get('m2') is not empty %}
+                                <div class="bottom">
+                                    <div class="sub-chart"></div>
+                                    <div class="chart-color box">
+                                        {% set m1_label = '' %}
+                                        {% set m2_label = '' %}
+                                        {% set m1_label = date(app.request.query.get('m1'))|date_format('', 'Y年m月') %}
+                                        {% set m2_label = date(app.request.query.get('m2'))|date_format('', 'Y年m月') %}
+                                        <div class="m1 c">{{ m1_label }}</div>
+                                        <div class="m2 c">{{ m2_label }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        {% if paidMonth is not empty %}
+                            <div class="paid-history box">
+                                <h2>支払い情報 / 報酬支払い履歴</h2>
+                                <table>
+                                    <thead>
+                                        <th>集計期間</th>
+                                        <th>振込完了日</th>
+                                        <th>報酬金額</th>
+                                    </thead>
+                                    <tbody>
+                                    {% for month, amount in paidMonth %}
+                                        <tr>
+                                            <td>{{ month }}</td>
+                                            <td>{{ amount.update_date }}</td>
+                                            <td>{{ amount.reward|price }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                <div class="note">
+                                    前日分の売上は、午前中に順次更新され、正午までに全て反映されます。<br>
+                                    ※注文内容の変更やキャンセル等により、確定売上が変動する場合があります。<br>
+                                    ※成果報酬額は売上の５％となります。<br>
+                                    3,001TWD以上の成果報酬を受け取るには、前月末までにご本人の銀行口座のご登録が必要となります。
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <div class="bank box">
+                            <h2>振込口座登録方法のご案内</h2>
+                            <p>ご案内をご参照の上、下記ボタンから登録ください。</p>
+                            <p class="btn-style"><a href="{{ url('mypage_change') }}"><span>￥</span>振込口座登録はコチラから</a></p>
+                            <p>「マイページ／会員情報編集」下部の「振込先情報」という項目から登録をお願いします。</p>
+                            <p class="img"><img src="{{ asset('assets/img/sample-salonaf.png','user_data') }}" alt=""></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ec-role row mt60">
+            <div class="col-xs-8">
+                <a href="{{ url('mypage') }}" class="mypage-back">{{ '我的帳號'|trans }}</a>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

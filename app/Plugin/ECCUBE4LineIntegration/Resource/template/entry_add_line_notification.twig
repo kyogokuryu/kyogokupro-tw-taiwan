@@ -1,0 +1,25 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% if form.line_notification_flg is defined %}
+{% if form.line_notification_flg|length > 0 %}
+    <dl>
+        <dt>
+            {{ form_label(form.line_notification_flg, '接收LINE通知', { 'label_attr': { 'class': 'ec-label' }}) }}
+        </dt>
+        <dd>
+            <div class="ec-radio{{ has_errors(form.line_notification_flg) ? ' error' }}">
+                {{ form_widget(form.line_notification_flg) }}
+                {{ form_errors(form.line_notification_flg) }}
+            </div>
+        </dd>
+    </dl>
+{% endif %}
+{% endif %}

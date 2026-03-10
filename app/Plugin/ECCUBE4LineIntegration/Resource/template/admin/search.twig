@@ -1,0 +1,838 @@
+{#
+[LINE管理]-[配信]画面
+#}
+
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['plugin_line_integration', 'plugin_line_message_notification'] %}
+
+{% block title %}LINE管理{% endblock %}
+{% block sub_title %}配信{% endblock %}
+
+{% form_theme searchForm '@admin/Form/bootstrap_4_horizontal_layout.html.twig' %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" href="{{ asset("assets/css/fileupload/jquery.fileupload.css",'admin') }}">
+    <link rel="stylesheet" href="{{ asset("assets/css/fileupload/jquery.fileupload-ui.css",'admin') }}">
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.0/emojionearea.min.css">
+    <style>
+        #message_content > .row {
+            border-bottom: solid 0.5px #f5f5f5;
+            padding: 20px 0;
+        }
+
+        .carousel-column {
+            margin: 5px -3px 20px;
+            padding: 4px;
+            border: solid 1px #eaeaea;
+            border-radius: 0.3rem;
+            background-color: #fff;
+        }
+
+        .carousel-column .c-form__fileUploadThumbnails {
+            margin-bottom: 0;
+        }
+
+        .carousel-column .c-form__fileUploadThumbnail {
+            width: 100%;
+        }
+
+        .carousel-column .upload-zone {
+            height: 100%;
+            margin-bottom: 0;
+        }
+
+        .carousel-column .image-upload {
+            margin-bottom: 0;
+        }
+
+        .carousel-column .media-body {
+            margin: auto;
+        }
+
+        .carousel-column .column-options {
+            padding-bottom: 3px;
+        }
+
+        .carousel-column > .row {
+            margin-left: 0px;
+        }
+
+        .sortable-handle {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            font-size: 1.6em;
+            background-color: #f9f9f9;
+        }
+
+        .sortable-handle:hover {
+            background-color: #f3f3f3;
+            cursor: move;
+        }
+
+        .image-upload {
+            background-color: #fff;
+        }
+    </style>
+{% endblock stylesheet %}
+
+{% block javascript %}
+<script src ="{{ asset("assets/js/vendor/fileupload/vendor/jquery.ui.widget.js",'admin') }}"></script>
+<script src="{{ asset("assets/js/vendor/fileupload/jquery.iframe-transport.js",'admin') }}"></script>
+<script src="{{ asset("assets/js/vendor/fileupload/jquery.fileupload.js",'admin') }}"></script>
+<script src="{{ asset("assets/js/vendor/fileupload/jquery.fileupload-process.js",'admin') }}"></script>
+<script src="{{ asset("assets/js/vendor/fileupload/jquery.fileupload-validate.js",'admin') }}"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.0/emojionearea.min.js"></script>
+<script>
+    // uploadArea要素の中にあるAjaxな画像アップロードを設定する関数
+    let ajaxImageUpload = function(uploadArea) {
+        const proto_img = '<div class="c-form__fileUploadThumbnail" style="background-image:url(\'__path__\');">'
+                        +     '<a class="delete-image"><i class="fa fa-times" aria-hidden="true"></i></a>'
+                        + '</div>';
+        let uploadWidget = uploadArea.find('input.image-file');
+        let imageUrlWidget = uploadArea.find('input.image-url');
+
+        // 画像のアップロード処理
+        uploadWidget.fileupload({
+            url: "{{ url('plugin_line_message_notification_imagefile_upload') }}",
+            type: "post",
+            dataType: 'json',
+            dropZone: uploadArea.find('.upload-zone'),
+            done: function (e, data) {
+                uploadArea.find('.progress').hide();
+                let path = '{{ asset('', 'temp_image') }}/' + data.result.filename;
+                let $img = $(proto_img.replace(/__path__/g, path));
+                imageUrlWidget.val(data.result.filename);
+
+                uploadArea.find('.thumb').append($img);
+            },
+            fail: function(e, data) {
+                alert("{{ 'admin.common.upload_error'|trans }}");
+                uploadArea.find('.upload-zone').fadeIn();
+                // 画像アップロード失敗時に、再度アップロードの設定を行う
+                // 失敗or消去すると同じフォームで画像がアップロードし直せない点を少し強引に修正
+                $('#{{ messageForm.image.name.id }}').val();
+                $('#{{ messageForm.image.file.id }}').val();
+                uploadArea.find('.file_upload').off('click');//ダイアログが2重表示の抑制
+                ajaxImageUpload(uploadArea);
+            },
+            always: function (e, data) {
+                uploadArea.find('.progress').hide();
+                uploadArea.find('.progress .progress-bar').width('0%');
+            },
+            start: function (e, data) {
+                uploadArea.find('.progress').show();
+                uploadArea.find(".thumb").find("div.c-form__fileUploadThumbnail").remove();
+                imageUrlWidget.val('');
+                uploadArea.find('.upload-zone').hide();
+            },
+            acceptFileTypes: /(.+)(\.jpg|\.png)$/,
+            maxFileSize: 1048576,
+            maxNumberOfFiles: 1,
+            progressall: function (e, data) {
+                let progress = parseInt(data.loaded / data.total * 100, 10);
+                uploadArea.find('.progress .progress-bar').css(
+                    'width',
+                    progress + '%'
+                );
+            },
+            processalways: function (e, data) {
+                if (data.files.error) {
+                    alert("画像ファイルサイズ、または画像形式を確認してください。");
+                uploadArea.find('.upload-zone').fadeIn();
+                // 画像アップロード失敗時に、再度アップロードの設定を行う
+                // 失敗or消去すると同じフォームで画像がアップロードし直せない点を少し強引に修正
+                uploadArea.find('.file_upload').off('click');//ダイアログが2重表示の抑制
+                ajaxImageUpload(uploadArea);
+                }
+            }
+        });
+
+        uploadArea.find(".thumb").on("click", ".delete-image", function () {
+            imageUrlWidget.val('');
+            $(this).parent("div.c-form__fileUploadThumbnail").remove();
+            $('#{{ messageForm.image.vars.id }}').val();
+
+            uploadArea.find('.upload-zone').fadeIn();
+            // 画像の削除時に、再度アップロードの設定を行う
+            // 失敗or消去すると同じフォームで画像がアップロードし直せない点を少し強引に修正
+            uploadArea.find('.file_upload').off('click');//ダイアログが2重表示の抑制
+            ajaxImageUpload(uploadArea);
+        });
+
+        uploadArea.find('.file_upload').on('click', function () {
+            uploadWidget.click();
+        });
+
+    };
+
+    // メッセージ画像のアップロードを設定
+    ajaxImageUpload($('#{{ messageForm.image_file.vars.id }}').parents('.image-upload'));
+
+    //絵文字選択フォーム
+    $(document).ready(function() {
+        $('#{{ messageForm.message.vars.id }}').emojioneArea({
+            filtersPosition: "bottom",
+            search: false,
+            tones: false,
+            autocomplete: false,
+            buttonTitle: "選択すると絵文字が入力できます"
+        });
+    });
+
+    // 画像カルーセルが無いときの表示
+    let carouselNoneMessageUpdate = function() {
+        if ($('#carousel_columns .carousel-column').length == 0) {
+            $('#image_carousel .crousel_is_none').show();
+        } else {
+            $('#image_carousel .crousel_is_none').hide();
+        }
+    }
+    // 画像カルーセルの追加
+    $('.add-another-collection-widget').click(function (e) {
+        let list = $($(this).data('list'));     // 項目の追加対象要素
+        let num = list.children().length;       // 既にある要素数
+        let counter = list.data('counter');     // 'widget-counter' から項目番号を取得
+        if (!counter) {                         // できない場合は既存要素の個数を使用
+            counter = num;
+            // 要素が0個でないのに取得できないときはインデックス被りできっと要素が欠ける
+            if (num != 0) {
+                alert("エラー: 画像カルーセルが正しく送信できないおそれがあります");
+            }
+        }
+        if (num >= 10) {
+            alert("画像カルーセルの要素は11個以上にできません");
+            return;
+        }
+
+        let newWidget = list.attr('data-prototype');
+        newWidget = newWidget.replace(/__name__/g, counter);
+
+        let newElem = $(list.attr('data-widget-tags')).html(newWidget);
+        newElem.appendTo(list);
+
+        list.data('counter', counter + 1);
+
+        // 画像アップロードの設定
+        ajaxImageUpload(newElem.find('.image-upload'));
+
+        carouselNoneMessageUpdate();
+        // 画像カルーセルの削除
+        $('.delete-column').on('click', function () {
+            $(this).parents('.carousel-column').remove();
+            $('#{{ messageForm.image.name.id }}').val();
+            $('#{{ messageForm.image.file.id }}').val();
+            carouselNoneMessageUpdate();
+        });
+    });
+
+    // そーたぶる！
+    $('#message_content').sortable({
+        items: "div.message-part",
+        handle: ".sortable-handle",
+    });
+
+    function enterButtonCheck(){
+        if(event.keyCode == 13){
+            return false;
+        }
+    }
+
+    // モーダルへのエラー表示
+    $('#send_message').on('click', function () {
+        let isError = false;    // エラーフラグ
+        let messages = [];       // モーダルに表示するメッセージ
+        let modal = $('#send_confirm');
+
+        // 画像URLがHTTPSでないときのエラー
+        let imageUrl = $('#{{ messageForm.image.vars.id }}').val();
+        if (imageUrl !== "" && location.protocol !== "https:") {
+            isError = true;
+            messages.push("HTTPSでないため、画像をLINEで送信できません");
+        }
+        // スタンプのIDが片方だけしか入力されていないときエラー
+        let stampPackageId = $('#{{ messageForm.stamp_package_id.vars.id }}').val();
+        let stampStickerId = $('#{{ messageForm.stamp_sticker_id.vars.id }}').val();
+        if ((stampPackageId != "" && stampStickerId == "") ||
+            (stampPackageId == "" && stampStickerId != "")) {
+            isError = true;
+            messages.push("スタンプのIDは、2種類両方を入力してください");
+        }
+        // 画像カルーセルの各カラムをチェック
+        $('#carousel_columns div.carousel-column').each(function(index, element) {
+            let imageUrl = $(element).find('.image-url').val();
+            let linkUrl = $(element).find('.link-url').val();
+            let labelStr = $(element).find('.carousel-label').val();
+            // 空の要素があったときエラー
+            if (imageUrl == "" || linkUrl == "") {
+                isError = true;
+                messages.push("画像カルーセルの要素すべてに画像とリンク先URLを設定してください");
+                return false;
+            }
+            // 入力されたURLが正しくないときエラー
+            if (!linkUrl.startsWith('https://')) {
+                isError = true;
+                messages.push("URLは「https://～」の形式で設定してください");
+                return false;
+            }
+            // URLが文字列が10000文字より多いときエラー
+            if (linkUrl.length > 1000) {
+                isError = true;
+                messages.push("画像のリンク先URLは1000文字以下にしてください");
+                return false;
+            }
+            // ラベルの文字列が12文字より多いときエラー
+            if (labelStr.length > 12) {
+                isError = true;
+                messages.push("画像カルーセルのラベルは12文字以下にしてください");
+                return false;
+            }
+        });
+        // テキストメッセージも画像URLも空欄のときエラー
+        let isTextMsgEmpty = $('#{{ messageForm.message.vars.id }}').val() == "";
+        let isImageEmpty   = $('#{{ messageForm.image.vars.id }}').val() == "";
+        let isStampEmpty   = stampPackageId == "" && stampStickerId == "";
+        let isImgCrsEmpty  = $('#carousel_columns div.carousel-column').length == 0;
+        if (isTextMsgEmpty && isImageEmpty && isStampEmpty && isImgCrsEmpty) {
+            isError = true;
+            messages.push("空のメッセージを送信することはできません");
+        }
+
+        // エラーのときエラーメッセージを表示
+        if (isError) {
+            let message = "";
+            if (messages.length === 1) {
+                message = messages.pop();
+            } else {
+                message = '<ul style="line-height:2em;" class="error-alert-list">';
+                messages.forEach(function (msg) {
+                    message += '<li>' + msg + '</li>';
+                });
+                message += '</ul>';
+            }
+            modal.find('h5').text("エラー");
+            modal.find('.modal-body p').html(message);
+                    modal.find('#send_ok').hide();
+        }
+        // エラーでなければ「確認」を表示
+        else {
+            modal.find('h5').text("確認");
+            modal.find('.modal-body p').html("「送信する」ボタンを押すと<strong> {{ pagination.totalItemCount }} </strong>名の会員に、メッセージを送信します。<br><small>（検索後に新規登録／登録情報修正／退会があった場合、実際の送信人数に差異が出る場合があります）</small>");
+            modal.find('#send_ok').show();
+        }
+        return true;
+    });
+
+     function checkDate() {
+            let birthStart = document.getElementById('line_search_birth_start').value;
+            let birthEnd = document.getElementById("line_search_birth_end").value;
+            let lsatBuyStart = document.getElementById("line_search_last_buy_start").value;
+            let lsatBuyEnd = document.getElementById("line_search_last_buy_end").value;
+            let createDateStart = document.getElementById("line_search_create_date_start").value;
+            let createDateEnd = document.getElementById("line_search_create_date_end").value;
+            let updateDateStart = document.getElementById("line_search_update_date_start").value;
+            let updateDateEnd = document.getElementById("line_search_update_date_end").value;
+            let buyTotalStart = document.getElementById("line_search_buy_total_start").value.replace(/,/g,"");
+            let buyTotalEnd = document.getElementById("line_search_buy_total_end").value.replace(/,/g,"");
+            let buyTimesStart = document.getElementById("line_search_buy_times_start").value;
+            let buyTimesEnd = document.getElementById("line_search_buy_times_end").value;
+            let isError = false;
+            let messages = [];
+
+            //購入金額の範囲チェック
+            if (buyTotalStart != "" && buyTotalEnd!= "" &&
+               (Number(buyTotalStart) > Number(buyTotalEnd))) {
+                isError = true;
+                messages.push("購入金額の終了金額には開始金額以降の金額を指定して下さい。");
+            }
+
+            //購入件数の範囲チェック
+            if (buyTimesStart != "" && buyTimesEnd!= "" &&
+               (Number(buyTimesStart) > Number(buyTimesEnd))) {
+                isError = true;
+                messages.push("購入件数の終了件数には開始件数以降の件数を指定して下さい。");
+            }
+
+            //誕生日の日付チェック
+            if (birthStart != "" && birthEnd!= "" &&(birthStart > birthEnd)) {
+                isError = true;
+                messages.push("誕生日の終了日には開始日以降の日付を指定して下さい。");
+            }
+
+            //最終購入日の日付チェック
+            if (lsatBuyStart !="" && lsatBuyEnd !="" && (lsatBuyStart > lsatBuyEnd)) {
+                 isError = true;
+                 messages.push("最終購入日の終了日には開始日以降の日付を指定して下さい。");
+            }
+
+            //登録日の日付チェック
+            if (createDateStart !="" && createDateEnd !="" && (createDateStart > createDateEnd)) {
+                isError = true;
+                messages.push("登録日の終了日には開始日以降の日付を指定して下さい。");
+            }
+
+             //更新日の日付チェック
+            if (updateDateStart !="" && updateDateEnd !="" && (updateDateStart > updateDateEnd)) {
+                isError = true;
+                messages.push("更新日の終了日には開始日以降の日付を指定して下さい。");
+            }
+
+            if (isError) {
+                alert(messages.join("\n"));
+                return !isError; //結果を検索しない
+            }
+            else {
+                return !isError; //結果を検索する
+            }
+     }
+</script>
+{% endblock javascript%}
+
+{% block main %}
+
+    <div class="c-outsideBlock">
+        <form name="search_form" id="search_form" method="post" action="{{ url('plugin_line_message_search') }}">
+
+            <div class="c-outsideBlock__contents">
+                {{ form_widget(searchForm._token) }}
+
+                <div class="row mb-2">
+                    <div class="col">
+                        <label>{{ 'admin.customer.customer_id'|trans }}</label>
+                        {{ form_widget(searchForm.id, { attr: { placeholder: '会員ID', class : 'input_id' } } ) }}
+                        {{ form_errors(searchForm.id) }}
+                    </div>
+                    <div class="col">
+                        <label>メールアドレス</label>
+                        {{ form_widget(searchForm.email, { attr: { placeholder: 'email@exapmle.com', class : 'input_email' } } ) }}
+                        {{ form_errors(searchForm.email) }}
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col">
+                        <label>お名前</label>
+                        {{ form_widget(searchForm.name, { attr: { placeholder: '氏名', class : 'input_name' } } ) }}
+                        {{ form_errors(searchForm.name) }}
+                    </div>
+                    <div class="col">
+                        <div>
+                            <label>{{ 'admin.order.purchase_product'|trans }}</label>
+                            {{ form_widget(searchForm.buy_product_name) }}
+                            {{ form_errors(searchForm.buy_product_name) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col">
+                        <div class="form-row align-items-center">
+                            <div class="col-6">
+                                <p class="col-form-label">{{ 'admin.common.gender'|trans }}</p>
+                                {{ form_widget(searchForm.sex, { 'label_attr': { 'class': 'checkbox-inline'}}) }}
+                                {{ form_errors(searchForm.sex) }}
+                            </div>
+                            <div class="col-6">
+                                <label>{{ 'admin.customer.birth_month'|trans }}</label>
+                                {{ form_widget(searchForm.birth_month) }}
+                                {{ form_errors(searchForm.birth_month) }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>{{ 'admin.common.pref'|trans }}</label>
+                        {{ form_widget(searchForm.pref) }}
+                        {{ form_errors(searchForm.pref) }}
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col">
+                        <div>
+                            <label>{{ 'admin.order.purchase_count'|trans }}</label>
+                            <div class="form-row align-items-center">
+                                <div class="col">
+                                    {{ form_widget(searchForm.buy_times_start) }}
+                                    {{ form_errors(searchForm.buy_times_start) }}
+                                </div>
+                                <div class="col-auto text-center">
+                                    <span>{{ 'admin.common.separator__range'|trans }}</span></div>
+                                <div class="col">
+                                    {{ form_widget(searchForm.buy_times_end) }}
+                                    {{ form_errors(searchForm.buy_times_end) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div>
+                            <label>{{ 'admin.common.birth_day'|trans }}</label>
+                            <div class="form-row align-items-center">
+                                <div class="col">
+                                    {{ form_widget(searchForm.birth_start) }}
+                                    {{ form_errors(searchForm.birth_start) }}
+                                </div>
+                                <div class="col-auto text-center">
+                                    <span>{{ 'admin.common.separator__range'|trans }}</span></div>
+                                <div class="col">
+                                    {{ form_widget(searchForm.birth_end) }}
+                                    {{ form_errors(searchForm.birth_end) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row mb-2">
+                    <div class="col">
+                        <div>
+                            <label>{{ 'admin.order.purchase_price'|trans }}</label>
+                            <div class="form-row align-items-center">
+                                <div class="col">
+                                    {{ form_widget(searchForm.buy_total_start) }}
+                                    {{ form_errors(searchForm.buy_total_start) }}
+                                </div>
+                                <div class="col-auto text-center">
+                                    <span>{{ 'admin.common.separator__range'|trans }}</span></div>
+                                <div class="col">
+                                    {{ form_widget(searchForm.buy_total_end) }}
+                                    {{ form_errors(searchForm.buy_total_end) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div>
+                            <label>{{ 'admin.order.last_buy_date'|trans }}</label>
+                            <div class="form-row align-items-center">
+                                <div class="col">
+                                    {{ form_widget(searchForm.last_buy_start) }}
+                                    {{ form_errors(searchForm.last_buy_start) }}
+                                </div>
+                                <div class="col-auto text-center">
+                                    <span>{{ 'admin.common.separator__range'|trans }}</span></div>
+                                <div class="col">
+                                    {{ form_widget(searchForm.last_buy_end) }}
+                                    {{ form_errors(searchForm.last_buy_end) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col">
+                        <div>
+                            <label>{{ 'admin.common.create_date'|trans }}</label>
+                            <div class="form-row align-items-center">
+                                <div class="col">
+                                    {{ form_widget(searchForm.create_date_start) }}
+                                    {{ form_errors(searchForm.create_date_start) }}
+                                </div>
+                                <div class="col-auto text-center">
+                                    <span>{{ 'admin.common.separator__range'|trans }}</span></div>
+                                <div class="col">
+                                    {{ form_widget(searchForm.create_date_end) }}
+                                    {{ form_errors(searchForm.create_date_end) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div>
+                            <label>{{ 'admin.common.update_date'|trans }}</label>
+                            <div class="form-row align-items-center">
+                                <div class="col">
+                                    {{ form_widget(searchForm.update_date_start) }}
+                                    {{ form_errors(searchForm.update_date_start) }}
+                                </div>
+                                <div class="col-auto text-center">
+                                    <span>{{ 'admin.common.separator__range'|trans }}</span></div>
+                                <div class="col">
+                                    {{ form_widget(searchForm.update_date_end) }}
+                                    {{ form_errors(searchForm.update_date_end) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            {# 検索ボタンと検索結果概要の表示 #}
+            <div class="c-outsideBlock__contents mb-5">
+                <button type="submit" class="btn btn-ec-conversion px-5"
+                        onclick="return checkDate();">{{ 'admin.common.search'|trans }}</button>
+                {% if pagination %}
+                    <span class="font-weight-bold ml-2">{{ 'admin.common.search_result'|trans({'%count%':pagination.totalItemCount}) }}</span>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <div class="c-outsideBlock">
+        <div class="c-contentsArea__cols">
+            <div class="c-contentsArea__primaryCol">
+                <div class="c-primaryCol">
+                    {% if pagination and pagination.totalItemCount %}
+                        <div class="card rounded border-0 mb-4 d-block">
+                            <div class="card-body p-0">
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th class="border-top-0 pt-2 pb-3 pl-3 text-nowrap">{{ 'admin.customer.customer_id'|trans }}</th>
+                                        <th class="border-top-0 pt-2 pb-3">{{ 'admin.common.name'|trans }}</th>
+                                        <th class="border-top-0 pt-2 pb-3">{{ 'admin.common.phone_number'|trans }}</th>
+                                        <th class="border-top-0 pt-2 pb-3">{{ 'admin.common.mail_address'|trans }}</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for Customer in pagination %}
+                                        <tr id="ex-customer-{{ Customer.id }}">
+                                            <td class="align-middle pl-3">{{ Customer.id }}</td>
+                                            <td class="align-middle"><a
+                                                        href="{{ url('admin_customer_edit', { 'id': Customer.id}) }}">{{ Customer.name01 }}
+                                                    &nbsp;{{ Customer.name02 }}</a></td>
+                                            <td class="align-middle">{{ Customer.phone_number }}</td>
+                                            <td class="align-middle">{{ Customer.email }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                <div class="row justify-content-md-center mb-4">
+                                    {% if pagination.totalItemCount > 0 %}
+                                        {% include "@admin/pager.twig" with { 'pages' : pagination.paginationData, 'routes' : 'admin_customer_page' } %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% elseif has_errors %}
+                        <div class="card rounded border-0">
+                            <div class="card-body p-4">
+                                <div class="text-center text-muted mb-4 h5">{{ 'admin.common.search_invalid_condition'|trans }}</div>
+                                <div class="text-center text-muted">{{ 'admin.common.search_try_change_condition'|trans }}</div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="card rounded border-0">
+                            <div class="card-body p-4">
+                                <div class="text-center text-muted mb-4 h5">{{ 'admin.common.search_no_result'|trans }}</div>
+                                <div class="text-center text-muted">{{ 'admin.common.search_try_change_condition'|trans }}</div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div><!-- /.col -->
+    </div>
+
+
+    {% if pagination and pagination.totalItemCount %}
+        <div class="c-contentsArea__cols">
+            <div class="c-contentsArea__primaryCol">
+                <div class="c-primaryCol">
+                    <div class="card rounded border-0 mb-4">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col-4">
+                                    <div class="d-inline-block">
+                                    <span class="card-title">
+                                        <h3>メッセージ送信</h3>
+                                    </span>
+                                    </div>
+                                </div>
+                                <div class="col-8 d-flex align-items-end">
+                                    <p style="color: grey; margin-bottom: 8px;">該当している {{ pagination.totalItemCount }}
+                                        名の会員に次のメッセージを送ります</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <form name="message_form" class="form-horizontal" id="message_form" method="post"
+                                  action="{{ url('plugin_line_message_notification') }}" enctype="multipart/form-data">
+                                {{ form_widget(messageForm._token) }}
+                                {{ form_widget(messageForm.image_dir_url, {value : asset('', 'save_image')} ) }}
+
+                                <div id="message_content">
+                                    {# メッセージ本文 #}
+                                    <div class="row message-part">
+                                        <label class="col-sm-2 control-label" for="admin_product_product_image">
+                                            {{ messageForm.message.vars.label }}
+                                        </label>
+                                        <div class="col mb-2">
+                                            {{ form_widget(messageForm.message, { attr: { placeholder: 'テキストメッセージ', class : 'input_message form-control' } } ) }}
+                                            {{ form_errors(messageForm.message) }}
+                                        </div>
+                                        <div class="col-sm-1">
+                                            <div class="sortable-handle">
+                                                <i class="fas fa-arrows-alt-v"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {# 画像 #}
+                                    <div class="row message-part">
+                                        <label class="col-sm-2 control-label" for="admin_product_product_image">
+                                            {{ messageForm.image_file.vars.label }}
+                                        </label>
+                                        <div class="col mb-2 image-upload">
+                                            <div class="progress" style="display: none;">
+                                                <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                                     role="progressbar" aria-valuenow="0" aria-valuemin="0"
+                                                     aria-valuemax="100"></div>
+                                            </div>
+                                            <div class="thumb c-form__fileUploadThumbnails clearfix"></div>
+                                            <p id="message"></p>
+                                            <div class="upload-zone media py-5 border-ec-dashed mb-2 rounded">
+                                                <div class="media-body">
+                                                    <i class="fa fa-cloud-upload fa-3x text-ec-lightGray mx-3 align-middle"
+                                                       aria-hidden="true"></i>
+                                                    {{ 'admin.common.drag_and_drop_image_description'|trans }}
+                                                    {{ form_widget(messageForm.image, { attr : { class: 'image-url' } }) }}
+                                                    {{ form_errors(messageForm.image) }}
+                                                    {{ form_widget(messageForm.image_file, { attr : { class: 'image-file', accept : 'image/*', style : 'display:none;' } }) }}
+                                                    {{ form_errors(messageForm.image_file) }}
+
+                                                    <a class="file_upload btn btn-ec-regular mr-2">
+                                                        {{ 'admin.common.file_select'|trans }}
+                                                    </a>
+                                                </div><!-- /.media-body -->
+                                            </div><!-- /.media -->
+                                        </div>
+                                        <div class="col-sm-1">
+                                            <div class="sortable-handle">
+                                                <i class="fas fa-arrows-alt-v"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {# スタンプ #}
+                                    <div class="row message-part">
+                                        <div class="col-sm-2">
+                                            スタンプ
+                                        </div>
+                                        <div class="col">
+                                            <div class="row">
+                                                <div class="col-sm-6">
+                                                    <label class="control-label" for="line_message_stamp_sticker_id">
+                                                        {{ messageForm.stamp_sticker_id.vars.label }}
+                                                    </label>
+                                                    {{ form_widget(messageForm.stamp_sticker_id, { attr: { placeholder: 'STKID', onkeydown: 'return enterButtonCheck();' } } ) }}
+                                                    {{ form_errors(messageForm.stamp_sticker_id) }}
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <label class="control-label" for="line_message_stamp_package_id">
+                                                        {{ messageForm.stamp_package_id.vars.label }}
+                                                    </label>
+                                                    {{ form_widget(messageForm.stamp_package_id, { attr: { placeholder: 'STKPKGID', onkeydown: 'return enterButtonCheck();'  } } ) }}
+                                                    {{ form_errors(messageForm.stamp_package_id) }}
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col">
+                                                    <p style="margin-top: 10px;">
+                                                        <a href="https://developers.line.biz/media/messaging-api/sticker_list.pdf"
+                                                           target="_blank">スタンプリスト<i class="far fa-file-pdf"></i></a> から
+                                                        送信したいスタンプのスティッカーIDとパッケージIDの2つを指定してください<br>
+                                                        ※リンク切れの場合、LINEのURLが更新されていますので、「LINE Messaging
+                                                        APIリファレンス」等でWebから検索いただき、最新のスタンプリストを参照してください。
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-1">
+                                            <div class="sortable-handle">
+                                                <i class="fas fa-arrows-alt-v"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {# 画像カルーセル #}
+                                    <div class="row message-part" id="image_carousel">
+                                        <div class="col-sm-2">
+                                            画像カルーセル
+                                            <button type="button" style="margin: 10px 0;"
+                                                    class="add-another-collection-widget btn btn-block"
+                                                    data-list="#carousel_columns">
+                                                <i class="fa fa-plus"></i> 要素を追加
+                                            </button>
+                                            <div class="">画像形式：JPEGまたはPNG<br>
+                                                縦横比：1:1<br>
+                                                最大横幅サイズ：1024px<br>
+                                                最大ファイルサイズ：1MB<br>
+                                                ※PC版LINEでは表示されません<br>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="row">
+                                                <div class="col-sm-12 crousel_is_none">
+                                                    <p>画像カルーセルを送信するには要素を追加してください</p>
+                                                </div>
+                                                <div id="carousel_columns" class="col-sm-12"
+                                                     data-prototype="{% filter escape %}
+                                                                        {{ include('ECCUBE4LineIntegration/Resource/template/admin/search.carousel_prototype.twig', { 'form': messageForm.carousel_columns.vars.prototype }) }}
+                                                                    {% endfilter %}"
+                                                     data-widget-tags="{{ '<div class="carousel-column"></div>'|e }}">
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-1">
+                                            <div class="sortable-handle">
+                                                <i class="fas fa-arrows-alt-v"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row btn_area">
+                                        <div class="col-md-12 search">
+                                            <a href="#" id="send_message" class="btn btn-primary btn-block"
+                                               style="margin-top: 12px;" data-toggle="modal"
+                                               data-target="#send_confirm">
+                                                送信する
+                                            </a>
+                                        </div>
+                                    </div>
+                                    {# 送信確認のモーダル #}
+                                    <div class="modal fade" id="send_confirm" tabindex="-1" role="dialog"
+                                         aria-labelledby="send_confirm" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title font-weight-bold">確認</h5>
+                                                    <button class="close" type="button" data-dismiss="modal"
+                                                            aria-label="Close">
+                                                        <span aria-hidden="true">×</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body text-left">
+                                                    <p class="text-left">
+
+                                                    </p>
+                                                </div>
+
+                                                <div class="modal-footer">
+                                                    <button class="btn btn-ec-sub" type="button" data-dismiss="modal">
+                                                        キャンセル
+                                                    </button>
+                                                    <button class="btn btn-ec-conversion" id="send_ok">
+                                                        送信する
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div><!-- /.box-body -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    </div>
+
+{% endblock %}

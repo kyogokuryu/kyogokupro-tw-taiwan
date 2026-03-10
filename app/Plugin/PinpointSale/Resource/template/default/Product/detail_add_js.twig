@@ -1,0 +1,86 @@
+<script>
+    {% set pinpoint_sale_default_prices = get_pinpoint_sale_default_prices(Product.id) %}
+    var pinpoint_sale_default_prices = JSON.parse('{{ pinpoint_sale_default_prices|raw }}');
+
+    window.addEventListener('DOMContentLoaded', function () {
+
+        var min = pinpoint_sale_default_prices.min;
+        var max = pinpoint_sale_default_prices.max;
+        var min_view = pinpoint_sale_default_prices.min_view;
+        var max_view = pinpoint_sale_default_prices.max_view;
+        var pinpoint_sale_origin = '';
+
+        // 初期値
+        if(min == max && min > 0) {
+            $('#pinpoint-default').text(min_view);
+            $('.ec-productRole__pinpoint_sale_default').show();
+            pinpoint_sale_origin = min_view;
+        } else if(max > 0) {
+            $('#pinpoint-default').text(min_view + " ～ " + max_view);
+            pinpoint_sale_origin = min_view + " ～ " + max_view;
+        } else {
+            $('#ec-productRole__pinpoint_sale').remove();
+        }
+
+        // 再読込時
+        var $gSele1 = $('#form1').find('select[name=classcategory_id1]');
+        var $gSele2 = $('#form1').find('select[name=classcategory_id2]');
+
+        if(!$gSele2.length) {
+            selectPinpointSale($('#form1'), $gSele1.val(), null);
+        } else {
+            selectPinpointSale($('#form1'), $gSele1.val(), $gSele2.val());
+        }
+
+        $('select[name=classcategory_id1]').change(function () {
+
+            var $form = $(this).parents('form');
+            var $sele1 = $(this);
+            var $sele2 = $form.find('select[name=classcategory_id2]');
+
+            if(!$sele2.length) {
+                selectPinpointSale($form, $sele1.val(), null);
+            }
+        });
+
+        $('select[name=classcategory_id2]').change(function () {
+
+            var $form = $(this).parents('form');
+            var $sele1 = $form.find('select[name=classcategory_id1]');
+            var $sele2 = $(this);
+
+            selectPinpointSale($form, $sele1.val(), $sele2.val());
+        });
+
+        function selectPinpointSale($form, classcat_id1, classcat_id2) {
+
+            classcat_id2 = classcat_id2 ? classcat_id2 : '';
+
+            var classcat2 = 'undefined';
+            if (typeof eccube.classCategories[classcat_id1] !== 'undefined') {
+                classcat2 = eccube.classCategories[classcat_id1]['#' + classcat_id2];
+            }
+
+            var $pinpointSale = $form.parent().find('.pinpoint-default').first();
+
+            if($pinpointSale.length == 0) {
+                return;
+            }
+
+            if (typeof classcat2 === 'undefined') {
+                $pinpointSale.text(pinpoint_sale_origin);
+                $('.ec-productRole__pinpoint_sale_default').show();
+            } else {
+                var product_class_id = classcat2.product_class_id;
+                if(typeof pinpoint_sale_default_prices[product_class_id] !== 'undefined') {
+                    if(pinpoint_sale_default_prices[product_class_id] == "") {
+                        $('.ec-productRole__pinpoint_sale_default').hide();
+                    } else {
+                        $pinpointSale.text('￥' + pinpoint_sale_default_prices[product_class_id]);
+                        $('.ec-productRole__pinpoint_sale_default').show();
+                    }
+                }
+            }
+        }
+    })
+</script>

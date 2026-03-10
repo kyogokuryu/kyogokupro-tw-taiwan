@@ -1,0 +1,723 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) LOCKON CO.,LTD. All Rights Reserved.
+
+http://www.lockon.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+
+{% set body_class = 'product_page' %}
+
+{% set KsProduct = Product.KsProduct %}
+{% set rootProductId = Product.id %}
+
+{% block stylesheet %}
+    <style>
+
+        .slick-slider {
+            margin-bottom: 30px;
+        }
+
+        .slick-dots {
+            position: absolute;
+            bottom: -45px;
+            display: block;
+            width: 100%;
+            padding: 0;
+            list-style: none;
+            text-align: center;
+        }
+
+        .slick-dots li {
+            position: relative;
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin: 0 5px;
+            padding: 0;
+
+            cursor: pointer;
+        }
+
+        .slick-dots li button {
+            font-size: 0;
+            line-height: 0;
+            display: block;
+            width: 20px;
+            height: 20px;
+            padding: 5px;
+            cursor: pointer;
+            color: transparent;
+            border: 0;
+            outline: none;
+            background: transparent;
+        }
+
+        .slick-dots li button:hover,
+        .slick-dots li button:focus {
+            outline: none;
+        }
+
+        .slick-dots li button:hover:before,
+        .slick-dots li button:focus:before {
+            opacity: 1;
+        }
+
+        .slick-dots li button:before {
+            content: " ";
+            line-height: 20px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 12px;
+            height: 12px;
+            text-align: center;
+            opacity: .25;
+            background-color: black;
+            border-radius: 50%;
+
+        }
+
+        .slick-dots li.slick-active button:before {
+            opacity: .75;
+            background-color: black;
+        }
+
+        .slick-dots li button.thumbnail img {
+            width: 0;
+            height: 0;
+        }
+
+        .kokokara_select_cart_btn_area {
+            margin: 14px 0;
+            font-size: 18px;
+        }
+        .kokokara_select_product_left {
+            width: 100%;
+        }
+        .kokokara_select_product_right {
+            width: 100%;
+        }
+        .kokokara_select-ec-color-accent {
+            color: #DE5D50;
+        }
+
+        .ks_group_title {
+            padding: 14px 0;
+            border-bottom-width: 1px;
+            border-bottom-style: dotted;
+            border-bottom-color: rgb(204, 204, 204);
+        }
+        .ks_group_description {
+            padding: 7px 0;
+        }
+        .ks_group_message {
+            padding: 7px 0;
+        }
+
+        .ks_select_quantity {
+            margin-top: auto;
+        }
+
+        @media only screen and (min-width: 768px) {
+            .kokokara_select_product_left {
+                width: 30%;
+            }
+            .kokokara_select_product_right {
+                width: 70%;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block javascript %}
+<script src="/html/template/default/assets/js/review.js"></script>
+
+    <script>
+        $(function() {
+            // bfcache無効化
+            $(window).bind('pageshow', function(event) {
+                if (event.originalEvent.persisted) {
+                    location.reload(true);
+                }
+            });
+
+            $('.item_visual').slick({
+                dots: false,
+                arrows: false,
+                responsive: [{
+                    breakpoint: 768,
+                    settings: {
+                        dots: false
+                    }
+                }]
+            });
+
+            $('.slideThumb').on('click', function() {
+                var index = $(this).attr('data-index');
+                $('.item_visual').slick('slickGoTo', index, false);
+            });
+        });
+    </script>
+    <script>
+        $(function() {
+
+            var maxSelectQuantity = {{ KsProduct.quantity }};
+
+            var selectQuantities = new Array({{ KsProduct.KsSelectItemGroups|length }});
+
+            var checkMode = {% if editId is empty %}0{% else %}1{% endif %};
+
+            // 初期処理
+            checkQuantity(true);
+
+            // 数量変更
+            $('.ks_quantity ').change(function () {
+                checkQuantity(false);
+            });
+
+            // 数量内部データクリア
+            function resetSelectQuantities() {
+                for (var i = 0; i < selectQuantities.length; i++) {
+                    selectQuantities[i] = 0;
+                }
+            }
+
+            // 数量チェック
+            function checkQuantity($first) {
+
+                var selectQuantity = 0;
+                var pattern = /^\d*$/;
+
+                resetSelectQuantities();
+
+                $('.ks_quantity').each(function() {
+
+                    if($(this).val() == "") {
+                        $(this).val(0);
+                    }
+
+                    if (pattern.test($(this).val())) {
+
+                        var quantity = parseInt($(this).val());
+                        var groupIndex = $(this).data('group_index');
+
+                        selectQuantities[groupIndex] += quantity;
+                        selectQuantity += quantity;
+                    }
+                });
+
+                var underQuantity = maxSelectQuantity - selectQuantity;
+                $('.under_quantity').text(underQuantity);
+                $('.select_item_count').text(selectQuantity);
+
+                var $selectValid = true;
+
+                for (var i = 0; i < selectQuantities.length; i++) {
+
+                    var quantity = selectQuantities[i];
+
+                    // 件数制御
+                    var limitQuantity = $('.ks_select_group' + i).data('quantity');
+                    var groupName = $('.ks_select_group' + i).data('group_name');
+
+                    if(groupName == "" && selectQuantities.length > 1) {
+                        groupName = "{{ DefaultGroupName }}" + (i+1);
+                    }
+
+                    if(selectQuantities.length > 1) {
+                        groupName = groupName + 'から';
+                    }
+
+                    if (quantity < limitQuantity) {
+                        // 不足
+                        if (!$first || checkMode == 1) {
+                            var quantityMsg = (limitQuantity - quantity);
+                            $('.ks_select_message_group' + i).text(groupName + 'あと' + quantityMsg + '点選択してください');
+                            $('.kokokara_select_quantity_area_group' + i).addClass('kokokara_select-ec-color-accent');
+                        }
+                        $selectValid = false;
+                    } else if (quantity > limitQuantity) {
+                        // 過剰
+                        if (!$first || checkMode == 1) {
+
+                            var quantityMsg = (quantity - limitQuantity);
+                            $('.ks_select_message_group' + i).text(groupName + quantityMsg + '点減らしてしてください');
+                            $('.kokokara_select_quantity_area_group' + i).addClass('kokokara_select-ec-color-accent');
+                        }
+                        $selectValid = false;
+                    } else {
+                        $('.ks_select_message_group' + i).text('');
+                        $('.kokokara_select_quantity_area_group' + i).removeClass('kokokara_select-ec-color-accent');
+                    }
+
+                    $('.kokokara_select_quantity_group' + i).text(selectQuantities[i]);
+                }
+
+                if($selectValid && selectQuantity == maxSelectQuantity) {
+                    $('.add-cart').prop('disabled', false);
+                } else {
+                    $('.add-cart').prop('disabled', true);
+                }
+            }
+
+            // カート追加
+            $('.add-cart').on('click', function(e) {
+                if($(this).hasClass('go')){
+                    $(this).addClass('on');
+                }
+                var $form = $('#form1');
+
+                e.preventDefault();
+                $.ajax({
+                    url: $form.attr('action'),
+                    type: $form.attr('method'),
+                    data: $form.serialize(),
+                    dataType: 'json',
+                    beforeSend: function(xhr, settings) {
+                        // Buttonを無効にする
+                        $('.add-cart').prop('disabled', true);
+                    }
+                }).done(function(data) {
+                    if($('.add-cart.go').hasClass('on')){
+                        let cart_url = $('a.cart-url').attr('href');
+                        window.location.href = cart_url;
+                        return false;
+                    }
+
+                    // レスポンス内のメッセージをalertで表示
+                    $.each(data.messages, function() {
+                        $('#ec-modal-header').html(this);
+                    });
+
+                    {% if is_kokokara_select_version405() %}
+                        $('.ec-modal').show()
+                    {% else %}
+                        $('#ec-modal-checkbox').prop('checked', true);
+                    {% endif %}
+
+                    // ボタンの表示変更
+                    if(data.done) {
+                        $('#ks_new_item_btn').show();
+                        $('#ks_edit_item_btn').hide();
+                    } else {
+                        $('#ks_new_item_btn').hide();
+                        $('#ks_edit_item_btn').show();
+                    }
+
+                    // カートブロックを更新する
+                    $.ajax({
+                        url: '{{ url('block_cart') }}',
+                        type: 'GET',
+                        dataType: 'html'
+                    }).done(function(html) {
+                        $('.ec-headerRole__cart').html(html);
+                    });
+                }).fail(function(data) {
+                    alert('{{ 'カートへの追加に失敗しました。'|trans }}');
+                }).always(function(data) {
+                    // Buttonを有効にする
+                    $('.add-cart').prop('disabled', false);
+                });
+            });
+
+            // サブ画像の表示処理
+            let slide_num = $('.item_nav .slideThumb').length;
+            let elm = '<span>1</span>/'+slide_num;
+            $('.total').html(elm);
+            $('.total').on('click',function(){
+                $('.float-elm').fadeIn('fast');
+            });
+            $('.slideThumb').on('click',function(){
+                $('.float-elm').fadeOut('fast');
+            });
+            $('.sub-image').on('click',function(){
+                $('.float-elm').fadeOut('fast');
+            });
+            $('.item_nav').on('click',function(evnet){
+                event.stopPropagation();
+            });
+            $('.item_visual').on('afterChange',function(){
+                let order = $('.slide-item.slick-active').data('index')+1;
+                $('.total span').text(order);
+            });
+
+            //タイムセール用
+            if($('dl.sale-time').length){
+                $(window).on('load',function(){
+                    let sale_time = $('dl.sale-time dd');
+                    let time = sale_time.data('time');
+                    if(time){
+                        sale_time.yycountdown({
+                            endDateTime:time,
+                            unit:{d: '日', h: '時', m: '分', s: '秒'},
+                        });
+                    }
+                });
+            }
+        });
+
+        {% if is_kokokara_select_version405() %}
+            $('.ec-modal-overlay, .ec-modal .ec-inlineBtn--cancel').on('click', function() {
+                $('.ec-modal').hide()
+            });
+        {% endif %}
+    </script>
+{% endblock %}
+
+{% block main %}
+
+    {# タイムセール用 #}
+    {% set regular_price = Product.getPrice02IncTaxMin|price %}
+    {% if Product.ProductClasses and Product.ProductClasses.has('0') is defined %}
+        {% set sale_price = Product.ProductClasses[0].ProductPinpoints[0].Pinpoint.salePrice|price %}
+        {% set sale_time = Product.ProductClasses[0].ProductPinpoints[0].Pinpoint.endTime %}
+    {% else %}
+        {% set sale_price = 0 %}
+        {% set sale_time = '' %}
+    {% endif %}
+    {% if sale_time %}
+        {% if sale_time > date() %}
+            {% set sale_time = sale_time|date_format('', 'Y/m/d H:i') %}
+        {% else %}
+            {% set sale_time = '' %}
+        {% endif %}
+    {% endif %}
+
+    <article id="item_info" class="set">
+    {% if KsProduct.KsSelectItemGroups|length > 0 %}
+        <form action="{{ url('product_select_add_cart', {id:Product.id}) }}" method="post" id="form1" name="form1">
+        {% if Product.stock_find %}
+            {{ form_widget(form._token) }}
+            {{ form_widget(form.product_id) }}
+            {{ form_widget(form.ProductClass) }}
+            {{ form_widget(form.quantity, {'type': 'hidden'}) }}
+            {{ form_widget(form.ksCartKey) }}
+        {% endif %}
+        <div class="ec-productRole">
+            <div class="ec-productRole__profile">
+                <div class="profile-inr"><div class="pinr">
+
+                    {# 商品名 #}
+                    <h1 class="ec-headingTitle mb20">{{ Product.name }}</h1>
+
+                    <div class="ec-sliderItemRole">
+                        <div class="item_visual">
+                            {% for ProductImage in Product.ProductImage %}
+                                <div class="slide-item" data-index="{{ loop.index0 }}"><img src="{{ asset(ProductImage, 'save_image') }}"></div>
+                            {% else %}
+                                <div class="slide-item" data-index="{{ loop.index0 }}"><img src="{{ asset(''|no_image_product, 'save_image') }}"/></div>
+                            {% endfor %}
+                        </div>
+                        <div class="total"></div>
+                        <div class="sub-image float-elm">
+                            <div class="close"></div>
+                            <div class="item_nav">
+                                {% for ProductImage in Product.ProductImage %}
+                                    <div class="slideThumb" data-index="{{ loop.index0 }}"><img src="{{ asset(ProductImage, 'save_image') }}"></div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="overlay float-elm"></div>
+                    </div>
+
+                    <div class="product-upper">
+                        {# タグ #}
+                        <ul class="ec-productRole__tags">
+                            {% for Tag in Product.Tags %}
+                                <li class="ec-productRole__tag tag_{{ Tag.id }}">{{ Tag }}</li>
+                            {% endfor %}
+                        </ul>
+
+                        <div class="upper">
+                            <div class="price-box">
+                                {# 通常価格 #}
+                                {% if Product.hasProductClass -%}
+                                    <div class="ec-productRole__priceRegular">
+                                        {% if Product.getPrice01Min is not null and Product.getPrice01IncTaxMin == Product.getPrice01IncTaxMax %}
+                                            <span class="ec-productRole__priceRegularPrice">{{ '通常価格'|trans }}：<span class="price01-default">{{ Product.getPrice01IncTaxMin|price }}</span></span>
+                                            {# <span class="ec-productRole__priceRegularTax">{{ '税込'|trans }}</span> #}
+                                        {% elseif Product.getPrice01Min is not null and Product.getPrice01Max is not null %}
+                                            <span class="ec-productRole__priceRegularPrice">{{ '通常価格'|trans }}：<span class="price01-default">{{ Product.getPrice01IncTaxMin|price}}～ {{ Product.getPrice01IncTaxMax|price }}</span></span>
+                                            {# <span class="ec-productRole__priceRegularTax">{{ '税込'|trans }}</span> #}
+                                        {% endif %}
+                                    </div>
+                                {% else %}
+                                    {% if Product.getPrice01Max is not null %}
+                                        <span class="ec-productRole__priceRegularPrice">{{ '通常価格'|trans }}：{{ Product.getPrice01IncTaxMin|price }}</span>
+                                        {# <span class="ec-productRole__priceRegularTax">{{ '税込'|trans }}</span> #}
+                                    {% endif %}
+                                {% endif %}
+
+                                {# 販売価格 #}
+                                <div class="ec-price">
+                                {% if sale_time and sale_price %}
+                                    <span class="ec-price__price">{{ sale_price }}</span>
+                                    {# <span class="ec-price__tax">{{ '税込'|trans }}</span> #}
+                                    <span class="regular-price">{{ regular_price }}</span>
+                                {% else %}
+                                    {% if Product.hasProductClass -%}
+                                        {% if Product.getPrice02IncTaxMin == Product.getPrice02IncTaxMax %}
+                                            <span class="ec-price__price price02-default">{{ Product.getPrice02IncTaxMin|price }}</span>
+                                            {# <span class="ec-price__tax">{{ '税込'|trans }}</span> #}
+                                        {% else %}
+                                            <span class="ec-price__price price02-default">{{ Product.getPrice02IncTaxMin|price }} ～ {{ Product.getPrice02IncTaxMax|price }}</span>
+                                            {# <span class="ec-price__tax">{{ '税込'|trans }}</span> #}
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="ec-price__price">{{ Product.getPrice02IncTaxMin|price }}</span>
+                                        {# <span class="ec-price__tax">{{ '税込'|trans }}</span> #}
+                                    {% endif %}
+                                {% endif %}
+                                </div>
+
+                                {# 商品コード #}
+                                {% if Product.code_min is not empty %}
+                                    <div class="ec-productRole__code">
+                                        {{ '商品コード'|trans }}： <span class="product-code-default">{{ Product.code_min }}{% if Product.code_min != Product.code_max %} ～ {{ Product.code_max }}{% endif %}</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+
+                        </div>
+
+                        <div class="bottom">
+                            <div class="quantity-box">
+                                {% if Product.stock_find %}
+                                    <div class="kokokara_select_cart_btn_area">
+                                        <div><span>現在の選択数量 合計：</span><span class="select_item_count">1</span></div>
+                                        
+                                        {% if KsProduct.KsSelectItemGroups|length > 1 %}
+                                            {% for KsSelectItemGroup in KsProduct.KsSelectItemGroups %}
+                                                <div class="kokokara_select_quantity_area_group{{ loop.index0 }}">
+                                                    {% if KsSelectItemGroup.groupName is empty %}
+                                                        {% set groupName = DefaultGroupName~loop.index %}
+                                                    {% else %}
+                                                        {% set groupName = KsSelectItemGroup.groupName %}
+                                                    {% endif %}
+                                                    （{{ groupName }}の選択：<span class="kokokara_select_quantity_group{{ loop.index0 }}">0</span>  / {{ KsSelectItemGroup.quantity }}）
+                                                </div>
+                                            {% endfor %}
+                                        {% endif %}
+                                        <div>合計で{{ KsProduct.quantity }}点選択してください</div>
+                                    </div>
+                                {% else %}
+                                    <div class="ec-productRole__btn mb0">
+                                        <button type="button" class="ec-blockBtn--action mb0" disabled="disabled">
+                                            {{ 'SOLD OUT'|trans }}
+                                        </button>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="sns-box">
+                                <dl>
+                                    <dt>SHARE</dt>
+                                    <dd>
+                                        <ul>
+                                            <li><a href="https://www.facebook.com/sharer/sharer.php?u={{ url('product_detail', {'id': Product.id}) }}" target="_blank"><img src="/images/icon/icon-facebook.svg"></a></li>
+                                            <li><a href="https://timeline.line.me/social-plugin/share?url={{ url('product_detail', {'id': Product.id}) }}" target="_blank"><img src="/images/icon/icon-line.svg"></a></li>
+                                            <li><a href="http://twitter.com/share?url={{ url('product_detail', {'id': Product.id}) }}" target="_blank"><img src="/images/icon/icon-twitter.svg"></a></li>
+                                        </ul>
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>{# product-upper #}
+                </div></div>
+
+                <div class="product-bottom">
+                    {# カートボタン #}
+                    {# {% if Product.stock_find %}
+                        <div class="go-cart">
+                            <button type="submit" class="ec-blockBtn--action add-cart go" disabled="disabled">
+                                <span>{{ '今すぐ買う'|trans }}</span>
+                            </button>
+                        </div> #}
+                        {# <div class="middle">
+                            <div class="ec-productRole__btn">
+                            {% if Product.stock_find %}
+                                <button type="submit" class="ec-blockBtn--action s1 add-cart" disabled="disabled">
+                                    <span>{{ 'カートに追加'|trans }}</span>
+                                </button>
+                                <div class="sp lower-cart-btn">
+                                    <button type="submit" class="ec-blockBtn--action s1 add-cart" disabled="disabled">
+                                        <span>{{ 'カートに追加'|trans }}</span>
+                                    </button>
+                                </div>
+                            {% else %}
+                                <button type="button" class="ec-blockBtn--cancel" disabled="disabled">
+                                    <span>{{ 'SOLD OUT'|trans }}</span>
+                                </button>
+                            {% endif %}
+                            </div> #}
+                            {# <div class="line-btn">
+                                <a href="https://lin.ee/28rac17" target="_blank">商品に関する質問はこちら！</a>
+                            </div> #}
+                        {# </div>
+                    {% endif %} #}
+
+                    {% if Product.description_list %}
+                        <div class="sp-box">
+                            <p>定期便なら、<b>３８％OFF〜</b><br><span>通常価格→</span><b>定期価格￥７００TWD〜(税込み)</b></p>
+                            <a href="{{ Product.description_list|raw }}" class="ec-blockBtn--action" target="_blank">
+                                <span>定期商品を今すぐお試し</span>
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>{# product-bottom #}
+
+                <div>
+                    {% set ksProduct = Product.ksProduct %}
+                    {{ KsProduct.description|raw|nl2br }}
+                </div>
+
+            </div>{# ec-productRole__profile #}
+
+            <div class="ec-shelfRole mb20">
+                {% set index = 0 %}
+                {% set groupIndex = 0 %}
+                {% for KsSelectItemGroup in KsProduct.KsSelectItemGroups %}
+                    {% if KsSelectItemGroup.groupName != "" %}
+                        <h2 class="ks_group_title">{{ KsSelectItemGroup.groupName }}</h2>
+                    {% endif %}
+                    {% if KsSelectItemGroup.description %}
+                        <div class="ks_group_description">{{ KsSelectItemGroup.description|raw|nl2br }}</div>
+                    {% endif %}
+                    <div class="ks_group_message kokokara_select-ec-color-accent"><span class="ks_select_message_group{{ groupIndex }}"></span></div>
+                    <ul class="ec-shelfGrid ks_select_group{{ groupIndex }}" data-quantity="{{ KsSelectItemGroup.quantity }}" data-group_name="{{ KsSelectItemGroup.groupName }}">
+                        {% for KsSelectItem in KsSelectItemGroup.KsSelectItems %}
+                            {% set ksSelectItemView = is_kokokara_select_view_item(KsSelectItem) %}
+                            {% set isKokokaraSelectItemStockZero = is_kokokara_select_item_stock_zero(KsSelectItem) %}
+                            {% if isKokokaraSelectItemStockZero and NonStockHidden %}
+                                {#在庫なし非表示#}
+                            {% else %}
+                                {% if ksSelectItemView %}
+                                    {% set SubProductClass = KsSelectItem.ProductClass %}
+                                    {% set SubProduct = SubProductClass.Product %}
+                                    <li class="ec-shelfGrid__item">
+                                        <p class="ec-shelfGrid__item-image">
+                                            <img src="{{ asset(SubProduct.main_list_image|no_image_product, 'save_image') }}">
+                                        </p>
+                                        <p class="name">
+                                            {% set viewProductName = get_kokokara_select_product_name(SubProductClass) %}
+                                            {{ viewProductName }}
+                                        </p>
+                                        {% if SubProduct.description_list %}
+                                            <p>{{ SubProduct.description_list|raw|nl2br }}</p>
+                                        {% endif %}
+                                        <p class="price02-default">
+                                            {% if KsProduct.priceView %}
+                                                {{ SubProductClass.price02IncTax|price }}
+                                            {% endif %}
+                                        </p>
+                                        <div class="ks_select_quantity">
+                                            {% set subForm = form.selectItems[index] %}
+                                            {{ form_widget(subForm.KsSelectItem) }}
+                                            {% if isKokokaraSelectItemStockZero or Product.stock_find == false %}
+                                                <input type="hidden" name="{{ subForm.quantity.vars.full_name }}" value="0">
+                                                {{ '目前缺货。' }}
+                                            {% else %}
+                                                {{ form_widget(subForm.quantity, {'attr': {'data-group_index': groupIndex}}) }}
+                                            {% endif %}
+                                            {{ form_widget(subForm.groupId, {'value': KsSelectItemGroup.id }) }}
+                                            {% set index = index + 1 %}
+                                        </div>
+                                    </li>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                    {% set groupIndex = groupIndex + 1 %}
+                {% endfor %}
+            </div>
+
+            {# フリーエリア #}
+            {% if Product.freearea %}
+                 <div class="ec-productRole__description">
+                     {{ include(template_from_string(Product.freearea)) }}
+                </div>
+            {% endif %}
+
+            {# 商品説明 #}
+            {% if Product.description_detail %}
+                <div class="ec-productRole__detail">
+                    <dl>
+                        <dt>商品情報詳細</dt>
+                        <dd>{{ Product.description_detail|raw }}</dd>
+                    </dl>
+                </div>
+            {% endif %}
+
+        </div>{# ec-productRole #}
+        </form>
+
+        <form action="{{ url('product_add_favorite', {id:Product.id}) }}" method="post" id="favorite-form"></form>
+
+        <div class="ec-modal">
+            {% if is_kokokara_select_version405() == false %}
+            <input type="checkbox" id="ec-modal-checkbox" class="checkbox">
+            {% endif %}
+            <div class="ec-modal-overlay">
+                <label for="ec-modal-checkbox" class="ec-modal-overlay-close"></label>
+                <div class="ec-modal-wrap">
+                    <label for="ec-modal-checkbox" class="ec-modal-close"><span class="ec-icon"><img src="{{ asset('assets/icon/cross-dark.svg') }}" alt=""/></span></label>
+                    <div id="ec-modal-header" class="text-center">{{ '已新增到購物車'|trans }}</div>
+                    <div class="ec-modal-box">
+                        <div class="ec-role">
+                            <a id="ks_new_item_btn" href="{{ url('kokokara_select_list', {'id': Product.id}) }}" class="ec-inlineBtn--cancel">{{ '繼續選購'|trans }}</a>
+                            <label id="ks_edit_item_btn" for="ec-modal-checkbox" class="ec-inlineBtn--cancel" style="display: none;">{{ '继续产品选择'|trans }}</label>
+                            <a href="{{ url('cart') }}" class="ec-inlineBtn--action cart-url">{{ '前往購物車'|trans }}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="page_product_detail"><div id="item_info"></div></div>
+
+        {# 関連商品 #}
+        {% if Product.RelatedProducts is not empty %}
+        <div id="RelatedProduct-product_area" class="top-slide related">
+            {% if 'cbd' not in body_class %}
+                <p class="h2">関連商品</p>
+            {% else %}
+                <p class="h2">このアイテムを<br class="sp">見ている人におすすめ</p>
+            {% endif %}
+            <ul>
+                {% for RelatedProduct in Product.RelatedProducts %}
+                    {% set ChildProduct = RelatedProduct.ChildProduct %}
+                    {% if ChildProduct.Status.id == constant("Eccube\\Entity\\Master\\ProductStatus::DISPLAY_SHOW") %}
+                        <li>
+                            <a href="{{ url('product_detail', {id : ChildProduct.id}) }}">
+                                <div class="image"><img src="{{ asset(RelatedProduct.ChildProduct.main_list_image|no_image_product, 'save_image') }}"></div>
+                                <div class="info">
+                                    <h2 class="name">{{ RelatedProduct.ChildProduct.name }}</h2>
+                                    <p class="price">
+                                        {% if RelatedProduct.ChildProduct.hasProductClass %}
+                                            {% if RelatedProduct.ChildProduct.getPrice02Min == RelatedProduct.ChildProduct.getPrice02Max %}
+                                                {{ RelatedProduct.ChildProduct.getPrice02IncTaxMin|price }}
+                                            {% else %}
+                                                {{ RelatedProduct.ChildProduct.getPrice02IncTaxMin|price }} ～ {{ RelatedProduct.ChildProduct.getPrice02IncTaxMax|price }}
+                                            {% endif %}
+                                        {% else %}
+                                            {{ RelatedProduct.ChildProduct.getPrice02IncTaxMin|price }}
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+    {% endif %}
+    </article>
+    <!-- KokokaraSelect -->
+{% endblock %}

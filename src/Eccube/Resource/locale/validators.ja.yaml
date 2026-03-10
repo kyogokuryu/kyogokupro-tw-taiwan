@@ -1,0 +1,72 @@
+#------------------------------------------------------------------------------------
+#
+#
+# $builder->add('name', TextType::class, [
+#    'message' => 'form_error.kana_only'
+# ]);
+#------------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------------
+# Symfony error message
+#
+# https://github.com/symfony/validator/blob/3.4/Resources/translations/validators.ja.xlf
+#------------------------------------------------------------------------------------
+This value should not be blank.: 該欄位不能空白
+This value should be the user's current password.: 该值应为用户的当前密码。
+Invalid credentials.: |
+  帳號無效
+  請檢查是否輸入正確
+Invalid CSRF token.: |
+  CSRF令牌无效。
+  请检查输入内容是否正确。
+
+
+#------------------------------------------------------------------------------------
+# EC-CUBE error message
+#
+#------------------------------------------------------------------------------------
+Invalid twig format. {{ error }}: Twig格式无效。{{ error }}
+
+form_error.numeric_only: 请输入数字。
+form_error.kana_only: 请输入片假名。
+form_error.graph_only: 请输入半角英数字。
+form_error.not_contain_spaces: 请勿包含空格、制表符或换行符。
+form_error.graph_and_hyphen_only: 只能输入半角英数字或连字符。
+form_error.not_selected: 未选择。
+form_error.select_is_future_or_now_date: 生日日期无效。
+form_error.float_only: 只能输入数字和小数点。
+form_error.same_password: 请输入相同的密码。
+form_error.same_email: 请输入相同的电子邮件地址。
+form_error.admin_is_not_available: 不允许使用“admin”作为目录名。
+form_error.member_already_exists: 登录ID已被使用。
+form_error.customer_already_exists: 该电子邮件地址不可用。
+form_error.brand_already_exists: 此品牌已存在。
+
+#------------------------------------------------------------------------------------
+# Deplicated
+#
+#------------------------------------------------------------------------------------
+errors.numeric_only: 请输入数字。
+errors.float_only: 只能输入数字和小数点。
+errors.graph_only: 请输入半角英数字。
+errors.kana_only: 请输入片假名。
+errors.not_contain_spaces: 请勿包含空格、制表符或换行符。
+errors.not_selected: 未选择。
+errors.graph_and_hyphen: 只能输入半角英数字或连字符。
+
+form.type.graph.invalid: 请输入半角英数字。
+form.type.name.firstname.nothasspace: 名字（名）请勿包含空格、制表符或换行符。
+form.type.name.lastname.nothasspace: 名字（姓）请勿包含空格、制表符或换行符。
+form.type.customer.password.too_short: 密码太短了。必须至少为{{ limit }}个字符。
+form.type.customer.password.too_long: 密码太长了。必须不超过{{ limit }}个字符。
+form.type.customer.company.nothasspace: 公司名请勿包含空格、制表符或换行符。
+form.type.admin.nottelstyle: 请输入半角数字或连字符作为电话号码。
+form.type.admin.notkanastyle: 请输入片假名作为姓名（假名）。
+form.type.select.notselect: 未输入。
+form.type.select.classcategory: 未选择项目。
+form.type.add.quantity: 请输入至少1个。
+form.type.select.select_is_future_or_now_date: 生日日期无效。
+form.type.admin.nottrackingnumberstyle: 请输入半角英数字或连字符作为运单号。
+form.type.float.invalid: 只能输入数字和小数点。
+
+

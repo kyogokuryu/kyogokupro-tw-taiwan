@@ -1,0 +1,42 @@
+{% for Product in pagination %}
+    {% set isPinpointSaleSetting = is_pinpoint_sale_setting(Product) %}
+    {% if isPinpointSaleSetting %}
+        <span class="pinpoint_sale_price_modal"
+              data-tooltip="true"
+              title="{{ 'pinpoint_sale.admin.product.list.help'|trans }}"
+              data-pinpoint_sale_product_id="{{ Product.id }}">
+            <button class="btn btn_pinpoint_sale_price"
+                    data-pinpoint_sale_product_id="{{ Product.id }}"
+                    data-has_product_class="{{ Product.hasProductClass }}"
+                    data-pinpoint_sale_load="{{ url('admin_product_pinpoint_sale_load', { 'id' : Product.id }) }}"
+                    data-class-url="{{ url('admin_product_product_class', { 'id' : Product.id, 'return_product_list' : true }) }}"
+                    data-message="{{ 'pinpoint_sale.admin.list.title'|trans({'%name%': Product.name}) }}">
+                <i class="far fa-clock fa-lg"></i>
+            </button>
+        </span>
+    {% endif %}
+{% endfor %}
+
+<div class="modal fade" id="pinpointSaleModal" tabindex="-1" role="dialog" aria-labelledby="pinpointSaleModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title font-weight-bold">{# Title #}</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {# Append data list #}
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-v-sub" type="button" data-dismiss="modal">
+                    {{ 'admin.common.cancel'|trans }}
+                </button>
+                <a class="btn btn-ec-conversion" id="pinpoint_sale_popup_product_class_btn"
+                   href="#">
+                    {{ 'admin.product.move_to_product_class'|trans }}
+                </a>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>

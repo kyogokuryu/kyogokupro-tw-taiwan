@@ -1,0 +1,143 @@
+
+<style>
+    .home-banner{
+        margin: 0 20px 0;
+    }
+    .banner-menu {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        margin: 20px 0;
+    }
+
+    .banner-menu ul {
+        display: flex;
+        width: 100%;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        gap: 10px;
+    }
+
+    .banner-menu li {
+        flex: 1;
+    }
+
+    .banner-menu li a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        background: #fff;
+        border-radius: 10px;
+        padding: 10px 0;
+        text-decoration: none;
+        color: #333;
+        font-size: 14px;
+        font-weight: 600;
+        box-shadow: 0 5px 8px rgba(55, 55, 55, 0.87);
+        transition: all 0.2s ease-in-out;
+        width: 100%;
+        height: 100%;
+    }
+
+    .banner-menu li a:hover {
+        background: #f5f5f5;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    .banner-menu .image-box {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .banner-menu .image-box img {
+        width: 18px;
+        height: 18px;
+    }
+
+    .banner-help {
+        display: flex;
+        justify-content: center;
+        margin: 20px 0;
+    }
+
+    .banner-help a {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        width: 100%;
+        background: #000;                
+        color: #fff;                     
+        font-size: 16px;
+        font-weight: 600;
+        line-height: 1.2;
+        padding: 14px 0;
+        border-radius: 50px;
+        text-decoration: none;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+        outline: 2px solid #FFD700;
+        outline-offset: -6px;
+    }
+
+    .banner-help a:hover {
+        background: #111;
+        box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+    }
+
+    .banner-help a span {
+        color: #D4B840;
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    .banner-help a span .number-point{
+        font-size: 32px;
+    }
+
+
+    @media screen and (max-width: 768px) {
+        .ec-layoutRole__contents, #page_homepage .ec-layoutRole__contents {
+            overflow: visible !important;
+        }
+
+       .home-banner{
+            margin: 15px;
+        }
+    }
+
+    @media screen and (max-width: 380px) {
+        
+    }
+</style>
+
+<div class="home-banner">    
+    <div class="banner-menu">
+        <ul>
+            <li>
+                <a href="/ranking">
+                    <div class="image-box">
+                        <img src="/html/user_data/assets/img/icon/i_banner_rank.svg" alt="brand"/>
+                        <span>排行榜</span>
+                    </div>
+                </a>
+            </li>
+            <li>
+                <a href="/categories">
+                    <div class="image-box">
+                        <img src="/html/user_data/assets/img/icon/i_banner_category.svg" alt="brand"/>
+                        <span>分類</span>
+                    </div>
+                </a>
+            </li>            
+        </ul>
+    </div>
+
+    <div class="banner-help">
+        <a href="/point">
+            新會員註冊贈送 <span>TWD $<span class="number-point">50</span></span> 點數
+        </a>
+    </div>
+</div>

@@ -1,0 +1,37 @@
+<!-- ▼item_list▼ -->
+<div class="ec-role">
+    <div class="ec-newItemRole">
+        {% for Collection in repository('Plugin\\Collection\\Entity\\Collection').getCollectionBlock %}
+            <div class="ec-newItemRole__list">
+                <div class="ec-newItemRole__listItem">
+                    <div class="ec-newItemRole__listItemHeading ec-secHeading--tandem">
+                        <span class="ec-secHeading__en">{{ Collection.name }}</span>
+                        <span class="ec-secHeading__ja"></span>
+                        <span class="ec-secHeading__ja"></span>
+                        <a class="ec-inlineBtn--top" href="{{ url('product_list', {'collection': Collection.collectionCode}) }}">{{ 'front.block.new_item.more'|trans }}</a>
+                    </div>
+                </div>
+                {% for CollectionProduct in Collection.getCollectionProductsLimit(3) %}
+                    <div class="ec-newItemRole__listItem">
+                        <a href="{{ url('product_detail', {'id': CollectionProduct.Product.id}) }}">
+                            <img src="{{ asset(CollectionProduct.Product.main_list_image|no_image_product, 'save_image') }}">
+                            <p class="ec-newItemRole__listItemTitle">{{ CollectionProduct.Product.name }}</p>
+                            <p class="ec-newItemRole__listItemPrice">
+                                {% if CollectionProduct.Product.hasProductClass %}
+                                    {% if CollectionProduct.Product.getPrice02Min == CollectionProduct.Product.getPrice02Max %}
+                                        {{ CollectionProduct.Product.getPrice02IncTaxMin|price }}
+                                    {% else %}
+                                        {{ CollectionProduct.Product.getPrice02IncTaxMin|price }} ～ {{ CollectionProduct.Product.getPrice02IncTaxMax|price }}
+                                    {% endif %}
+                                {% else %}
+                                    {{ CollectionProduct.Product.getPrice02IncTaxMin|price }}
+                                {% endif %}
+                            </p>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+<!-- ▲item_list▲ -->

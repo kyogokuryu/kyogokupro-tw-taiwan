@@ -1,0 +1,45 @@
+{% if CheckProducts|length > 0 %}
+
+{% import _self as stars %}
+
+{# 星テキスト生成用マクロ #}
+{% macro stars(positive, negative) %}
+    {% set positive_stars = ["", "★", "★★", "★★★", "★★★★", "★★★★★"] %}
+    {% set negative_stars = ["", "☆", "☆☆", "☆☆☆", "☆☆☆☆", "☆☆☆☆☆"] %}
+    {{ positive_stars[positive] }}{{ negative_stars[negative] }}
+{% endmacro %}
+
+    <div class="top-slide check">
+        <p class="h2">{{'CheckProduct4.front.block.check_products.title.ja'|trans}}</p>
+        <ul>
+        {% for Product in CheckProducts %}
+            <li>
+                <a href="{{ url('product_detail', {'id' : Product.id}) }}" class="item_photo">
+                    <div class="image"><img src="{{ asset(Product.main_list_image|no_image_product, 'save_image') }}"  loading="lazy"></div>
+                    <div class="info ec-shelfGrid__item">
+                        <h2 class="name">{{ Product.name }}</h2>
+                        <p class="review">
+
+                            {% set positive_star = Product.review_ave %}
+                            {% set nagative_star = 5 - positive_star %}
+                            <span class="star">{{ stars.stars(positive_star, nagative_star) }}<i>({{ Product.review_cnt }})</i></span>
+
+                        </p>   
+                        <p class="price">
+                        {% if Product.hasProductClass %}
+                            {% if Product.getPrice02Min == Product.getPrice02Max %}
+                                {{ Product.getPrice02IncTaxMin|price }}
+                            {% else %}
+                                {{ Product.getPrice02IncTaxMin|price }} ～ {{ Product.getPrice02IncTaxMax|price }}
+                            {% endif %}
+                        {% else %}
+                            {{ Product.getPrice02IncTaxMin|price }}
+                        {% endif %}
+                        </p>
+                    </div>
+                </a>
+            </li>
+        {% endfor %}
+        </ul>
+    </div>
+{% endif %}

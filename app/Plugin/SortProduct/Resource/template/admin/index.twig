@@ -1,0 +1,270 @@
+
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['product', 'sort_product'] %}
+
+{% block title %}{{ 'sort_product.title'|trans }}{% endblock %}
+{% block sub_title %}{{ 'sort_product.subtitle'|trans }}{% endblock %}
+
+{% block stylesheet %}
+
+{% endblock stylesheet %}
+
+{% block javascript %}
+    <meta http-equiv="Content-Script-Type" content="text/javascript">
+
+    <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.core.min.js', 'admin') }}"></script>
+    <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.widget.min.js', 'admin') }}"></script>
+    <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.mouse.min.js', 'admin') }}"></script>
+    <script src="{{ asset('assets/js/vendor/jquery.ui/jquery.ui.sortable.min.js', 'admin') }}"></script>
+
+    <script type="text/javascript">
+
+
+        {# 古い並び替えの配列を作成 #}
+        var old_rank= new Array();
+        {% for Product in productRecordsPlus %}
+        old_rank[{{ loop.index0 }}] = {{ Product.sort_no }};
+        {% endfor %}
+
+        {# ドラッグ＆ドロップ時の対象rank保管 #}
+        var fromRank = null;
+
+        $(function() {
+
+            // 初期表示時のsort noを保持.
+            var oldSortNos = [];
+            $('.sortable-item').each(function () {
+                oldSortNos.push(this.dataset.sortNo);
+            });
+            oldSortNos.sort(function (a, b) {
+                return a - b;
+            }).reverse();
+            // 並び替え後にsort noを更新
+            var updateSortNo = function () {
+                var newSortNos = {};
+                var i = 0;
+                $('.sortable-item').each(function () {
+                    newSortNos[this.dataset.id] = oldSortNos[i];
+                    i++;
+                });
+                $.ajax({
+                    url: '{{ url('plg_SortProduct_product_rank_move') }}',
+                    type: 'POST',
+                    data: newSortNos
+                }).always(function () {
+                    $(".modal-backdrop").remove();
+                });
+            };
+            // オーバレイ後, 表示順の更新を行う
+            var moveSortNo = function () {
+                $('body').append($('<div class="modal-backdrop show"></div>'));
+                updateSortNo();
+            };
+            // Drag and Drop
+            $(".sortable-container").sortable({
+                items: '> .sortable-item',
+                cursor: 'move',
+                update: function (e, ui) {
+                    moveSortNo();
+                }
+            });
+
+            $("#update_btn").click(function(){
+                {% if categoryId is null %}
+                location.href = "{{ path( this_page, { 'page_no': page_no} )}}";
+                {% else %}
+                location.href = "{{ path( this_page_by, { 'categoryId': categoryId|default(null), 'page_no': page_no} )}}";
+                {% endif %}
+            });
+
+        });
+
+        function clickMoveRankButton(fromRank,selectBoxNo){
+            var fromNo = parseInt(selectBoxNo);
+
+            var selector = "#select_box_"+selectBoxNo;
+
+            var toNo = parseInt($(selector).val());
+
+            {# 移動先の一つ上のrank (一つ上のrankの下に移動する) #}
+
+            if(toNo != fromNo) {
+                if(toNo > fromNo){
+                    {# 順位を下げる場合 #}
+                    var toRankBefore=nowRanks[toNo];
+                } else {
+                    {# 順位を上げる場合 #}
+                    var toRankBefore=nowRanks[toNo-1];
+                }
+                console.log("toNo > fromNo:"+(toNo > fromNo));
+                console.log("toRankBefore:"+toRankBefore);
+                var toRank = nowRanks[toNo];
+
+                var selector = "#changeRankForm";
+                var html ='<input type="hidden" name="from_rank" value="' + fromRank + '">'
+                    +'<input type="hidden" name="to_rank_before" value="' + toRankBefore + '">';
+                addHTML(selector,html);
+
+                $(selector).submit();
+            }
+        }
+
+        function addHTML(selector,html){
+            $(selector).append(html);
+        }
+
+        var nowRanks= new Array();
+        nowRanks[0] = "top";
+        {% for rank,no in choices %}
+        nowRanks[{{ no }}] = {{ rank }};
+        {% endfor %}
+
+    </script>
+
+
+{% endblock javascript %}
+
+{% block main %}
+
+    {% if categoryId is not null %}
+        {% set actionLink = url(this_page_by, { 'categoryId': categoryId }) %}
+    {% else %}
+        {% set actionLink = url(this_page) %}
+    {% endif %}
+
+    <form id="changeRankForm" method="post" action="{{ actionLink }}">
+
+    </form>
+
+
+    <div class="c-contentsArea__cols">
+        <div class="c-contentsArea__primaryCol">
+            <div class="c-primaryCol">
+                <div class="card rounded border-0 mb-4">
+                    {% if productRecordsPlus|length <= 0 %}
+                        <div class="card-header">
+                            {{ 'sort_product.header.no_product'|trans }}
+                        </div>
+
+                    {% else %}
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col-6">
+                                    {{ 'sort_product.header'|trans }}
+                                </div>
+
+                                <!-- 表示件数指定 -->
+                                <div class="col-6 text-right">
+                                    <div class="d-inline-block mr-2">
+                                        <div>
+                                            <select class="custom-select" onchange="location = this.value;">
+                                                {% for pageMax in pageMaxis %}
+                                                    {% set pageLink = path( this_page, { 'page_no': 1, 'page_count': pageMax.name}) %}
+                                                    {% if categoryId is not null %}
+                                                        {% set pageLink = path( this_page_by, { 'categoryId': categoryId, 'page_no': 1, 'page_count': pageMax.name}) %}
+                                                    {% endif %}
+                                                    <option {% if pageMax.name == page_count %}selected="selected"{% endif %}
+                                                            value="{{ pageLink }}">
+                                                        {{ 'admin.common.count'|trans({ '%count%': pageMax.name }) }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div><!-- /.box-header -->
+
+                        <div class="card-body p-0">
+                            <div class="card rounded border-0 mb-2">
+                                <ul class="list-group list-group-flush sortable-container">
+                                    <!-- フロー表示 商品情報１行ずつ表示 ここから -->
+                                    {% for Product in productRecordsPlus %}
+                                        <li class="list-group-item sortable-item" data-id="{{ Product.productId }}" data-sort-no="{{ Product.sort_no }}" >
+                                            <div class="row justify-content-around mode-view">
+                                                <div class="col-auto d-flex align-items-center">
+                                                    <i class="fa fa-bars text-ec-gray"></i>
+                                                </div>
+
+                                                <!-- 商品並び替えツール ここから -->
+                                                <!-- 並び順番号 -->
+                                                {% set this_no = loop.index + page_count * (page_no - 1) %}
+                                                <div class="col-auto d-flex align-items-center">
+                                                    {{ this_no }}
+                                                    {#{{ loop.index + page_count * (page_no - 1) }}#}
+                                                </div>
+
+                                                <!-- 並び順の指定セレクトボックス と 変更ボタン -->
+                                                <div class="col-auto d-flex align-items-center">
+                                                    <select id="select_box_{{ this_no }}" class="form-inline padT07 form-control">
+                                                        {% for rank,no in choices %}
+                                                            {% if no == this_no %}
+                                                                {#<option value="{{ no }}">--</option>#}
+                                                                <option value="{{ no }}">{{ no }}</option>
+                                                            {% else %}
+                                                                <option value="{{ no }}">{{ no }}</option>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </select>
+                                                    <button type="button" id="changeRank" class="btn btn-ec-conversion"
+                                                            onclick="clickMoveRankButton('{{ Product.sort_no }}','{{ this_no }}')" >{{ 'sort_product.move.button'|trans }}</button>
+                                                </div>
+
+                                                <!-- 商品並び替えツール ここまで -->
+
+                                                <!-- 商品画像 -->
+                                                <div id="result_list__image--{{ Product.productRecord.id }}" class="col-auto d-flex align-items-center">
+                                                    <a href="{{ url('admin_product_product_edit', { id : Product.productRecord.id }) }}">
+                                                        <img src="{{ asset(Product.productRecord.mainFileName|no_image_product, 'save_image') }}" style="max-width: 100px" />
+                                                    </a>
+                                                </div>
+
+                                                <!-- 商品名 -->
+                                                <div id="sortable_list__item_body--{{ Product.sort_no }}" class="col d-flex align-items-center">
+                                                    [{{ Product.productId }}]
+                                                    &nbsp;{{ Product.productRecord.name }}
+                                                    [{{ Product.sort_no }}]
+                                                </div>
+
+                                            </div>
+
+                                        </li>
+                                    {% endfor %}
+                                    <!-- フロー表示 商品情報１行ずつ表示 ここまで -->
+                                </ul>
+                                {#</table>#}
+                            </div>
+                        </div>
+                        <div class="row justify-content-md-center mb-4">
+                            <!-- ページャー ここまで -->
+                            {% if pagination.totalItemCount > 0 %}
+                                {% if categoryId is not null %}
+                                    {% include "SortProduct/Resource/template/admin/pager_custom.twig" with { 'pages' : pagination.paginationData, 'routes' : this_page_by , 'categoryId' : categoryId } %}
+                                {% else %}
+                                    {% include "@admin/pager.twig" with { 'pages' : pagination.paginationData, 'routes' : this_page } %}
+                                {% endif %}
+                            {% endif %}
+                            <!-- ページャー ここまで -->
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="c-contentsArea__secondaryCol">
+            <div class="c-secondaryCol">
+                <div class="card rounded border-0 mb-4">
+                    <!-- カテゴリーツリー表示 ここから -->
+                    {% if categoryId is null %}
+                        {% include "SortProduct/Resource/template/admin/block/block_category_tree.twig" with {'categoryId': 0} only %}
+                    {% else %}
+                        {% include "SortProduct/Resource/template/admin/block/block_category_tree.twig" with {'categoryId': categoryId} only %}
+                    {% endif %}
+                    <!-- カテゴリーツリー表示 ここまで -->
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

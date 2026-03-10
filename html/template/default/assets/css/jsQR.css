@@ -1,0 +1,26 @@
+/* CSS */
+body{
+	background-color: black;
+}
+
+h1{
+	text-align: center;
+	color:white;
+}
+
+#wrapper{
+	margin: 0px auto 0px auto;
+	width: 320px; height: auto;
+}
+
+#msg{
+	margin: 0px; padding: 10px;
+	background-color: lightgray;
+	text-align: center;
+}
+
+#canvas{
+	width: 100%; height: auto;
+	background-color: white;
+}
+

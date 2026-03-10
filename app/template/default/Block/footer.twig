@@ -1,0 +1,121 @@
+{% block stylesheet %}
+    <style>
+    .site-footer {
+        background: #fff;
+        text-align: center;
+        padding: 30px 20px;
+        font-family: "Noto Sans TC", sans-serif;
+        color: #333;
+    }
+
+    .footer-links {
+        display: flex;
+        justify-content: center;
+        gap: 25px;
+        margin-bottom: 20px;
+        padding: 0;
+        list-style: none;
+    }
+    .footer-links a {
+        text-decoration: none;
+        color: #000;
+        font-size: 16px;
+    }
+
+    .footer-social {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        margin: 20px 0;
+    }
+    .icon-circle {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .icon-circle svg {
+        width: 24px;
+        height: 24px;
+        fill: #fff;
+    }
+
+    .footer-bottom-links {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px 40px;
+        margin: 20px 0;
+        padding: 0;
+        list-style: none;
+    }
+    .footer-bottom-links a {
+        text-decoration: none;
+        color: #555;
+        font-size: 14px;
+    }
+
+    .copyright {
+        font-size: 13px;
+        color: #777;
+        margin-top: 10px;
+    }
+    </style>
+{% endblock %}
+<div class="ec-footerRole">
+    <div class="footer-top">
+        <ul class="footer-links">
+            <li><a href="/mypage/favorite">我的最愛</a></li>
+            <li><a href="/mypage">訂單紀錄</a></li>
+            <li><a href="#">最近瀏覽商品</a></li>
+            <li><a href="/mypage/change">帳戶服務</a></li>
+        </ul>
+    </div>
+
+    <div class="footer-social">
+        <a href="https://www.facebook.com/share/1BAgQwMLEE/?mibextid=wwXIfr"><div class="icon-circle">
+            <img src="{{asset('assets/img/facebook.svg','user_data')}}" alt="Facebook">
+        </div></a>
+
+        <a href="https://www.instagram.com/kyogoku_tw?igsh=aGI0a2QyeWN3MWZ1&utm_source=qr"><div class="icon-circle">
+            <img src="{{asset('assets/img/instagram.svg','user_data')}}" alt="Instagram">
+        </div></a>
+
+        <a href="https://youtube.com/channel/UCQ9Te_FDc-Itq-UhSdqeCgg?si=qTrxFo8DN-nkJSpW"><div class="icon-circle">
+            <img src="{{asset('assets/img/youtube.svg','user_data')}}" alt="YouTube">
+        </div></a>
+
+        <a href="https://lin.ee/f4FAiSw"><div class="icon-circle">
+            <img src="{{asset('assets/img/line.svg','user_data')}}" alt="Line">
+        </div></a>
+
+        <a href="https://www.threads.com/@kyogoku_tw?igshid=NTc4MTIwNjQ2YQ=="><div class="icon-circle">
+            <img src="{{asset('assets/img/threads.svg','user_data')}}" alt="Twitter">
+        </div></a>
+    </div>
+
+    <div class="footer-bottom">
+        <ul class="footer-bottom-links">
+            <li><a href="{{ url('user_data', {'route': 'aboutetc'}) }}">付款・商品出貨・退貨說明</a></li>
+            <li><a href="{{ url('help_agreement') }}">使用本網站前請先閱讀</a></li>
+            <li><a href="{{ url('help_privacy') }}">隱私權政策</a></li>
+            <li><a href="{{ url('help_tradelaw') }}">依照特定商業交易法之表示</a></li>
+            <li><a href="{{ url('contact') }}">聯絡我們</a></li>
+        </ul>
+        <p class="copyright">
+            Copyright (C) KYOGOKU PROFESSIONAL All Rights Reserved.
+        </p>
+    </div>
+</div>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-PQWEL7SPF6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-PQWEL7SPF6');
+</script>

@@ -1,0 +1,158 @@
+{% block main %}
+
+    <link rel="stylesheet" href="{{ asset('assets/css/hsd_swiper.min.css') }}">
+    <script src="{{ asset('assets/js/hsd_swiper.min.js') }}"></script>
+
+    <style type="text/css">
+        .hsd_product_img_rp {
+            width: 100%;
+        }
+
+        .hsd_flex_area_rp {
+            display: block;
+        }
+
+        .hsd_h4 {
+            padding-left: 15px;
+        }
+    </style>
+    <div class="ec-productRole">
+        {% if rp_count > 0 %}
+            <h4 class="hsd_h4">{{ title }}</h4>
+        {% endif %}
+
+        {% set lpc = 1 %}
+
+        <div class="hsd_flex_area_rp">
+            {% if rp_count > 0 and show_type == 'normal' %}
+                {% for reldat in hsd_related_product %}
+                    {% if max_count >= lpc %}
+                        <div class="col-sm-3 col-xs-6">
+                            <div class="pickup_item">
+                                <a href="{{ url('product_detail', {'id': reldat.id}) }}">
+                                    <div class="item_photo"><img src="{{ asset('', 'save_image') }}{{ reldat.file_name | no_image_product }}" class="hsd_product_img_rp" style="width: 100%;" /></div>
+                                    <dd class="item_comment">{{ reldat.description_detail|length > 30 ? reldat.description_detail[:30] ~ '...' : reldat.description_detail }}</dd>
+                                    <dl>
+                                        <dt class="item_name">{{reldat.name}}</dt>
+                                        {% if show_price == 'show_price' %}
+                                            {% if reldat.min_price == reldat.max_price %}
+                                                <dd class="item_price">{{ reldat.min_price|number_format(0, '.', ',') }}TWD</dd>
+                                            {% else %}
+                                                <dd class="item_price">{{ reldat.min_price|number_format(0, '.', ',') }}TWD 〜 {{ reldat.max_price|number_format(0, '.', ',') }}TWD</dd>
+                                            {% endif %}
+                                        {% endif %}
+                                    </dl>
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% set lpc = lpc + 1 %}
+                {% endfor %}
+            {% else %}
+                {%  if rp_count > 0 %}
+                    <div class="swiper-container">
+                        <div class="swiper-wrapper">
+                            {% for reldat in hsd_related_product %}
+                                {% if max_count >= lpc %}
+                                    <div class="swiper-slide">
+                                        <div class="pickup_item">
+                                            <a href="{{ url('product_detail', {'id': reldat.id}) }}">
+                                                <div class="item_photo"><img src="{{ asset('', 'save_image') }}{{ reldat.file_name | no_image_product }}" style="width: 100%;" /></div>
+                                                <dd class="item_comment">{{ reldat.description_detail|length > 30 ? reldat.description_detail[:30] ~ '...' : reldat.description_detail }}</dd>
+                                                <dl>
+                                                    <dt class="item_name">{{reldat.name}}</dt>
+                                                    {% if show_price == 'show_price' %}
+                                                        {% if reldat.min_price == reldat.max_price %}
+                                                            <dd class="item_price">{{ reldat.min_price|number_format(0, '.', ',') }}TWD</dd>
+                                                        {% else %}
+                                                            <dd class="item_price">{{ reldat.min_price|number_format(0, '.', ',') }}TWD 〜 {{ reldat.max_price|number_format(0, '.', ',') }}TWD</dd>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                </dl>
+                                            </a>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                {% set lpc = lpc + 1 %}
+                            {% endfor %}
+                        </div>
+
+                        {% if pagination == 'true' %}
+                            <div class="swiper-pagination"></div>
+                        {% endif %}
+
+                        {% if navbuttons == 'true' %}
+                            <div class="swiper-button-prev"></div>
+                            <div class="swiper-button-next"></div>
+                        {% endif %}
+
+                    </div>
+                {%  endif %}
+            {% endif %}
+        </div>
+    </div>
+    {%  if rp_count > 0 %}
+        {% if show_type == 'flip' or show_type == 'cube' %}
+            <style>
+                .swiper-container {
+                    margin: 0 20px;
+                }
+            </style>
+        {% elseif show_type == 'coverflow' %}
+            <style>
+                .swiper-slide {
+                    background-position: center;
+                    background-size: cover;
+                    width: 200px;
+                }
+            </style>
+        {% endif %}
+    {% endif %}
+
+    <script>
+        var swiper = new Swiper('.swiper-container', {
+            pagination: '.swiper-pagination',
+            prevButton: '.swiper-button-prev',
+            nextButton: '.swiper-button-next',
+            paginationClickable: true,
+            {% if rp_count > 0 and showloop == 'true' %}
+            autoplay: 2500,
+            {% endif %}
+            {% if rp_count > 0 and show_type == 'per3' %}
+            slidesPerView: 3,
+            spaceBetween: 20,
+            {% elseif rp_count > 0 and show_type == 'per4' %}
+            slidesPerView: 4,
+            spaceBetween: 20,
+            {% elseif rp_count > 0 and show_type == 'per5' %}
+            slidesPerView: 5,
+            spaceBetween: 20,
+            {% elseif rp_count > 0 and show_type == 'flip' %}
+            effect: 'flip',
+            grabCursor: true,
+            {% elseif rp_count > 0 and show_type == 'cube' %}
+            effect: 'cube',
+            grabCursor: true,
+            cube: {
+                shadow: true,
+                slideShadows: true,
+                shadowOffset: 20,
+                shadowScale: 0.94
+            },
+            {% elseif rp_count > 0 and show_type == 'coverflow' %}
+            effect: 'coverflow',
+            grabCursor: true,
+            centeredSlides: true,
+            slidesPerView: 'auto',
+            coverflow: {
+                rotate: 50,
+                stretch: 0,
+                depth: 100,
+                modifier: 1,
+                slideShadows : true
+            },
+            {% endif %}
+        });
+    </script>
+
+{% endblock %}

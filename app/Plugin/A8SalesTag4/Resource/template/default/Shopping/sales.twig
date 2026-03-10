@@ -1,0 +1,24 @@
+<span id="a8sales"></span>
+<script src="//statics.a8.net/a8sales/a8sales.js"></script>
+<script>
+{% set pid_list = pids|split(',') %}
+{% for pid in pid_list %}
+  {% set totalPrice = 0 %}
+  a8sales({
+    "pid": "{{ pid }}",
+    "order_number": "{{ Order.order_no }}",
+    "currency": "{{ Order.currency_code }}",
+    "items": [
+    {% for ProductOrderItem in Order.ProductOrderItems %}
+      {% set totalPrice = totalPrice + (ProductOrderItem.price * ProductOrderItem.quantity) %}
+      {
+        "code": "{{ ProductOrderItem.product_code }}",
+        "price": {{ ProductOrderItem.price }},
+        "quantity": {{ ProductOrderItem.quantity }}
+      },
+    {% endfor %}
+    ],
+    "total_price": {{ totalPrice }}
+  });
+{% endfor %}
+</script>

@@ -1,0 +1,23 @@
+<script>
+    $(function() {
+		$('.ec-orderPayment .ec-radio').before($('#add_shopping_index_area'));
+    });
+</script>
+
+<div id="add_shopping_index_area" style="padding-bottom:10px;">
+	{% for key, child in form.Payment %}
+		{% set Payment = form.Payment.vars.choices[key].data %}
+		{% if Payment.site_ex is not null %}
+			<p style="border-bottom:1px dotted #999;padding-bottom:10px;margin-bottom:10px;">
+				<span class="text-primary"><i class="fas fa-caret-right"></i> {{ Payment.method }}</span><br />{{ Payment.site_ex|raw|nl2br }}
+			</p>
+		{% endif %}
+	{% endfor %}
+	{% if Order.Payment %}
+	<div style="display:none;">
+		<fieldset form="shopping-form">
+			<textarea id="shopping_order_mail_ex" name="_shopping_order[mail_ex]" class="form-control" rows="6">{{ Order.Payment.mail_ex }}</textarea>
+		</fieldset>
+	</div>
+	{% endif %}
+</div>

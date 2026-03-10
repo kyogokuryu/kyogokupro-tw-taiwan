@@ -1,0 +1,34 @@
+{% extends 'default_frame.twig' %}
+
+{% block main %}
+
+	<article id="news">
+		<section>
+			<h1 class="page-area-title">NEWS</h1>
+			{% set category = '' %}
+			{% set page = '' %}
+			{% set queryParams = app.request.query.all %}
+            {% if queryParams.category is defined %}
+    			{% set category = queryParams['category'] %}
+            {% endif %}
+            {% if queryParams.page is defined %}
+    			{% set page = queryParams['page'] %}
+            {% endif %}
+			<div id="category_menu">
+				<ul class="menubox">
+					<li><a href="/user_data/news?category=Seminar" {% if category == 'Seminar' %}class="active"{% endif %}><span>Seminar<span></a></li>
+					<li><a href="/user_data/news?category=Media" {% if category == 'Media' %}class="active"{% endif %}><span>Media<span></a></li>
+					<li><a href="/user_data/news?category=Information" {% if category == 'Information' %}class="active"{% endif %}><span>Information<span></a></li>
+					<li><a href="/user_data/news?category=Kyogoku Artist" {% if category == 'Kyogoku Artist' %}class="active"{% endif %}><span>Kyogoku Artist<span></a></li>
+					<li><a href="/user_data/news?category=Colour Shampoo" {% if category == 'Colour Shampoo' %}class="active"{% endif %}><span>Colour Shampoo<span></a></li>
+					<li><a href="/user_data/news?category=Colour Recipe" {% if category == 'Colour Recipe' %}class="active"{% endif %}><span>Colour Recipe<span></a></li>
+					<li><a href="/user_data/news?category=Blog" {% if category == 'Blog' %}class="active"{% endif %}><span>Blog<span></a></li>
+				</ul>
+			</div>
+
+            {{ get_newslist(category,page) }}
+
+		</section>
+	</article>
+
+{% endblock %}

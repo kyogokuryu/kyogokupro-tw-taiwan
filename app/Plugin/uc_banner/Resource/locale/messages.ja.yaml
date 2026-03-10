@@ -1,0 +1,27 @@
+# flash messages
+uc_banner.admin.setting.save.complete: 设置已保存。
+uc_banner.admin.setting.delete.complete: 数据已删除。
+
+# config
+uc_banner.admin.config.title: 横幅广告
+uc_banner.admin.config.config_title: 插件设置
+uc_banner.admin.config.edit_title: 编辑图片
+uc_banner.admin.config.image_title: 图片设置
+uc_banner.admin.config.no_image: 尚未上传图片。
+uc_banner.admin.config.conversion.save: 保存
+uc_banner.admin.config.conversion.add: 添加
+uc_banner.admin.config.conversion.back: 返回插件列表
+uc_banner.admin.config.conversion.top: 图片列表
+
+uc_banner.admin.config.label_title: 标题
+uc_banner.admin.config.label_display_title: 是否显示标题
+uc_banner.admin.config.label_display_description: 是否显示描述
+uc_banner.admin.config.label_img_url: 图片链接（必填）
+uc_banner.admin.config.label_img_alt: 图片Alt
+uc_banner.admin.config.label_img_description: 图片描述（可包含HTML）
+uc_banner.admin.config.label_link_url: 图片链接
+uc_banner.admin.config.label_column_xs: 列数（手机）
+uc_banner.admin.config.label_column_lg: 列数（电脑）
+
+## messages
+uc_banner.admin.config.message_path: user_data/~

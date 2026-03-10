@@ -1,0 +1,19 @@
+<script>
+
+    window.addEventListener('DOMContentLoaded', function () {
+
+        $('.kokokara_select_item_ex').each(function () {
+
+            var quantityName = $(this).data('quantity');
+            $('#' + quantityName).addClass('d-none');
+            $('#' + quantityName).after('<div class="col-4">' + $('#' + quantityName).val() + '</div>');
+
+            var delModalName = $(this).data('delmodal');
+            var $delModal = $('#' + delModalName);
+            var $targetTd = $delModal.parents('td');
+            var $target = $targetTd.find('a:first');
+            $target.addClass('disabled');
+        });
+    });
+
+</script>

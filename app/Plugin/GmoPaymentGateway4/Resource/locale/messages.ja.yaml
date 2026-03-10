@@ -1,0 +1,571 @@
+gmo_payment_gateway.com.yen: 圓
+gmo_payment_gateway.com.required: 必需
+gmo_payment_gateway.com.payname.credit: 信用卡付款
+gmo_payment_gateway.com.payname.cvs: 超商付款
+gmo_payment_gateway.com.payname.cvs.lawson: 羅森
+gmo_payment_gateway.com.payname.cvs.familymart: 全家
+gmo_payment_gateway.com.payname.cvs.ministop: 全家
+gmo_payment_gateway.com.payname.cvs.daily: 每日頂好
+gmo_payment_gateway.com.payname.cvs.seveneleven: 7-ELEVEN
+gmo_payment_gateway.com.payname.cvs.seicomart: 統一超商
+gmo_payment_gateway.com.payname.payeasy: Pay-easy付款
+gmo_payment_gateway.com.payname.payeasy.net: Pay-easy付款(網路銀行)
+gmo_payment_gateway.com.payname.payeasy.atm: Pay-easy付款(銀行ATM)
+gmo_payment_gateway.com.payname.carrier.au: au簡單付款
+gmo_payment_gateway.com.payname.carrier.docomo: Docomo手機付款
+gmo_payment_gateway.com.payname.carrier.softbank: Softbank整合付款
+gmo_payment_gateway.com.payname.rakuten_pay: Rakuten Pay
+gmo_payment_gateway.com.payname.unknown: 未知付款
+gmo_payment_gateway.com.error_file.error1: 讀取錯誤定義文件失敗。
+
+#共通（一般）
+#共通（管理）
+gmo_payment_gateway.admin.save: 儲存
+gmo_payment_gateway.admin.use: 使用
+gmo_payment_gateway.admin.notuse: 不使用
+gmo_payment_gateway.admin.permit: 允許
+gmo_payment_gateway.admin.notpermit: 不允許
+gmo_payment_gateway.admin.save.success: 儲存成功
+gmo_payment_gateway.admin.save.failed: 儲存失敗
+
+#管理 nav
+gmo_payment_gateway.admin.nav.payment_list: 付款狀況列表
+
+#插件設定畫面
+gmo_payment_gateway.admin.config.title: PG多支付服務付款插件
+gmo_payment_gateway.admin.config.sub_title: ''
+gmo_payment_gateway.admin.config.note1: 要使用PG多支付服務付款插件，您需要與Gmo支付閘道有限公司簽約。
+gmo_payment_gateway.admin.config.note2: 如果您有興趣，您可以通過以下網址申請測試環境，以獲得用於測試運行所需的帳戶信息。
+gmo_payment_gateway.admin.config.note_btn1: 關於PG多支付服務
+gmo_payment_gateway.admin.config.note_btn2: 關於測試帳戶
+gmo_payment_gateway.admin.config.header1: 設定
+gmo_payment_gateway.admin.config.header2: 其他資訊
+gmo_payment_gateway.admin.config.col1: 連接目標
+gmo_payment_gateway.admin.config.col2: 網站ID
+gmo_payment_gateway.admin.config.col3: 網站密碼
+gmo_payment_gateway.admin.config.col4: 商店ID
+gmo_payment_gateway.admin.config.col5: 商店密碼
+gmo_payment_gateway.admin.config.col6: 啟用付款方法
+gmo_payment_gateway.admin.config.col7: 註冊信用卡信息
+gmo_payment_gateway.admin.config.col8: 連接目標伺服器URL
+gmo_payment_gateway.admin.config.col9: 管理介面伺服器URL
+gmo_payment_gateway.admin.config.col1.label1: 測試環境
+gmo_payment_gateway.admin.config.col1.label2: 正式環境
+gmo_payment_gateway.admin.config.col1.label3: 輸入指定
+gmo_payment_gateway.admin.config.col7.label1: 不使用
+gmo_payment_gateway.admin.config.col7.label2: 使用
+gmo_payment_gateway.admin.config.note_recv: 請登入商店管理介面，設置結果通知程式URL，位於“商店管理”選項卡下的“郵件/結果通知設置”選項卡中。
+gmo_payment_gateway.admin.config.other.col1: 結果通知程式URL
+gmo_payment_gateway.admin.config.other.col2: 網站管理
+gmo_payment_gateway.admin.config.other.col3: 商店管理
+gmo_payment_gateway.admin.config.other.btn2: 網站管理介面
+gmo_payment_gateway.admin.config.other.btn3: 商店管理介面
+gmo_payment_gateway.admin.config.back: 插件列表
+gmo_payment_gateway.admin.config.error1: 請設置管理介面伺服器URL。
+gmo_payment_gateway.admin.config.error2: 請設置網站ID。
+gmo_payment_gateway.admin.config.error3: 請設置商店ID。
+#支付方式設定畫面
+#通用
+gmo_payment_gateway.admin.payment_edit.header: GMO支付設定
+gmo_payment_gateway.admin.payment_edit.jobcd.capture: 即時銷售
+gmo_payment_gateway.admin.payment_edit.jobcd.auth: 暫時銷售
+gmo_payment_gateway.admin.payment_edit.jobcd.sauth: 簡易授權
+gmo_payment_gateway.admin.payment_edit.jobcd.check: 有效性檢查
+gmo_payment_gateway.admin.payment_edit.jobcd.note1: 暫時銷售(AUTH)…保留信用卡額度並取得授權號碼。※暫時銷售的數據保留期限為90天。未執行實際銷售處理將不會生成銷售數據至信用卡公司。
+gmo_payment_gateway.admin.payment_edit.jobcd.note2: 即時銷售(CAPTURE)…保留信用卡額度並取得授權號碼，然後向信用卡公司發送銷售數據請求。(相當於暫時銷售+實際銷售的處理。)
+gmo_payment_gateway.admin.payment_edit.order_mail_title1: 有關付款的事項
+
+#信用卡
+gmo_payment_gateway.admin.payment_edit.credit.col1: 處理類別
+gmo_payment_gateway.admin.payment_edit.credit.col2: 付款類型
+gmo_payment_gateway.admin.payment_edit.credit.col3: 安全碼
+gmo_payment_gateway.admin.payment_edit.credit.col4: 必須輸入安全碼
+gmo_payment_gateway.admin.payment_edit.credit.col5: 本人認證服務(3D安全)
+gmo_payment_gateway.admin.payment_edit.credit.col6: 3D安全顯示店名
+gmo_payment_gateway.admin.payment_edit.credit.col7: 輸入次數限制
+gmo_payment_gateway.admin.payment_edit.credit.col8: 輸入次數限制檢測時間
+gmo_payment_gateway.admin.payment_edit.credit.col9: 輸入次數限制錯誤上限次數
+gmo_payment_gateway.admin.payment_edit.credit.col10: 輸入次數限制鎖定時間
+gmo_payment_gateway.admin.payment_edit.credit.col11: 付款完成通知標題
+gmo_payment_gateway.admin.payment_edit.credit.col12: 付款完成通知內文
+gmo_payment_gateway.admin.payment_edit.credit.col13: 自由項目1
+gmo_payment_gateway.admin.payment_edit.credit.col14: 自由項目2
+gmo_payment_gateway.admin.payment_edit.credit.method1: 一次付清
+gmo_payment_gateway.admin.payment_edit.credit.method2: 分期付款2次
+gmo_payment_gateway.admin.payment_edit.credit.method3: 分期付款3次
+gmo_payment_gateway.admin.payment_edit.credit.method4: 分期付款4次
+gmo_payment_gateway.admin.payment_edit.credit.method5: 分期付款5次
+gmo_payment_gateway.admin.payment_edit.credit.method6: 分期付款6次
+gmo_payment_gateway.admin.payment_edit.credit.method7: 分期付款7次
+gmo_payment_gateway.admin.payment_edit.credit.method8: 分期付款8次
+gmo_payment_gateway.admin.payment_edit.credit.method9: 分期付款9次
+gmo_payment_gateway.admin.payment_edit.credit.method10: 分期付款10次
+gmo_payment_gateway.admin.payment_edit.credit.method11: 分期付款11次
+gmo_payment_gateway.admin.payment_edit.credit.method12: 分期付款12次
+gmo_payment_gateway.admin.payment_edit.credit.method13: 分期付款13次
+gmo_payment_gateway.admin.payment_edit.credit.method14: 分期付款14次
+gmo_payment_gateway.admin.payment_edit.credit.method15: 分期付款15次
+gmo_payment_gateway.admin.payment_edit.credit.method16: 分期付款16次
+gmo_payment_gateway.admin.payment_edit.credit.method17: 分期付款17次
+gmo_payment_gateway.admin.payment_edit.credit.method18: 分期付款18次
+gmo_payment_gateway.admin.payment_edit.credit.method19: 分期付款19次
+gmo_payment_gateway.admin.payment_edit.credit.method20: 分期付款20次
+gmo_payment_gateway.admin.payment_edit.credit.method21: 分期付款21次
+gmo_payment_gateway.admin.payment_edit.credit.method22: 分期付款22次
+gmo_payment_gateway.admin.payment_edit.credit.method23: 分期付款23次
+gmo_payment_gateway.admin.payment_edit.credit.method24: 分期付款24次
+gmo_payment_gateway.admin.payment_edit.credit.method26: 分期付款26次
+gmo_payment_gateway.admin.payment_edit.credit.method30: 分期付款30次
+gmo_payment_gateway.admin.payment_edit.credit.method32: 分期付款32次
+gmo_payment_gateway.admin.payment_edit.credit.method34: 分期付款34次
+gmo_payment_gateway.admin.payment_edit.credit.method36: 分期付款36次
+gmo_payment_gateway.admin.payment_edit.credit.method37: 分期付款37次
+gmo_payment_gateway.admin.payment_edit.credit.method40: 分期付款40次
+gmo_payment_gateway.admin.payment_edit.credit.method42: 分期付款42次
+gmo_payment_gateway.admin.payment_edit.credit.method48: 分期付款48次
+gmo_payment_gateway.admin.payment_edit.credit.method50: 分期付款50次
+gmo_payment_gateway.admin.payment_edit.credit.method54: 分期付款54次
+gmo_payment_gateway.admin.payment_edit.credit.method60: 分期付款60次
+gmo_payment_gateway.admin.payment_edit.credit.method72: 分期付款72次
+gmo_payment_gateway.admin.payment_edit.credit.method84: 分期付款84次
+gmo_payment_gateway.admin.payment_edit.credit.method_1b: 獎金一次付清
+gmo_payment_gateway.admin.payment_edit.credit.method_2b: 獎金分期付款2次
+gmo_payment_gateway.admin.payment_edit.credit.method_r: 週期付款
+gmo_payment_gateway.admin.payment_edit.credit.credit_pay_methods.note1: ※請選擇要啟用的付款類型。
+gmo_payment_gateway.admin.payment_edit.credit.credit_pay_methods.note2: ※請在PG多支付服務的商店管理畫面上確認信用卡公司的契約狀況，然後設定。
+gmo_payment_gateway.admin.payment_edit.credit.use_securitycd.note1: ※请输入卡片背面的3〜4位数字。
+gmo_payment_gateway.admin.payment_edit.credit.TdFlag.note1: ※若要使用本人认证服务，需要SSL环境。
+gmo_payment_gateway.admin.payment_edit.credit.TdFlag.note2: ※对于移动电话（包括未来型手机），将执行常规结算。
+gmo_payment_gateway.admin.payment_edit.credit.TdTenantName.caution: （请输入最多18个半角英数字字符）
+gmo_payment_gateway.admin.payment_edit.credit.TdTenantName.note1: ※如果不使用本人认证服务，则无需输入。
+gmo_payment_gateway.admin.payment_edit.credit.TdTenantName.note2: 设置的商店名称将显示在本人认证服务的密码输入画面上。
+gmo_payment_gateway.admin.payment_edit.credit.TdTenantName.note3: 如果设置为日语（特别是全角），可能会因字符组合而导致乱码或错误，无法进行结算。
+gmo_payment_gateway.admin.payment_edit.credit.TdTenantName.note4: 对于3D安全显示商店名称，建议尽可能使用半角字符进行设置，并进行充分验证。
+gmo_payment_gateway.admin.payment_edit.credit.order_mail_title1.caution: （最多50个字符）
+gmo_payment_gateway.admin.payment_edit.credit.order_mail_title1.note1: 如果要在订单完成页面和订单完成邮件中放置有关付款的说明文本，请输入标题和正文。（如果两者都没有输入，则无效。）
+gmo_payment_gateway.admin.payment_edit.credit.order_mail_body1.caution: （最多1,000个字符）
+gmo_payment_gateway.admin.payment_edit.credit.ClientField1.caution: （最多100个字符）
+gmo_payment_gateway.admin.payment_edit.credit.ClientField2.caution: （最多100个字符）
+
+gmo_payment_gateway.admin.payment_edit.cvs.col1: 选择便利店
+gmo_payment_gateway.admin.payment_edit.cvs.col2: 支付期限
+gmo_payment_gateway.admin.payment_edit.cvs.col2.day: 天
+gmo_payment_gateway.admin.payment_edit.cvs.col3: PG邮件发送
+gmo_payment_gateway.admin.payment_edit.cvs.col4: 便利店单位PG邮件发送与否
+gmo_payment_gateway.admin.payment_edit.cvs.col5: POS收银机显示栏1（店名）
+gmo_payment_gateway.admin.payment_edit.cvs.col6: POS收银机显示栏2
+gmo_payment_gateway.admin.payment_edit.cvs.col7: POS收银机显示栏3
+gmo_payment_gateway.admin.payment_edit.cvs.col8: POS收银机显示栏4
+gmo_payment_gateway.admin.payment_edit.cvs.col9: POS收银机显示栏5
+gmo_payment_gateway.admin.payment_edit.cvs.col10: POS收银机显示栏6
+gmo_payment_gateway.admin.payment_edit.cvs.col11: POS收银机显示栏7
+gmo_payment_gateway.admin.payment_edit.cvs.col12: POS收银机显示栏8
+gmo_payment_gateway.admin.payment_edit.cvs.col13: 收据显示栏1
+gmo_payment_gateway.admin.payment_edit.cvs.col14: 收据显示栏2
+gmo_payment_gateway.admin.payment_edit.cvs.col15: 收据显示栏3
+gmo_payment_gateway.admin.payment_edit.cvs.col16: 收据显示栏4
+gmo_payment_gateway.admin.payment_edit.cvs.col17: 收据显示栏5
+gmo_payment_gateway.admin.payment_edit.cvs.col18: 收据显示栏6
+gmo_payment_gateway.admin.payment_edit.cvs.col19: 收据显示栏7
+gmo_payment_gateway.admin.payment_edit.cvs.col20: 收据显示栏8
+gmo_payment_gateway.admin.payment_edit.cvs.col21: 收据显示栏9
+gmo_payment_gateway.admin.payment_edit.cvs.col22: 收据显示栏10
+gmo_payment_gateway.admin.payment_edit.cvs.col23: 联系方式
+gmo_payment_gateway.admin.payment_edit.cvs.col24: 联系电话
+gmo_payment_gateway.admin.payment_edit.cvs.col25: 接受时间
+gmo_payment_gateway.admin.payment_edit.cvs.col26: 结算完成通知标题
+gmo_payment_gateway.admin.payment_edit.cvs.col27: 结算完成通知正文
+gmo_payment_gateway.admin.payment_edit.cvs.col28: 自由项1
+gmo_payment_gateway.admin.payment_edit.cvs.col29: 自由项2
+gmo_payment_gateway.admin.payment_edit.cvs.conveni.note1: 请选择可用的便利店。
+gmo_payment_gateway.admin.payment_edit.cvs.payment_term_day.caution: （请用半角数字输入）
+gmo_payment_gateway.admin.payment_edit.cvs.payment_term_day.note1: ※ 省略时，将按照商店信息中设置的支付期限进行处理。
+gmo_payment_gateway.admin.payment_edit.cvs.payment_term_day.validate1: ※ 支付期限最多可设置为30天。
+gmo_payment_gateway.admin.payment_edit.cvs.enable_mail.note1: ※ 设置是否在结算时从电子商务网站和结算服务器发送邮件。
+gmo_payment_gateway.admin.payment_edit.cvs.enable_cvs_mails.note1: ※ 请选择要发送邮件的便利店。
+gmo_payment_gateway.admin.payment_edit.cvs.enable_cvs_mails.note2: 设置每家便利店在结算时是否从电子商务网站和结算服务器发送邮件。
+gmo_payment_gateway.admin.payment_edit.cvs.register_disp.caution: （最多16个字符）
+gmo_payment_gateway.admin.payment_edit.cvs.receipts_disp.caution: （最多16个字符）
+gmo_payment_gateway.admin.payment_edit.cvs.receipts_disp1.note1: 例）感谢您的使用。
+gmo_payment_gateway.admin.payment_edit.cvs.receipts_disp11.caution: （最多42个字符）
+gmo_payment_gateway.admin.payment_edit.cvs.receipts_disp12.caution: （请用半角数字输入）
+gmo_payment_gateway.admin.payment_edit.cvs.order_mail_title1.caution: （最多50个字符）
+gmo_payment_gateway.admin.payment_edit.cvs.order_mail_title1.note1: 如果要在订单完成页面和订单完成邮件中放置有关付款的说明文本，请输入标题和正文。（如果两者都没有输入，则无效。）
+gmo_payment_gateway.admin.payment_edit.cvs.order_mail_body1.caution: （最多1,000个字符）
+gmo_payment_gateway.admin.payment_edit.cvs.ClientField1.caution: （最多100个字符）
+gmo_payment_gateway.admin.payment_edit.cvs.ClientField2.caution: （最多100个字符）
+
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.col1: 支付期限
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.col1.day: 日
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.col2: PG邮件发送
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.col3: ATM显示栏1（店名）
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.col4: ATM显示栏2
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.col5: ATM显示栏3
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.col6: ATM显示栏4
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.col7: ATM显示栏5
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.col8: ATM显示栏6
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.col9: ATM显示栏7
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.col10: ATM显示栏8
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.col11: 使用明细显示栏1
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.col12: 使用明细显示栏2
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.col13: 使用明细显示栏3
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.col14: 使用明细显示栏4
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.col15: 使用明细显示栏5
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.col16: 使用明细显示栏6
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.col17: 使用明细显示栏7
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.col18: 使用明细显示栏8
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.col19: 使用明细显示栏9
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.col20: 使用明细显示栏10
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.col21: 联系方式
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.col22: 联系电话
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.col23: 联系时间
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.col24: 结算完成通知标题
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.col25: 结算完成通知正文
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.col26: 自由项目1
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.col27: 自由项目2
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.payment_term_day.caution: （请用半角数字输入）
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.payment_term_day.note1: ※ 省略时，将按照商店信息中设置的支付期限进行处理。
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.payment_term_day.validate1: ※ 支付期限最多可设置为30天。
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.enable_mail.note1: ※ 设置是否在结算时从电子商务网站和结算服务器发送邮件。
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.register_disp.caution: （最多16个字符）
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.receipts_disp.caution: （最多30个字符）
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.receipts_disp1.note1: 例）感谢您的使用。
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.receipts_disp11.caution: （最多42个字符）
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.receipts_disp12.caution: （请用半角数字输入）
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.order_mail_title1.caution: （最多50个字符）
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.order_mail_title1.note1: 如果要在订单完成页面和订单完成邮件中放置有关付款的说明文本，请输入标题和正文。（如果两者都没有输入，则无效。）
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.order_mail_body1.caution: （最多1,000个字符）
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.ClientField1.caution: （最多100个字符）
+gmo_payment_gateway.admin.payment_edit.payeasy_atm.ClientField2.caution: （最多100个字符）
+
+gmo_payment_gateway.admin.payment_edit.payeasy_net.col1: 支付期限
+gmo_payment_gateway.admin.payment_edit.payeasy_net.col1.day: 日
+gmo_payment_gateway.admin.payment_edit.payeasy_net.col2: PG邮件发送
+gmo_payment_gateway.admin.payment_edit.payeasy_net.col3: 使用明细显示栏1
+gmo_payment_gateway.admin.payment_edit.payeasy_net.col4: 使用明细显示栏2
+gmo_payment_gateway.admin.payment_edit.payeasy_net.col5: 使用明细显示栏3
+gmo_payment_gateway.admin.payment_edit.payeasy_net.col6: 使用明细显示栏4
+gmo_payment_gateway.admin.payment_edit.payeasy_net.col7: 使用明细显示栏5
+gmo_payment_gateway.admin.payment_edit.payeasy_net.col8: 使用明细显示栏6
+gmo_payment_gateway.admin.payment_edit.payeasy_net.col9: 使用明细显示栏7
+gmo_payment_gateway.admin.payment_edit.payeasy_net.col10: 使用明细显示栏8
+gmo_payment_gateway.admin.payment_edit.payeasy_net.col11: 使用明细显示栏9
+gmo_payment_gateway.admin.payment_edit.payeasy_net.col12: 使用明细显示栏10
+gmo_payment_gateway.admin.payment_edit.payeasy_net.col13: 联系方式
+gmo_payment_gateway.admin.payment_edit.payeasy_net.col14: 联系电话
+gmo_payment_gateway.admin.payment_edit.payeasy_net.col15: 联系时间
+gmo_payment_gateway.admin.payment_edit.payeasy_net.col16: 结算完成通知标题
+gmo_payment_gateway.admin.payment_edit.payeasy_net.col17: 结算完成通知正文
+gmo_payment_gateway.admin.payment_edit.payeasy_net.col18: 自由项目1
+gmo_payment_gateway.admin.payment_edit.payeasy_net.col19: 自由项目2
+gmo_payment_gateway.admin.payment_edit.payeasy_net.payment_term_day.caution: （请用半角数字输入）
+gmo_payment_gateway.admin.payment_edit.payeasy_net.payment_term_day.note1: ※ 省略时，将按照商店信息中设置的支付期限进行处理。
+gmo_payment_gateway.admin.payment_edit.payeasy_net.payment_term_day.validate1: ※ 支付期限最多可设置为30天。
+gmo_payment_gateway.admin.payment_edit.payeasy_net.enable_mail.note1: ※ 设置是否在结算时从电子商务网站和结算服务器发送邮件。
+gmo_payment_gateway.admin.payment_edit.payeasy_net.receipts_disp.caution: （最多30个字符）
+gmo_payment_gateway.admin.payment_edit.payeasy_net.receipts_disp1.note1: 例）感谢您的使用。
+gmo_payment_gateway.admin.payment_edit.payeasy_net.receipts_disp11.caution: （最多42个字符）
+gmo_payment_gateway.admin.payment_edit.payeasy_net.receipts_disp12.caution: （请用半角数字输入）
+gmo_payment_gateway.admin.payment_edit.payeasy_net.order_mail_title1.caution: （最多50个字符）
+gmo_payment_gateway.admin.payment_edit.payeasy_net.order_mail_title1.note1: 如果要在订单完成页面和订单完成邮件中放置有关付款的说明文本，请输入标题和正文。（如果两者都没有输入，则无效。）
+gmo_payment_gateway.admin.payment_edit.payeasy_net.order_mail_body1.caution: （最多1,000个字符）
+gmo_payment_gateway.admin.payment_edit.payeasy_net.ClientField1.caution: （最多100个字符）
+gmo_payment_gateway.admin.payment_edit.payeasy_net.ClientField2.caution: （最多100个字符）
+# auかんたん決済
+gmo_payment_gateway.admin.payment_edit.au.col1: 处理区分
+gmo_payment_gateway.admin.payment_edit.au.col2: 支付期限
+gmo_payment_gateway.admin.payment_edit.au.col2.sec: 秒
+gmo_payment_gateway.admin.payment_edit.au.col3: 服务名称（店名）
+gmo_payment_gateway.admin.payment_edit.au.col4: 显示电话号码
+gmo_payment_gateway.admin.payment_edit.au.col5: 结算完成通知标题
+gmo_payment_gateway.admin.payment_edit.au.col6: 结算完成通知正文
+gmo_payment_gateway.admin.payment_edit.au.col7: 自由项目1
+gmo_payment_gateway.admin.payment_edit.au.col8: 自由项目2
+gmo_payment_gateway.admin.payment_edit.au.payment_term_sec.caution: （请用半角数字输入）
+gmo_payment_gateway.admin.payment_edit.au.payment_term_sec.note1: ※ 省略时，将按照商店信息中设置的支付期限进行处理。
+gmo_payment_gateway.admin.payment_edit.au.payment_term_sec.validate1: ※ 支付期限最多可设置为86400秒。
+gmo_payment_gateway.admin.payment_edit.au.service_name.caution: （最多48个字符）
+gmo_payment_gateway.admin.payment_edit.au.service_tel.caution: （请用半角数字输入）
+gmo_payment_gateway.admin.payment_edit.au.order_mail_title1.caution: （最多50个字符）
+gmo_payment_gateway.admin.payment_edit.au.order_mail_title1.note1: 如果要在订单完成页面和订单完成邮件中放置有关付款的说明文本，请输入标题和正文。（如果两者都没有输入，则无效。）
+gmo_payment_gateway.admin.payment_edit.au.order_mail_body1.caution: （最多1,000个字符）
+gmo_payment_gateway.admin.payment_edit.au.ClientField1.caution: （最多100个字符）
+gmo_payment_gateway.admin.payment_edit.au.ClientField2.caution: （最多100个字符）
+gmo_payment_gateway.admin.payment_edit.au.action_error1: ※ 服务名称（店名）中含有被禁止的字符“%char%”。
+
+gmo_payment_gateway.admin.payment_edit.docomo.col1: 处理区分
+gmo_payment_gateway.admin.payment_edit.docomo.col2: 支付期限
+gmo_payment_gateway.admin.payment_edit.docomo.col2.sec: 秒
+gmo_payment_gateway.admin.payment_edit.docomo.col3: 电话号码显示项1
+gmo_payment_gateway.admin.payment_edit.docomo.col4: 电话号码显示项2
+gmo_payment_gateway.admin.payment_edit.docomo.col5: 结算完成通知标题
+gmo_payment_gateway.admin.payment_edit.docomo.col6: 结算完成通知正文
+gmo_payment_gateway.admin.payment_edit.docomo.col7: 自由项目1
+gmo_payment_gateway.admin.payment_edit.docomo.col8: 自由项目2
+gmo_payment_gateway.admin.payment_edit.docomo.payment_term_sec.caution: （请用半角数字输入）
+gmo_payment_gateway.admin.payment_edit.docomo.payment_term_sec.note1: ※ 省略时，将按照商店信息中设置的支付期限进行处理。
+gmo_payment_gateway.admin.payment_edit.docomo.payment_term_sec.validate1: ※ 支付期限最多可设置为86400秒。
+gmo_payment_gateway.admin.payment_edit.docomo.docomo_disp1.caution: （最多40个字符）
+gmo_payment_gateway.admin.payment_edit.docomo.docomo_disp2.caution: （最多40个字符）
+gmo_payment_gateway.admin.payment_edit.docomo.docomo_disp.note1: ※ 仅当使用sp mode时，以下内容将显示在NTT DoCoMo支付页面上。
+gmo_payment_gateway.admin.payment_edit.docomo.docomo_disp.note2: ・结算内容确认页面
+gmo_payment_gateway.admin.payment_edit.docomo.docomo_disp.note3: ・使用明细
+gmo_payment_gateway.admin.payment_edit.docomo.docomo_disp.note4: 请用于商品详细说明或向客户发送消息等用途。
+gmo_payment_gateway.admin.payment_edit.docomo.order_mail_title1.caution: （最多50个字符）
+gmo_payment_gateway.admin.payment_edit.docomo.order_mail_title1.note1: 如果要在订单完成页面和订单完成邮件中放置有关付款的说明文本，请输入标题和正文。（如果两者都没有输入，则无效。）
+gmo_payment_gateway.admin.payment_edit.docomo.order_mail_body1.caution: （最多1,000个字符）
+gmo_payment_gateway.admin.payment_edit.docomo.ClientField1.caution: （最多100个字符）
+gmo_payment_gateway.admin.payment_edit.docomo.ClientField2.caution: （最多100个字符）
+gmo_payment_gateway.admin.payment_edit.docomo.action_error1: ※ 电话号码显示项%no%中包含了被禁止的字符“%char%”。
+
+gmo_payment_gateway.admin.payment_edit.softbank.col1: 处理区分
+gmo_payment_gateway.admin.payment_edit.softbank.col2: 支付期限
+gmo_payment_gateway.admin.payment_edit.softbank.col2.sec: 秒
+gmo_payment_gateway.admin.payment_edit.softbank.col3: 结算完成通知标题
+gmo_payment_gateway.admin.payment_edit.softbank.col4: 结算完成通知正文
+gmo_payment_gateway.admin.payment_edit.softbank.col5: 自由项目1
+gmo_payment_gateway.admin.payment_edit.softbank.col6: 自由项目2
+gmo_payment_gateway.admin.payment_edit.softbank.payment_term_sec.caution: （请用半角数字输入）
+gmo_payment_gateway.admin.payment_edit.softbank.payment_term_sec.note1: ※ 省略时，将按照商店信息中设置的支付期限进行处理。
+gmo_payment_gateway.admin.payment_edit.softbank.payment_term_sec.validate1: ※ 支付期限最多可设置为86400秒。
+gmo_payment_gateway.admin.payment_edit.softbank.order_mail_title1.caution: （最多50个字符）
+gmo_payment_gateway.admin.payment_edit.softbank.order_mail_title1.note1: 如果要在订单完成页面和订单完成邮件中放置有关付款的说明文本，请输入标题和正文。（如果两者都没有输入，则无效。）
+gmo_payment_gateway.admin.payment_edit.softbank.order_mail_body1.caution: （最多1,000个字符）
+gmo_payment_gateway.admin.payment_edit.softbank.ClientField1.caution: （最多100个字符）
+gmo_payment_gateway.admin.payment_edit.softbank.ClientField2.caution: （最多100个字符）
+
+gmo_payment_gateway.admin.payment_edit.rakuten_pay.col1: 处理区分
+gmo_payment_gateway.admin.payment_edit.rakuten_pay.col2: 结算完成通知标题
+gmo_payment_gateway.admin.payment_edit.rakuten_pay.col3: 结算完成通知正文
+gmo_payment_gateway.admin.payment_edit.rakuten_pay.col4: 自由项目1
+gmo_payment_gateway.admin.payment_edit.rakuten_pay.col5: 自由项目2
+gmo_payment_gateway.admin.payment_edit.rakuten_pay.order_mail_title1.caution: （最多50个字符）
+gmo_payment_gateway.admin.payment_edit.rakuten_pay.order_mail_title1.note1: 如果要在订单完成页面和订单完成邮件中放置有关付款的说明文本，请输入标题和正文。（如果两者都没有输入，则无效。）
+gmo_payment_gateway.admin.payment_edit.rakuten_pay.order_mail_body1.caution: （最多1,000个字符）
+gmo_payment_gateway.admin.payment_edit.rakuten_pay.ClientField1.caution: （最多100个字符）
+gmo_payment_gateway.admin.payment_edit.rakuten_pay.ClientField2.caution: （最多100个字符）
+
+gmo_payment_gateway.admin.order_edit.title: PG多支付服务结算信息
+gmo_payment_gateway.admin.order_edit.col.payment_method: 结算种类
+gmo_payment_gateway.admin.order_edit.col.pay_status: 交易状态
+gmo_payment_gateway.admin.order_edit.col.error: 结算操作错误
+gmo_payment_gateway.admin.order_edit.col.order_id: 结算订单ID
+gmo_payment_gateway.admin.order_edit.col.err_info: 最终错误代码
+gmo_payment_gateway.admin.order_edit.col.err_msg: 最终错误信息
+gmo_payment_gateway.admin.order_edit.col.approve: 批准号码
+gmo_payment_gateway.admin.order_edit.col.method: 支付方式
+gmo_payment_gateway.admin.order_edit.col.forward: 转发目标
+gmo_payment_gateway.admin.order_edit.col.tran_id: 交易ID
+gmo_payment_gateway.admin.order_edit.col.tran_date: 信用日时
+gmo_payment_gateway.admin.order_edit.col.convenience: 支付目标便利店
+gmo_payment_gateway.admin.order_edit.col.cust_id: 客户编号
+gmo_payment_gateway.admin.order_edit.col.bk_code: 存款机构编号
+gmo_payment_gateway.admin.order_edit.col.conf_no: 确认编号
+gmo_payment_gateway.admin.order_edit.col.receipt_no: 受理编号
+gmo_payment_gateway.admin.order_edit.col.payment_term: 缴款期限
+gmo_payment_gateway.admin.order_edit.col.amount: 结算金额
+gmo_payment_gateway.admin.order_edit.col.action: 结算操作
+gmo_payment_gateway.admin.order_edit.col.log: 结算日志
+gmo_payment_gateway.admin.order_edit.col.log.a: 结算日志显示・隐藏
+gmo_payment_gateway.admin.order_edit.col.log.time: 时间
+gmo_payment_gateway.admin.order_edit.col.log.contents: 内容
+gmo_payment_gateway.admin.order_edit.button.commit: 销售确定(实际销售)执行
+gmo_payment_gateway.admin.order_edit.button.cancel: 取消(退货)执行
+gmo_payment_gateway.admin.order_edit.button.change: 结算金额更改
+gmo_payment_gateway.admin.order_edit.button.reauth: 重新授权执行
+gmo_payment_gateway.admin.order_edit.button.status: 结算状态确认・反映
+gmo_payment_gateway.admin.order_edit.amount.attention: ※结算金额与付款总额存在差异。
+gmo_payment_gateway.admin.order_edit.action_msg: 结算操作已完成。
+gmo_payment_gateway.admin.order_edit.action_error1: %action%不支持的结算方式。
+gmo_payment_gateway.admin.order_edit.action_error2: 处理日期不足。
+gmo_payment_gateway.admin.order_edit.action_error3: 已超过期限。（距离结算日%target_term_days%天内）
+gmo_payment_gateway.admin.order_edit.action_error4: 重新授权仅支持信用卡结算。
+gmo_payment_gateway.admin.order_edit.action_error5: 未取消的订单无法重新授权。
+gmo_payment_gateway.admin.order_edit.action_error6: '结算处理错误：无法针对交易的当前状态执行操作。'
+gmo_payment_gateway.admin.order_edit.action_error7: '结算处理错误：无法执行指定处理类型的处理（已在临时销售中注册的交易）。'
+gmo_payment_gateway.admin.order_edit.action_error8: '结算处理错误：订单日期不足。'
+gmo_payment_gateway.admin.order_edit.action_error9: '结算处理错误：已超过取消期限（对于未确认订单的交易，请在订单确认后的5个月末日前）。'
+gmo_payment_gateway.admin.order_edit.action_error10: '结算处理错误：订单确认的处理完成日期不足。'
+gmo_payment_gateway.admin.order_edit.action_error11: '结算处理错误：已超过取消期限（对于订单确认后的交易，请在订单确认的处理完成日期后的下个月末日前）。'
+gmo_payment_gateway.admin.order_edit.action_error12: '结算取消错误：auかんたん支付（WebMoney）不支持退货处理。'
+gmo_payment_gateway.admin.order_edit.action_error13: '结算取消错误：auかんたん支付退货期限已过。退货期限为销售确认月份的次月底。'
+gmo_payment_gateway.admin.order_edit.action_error14: '结算取消错误：Docomo手机支付取消期限已过。Docomo手机支付的取消期限为交易日的次月底20:00。'
+gmo_payment_gateway.admin.order_edit.action_error15: '结算取消错误：Softbank手机支付取消期限已过。请检查服务规格以获取取消期限。'
+
+
+gmo_payment_gateway.admin.customer_edit.title: PG多支付服务结算信息
+gmo_payment_gateway.admin.customer_edit.member_id: GMO会员ID
+
+gmo_payment_gateway.admin.payment_status.bulk_action.success: 已处理 %count% 项。
+gmo_payment_gateway.admin.payment_status.title: 支付状态列表
+gmo_payment_gateway.admin.payment_status.sub_title: 订单管理
+gmo_payment_gateway.admin.payment_status.search: 搜索
+gmo_payment_gateway.admin.payment_status.search_result_count: 搜索结果：%count% 项符合条件
+gmo_payment_gateway.admin.payment_status.search_condition_payment: 支付方式
+gmo_payment_gateway.admin.payment_status.search_condition_order_status: 订单状态
+gmo_payment_gateway.admin.payment_status.search_condition_payment_status: 支付状态
+gmo_payment_gateway.admin.payment_status.invalid_condition: 搜索条件错误
+gmo_payment_gateway.admin.payment_status.no_result: 未找到符合条件的数据
+gmo_payment_gateway.admin.payment_status.change_condition: 请更改搜索条件后重新搜索。
+gmo_payment_gateway.admin.payment_status.display_count: %count% 项
+gmo_payment_gateway.admin.payment_status.col_order_date: 订单日期
+gmo_payment_gateway.admin.payment_status.col_order_no: 订单号
+gmo_payment_gateway.admin.payment_status.col_order_name: 客户姓名
+gmo_payment_gateway.admin.payment_status.col_order_payment: 支付方式
+gmo_payment_gateway.admin.payment_status.col_order_price: 订单金额
+gmo_payment_gateway.admin.payment_status.col_order_status: 订单状态
+gmo_payment_gateway.admin.payment_status.col_pay_status: 支付状态
+gmo_payment_gateway.admin.payment_status.col_payment_date: 入账日期
+gmo_payment_gateway.admin.payment_status.col_payment_date.not: 未入账
+gmo_payment_gateway.admin.payment_status.bulk_label: 批量操作
+gmo_payment_gateway.admin.payment_status.bulk_submit: 确定
+gmo_payment_gateway.admin.payment_status.bulk_action_commit: 批量销售
+gmo_payment_gateway.admin.payment_status.bulk_action_cancel: 批量取消
+gmo_payment_gateway.admin.payment_status.bulk_action_reauth: 批量重新授权
+gmo_payment_gateway.admin.payment_status.bulk_modal_title: 批量操作确认
+gmo_payment_gateway.admin.payment_status.bulk_modal_body: 将更改多个项目。确定执行吗？
+gmo_payment_gateway.admin.payment_status.bulk_modal_action_exec: 执行
+gmo_payment_gateway.admin.payment_status.bulk_modal_action_cancel: 取消
+gmo_payment_gateway.admin.payment_status.bulk_alert: 未选择任何项目
+
+gmo_payment_gateway.shopping.com.mismatch.payment: 支付方式不匹配。
+gmo_payment_gateway.shopping.com.unusable.order: 不存在正在进行支付处理的订单。
+gmo_payment_gateway.shopping.com.unusable.paymentinfo: 无法从订单获取支付信息。
+gmo_payment_gateway.shopping.com.done.info1: 将清除购物车 [%order_id%]。
+gmo_payment_gateway.shopping.com.done.info2: 将发送订单确认邮件 [%order_id%]。
+gmo_payment_gateway.shopping.com.done.info3: 订单处理已完成。将跳转至购买完成页面。[%order_id%]。
+
+gmo_payment_gateway.shopping.credit.title.register_card: 已注册信用卡支付
+gmo_payment_gateway.shopping.credit.col1: 信用卡号码
+gmo_payment_gateway.shopping.credit.col2: 有效期限
+gmo_payment_gateway.shopping.credit.col2.month: 月
+gmo_payment_gateway.shopping.credit.col2.year: 年
+gmo_payment_gateway.shopping.credit.col3: 持卡人姓名
+gmo_payment_gateway.shopping.credit.col3.first: 名：
+gmo_payment_gateway.shopping.credit.col3.last: 姓：
+gmo_payment_gateway.shopping.credit.col3.ex: （例如：）
+gmo_payment_gateway.shopping.credit.col4: 安全码
+gmo_payment_gateway.shopping.credit.col4.ex: （例如：123）
+gmo_payment_gateway.shopping.credit.col4.note1: 请填写后三到四位数字，通常位于信用卡背面的签名栏。
+gmo_payment_gateway.shopping.credit.col5: 支付方式
+gmo_payment_gateway.shopping.credit.col6: 注册卡信息
+gmo_payment_gateway.shopping.credit.col6.label: 注册此卡。
+gmo_payment_gateway.shopping.credit.col6.note1: 注册卡信息后，下次购买无需再次输入。
+gmo_payment_gateway.shopping.credit.col6.note2: 我们不会存储您的卡片信息。
+gmo_payment_gateway.shopping.credit.col6.note3: 您的卡片信息将安全存储在托管支付代理公司处。
+gmo_payment_gateway.shopping.credit.col6.note4: 您已经注册了%count%张卡。
+gmo_payment_gateway.shopping.credit.col6.note5: 无法注册更多卡片。
+gmo_payment_gateway.shopping.credit.col6.note6: 如果要注册新卡，请稍后在我的页面进行编辑。
+gmo_payment_gateway.shopping.credit.col6.register: 注册
+gmo_payment_gateway.shopping.credit.col6.notregister: 不注册
+gmo_payment_gateway.shopping.credit.error1: 购买过程中出现错误
+gmo_payment_gateway.shopping.credit.error2: ※ 未输入卡号。
+gmo_payment_gateway.shopping.credit.error3: ※ 卡号必须为数字。
+gmo_payment_gateway.shopping.credit.error4: ※ 卡号必须为7位以上。
+gmo_payment_gateway.shopping.credit.error5: ※ 未输入持卡人名字。
+gmo_payment_gateway.shopping.credit.error6: ※ 未输入持卡人姓氏。
+gmo_payment_gateway.shopping.credit.error7: ※ 未输入安全码。
+gmo_payment_gateway.shopping.credit.error8: ※ 安全码必须为数字。
+gmo_payment_gateway.shopping.credit.error9: ※ 安全码必须为4位以下。
+gmo_payment_gateway.shopping.credit.error10: ※ 名字必须为半角英文字母或数字。
+gmo_payment_gateway.shopping.credit.error11: ※ 姓氏必须为半角英文字母或数字。
+
+gmo_payment_gateway.shopping.credit.regist.note: 请选择要用于支付的卡片。
+gmo_payment_gateway.shopping.credit.regist.col1: 选择
+gmo_payment_gateway.shopping.credit.regist.col2: 卡号
+gmo_payment_gateway.shopping.credit.regist.col3: 有效期限
+gmo_payment_gateway.shopping.credit.regist.col4: 持卡人
+
+gmo_payment_gateway.shopping.credit.3dsecure.note1: 正在转到身份验证服务（3D安全认证）页面。
+gmo_payment_gateway.shopping.credit.3dsecure.note2: ※ 切换页面可能需要一段时间，请耐心等待。
+gmo_payment_gateway.shopping.credit.3dsecure.error1: '交易ID(MD)不匹配。(%MD1%|%MD2%)'
+gmo_payment_gateway.shopping.credit.3dsecure.error2: 无法获取结果电文。
+
+gmo_payment_gateway.shopping.cvs.col1: 选择便利店
+gmo_payment_gateway.shopping.cvs.col1.note1: 请选择您要支付的便利店。
+
+gmo_payment_gateway.shopping.payeasy.net.note1: Pay-easy支付和订单处理已完成。
+gmo_payment_gateway.shopping.payeasy.net.note2: 为了金融机构的反映，请等待大约20秒。屏幕将自动切换。
+gmo_payment_gateway.shopping.payeasy.netbank.info1: 订单处理已完成。[%order_id%]
+gmo_payment_gateway.shopping.carrier.note1: 转到运营商支付界面。
+gmo_payment_gateway.shopping.carrier.note2: ※ 页面切换可能需要一些时间，请耐心等待。
+gmo_payment_gateway.shopping.rakuten_pay.note1: 转到楽天支付界面。
+gmo_payment_gateway.shopping.rakuten_pay.note2: ※ 页面切换可能需要一些时间，请耐心等待。
+
+gmo_payment_gateway.mypage.card_edit.title: 我的页面
+gmo_payment_gateway.mypage.card_edit.sub_title: 编辑卡信息
+gmo_payment_gateway.mypage.card_edit.nodata: 没有注册的卡信息。
+gmo_payment_gateway.mypage.card_edit.noselect: 请选择要删除的卡。
+gmo_payment_gateway.mypage.card_edit.token.error1: 在注册卡时发生错误
+gmo_payment_gateway.mypage.card_edit.token.error2: ※ 未输入卡号。
+gmo_payment_gateway.mypage.card_edit.token.error3: ※ 卡号必须为数字。
+gmo_payment_gateway.mypage.card_edit.token.error4: ※ 卡号必须至少为7位。
+gmo_payment_gateway.mypage.card_edit.token.error5: ※ 未输入卡持有人姓名。
+gmo_payment_gateway.mypage.card_edit.token.error6: ※ 卡持有人姓名必须为半角英文和数字。
+
+gmo_payment_gateway.mypage.card_edit.col1: 删除
+gmo_payment_gateway.mypage.card_edit.col2: 编号
+gmo_payment_gateway.mypage.card_edit.col3: 卡号
+gmo_payment_gateway.mypage.card_edit.col4: 有效期限
+gmo_payment_gateway.mypage.card_edit.col5: 持有人
+
+gmo_payment_gateway.mypage.card_edit.col3.caution: ※ 更改时，需要重新输入卡号。
+gmo_payment_gateway.mypage.card_edit.col5.caution: ※ 不需要输入“Mr.”等尊称。
+
+gmo_payment_gateway.mypage.card_edit.month: 月
+gmo_payment_gateway.mypage.card_edit.year: 年
+
+gmo_payment_gateway.mypage.card_edit.button.delete: 删除所选卡
+gmo_payment_gateway.mypage.card_edit.button.save: 保存输入内容
+
+gmo_payment_gateway.mypage.card_edit.append.success: 添加了一张卡。
+gmo_payment_gateway.mypage.card_edit.modify.success: 更新了卡信息。
+gmo_payment_gateway.mypage.card_edit.delete.success: 删除了所选卡。
+
+gmo_payment_gateway.payment_helper.approve: 承認号码
+gmo_payment_gateway.payment_helper.custid: 客户号码
+gmo_payment_gateway.payment_helper.bkcode: 收款机构编号
+gmo_payment_gateway.payment_helper.receiptno1: 客户号码
+gmo_payment_gateway.payment_helper.receiptno2: 受理编号
+gmo_payment_gateway.payment_helper.receiptno3: 订单号码
+gmo_payment_gateway.payment_helper.confno1: 确认号码
+gmo_payment_gateway.payment_helper.confno2: 企业代码
+gmo_payment_gateway.payment_helper.confno3: 申请号码
+gmo_payment_gateway.payment_helper.paymentterm: 付款期限
+gmo_payment_gateway.payment_helper.paymentterm.fmt: %04d年%02d月%02d日 %02d时%02d分
+gmo_payment_gateway.payment_helper.receipturl: 缴款书URL
+gmo_payment_gateway.payment_helper.cvstitle: 的付款
+gmo_payment_gateway.payment_helper.payinfono: 结算信息号码
+gmo_payment_gateway.payment_helper.docomocode: Docomo支付号码
+gmo_payment_gateway.payment_helper.softbanktrackid: Softbank处理跟踪ID
+gmo_payment_gateway.payment_helper.error1: 个人认证服务执行失败。
+gmo_payment_gateway.payment_helper.error2: 收到了无效的回应。请检查连接目标。
+gmo_payment_gateway.payment_helper.error3: '响应错误: RCODE:'
+gmo_payment_gateway.payment_helper.error4: '支付服务器错误: RCODE:'
+gmo_payment_gateway.payment_helper.error5: '响应数据错误: 没有响应。'
+gmo_payment_gateway.payment_helper.do_no_order.title: 不匹配数据检测
+gmo_payment_gateway.payment_helper.do_unmatch_accessid.title: 交易ID不匹配数据检测
+gmo_payment_gateway.payment_helper.do_unmatch_paytype.title: 付款方式不匹配数据检测
+
+gmo_payment_gateway.payment_helper.carrier.cancel: 支付已取消。
+
+gmo_payment_gateway.pay_status.unsettled: 未结算
+gmo_payment_gateway.pay_status.request_success: 请求成功
+gmo_payment_gateway.pay_status.pay_success: 支付完成
+gmo_payment_gateway.pay_status.expire: 已过期
+gmo_payment_gateway.pay_status.cancel: 已取消
+gmo_payment_gateway.pay_status.fail: 支付失败
+gmo_payment_gateway.pay_status.auth: 临时销售
+gmo_payment_gateway.pay_status.commit: 实际销售完成
+gmo_payment_gateway.pay_status.sales: 实际销售完成
+gmo_payment_gateway.pay_status.capture: 即时销售完成
+gmo_payment_gateway.pay_status.void: 已取消
+gmo_payment_gateway.pay_status.return: 已退货
+gmo_payment_gateway.pay_status.returnx: 月跨退货完成
+gmo_payment_gateway.pay_status.sauth: 简易授权完成
+gmo_payment_gateway.pay_status.check: 有效性检查完成
+gmo_payment_gateway.pay_status.except: 异常错误
+gmo_payment_gateway.pay_status.paystart: 支付开始
+gmo_payment_gateway.pay_status.reqsales: 订单确认接受
+gmo_payment_gateway.pay_status.reqcancel: 取消请求接受
+gmo_payment_gateway.pay_status.reqchange: 订单金额变更接受

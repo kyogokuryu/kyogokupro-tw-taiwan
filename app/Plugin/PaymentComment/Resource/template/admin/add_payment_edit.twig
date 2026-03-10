@@ -1,0 +1,22 @@
+<script>
+    $(function() {
+		$('#add_payment_edit_area').appendTo($('.card-body'));
+    });
+</script>
+
+<div id="add_payment_edit_area">
+	<div class="row">
+		<div class="col-3"><span>{{ 'サイト表示'|trans }}</span></div>
+		<div class="col mb-2">
+			{{ form_widget(form.site_ex, { attr : { rows : "6"} }) }}
+			{{ form_errors(form.site_ex) }}
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-3"><span>{{ 'メール表示'|trans }}</span></div>
+		<div class="col mb-2">
+			{{ form_widget(form.mail_ex, { attr : { rows : "6"} }) }}
+			{{ form_errors(form.mail_ex) }}
+		</div>
+	</div>
+</div>

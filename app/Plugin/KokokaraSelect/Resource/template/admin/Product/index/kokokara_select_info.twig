@@ -1,0 +1,20 @@
+{% for Product in pagination %}
+    {% set isKsProduct = is_kokokara_select_product(Product, false) %}
+    {% if isKsProduct %}
+        {% if is_kokokara_select_product(Product) %}
+            {% set message = 'kokokara_select.admin.product.list.ks_product.help'|trans %}
+        {% else %}
+            {% set message = 'kokokara_select.admin.product.list.direct_select.help'|trans %}
+        {% endif %}
+        <div title="{{ message }}"
+              class="kokokara_select_info"
+              style="margin-top: 5px;"
+              data-kokokara_select_product_id="{{ Product.id }}">
+            {% if is_kokokara_select_product(Product) %}
+                <i class="fas fa-box-open fa-lg"></i>
+            {% else %}
+                <i class="fas fa-box fa-lg"></i>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endfor %}

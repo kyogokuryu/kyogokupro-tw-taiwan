@@ -1,0 +1,97 @@
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['store', 'plugin', 'plugin_list'] %}
+
+{% block title %}{{ config_title }}{% endblock %}
+{% block sub_title %}{{ config_sub_title }}{% endblock %}
+
+{% form_theme form '@admin/Form/bootstrap_4_horizontal_layout.html.twig' %}
+
+{% block main %}
+
+    <form id="config_form" role="form" method="post" action="">
+
+        {{ form_widget(form._token) }}
+
+        <div class="c-contentsArea__cols">
+            <div class="c-contentsArea__primaryCol">
+                <div class="c-primaryCol">
+                    {% set group = "" %}
+                    {% set output = true %}
+                    {% for ConfigForm in form.plgConfigs %}
+                        {% if group != ConfigForm.groupId.vars.value %}
+                            {% if group != "" %}
+                                </div>
+                            {% endif %}
+                            {% set group = ConfigForm.groupId.vars.value %}
+                            {% set output = false %}
+                            <div class="card rounded border-0 mb-4">
+                            <div class="card-header">
+                                <span>{{ SETTING_GROUPS[ConfigForm.groupId.vars.value]|trans }}</span>
+                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                        {{ form_widget(ConfigForm.configType) }}
+                        {{ form_widget(ConfigForm.groupId) }}
+                        <div class="row mb-2">
+                            {% if ConfigForm.configType.vars.value == TYPE_STRING %}
+                                <div class="col-2"><span>{{ ConfigForm.textValue.vars.label }}</span></div>
+                                <div class="col mb-2">
+                                    {{ form_widget(ConfigForm.textValue) }}
+                                    {{ form_errors(ConfigForm.textValue) }}
+                                </div>
+                            {% elseif ConfigForm.configType.vars.value == TYPE_CHOICE %}
+                                <div class="col-2"><span>{{ ConfigForm.intValue.vars.label }}</span></div>
+                                <div class="col mb-2">
+                                    {{ form_widget(ConfigForm.intValue, { 'label_attr': { 'class': 'radio-inline'}}) }}
+                                    {{ form_errors(ConfigForm.intValue) }}
+                                </div>
+                            {% elseif ConfigForm.configType.vars.value == TYPE_BOOL %}
+                                <div class="col-2"><span>{{ ConfigForm.boolValue.vars.label }}</span></div>
+                                <div class="col mb-2">
+                                    {{ form_widget(ConfigForm.boolValue) }}
+                                    {{ form_errors(ConfigForm.boolValue) }}
+                                </div>
+                            {% elseif ConfigForm.configType.vars.value == TYPE_OPTIONS %}
+                                <div class="col-2"><span>{{ ConfigForm.optionsValue.vars.label }}</span></div>
+                                <div class="col mb-2">
+                                    {{ form_widget(ConfigForm.optionsValue, {'label_attr': {'class': 'checkbox-inline'}}) }}
+                                    {{ form_errors(ConfigForm.optionsValue) }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        {% if output %}
+                        </div>
+                        {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="c-conversionArea">
+            <div class="c-conversionArea__container">
+                <div class="row justify-content-between align-items-center">
+                    <div class="col-6">
+                        <div class="c-conversionArea__leftBlockItem">
+                            <a class="c-baseLink"
+                               href="{{ url('admin_store_plugin') }}">
+                                <i class="fa fa-backward" aria-hidden="true"></i>
+                                <span>{{ config_back }}</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="row align-items-center justify-content-end">
+                            <div class="col-auto">
+                                <button class="btn btn-ec-conversion px-5"
+                                        type="submit">{{ 'admin.common.save'|trans }}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+{% endblock %}

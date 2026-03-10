@@ -1,0 +1,166 @@
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['faq', 'faq'] %}
+
+{% block title %}{{ 'admin.QvA.list'|trans }}{% endblock %}
+{% block sub_title %}{{ 'admin.QvA.sub_title'|trans }}{% endblock %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/bootstrap-datepicker@1.9.0/dist/css/bootstrap-datepicker3.css">
+    <style type="text/css">
+        .answer {
+            white-space: pre-wrap;
+        }
+    </style>
+{% endblock stylesheet %}
+
+{% block javascript %}
+    <script>
+        $('#admin_search_faq_FaqCategory').change(function () {
+            $('#search_form').submit();
+        });
+
+        $('.btn-ec-delete').click(function () {
+            var question = $(this).data('question');
+            var result = confirm('質問: ' + question + 'のQ&Aを削除しますか？');
+            if (result) {
+                var delete_url = $(this).data('delete-url');
+                $.ajax({
+                    'url': delete_url,
+                    'type': 'delete',
+                })
+                .done(function (data) {
+                    if (data.success) {
+                        window.location.reload(true);
+                    } else {
+                        console.log(data);
+                        alert(data);
+                    }
+                })
+                .fail(function (data) {
+                    console.log(data);
+                    alert(data);
+                });
+            }
+        });
+    </script>
+{% endblock javascript %}
+
+{% block main %}
+    <div class="c-contentsArea__cols">
+        <div class="c-contentsArea__primaryCol">
+            <div class="c-primaryCol">
+                <div class="d-inline-block mb-2">
+                    <div>
+                        <a href="{{ url('admin_faq_new') }}">
+                            <button class="btn btn-ec-conversion px-5" type="button">{{ 'admin.common.registration'|trans }}</button>
+                        </a>
+                    </div>
+                </div>
+                {% if pagination and pagination.totalItemCount %}
+                    <div class="row mb-2">
+                        <div class="col-5">
+                            <div class="d-inline-block mr-2">
+                                <form name="search_form" id="search_form" method="post" action="">
+                                    {{ form_widget(searchForm._token) }}
+                                    {{ form_widget(searchForm.FaqCategory) }}
+                                </form>
+                            </div>
+                            <div class="d-inline-block mr-2">
+                                <div>
+                                    <select class="custom-select" onchange="location = this.value;">
+                                        {% for pageMax in pageMaxis %}
+                                            <option {% if pageMax.name == page_count %}selected=""{% endif %} value="{{ path('admin_faq_page', {'page_no': 1, 'page_count': pageMax.name}) }}">{{ 'admin.common.count'|trans({ '%count%': pageMax.name }) }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card rounded border-0 mb-4 d-block">
+                        <div class="card-body p-0">
+                            <table class="table table-sm">
+                                <thead>
+                                <tr>
+                                    <th class="border-top-0 pl-3 pt-2 pb-2">{{ 'ID'|trans }}</th>
+                                    <th class="border-top-0 pt-2 pb-2">{{ '質問'|trans }}</th>
+                                    <th class="border-top-0 pt-2 pb-2">{{ '回答'|trans }}</th>
+                                    <th class="border-top-0 pt-2 pb-2">{{ 'TOPページに表示するか'|trans }}</th>
+                                    <th class="border-top-0 pt-2 pb-2">{{ 'カテゴリ名'|trans }}</th>
+                                    <th class="border-top-0 pt-2 pb-2 pr-3" colspan="3"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for Faq in pagination %}
+                                    <tr id="ex-faq-{{ Faq.id }}">
+                                        <td class="align-middle pl-3">{{ Faq.id }}</td>
+                                        <td class="align-middle">
+                                            <a href="{{ url('admin_faq_edit', { id: Faq.id }) }}">
+                                                {{ Faq.question }}
+                                            </a>
+                                        </td>
+                                        <td class="align-middle answer">{{ Faq.answer|raw }}</td>
+                                        <td class="align-middle">{% if Faq.display_top %}表示{% else %}非表示{% endif %}</td>
+                                        <td class="align-middle">{{ Faq.FaqCategory.name }}</td>
+                                        <td>
+                                            <button
+                                                class="btn btn-ec-delete px-5"
+                                                type="button"
+                                                data-question="{{ Faq.question }}"
+                                                data-delete-url="{{ url('admin_faq_delete', { id: Faq.id }) }}"
+                                            >
+                                                {{ 'admin.common.delete'|trans }}
+                                            </button>
+                                        </td>
+
+                                    </tr>
+                                {% endfor %}
+
+                                </tbody>
+                            </table>
+                        </div>
+                        {% if pagination.totalItemCount > 0 %}
+                            <div class="row justify-content-md-center mb-4 pb-4">
+                                {% include "@admin/pager.twig" with { 'pages' : pagination.paginationData, 'routes' : 'admin_faq_page' } %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <div class="card rounded border-0">
+                        <div class="card-body p-4">
+                            <div class="text-center text-muted mb-4 h5">{{ 'admin.common.search_no_result'|trans }}</div>
+                            <div class="text-center text-muted">{{ 'admin.common.search_try_change_condition'|trans }}</div>
+                            <div class="text-center text-muted">{{ 'admin.common.search_try_advanced_search'|trans }}</div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- 完全に削除の確認モーダル-->
+            <div class="modal fade" id="bulkDeleteModal" tabindex="-1" role="dialog" aria-labelledby="discontinuance" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title font-weight-bold">{{ 'admin.product.permanently_delete__confirm_title'|trans }}</h5>
+                            <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                        </div>
+                        <div class="modal-body text-left">
+                            <p class="text-left">{{ 'admin.product.permanently_delete__confirm_message'|trans }}</p>
+                            <ul id="bulkErrors"></ul>
+                            <div class="progress" style="display: none">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-ec-sub" type="button" data-dismiss="modal">{{ 'admin.common.cancel'|trans }}</button>
+                            <button class="btn btn-ec-delete" type="button" id="bulkDelete">{{ 'admin.product.permanently_delete' | trans }}</button>
+                            <button class="btn btn-ec-regular" id="bulkDeleteDone" style="display: none" type="button" data-dismiss="modal">{{ 'admin.product.permanently_delete__complete'|trans }}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}

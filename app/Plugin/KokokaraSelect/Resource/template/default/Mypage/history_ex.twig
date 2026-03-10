@@ -1,0 +1,10 @@
+{% set kokokaraSelectIndex = 0 %}
+
+{% for Shipping in Order.Shippings %}
+    <div>
+        {% for orderItem in Shipping.productOrderItems %}
+            {{ include('@KokokaraSelect/history_parts.twig', {'orderItem': orderItem}, ignore_missing=true) }}
+            {% set kokokaraSelectIndex = kokokaraSelectIndex + 1 %}
+        {% endfor %}
+    </div>
+{% endfor %}

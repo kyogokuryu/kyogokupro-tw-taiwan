@@ -1,0 +1,62 @@
+{% set Products = repository('Plugin\\[code]\\Entity\\[code]Config').getProductRanking %}
+{% set Config = repository('Plugin\\[code]\\Entity\\[code]Config').get %}
+
+{% block stylesheet %}
+<style>
+    .uic-itemrank {
+        margin-bottom: 40px;
+    }
+    .uic-itemrank .uic-itemrank__image {
+        width: 100%;
+        height: auto;
+        margin-bottom: 10px;
+    }
+    .uic-itemrank .uic-itemrank__box {
+        display: block;
+        color: #525263;
+        margin-bottom: 2rem;
+    }
+    .uic-itemnew .uic-itemrank__box:hover {
+        color: #525263;
+        text-decoration: none;
+    }
+</style>
+{% endblock %}
+
+<!-- [code] -->
+<div class="ec-role uic-itemrank">
+    {% if Config.title %}
+        <div class="ec-secHeading">
+            <span class="ec-secHeading__en">{{ Config.title }}</span>
+        </div>
+    {% endif %}
+    <div class="ec-secBody">
+        {% if Products == null %}
+            <p>商品は見つかりませんでした。</p>
+        {% else %}
+            <div class="ec-shelfGrid">
+                {% for Product in Products %}
+                    <div class="ec-shelfGrid__item">
+                        <a href="{{ url('product_detail', {'id': Product.id}) }}" class="uic-itemrank__box [code_lower]">
+                            <div class="uic-itemrank__image">
+                                <img src="{{ asset(Product.main_list_image|no_image_product, 'save_image') }}" class="img-responsive">
+                            </div>
+                            <div class="uic-itemrank__body">
+                                {% if Config.item_name == 0 %}
+                                    <p class="item-title">{{ Product.name }}</p>
+                                {% endif %}
+                                {% if Config.item_price == 0 %}
+                                    <p class="price02-default">{{ Product.getPrice02IncTaxMax|price }}</p>
+                                {% endif %}
+                                {% if Config.item_description == 0 %}
+                                    <p class="item-description">{{ Product.description_list }}</p>
+                                {% endif %}
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+<!-- /[code] -->

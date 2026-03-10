@@ -1,0 +1,153 @@
+{% extends 'default_frame.twig' %}
+
+{% block additional_head %}
+    <script src="https://static.appront.net/click.js"></script>
+{% endblock %}
+
+{% block main %}
+    {% if app.user is not defined or (app.user is defined and app.session.get('IS_SUPPLIER') == null)  %}
+        {% include 'Block/enter-supplier-code.twig' %}
+    {% else %}
+        {% include 'Block/salon_supplier_products.twig' %}
+    {% endif %}
+
+    <style>
+        .salon-supplier{
+            text-align: center;
+        }
+
+        .salon-supplier hr{
+            border: 1px solid #000000;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+
+        .salon-supplier .salon-code .salon-code-title {
+            font-size: 28px;
+            font-family: Cabin;
+            font-weight: 600;
+            color:#000;
+            line-height: 3.2rem;
+            margin-top: 23px;
+        }
+
+        .salon-supplier .salon-code .salon-code-tip {
+            font-size: 18px;
+            font-family: Cabin;
+            font-weight: 400;
+            color:#000;
+            line-height: 1.6rem;
+            margin-top: 23px;
+        }
+
+        .salon-supplier .salon-code form .form-item {
+            max-width:400px;
+            width:100%;
+            margin:auto;
+        }
+        .salon-supplier .salon-code form .form-item p {
+            font-size : 18px;
+            font-family: Cabin;
+            font-weight: 500;
+            text-align: left;
+            width: 100%;
+            margin: 22px auto 0;
+        }
+        .salon-supplier .salon-code form .from-item p {
+            font-size : 18px;
+            font-family: Cabin;
+            font-weight: 500;
+            text-align: left;
+            width: 100%;
+            margin: 22px auto 0;
+        }
+
+        .salon-supplier .salon-code form .form-item input {
+            width: 100%;
+            height: 36px;
+            margin: 7px auto 0px;
+            border: 1px solid #9B9B9B;
+        }
+
+        .salon-supplier .salon-code form button {
+            background: #26AF65;
+            color: #fff;
+            max-width:400px;
+            width:100%;
+            height: 50px;
+            border-radius:5px;
+            border: none;
+            margin: 33px 0px 0;
+        }
+
+        .salon-supplier .salon-code form .supplier_code_error{
+            color: red;
+            font-size: 14px;
+            font-family: Cabin;
+            font-weight: 500;
+            margin-top: 10px;
+        }
+
+        .salon-supplier .salon-line .salon-line-title {
+            font-size: 18px;
+            font-family: Cabin;
+            font-weight: 700;
+            color:#000;
+            margin:15px 0;
+        }
+
+        .salon-supplier .salon-line .salon-line-tip {
+            font-size: 18px;
+            font-family: Cabin;
+            font-weight: 500;
+            color:#000;
+            text-decoration: none;
+        }
+
+        .salon-supplier .salon-line button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #06C755;
+            color: #fff;
+            width: fit-content;
+            border-radius: 10px;
+            font-weight: 600;
+            padding: 11px;
+            margin:23px auto;
+            border: none;
+        }
+        .salon-supplier .salon-line a{
+            text-decoration: none;
+         }
+
+        .salon-supplier .salon-line .salon-line-node {
+            font-size: 18px;
+            font-family: Cabin;
+            font-weight: 500;
+            color:#000;
+        }
+
+        .salon-supplier .salon-line .salon-line-end {
+            font-size: 14px;
+            font-family: Cabin;
+            font-weight: 500;
+            color:#000;
+            margin-top:10px;
+            margin-bottom: 39px;
+
+        }
+
+        .salon-supplier .salon-line .salon-line-end span {
+            font-weight: 600;
+        }
+
+        .ec-layoutRole{
+            background: #fff;
+        }
+        .ec-headerNaviRole #hinr .container{
+            display: none;
+        }
+    </style>
+
+{% endblock %}

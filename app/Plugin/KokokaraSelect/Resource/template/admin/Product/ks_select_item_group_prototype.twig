@@ -1,0 +1,99 @@
+<div class="card rounded border-0 mb-4 ks_select_item_group_area">
+    <div class="card rounded border-0 ks-group-header">
+
+        {#グループヘッダー#}
+        <div class="card-header">
+            <div class="row">
+                <div class="col-8">
+                    <div>{{ 'kokokara_select.admin.setting.ks_select_item_group.title'|trans }}</div>
+                </div>
+                <div class="col-4 text-right">
+                    <div class="d-inline-block mr-2" data-tooltip="true"
+                         data-placement="top" title="{{ 'admin.common.delete'|trans }}">
+                        <a class="btn btn-ec-actionIcon action-group-delete">
+                            <i class="fa fa-close fa-lg text-secondary"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {#グループ設定情報#}
+        <div class="card-header">
+            {{ form_widget(ksSelectItemGroupForm.sortNo) }}
+            <div class="form-row mb-2">
+                <div class="col-2">
+                    <div class="d-inline-block">
+                        <span>{{ ksSelectItemGroupForm.groupName.vars.label|trans }}</span>
+                    </div>
+                </div>
+                <div class="col-3 align-items-center">
+                    {{ form_widget(ksSelectItemGroupForm.groupName) }}
+                    {{ form_errors(ksSelectItemGroupForm.groupName) }}
+                </div>
+            </div>
+            <div class="form-row mb-2">
+                <div class="col-2">
+                    <div class="d-inline-block">
+                        <span>{{ ksSelectItemGroupForm.description.vars.label|trans }}</span>
+                    </div>
+                </div>
+                <div class="col-10 align-items-center">
+                    {{ form_widget(ksSelectItemGroupForm.description) }}
+                    {{ form_errors(ksSelectItemGroupForm.description) }}
+                </div>
+            </div>
+            <div class="form-row mb-2">
+                <div class="col-2">
+                    <div class="d-inline-block">
+                        <span>{{ ksSelectItemGroupForm.quantity.vars.label|trans }}</span>
+                        <span class="badge badge-primary ml-1">{{ 'admin.common.required'|trans }}</span>
+                    </div>
+                </div>
+                <div class="col-3 align-items-center">
+                    {{ form_widget(ksSelectItemGroupForm.quantity) }}
+                    {{ form_errors(ksSelectItemGroupForm.quantity) }}
+                </div>
+            </div>
+        </div>
+
+        {#商品追加ボタン#}
+        <div class="card-header">
+            <div class="form-row mb-2">
+                <div class="col-2">
+                    <div class="d-inline-block">
+                        <span>{{ 'kokokara_select.admin.setting.ks_select_item.title'|trans }}</span>
+                    </div>
+                </div>
+                <div class="col-3 align-items-center">
+                    <a class="btn btn-ec-regular mr-2 kokokaraSelectItemAdd" data-toggle="modal" data-target="#addProduct" data-group_key="{{ index }}">{{ 'kokokara_select.admin.setting.ks_select_item.add'|trans }}</a>
+                    {{ form_errors(ksSelectItemGroupForm.KsSelectItems) }}
+                </div>
+            </div>
+        </div>
+
+        {#選択商品情報#}
+        <div class="card rounded border-0">
+            <ul class="list-group list-group-flush sortable-container ks_select_item_group_{{ index }}"
+                data-prototype="{% filter escape %}{{ include('@KokokaraSelect/admin/Product/ks_select_item_prototype.twig', {'ksSelectItemForm': ksSelectItemGroupForm.KsSelectItems.vars.prototype, 'index': '__name__'}) }}{% endfilter %}">
+                <li class="list-group-item">
+                    <div class="row">
+                        <div class="col-auto"><strong>&nbsp;</strong></div>
+                        <div class="col-1"><strong>{{ 'admin.product.image__short'|trans }}</strong></div>
+                        <div class="col-2"><strong>{{ 'admin.product.name'|trans }}</strong></div>
+                        <div class="col-1 ks_select_item_quantity_area"><strong>{{ 'kokokara_select.admin.setting.ks_select_item.quantity'|trans }}</strong></div>
+                        <div class="col-2"><strong>{{ 'kokokara_select.admin.setting.ks_select_item.list.stock'|trans }}</strong></div>
+                        <div class="col-1"><strong>{{ 'admin.product.stock'|trans }}</strong></div>
+                        <div class="col-1"><strong>{{ 'admin.product.price'|trans }}</strong></div>
+                        <div class="col-1"><strong>{{ 'admin.product.display_status__short'|trans }}</strong></div>
+                    </div>
+                </li>
+                {% for ksSelectItemForm in ksSelectItemGroupForm.KsSelectItems %}
+                    {% set loopFirst = loop.first %}
+                    {% set loopLast = loop.last %}
+                    {{ include('@KokokaraSelect/admin/Product/ks_select_item_prototype.twig', {'ksSelectItemForm': ksSelectItemForm, 'group_key': index, 'key_name': loop.index0, 'loopFirst': loopFirst, 'loopLast': loopLast}) }}
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>

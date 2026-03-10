@@ -1,0 +1,73 @@
+{% extends 'default_frame.twig' %}
+
+{% block javascript %}
+<script type="text/javascript" src="{{ checkout_js }}"></script>
+<script type="text/javascript">
+    $(function() {
+        // 画面遷移妥当性チェック用AJAX
+        $.ajax({
+            type: "POST",
+            url: "{{ url('paidy_confirm', {order_id : target_order_id}) }}",
+            error: function(result){
+                location.href = "{{ url('shopping_error') }}";
+            }
+        });
+        paidyPay();
+    });
+    var config = {
+        "api_key" : "{{ plugin_config.public_key }}",
+        "logo_url": "{{ plugin_config.logo_url }}",
+        "closed"  : function(callbackData) {
+            if (callbackData.status == 'authorized') {
+                // ボタンを押さないように
+                $(".ec-blockBtn--action").prop('disabled', true);
+                $(".ec-blockBtn--cancel").prop('disabled', true);
+                // succeeded
+                document.form1.paidy_order_id.value = callbackData.id;
+                document.form1.action = "{{ url('paidy_complete', {order_id : target_order_id}) }}";
+                document.form1.submit();
+
+            } else if (callbackData.status == 'rejected') {
+                // failed
+                document.form1.action = "{{ url('paidy_back', {order_id : target_order_id}) }}";
+                document.form1.submit();
+            }
+        }
+    };
+    var paidyHandler = Paidy.configure(config);
+    function paidyPay() {
+        var payload = {{ paidyOrderData|json_encode(constant('JSON_PRETTY_PRINT') b-or constant('JSON_UNESCAPED_UNICODE')) |raw }};
+        paidyHandler.launch(payload);
+    };
+    function paidyCancel(){
+        location.href = "{{ url('paidy_cancel', {order_id : target_order_id}) }}";
+    }
+</script>
+{% endblock javascript %}
+
+{% set body_class = 'cart_page' %}
+
+{% block main %}
+
+<div class="ec-role">
+    <div class="ec-pageHeader">
+        <h1>Paidy</h1>
+    </div>
+</div>
+
+<div class="ec-cartRole">
+    <div class="ec-cartRole__progress">
+        <div class="">
+            <div class="ec-totalBox__btn">
+                <button class="ec-blockBtn--action" onclick="paidyPay();">{{ '打开延期付款 (pay-dee) 程序屏幕'|trans }}</button>
+                <button class="ec-blockBtn--cancel" onclick="paidyCancel();">{{ '返回订单流程'|trans }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form name="form1" method="post" action="{{ url('paidy_complete', {order_id : target_order_id}) }}">
+    <input type="hidden" name="paidy_order_id" id="paidy_order_id" />
+</form>
+
+{% endblock %}

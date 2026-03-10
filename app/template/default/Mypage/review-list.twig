@@ -1,0 +1,174 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+
+{% set mypageno = 'review-list' %}
+
+{% set body_class = 'mypage' %}
+
+{% import _self as stars %}
+
+{# 星テキスト生成用マクロ #}
+{% macro stars(positive, negative) %}
+    {% set positive_stars = ["", "★", "★★", "★★★", "★★★★", "★★★★★"] %}
+    {% set negative_stars = ["", "☆", "☆☆", "☆☆☆", "☆☆☆☆", "☆☆☆☆☆"] %}
+    {{ positive_stars[positive] }}{{ negative_stars[negative] }}
+{% endmacro %}
+
+{% block main %}
+
+<article id="mypage">
+	<section>
+    <div class="ec-layoutRole__main mypage-review">
+    {#
+        <div class="ec-mypageRole">
+
+            {% include 'Mypage/navi-change.twig' %}
+        
+        </div>
+    #}
+        <div class="ec-withdrawRole">
+            <h3 class="mypage-history-title text-left">歷史紀錄</h3>
+            <hr class="mypage-review-title">
+        </div>
+
+        <div class="ec-withdrawRole">
+            <p class="text-left mypage-review-msg">
+                一直以來,非常感謝您的評論 !<br>
+                您的評論對其他客戶非常有幫助,<br>
+                也是我們前進的動力
+            </p>
+        </div>
+
+        <div class="ec-withdrawRole">
+        
+        {% for Review in pagination %}
+			{% set OrderItem = Review.OrderItem %}
+			<div class="product_review_part">    
+ 
+				<div class="review-box">
+                {#
+					<div class="recommend_star">
+						{% set positive_star = Review.recommend_level %}
+						{% set nagative_star = 5 - positive_star %}
+						{{ stars.stars(positive_star, nagative_star) }}
+						<span class="star-buy">Kyogokuで購入</span>
+					</div>
+				#}	
+					<div class="recommend_date">{{ Review.create_date|date_format('','Y/m/d') }}</div>
+					
+				</div>
+
+				<div class="review-box">
+					<p class="review-title">{{ Review.title }}</p>
+					<div class="review-comm readmore">
+                        <input id="check{{ Review.id }}" class="readmore-check" type="checkbox">
+                        <div class="org-readmore-content" data-label="readmore-label{{ Review.id }}">
+                            {{ Review.comment|nl2br }}
+
+                            <div class="review-box row">
+                                {% if Review.pic1 %}
+                                <div class="col-xs-3 review-user-img"><a href="{{ Review.pic1 }}" target="_blank" data-toggle="lightbox"><img src="{{ Review.pic1 }}"></a></div>
+                                {% endif %}
+
+                                {% if Review.pic2 %}
+                                <div class="col-xs-3 review-user-img"><a href="{{ Review.pic2 }}" target="_blank" data-toggle="lightbox"><img src="{{ Review.pic2 }}"></a></div>
+                                {% endif %}
+                                
+                                {% if Review.pic3 %}
+                                <div class="col-xs-3 review-user-img"><a href="{{ Review.pic3 }}" target="_blank" data-toggle="lightbox"><img src="{{ Review.pic3 }}"></a></div>
+                                {% endif %}
+                                
+                                {% if Review.pic4 %}
+                                <div class="col-xs-3 review-user-img"><a href="{{ Review.pic4 }}" target="_blank" data-toggle="lightbox"><img src="{{ Review.pic4 }}"></a></div>
+                                {% endif %}
+                            </div>
+
+                        </div>
+                        <label id="readmore-label{{ Review.id }}" class="readmore-label" for="check{{ Review.id }}"></label>
+                    </div>
+				</div>
+
+
+				<hr class="review-bar">
+                {% set orderItem = Review.OrderItem %}
+                {% if Review.order_item_id > 0 %}
+                <div class="mypage-review-product product-box">
+                    <div class="row">
+                        <div class="col-xs-4">
+                            {% if orderItem.product is null %}
+                                <img src="{{ asset(''|no_image_product, 'save_image') }}"/>
+                            {% else %}
+                                <img src="{{ asset(orderItem.Product.MainListImage|no_image_product, 'save_image') }}"
+                                        alt="{{ orderItem.productName }}"/>
+                            {% endif %}
+                        </div>
+                        <div class="col-xs-8">
+                            <div class="product_name">
+                                {% if orderItem.Product is not null and orderItem.Product.Status.id == constant('Eccube\\Entity\\Master\\ProductStatus::DISPLAY_SHOW') %}
+                                    <a href="{{ url('product_detail', {'id': orderItem.Product.id}) }}">{{ orderItem.productName }}</a>
+                                {% else %}
+                                    {{ orderItem.productName }}
+                                {% endif %}
+                            </div>
+                            <div class="product_price">                                
+                                <p>{{ orderItem.price_inc_tax|price }} ×{{ orderItem.quantity }} {{ is_reduced_tax_rate(orderItem) ? '※'|trans }}
+
+                            </div>
+                            <div class="product_date">{{ orderItem.Order.create_date|date_sec }}</div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+			</div>
+		{% endfor %}
+
+        </div>
+
+		<div class="ec-pagerRole">
+			{% include "Mypage/review-pager.twig" with {'pages': pagination.paginationData} %}
+		</div>
+
+
+        {% if review_id > 0 %}
+        <div class="ec-role row" style="margin:20px auto">
+            <div class="col-xs-8">
+                <a href="{{ url('mypage_myreview_list') }}" class="mypage-back mypage-back-none">{{ '歷史紀錄'|trans }}</a>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="ec-role row mt60">
+            <div class="col-xs-8">
+                <a href="{{ url('mypage') }}" class="mypage-back">{{ '我的帳號'|trans }}</a>
+            </div>
+        </div>
+
+    </div>
+	</section>
+</article>
+
+<script>
+    window.addEventListener('load', function(){
+        $('.org-readmore-content').each(function(){
+            let elm = $(this)
+            if( elm.height() > 50){
+                elm.addClass('readmore-content').show();
+                let label = elm.data('label');
+                $('#' + label).css('display','table')
+            }else{
+                elm.show()
+            }
+        })
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,304 @@
+<!doctype html>
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+<html lang="{{ eccube_config.locale }}">
+<head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# product: http://ogp.me/ns/product#">
+    <meta http-equiv="content-language" content="{{ eccube_config.locale }}">
+    <meta name="google-site-verification" content="Y66QrlYcz64bHEY5gShRL_D_Uv99BsW0Q3HaQ8vBfQs" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="eccube-csrf-token" content="{{ csrf_token(constant('Eccube\\Common\\Constant::TOKEN_NAME')) }}">
+    <meta name="p:domain_verify" content="f4b9dc1809d0da8bb7113d9d5b07de34"/>
+    <meta property="og:title" content="卡雅仕 日本第一毛髮保養專家">
+    <meta property="og:description" content="世界第一美髮師京極琉展開的KYOGOKU Professional，是最高品質的專業護髮品牌。採用嚴選成分與獨家配方開發的洗髮精、護色洗髮精、護髮素、染髮產品、造型劑，實現美麗健康的秀髮。提供美髮師技術研討會與沙龍經營實用know-how。從專業美髮師到一般顧客，提供貼近秀髮煩惱的產品與資訊。涵蓋損傷修護到最新造型技巧，全方位支援美麗需求。" />
+    <meta property="og:image" content="{{ asset('assets/img/taiwan_logo.png') }}">
+    <meta property="og:url" content="https://tw.kyogokupro.com/">
+    <meta property="og:type" content="website">
+    <title>{{ BaseInfo.shop_name }}
+    {# {% if subtitle is defined and subtitle is not empty %} / {{ subtitle }}{% elseif title is defined and title is not empty %} / {{ title }}{% endif %} #}
+    </title>
+    {% if Page.author is not empty %}
+        <meta name="author" content="{{ Page.author }}">
+    {% endif %}
+    {# 向井編集分 #}
+    {# {% if Page.description is not empty %}
+        <meta name="description" content="{{ Page.description }}">
+    {% endif %} #}
+    {# {% if Page.keyword is not empty %}
+        <meta name="keywords" content="{{ Page.keyword }}">
+    {% endif %} #}
+    {# {% if Page.meta_robots is not empty %}
+        <meta name="robots" content="{{ Page.meta_robots }}">
+    {% endif %} #}
+    {# {% if Page.meta_tags is not empty %}
+        {{ include(template_from_string(Page.meta_tags)) }}
+    {% endif %} #}
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://js.stripe.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="https://js.stripe.com">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="{{ asset('assets/img/taiwan_logo.png') }}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css?v=20230117" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/jquery.yycountdown.css') }}"/>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+{% block stylesheet %}{% endblock %}
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    <script type="text/javascript" src="{{ asset('assets/js/jquery.yycountdown.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/js/storeCommon.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/js/elementManager.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/js/request.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/js/copysize.js') }}"></script>
+    <script>
+        $(function() {
+            $.ajaxSetup({
+                'headers': {
+                    'ECCUBE-CSRF-TOKEN': $('meta[name="eccube-csrf-token"]').attr('content')
+                }
+            });
+
+			{% set userId = app.user.id is defined ? app.user.id : 0 %}
+			let userId = {{ userId }}
+			let currentPath = window.location.pathname
+			$.ajax({
+				url: '{{ url('access_log') }}',
+				type: 'POST',
+				dataType: 'json',
+				data: {
+					"userId": userId,
+					"path": currentPath,
+				},
+			}).done(function(response) {
+				console.log("accessLog",response)
+			})
+        });
+    </script>
+    {# Layout: HEAD #}
+    {% if Layout.Head %}
+        {{ include('block.twig', {'Blocks': Layout.Head}) }}
+    {% endif %}
+    <script src="//statics.a8.net/a8sales/a8sales.js"></script>
+    {# プラグイン用styleseetやmetatagなど #}
+    {% if plugin_assets is defined %}{{ include('@admin/snippet.twig', { snippets: plugin_assets }) }}{% endif %}
+    <link rel="stylesheet" href="{{ asset('assets/css/customize.css', 'user_data') }}?v=202204011"><!-- test = -->
+    <link rel="stylesheet" href="{{ asset('assets/css/default.css') }}?v={{ "now"|date("Ymd") }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/page_countdown.css') }}?v=20220915">
+    <link rel="stylesheet" href="{{ asset('assets/css/video_style.css') }}">
+    {% if body_class is not defined %}
+        {% set body_class = "" %}
+    {% endif %}
+    {% if 'cbd' in body_class %}
+        <link rel="stylesheet" href="{{ asset('assets/css/cbd.css') }}">
+    {% endif %}
+    <script type='text/javascript' src='https://js.crossees.com/csslp.js' async></script>
+    {% block additional_head %}{% endblock %}
+    {{ include('Block/meta_pixel.twig') }}
+</head>
+<body id="page_{{ app.request.get('_route') }}" class="{{ body_class|default('other_page') }}" style="{% if body_style is defined %}{{ body_style }}{% endif %}">
+{% if Layout.BodyAfter %}
+    {{ include('block.twig', {'Blocks': Layout.BodyAfter}) }}
+{% endif %}
+
+<div class="{{ IsApp ? 'ec-layoutRole-app' :'ec-layoutRole' }}">
+    {# Layout: HEADER #}
+    {% if Layout.Header %}
+        <div class="ec-layoutRole__header">
+            {{ include('block.twig', {'Blocks': Layout.Header}) }}
+        </div>
+        <div class="ec-layoutRole__header_cz"></div>
+    {% endif %}
+
+    {# Layout: CONTENTS_TOP #}
+    {# {% if Layout.ContentsTop %} #}
+        <div class="ec-layoutRole__contentTop">
+            {% if is_sp() %}
+                {% set Config = repository('Plugin\\uc_slide_sp\\Entity\\uc_slide_spConfig').get %}
+                {% set Images = repository('Plugin\\uc_slide_sp\\Entity\\uc_slide_spData').getRandomImages %}
+                {% set DeviceClass = 'sp' %}
+                <link rel="stylesheet" href="{{ asset('assets/css/uc_slide_sp.css') }}">
+            {% else %}
+                {% set Config = repository('Plugin\\uc_slide\\Entity\\uc_slideConfig').get %}
+                {% set Images = repository('Plugin\\uc_slide\\Entity\\uc_slideData').getImages %}
+                {% set DeviceClass = 'pc' %}
+                <link rel="stylesheet" href="{{ asset('assets/css/uc_slide_pc.css') }}">
+            {% endif %}
+            {% if Images is not empty %}
+            <div class="{{ DeviceClass }} slider-height">
+                <div class="top-mv">
+                    <div class="slideshow">
+                        <div class="inr">
+                            <ul>
+                                {% for image in Images %}
+                                    <li class="slider" {% if loop.index == 1 %}style="display:block"{% endif %}>
+                                        {% if image.link_url %}
+                                            <a href="{{ image.link_url }}" class="slide__link">
+                                        {% endif %}
+                                            <div class="slide-item">
+                                                <img 
+                                                    {% if is_sp() %}height="320"{% endif %}
+                                                    src="{{ url('homepage') }}html/user_data/{{ image.img_url }}" 
+                                                    alt="{{ image.img_alt }}"
+                                                >
+                                            </div>
+                                        {% if image.link_url %}
+                                            </a>
+                                        {% endif %}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script>
+                $('.top-mv ul').slick({
+                    fade: false,
+                    autoplay: true,
+                    autoplaySpeed: 3000,
+                    speed: 500,
+                    arrows: false,
+                    dots: true,
+                });
+            </script>
+            {% endif %}
+        </div>
+    {# {% endif %} #}
+    
+    <div class="inner" style="background-color: #F4F4F4">
+        <div class="ec-layoutRole__contents">
+            {# Layout: SIDE_LEFT #}
+            {% if Layout.SideLeft %}
+                <div class="ec-layoutRole__left">
+                    {{ include('block.twig', {'Blocks': Layout.SideLeft}) }}
+                </div>
+            {% endif %}
+
+            {% set layoutRoleMain = 'ec-layoutRole__main' %}
+            {% if Layout.ColumnNum == 2 %}
+                {% set layoutRoleMain = 'ec-layoutRole__mainWithColumn' %}
+            {% elseif Layout.ColumnNum == 3 %}
+                {% set layoutRoleMain = 'ec-layoutRole__mainBetweenColumn' %}
+            {% endif %}
+
+            <div class="{{ layoutRoleMain }} ">
+                {# Layout: MAIN_TOP #}
+                {% if Layout.MainTop %}
+                    <div class="ec-layoutRole__mainTop">
+                        {{ include('block.twig', {'Blocks': Layout.MainTop}) }}
+                    </div>
+                {% endif %}
+
+                {# MAIN AREA #}
+                {% block main %}{% endblock %}
+            </div>
+        </div>
+    </div>
+    
+	<div class="list-category">
+		<p class="title-category">產品分類</p>
+		<div class="inr">
+			<ul>
+				<li class="c01">
+					<a href="{{ url('categories_detail', {'id': 91}) }}">洗髮精</a>
+				</li>
+				<li class="c02-new">
+					<a href="{{ url('categories_detail', {'id': 78})}}">護髮素</a>
+				</li>
+				<li class="c03-new">
+					<a href="{{ url('categories_detail', {'id': 84})}}">美髮造型用品</a>
+				</li>
+				<li class="c04-new">
+					<a href="{{ url('categories_detail', {'id': 89})}}">染髮用品</a>
+				</li>
+				<li class="c05-new">
+					<a href="{{ url('categories_detail', {'id': 85})}}">美容美髮儀器</a>
+				</li>
+				<li class="c06-new">
+					<a href="{{ url('categories_detail', {'id': 90})}}">醫美清潔保養</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+    <div class="back-to-top">
+        <img src="{{asset('assets/img/vector.svg','user_data')}}">
+        <p>回到頁面頂部</p>
+    </div>
+    <hr style="height: 1px; background-color: #000; border: none;">
+    {# Layout: CONTENTS_FOOTER #}
+    {% if Layout.Footer %}
+        <div class="ec-layoutRole__footer">
+            {{ include('block.twig', {'Blocks': Layout.Footer}) }}
+        </div>
+    {% endif %}
+</div><!-- ec-layoutRole -->
+
+<div class="ec-overlayRole"></div>
+<div class="ec-drawerRoleClose"><i class="fas fa-times"></i></div>
+<div class="ec-drawerRole">
+    {# Layout: DRAWER #}
+    {% if Layout.Drawer %}
+        {{ include('block.twig', {'Blocks': Layout.Drawer}) }}
+    {% endif %}
+</div>
+<div id="FixedLineBtn" style="display:none">
+    <div id="FixedLineDiv">
+        <a href="https://www.tiktok.com/@saepatra/live" target="_blank"><img loading="lazy"  id="FixedLineBtnImg" src="/html/user_data/assets/img/lineBtn/liveCommerce.png"></a>
+        <img loading="lazy"  id="FixedLineBtnClose" src="/html/user_data/assets/img/lineBtn/LineClose.png">
+    </div>
+</div>
+<div class="ec-blockTopBtn pagetop"><i class="fas fa-chevron-circle-up"></i></div>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/jquery.slick/1.6.0/slick.min.js"></script>
+{% include('@common/lang.twig') %}
+<script src="{{ asset('assets/js/function.js') }}?v=2023-01-29"></script>
+<script src="{{ asset('assets/js/eccube.js') }}"></script>
+{% block javascript %}
+<script>
+$(function(){
+    $(".back-to-top").click(function(e){
+        e.preventDefault();
+        $("html, body").animate({scrollTop: 0}, 1500);
+    });
+});
+</script>
+{% endblock %}
+{# Layout: CLOSE_BODY_BEFORE #}
+{% if Layout.CloseBodyBefore %}
+    {{ include('block.twig', {'Blocks': Layout.CloseBodyBefore}) }}
+{% endif %}
+{# プラグイン用Snippet #}
+{# {% if plugin_snippets is defined %}
+    {{ include('snippet.twig', { snippets: plugin_snippets }) }}
+{% endif %} #}
+    <script src="{{ asset('assets/js/customize.js', 'user_data') }}?v20220128"></script>
+    <script>
+        document.querySelector('input[name="name"]').addEventListener('input', function() {
+            if (this.value) {
+                this.classList.add('no-background');
+            } else {
+                this.classList.remove('no-background');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<style>
+	.add-cart-block button {
+		width: 38px;
+		height: 38px;
+		border: 1px solid rgba(0, 0, 0, 1);
+		border-radius: 6px;
+		background: transparent;
+	}
+	@media screen and (max-width:767px) {
+		.add-cart-block button {
+			width: 30px;
+			height: 30px;
+			border: 1px solid rgba(0, 0, 0, 1);
+			border-radius: 6px;	
+			background: transparent;
+		}
+	}
+</style>
+<div class="add-cart-block">
+	<form action="{{ url('product_add_cart', {id:product.id}) }}" method="post" id="form{{ product.id }}" name="form{{ product.id }}">
+		<input type="hidden" name="product_id" value="{{ product.id }}">
+		<input type="hidden" name="quantity" value="1">
+		<input type="hidden" name="ProductClass" value="{{ product.ProductClasses[0].id }}">
+		<input type="hidden" name="_token" value="{{ csrf_token(constant('Eccube\\Common\\Constant::TOKEN_NAME')) }}">
+	</form>
+	<button class="add-cart-{{ product.id }}" onclick="AddCart({{ product.id }})" data-id="{{ product.id }}" style="padding: 0 !important; border:none;">
+		<img loading="lazy" style="aspect-ratio: 62 / 55;" src="/html/template/default/assets/img/cart_add.png" alt="" style="">
+	</button>
+</div>
