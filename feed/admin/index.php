@@ -248,9 +248,23 @@ function showAdminPage($videos, $products, $totalViews, $totalLikes, $message, $
         .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         
-        .generating-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.85); display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 16px; z-index: 10; }
-        .generating-text { color: #fff; margin-top: 16px; font-size: 14px; }
-        .generating-sub { color: #888; margin-top: 4px; font-size: 12px; }
+        .generating-overlay { position: absolute; inset: 0; background: rgba(10,10,10,0.95); display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 16px; z-index: 10; }
+        .generating-text { color: #fff; margin-top: 20px; font-size: 16px; font-weight: 600; }
+        .generating-sub { color: #a0aec0; margin-top: 6px; font-size: 13px; }
+        .generating-timer { color: #888; margin-top: 8px; font-size: 12px; font-variant-numeric: tabular-nums; }
+        .generating-steps { margin-top: 24px; width: 80%; max-width: 320px; }
+        .gen-step { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; margin-bottom: 6px; font-size: 13px; color: #666; transition: all 0.4s ease; background: rgba(255,255,255,0.03); }
+        .gen-step.active { color: #fff; background: rgba(229,62,62,0.15); }
+        .gen-step.done { color: #48bb78; background: rgba(72,187,120,0.1); }
+        .gen-step .step-icon { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .gen-step .step-spinner { width: 16px; height: 16px; border: 2px solid rgba(229,62,62,0.3); border-top-color: #e53e3e; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        .gen-step .step-check { color: #48bb78; font-size: 16px; }
+        .gen-step .step-wait { width: 8px; height: 8px; background: #444; border-radius: 50%; }
+        .generating-pulse { width: 60px; height: 60px; position: relative; }
+        .generating-pulse .pulse-ring { position: absolute; inset: 0; border: 2px solid rgba(229,62,62,0.3); border-radius: 50%; animation: pulseRing 2s ease-out infinite; }
+        .generating-pulse .pulse-ring:nth-child(2) { animation-delay: 0.6s; }
+        .generating-pulse .pulse-core { position: absolute; inset: 10px; border: 3px solid rgba(255,255,255,0.3); border-top-color: #e53e3e; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes pulseRing { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.8); opacity: 0; } }
         
         .toast { position: fixed; top: 20px; right: 20px; padding: 12px 20px; border-radius: 8px; font-size: 14px; z-index: 2000; animation: slideIn 0.3s ease; }
         .toast-success { background: #48bb78; color: #fff; }
@@ -396,9 +410,28 @@ function showAdminPage($videos, $products, $totalViews, $totalLikes, $message, $
     <div class="modal-overlay" id="addModal">
         <div class="modal">
             <div id="generatingOverlay" class="generating-overlay" style="display:none;">
-                <div class="spinner" style="width:40px;height:40px;border-width:3px;"></div>
+                <div class="generating-pulse">
+                    <div class="pulse-ring"></div>
+                    <div class="pulse-ring"></div>
+                    <div class="pulse-core"></div>
+                </div>
                 <div class="generating-text">AI 正在自動生成中...</div>
-                <div class="generating-sub">標題 A/B、說明文 A/B、SEO文章</div>
+                <div class="generating-sub">請稍候，通常需要 20~40 秒</div>
+                <div class="generating-timer" id="genTimer">已經過 0 秒</div>
+                <div class="generating-steps">
+                    <div class="gen-step" id="genStep1">
+                        <div class="step-icon"><div class="step-wait"></div></div>
+                        <span>標題 A/B 2種版本生成</span>
+                    </div>
+                    <div class="gen-step" id="genStep2">
+                        <div class="step-icon"><div class="step-wait"></div></div>
+                        <span>說明文 A/B 2種版本生成</span>
+                    </div>
+                    <div class="gen-step" id="genStep3">
+                        <div class="step-icon"><div class="step-wait"></div></div>
+                        <span>SEO文章生成</span>
+                    </div>
+                </div>
             </div>
             <div id="completionView" style="display:none;">
                 <div class="modal-header">
@@ -589,8 +622,13 @@ function showAdminPage($videos, $products, $totalViews, $totalLikes, $message, $
     }
 
     function openAiModal(videoId) {
-        if (!confirm('確定要為此影片生成AI內容嗎？（標題A/B、說明文A/B、SEO文章）')) return;
-        showToast('AI生成開始中...', 'success');
+        if (!confirm('確定要為此影片生成AI內容嗎？（標題 A/B、說明文 A/B、SEO文章）')) return;
+        // Show generating overlay in add modal
+        document.getElementById('addModal').classList.add('active');
+        document.getElementById('formView').style.display = 'none';
+        document.getElementById('completionView').style.display = 'none';
+        document.getElementById('generatingOverlay').style.display = 'flex';
+        startGenAnimation();
         fetch(apiBase + '?action=ai_generate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -598,10 +636,27 @@ function showAdminPage($videos, $products, $totalViews, $totalLikes, $message, $
         })
         .then(function(r) { return r.json(); })
         .then(function(data) {
-            if (data.success) { showToast('AI生成完成！', 'success'); setTimeout(function() { location.reload(); }, 1000); }
-            else { showToast('AI生成失敗: ' + (data.error || '未知錯誤'), 'error'); }
+            stopGenAnimation();
+            setTimeout(function() {
+                document.getElementById('generatingOverlay').style.display = 'none';
+                document.getElementById('completionView').style.display = '';
+                var items = '';
+                if (data.success) {
+                    items += '<div class="completion-item"><span>&#10003;</span> 標題 A/B 2種版本生成完成</div>';
+                    items += '<div class="completion-item"><span>&#10003;</span> 說明文 A/B 2種版本生成完成</div>';
+                    items += '<div class="completion-item"><span>&#10003;</span> SEO文章生成完成</div>';
+                } else {
+                    items += '<div class="completion-item" style="color:#e53e3e;"><span>&#10007;</span> AI生成失敗: ' + (data.error || '未知錯誤') + '</div>';
+                }
+                document.getElementById('completionItems').innerHTML = items;
+            }, 800);
         })
-        .catch(function(err) { showToast('AI生成錯誤: ' + err.message, 'error'); });
+        .catch(function(err) {
+            stopGenAnimation();
+            document.getElementById('generatingOverlay').style.display = 'none';
+            document.getElementById('addModal').classList.remove('active');
+            showToast('AI生成錯誤: ' + err.message, 'error');
+        });
     }
 
     // Upload
@@ -734,6 +789,54 @@ function showAdminPage($videos, $products, $totalViews, $totalLikes, $message, $
         xhr.send(formData);
     }
 
+    // AI generation step animation
+    var genTimerInterval = null;
+    var genStepInterval = null;
+    function startGenAnimation() {
+        var seconds = 0;
+        var timerEl = document.getElementById('genTimer');
+        // Reset steps
+        for (var i = 1; i <= 3; i++) {
+            var step = document.getElementById('genStep' + i);
+            step.className = 'gen-step';
+            step.querySelector('.step-icon').innerHTML = '<div class="step-wait"></div>';
+        }
+        // Start timer
+        genTimerInterval = setInterval(function() {
+            seconds++;
+            timerEl.textContent = '已經過 ' + seconds + ' 秒';
+        }, 1000);
+        // Simulate step progress
+        var stepTimings = [
+            { step: 1, delay: 500 },    // Start step 1 immediately
+            { step: 1, delay: 8000, done: true },  // Step 1 done ~8s
+            { step: 2, delay: 9000 },   // Start step 2
+            { step: 2, delay: 18000, done: true }, // Step 2 done ~18s
+            { step: 3, delay: 19000 },  // Start step 3
+        ];
+        stepTimings.forEach(function(t) {
+            setTimeout(function() {
+                var step = document.getElementById('genStep' + t.step);
+                if (t.done) {
+                    step.className = 'gen-step done';
+                    step.querySelector('.step-icon').innerHTML = '<span class="step-check">&#10003;</span>';
+                } else {
+                    step.className = 'gen-step active';
+                    step.querySelector('.step-icon').innerHTML = '<div class="step-spinner"></div>';
+                }
+            }, t.delay);
+        });
+    }
+    function stopGenAnimation() {
+        if (genTimerInterval) { clearInterval(genTimerInterval); genTimerInterval = null; }
+        // Mark all steps as done
+        for (var i = 1; i <= 3; i++) {
+            var step = document.getElementById('genStep' + i);
+            step.className = 'gen-step done';
+            step.querySelector('.step-icon').innerHTML = '<span class="step-check">&#10003;</span>';
+        }
+    }
+
     // Submit
     function submitVideo() {
         var videoUrl = document.getElementById('videoUrl').value.trim();
@@ -780,6 +883,7 @@ function showAdminPage($videos, $products, $totalViews, $totalLikes, $message, $
             if (data.success) {
                 document.getElementById('formView').style.display = 'none';
                 document.getElementById('generatingOverlay').style.display = 'flex';
+                startGenAnimation();
                 return fetch(apiBase + '?action=ai_generate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -788,19 +892,23 @@ function showAdminPage($videos, $products, $totalViews, $totalLikes, $message, $
             } else { throw new Error(data.error || '建立失敗'); }
         })
         .then(function(aiData) {
-            document.getElementById('generatingOverlay').style.display = 'none';
-            document.getElementById('completionView').style.display = '';
-            var items = '';
-            if (aiData && aiData.success) {
-                items += '<div class="completion-item"><span>&#10003;</span> 標題 A/B 2種版本生成完成</div>';
-                items += '<div class="completion-item"><span>&#10003;</span> 說明文 A/B 2種版本生成完成</div>';
-                items += '<div class="completion-item"><span>&#10003;</span> SEO文章生成完成</div>';
-            } else {
-                items += '<div class="completion-item" style="color:#e53e3e;"><span>&#10007;</span> AI生成失敗（影片已新增，可稍後重試）</div>';
-            }
-            document.getElementById('completionItems').innerHTML = items;
+            stopGenAnimation();
+            setTimeout(function() {
+                document.getElementById('generatingOverlay').style.display = 'none';
+                document.getElementById('completionView').style.display = '';
+                var items = '';
+                if (aiData && aiData.success) {
+                    items += '<div class="completion-item"><span>&#10003;</span> 標題 A/B 2種版本生成完成</div>';
+                    items += '<div class="completion-item"><span>&#10003;</span> 說明文 A/B 2種版本生成完成</div>';
+                    items += '<div class="completion-item"><span>&#10003;</span> SEO文章生成完成</div>';
+                } else {
+                    items += '<div class="completion-item" style="color:#e53e3e;"><span>&#10007;</span> AI生成失敗（影片已新增，可稍後重試）</div>';
+                }
+                document.getElementById('completionItems').innerHTML = items;
+            }, 800);
         })
         .catch(function(err) {
+            stopGenAnimation();
             document.getElementById('generatingOverlay').style.display = 'none';
             document.getElementById('formView').style.display = '';
             document.getElementById('submitBtn').disabled = false;
