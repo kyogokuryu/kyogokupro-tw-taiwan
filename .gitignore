@@ -31,3 +31,9 @@ composer.phar
 
 # Backup files
 *.bak_perf
+
+# Feed sensitive config (use config.example.php as template)
+feed/includes/config.php
+
+# Feed uploads
+feed/uploads/

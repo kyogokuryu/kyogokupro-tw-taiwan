@@ -1,8 +1,15 @@
 <?php
 /**
- * Feed Configuration
+ * Feed Configuration - EXAMPLE
  * tw.kyogokupro.com/feed/
- * EC-CUBEとは完全に独立した動画フィード設定
+ * 
+ * このファイルをコピーして config.php にリネームし、
+ * 実際の認証情報を入力してください。
+ * 
+ * cp config.example.php config.php
+ * 
+ * ※ config.php は .gitignore で除外されているため、
+ *   GitHubにプッシュされません。
  */
 
 // Error reporting (本番では OFF にする)
@@ -10,10 +17,10 @@ error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 ini_set('display_errors', 0);
 
 // Database Configuration
-define('DB_HOST', getenv('FEED_DB_HOST') ?: 'localhost');
-define('DB_NAME', getenv('FEED_DB_NAME') ?: 'xs679489_taiwan');
-define('DB_USER', getenv('FEED_DB_USER') ?: 'xs679489_taiwan');
-define('DB_PASS', getenv('FEED_DB_PASS') ?: '');
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'YOUR_DB_NAME');
+define('DB_USER', 'YOUR_DB_USER');
+define('DB_PASS', 'YOUR_DB_PASSWORD');
 define('DB_CHARSET', 'utf8mb4');
 
 // Site Configuration
@@ -42,7 +49,7 @@ define('ALLOWED_VIDEO_TYPES', ['video/mp4', 'video/webm', 'video/quicktime']);
 define('ALLOWED_VIDEO_EXTENSIONS', ['mp4', 'webm', 'mov']);
 
 // OpenAI API Configuration
-define('OPENAI_API_KEY', getenv('OPENAI_API_KEY') ?: '');
+define('OPENAI_API_KEY', 'YOUR_OPENAI_API_KEY');
 define('OPENAI_MODEL', 'gpt-4.1-mini');
 define('OPENAI_BASE_URL', 'https://api.openai.com/v1');
 
