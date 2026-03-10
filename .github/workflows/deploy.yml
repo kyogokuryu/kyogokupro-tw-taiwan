@@ -1,0 +1,81 @@
+name: Deploy Taiwan Site to Production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Deploy via rsync
+        run: |
+          rsync -avz --delete \
+            --exclude=".env" \
+            --exclude=".env.local" \
+            --exclude="vendor/" \
+            --exclude="var/" \
+            --exclude="node_modules/" \
+            --exclude=".git/" \
+            --exclude="html/upload/" \
+            --exclude="note/" \
+            --exclude="feed/uploads/" \
+            --exclude="*.log" \
+            --exclude="*.cache" \
+            -e "ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
+            ./ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/kyogokupro.com/public_html/tw/
+
+      - name: Post-deploy tasks
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          command_timeout: 30m
+          script: |
+            cd /home/${{ secrets.SSH_USER }}/kyogokupro.com/public_html/tw
+
+            echo "=== Verify key files ==="
+            test -f feed/index.php && echo "feed/index.php: OK" || echo "feed/index.php: MISSING"
+            test -f personalcolor_diagnosis/index.html && echo "personalcolor_diagnosis: OK" || echo "personalcolor_diagnosis: MISSING"
+            test -f .htaccess && echo ".htaccess: OK" || echo ".htaccess: MISSING"
+
+            echo "=== Check vendor ==="
+            if [ ! -f vendor/autoload.php ]; then
+              echo "vendor/autoload.php missing, restoring vendor..."
+
+              if [ ! -f composer.phar ]; then
+                echo "Downloading composer.phar..."
+                php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+                php composer-setup.php --quiet
+                rm -f composer-setup.php
+              fi
+
+              php composer.phar install --no-dev --no-custom-installers --optimize-autoloader --no-interaction 2>&1 || echo "WARNING: composer install failed"
+              php composer.phar dump-autoload --optimize --no-dev 2>&1 || true
+            else
+              echo "vendor/autoload.php: OK"
+            fi
+
+            echo "=== Generate proxies ==="
+            php bin/console eccube:generate:proxies --env=prod 2>&1 || true
+
+            echo "=== Cache clear ==="
+            php bin/console cache:clear --env=prod --no-debug 2>&1 || true
+
+            echo "=== Deploy complete ==="
+            date
