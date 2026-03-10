@@ -1,6 +1,7 @@
 /**
  * Feed - TikTok-style Video Feed
  * tw.kyogokupro.com/feed/
+ * Supports: YouTube, uploaded video files (MP4/WebM/MOV)
  */
 
 (function() {
@@ -41,15 +42,22 @@
         card.className = 'video-card';
         card.dataset.videoId = video.id;
         card.dataset.youtubeId = video.youtube_id || '';
+        card.dataset.videoType = video.video_type || 'youtube';
+        card.dataset.videoUrl = video.video_url || '';
+        card.dataset.videoFile = video.video_file_url || '';
 
         const thumbnailUrl = video.thumbnail || '';
         const productsHtml = (video.products && video.products.length > 0) 
             ? createProductsHtml(video.products, video.id) 
             : '';
 
+        // Use AI-generated title/description if available
+        const displayTitle = video.display_title || video.title;
+        const displayDesc = video.display_description || video.description;
+
         card.innerHTML = 
             '<div class="video-player-wrapper" data-video-id="' + video.id + '">' +
-                '<img class="video-thumbnail" src="' + escapeHtml(thumbnailUrl) + '" alt="' + escapeHtml(video.title) + '" loading="lazy">' +
+                '<img class="video-thumbnail" src="' + escapeHtml(thumbnailUrl) + '" alt="' + escapeHtml(displayTitle) + '" loading="lazy">' +
                 '<div class="video-play-btn" role="button" aria-label="播放影片">' +
                     '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>' +
                 '</div>' +
@@ -59,7 +67,7 @@
                     '<span class="action-btn-icon"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span>' +
                     '<span class="action-btn-label">' + (video.formatted_likes || '0') + '</span>' +
                 '</button>' +
-                '<button class="action-btn share-btn" data-video-id="' + video.id + '" data-title="' + escapeHtml(video.title) + '" aria-label="分享">' +
+                '<button class="action-btn share-btn" data-video-id="' + video.id + '" data-title="' + escapeHtml(displayTitle) + '" aria-label="分享">' +
                     '<span class="action-btn-icon"><svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg></span>' +
                     '<span class="action-btn-label">分享</span>' +
                 '</button>' +
@@ -70,10 +78,11 @@
             '</div>' +
             (productsHtml ? '<div class="video-products">' + productsHtml + '</div>' : '') +
             '<div class="video-info">' +
-                '<h2 class="video-title">' + escapeHtml(video.title) + '</h2>' +
-                (video.description ? '<p class="video-description">' + escapeHtml(video.description) + '</p>' : '') +
+                '<h2 class="video-title">' + escapeHtml(displayTitle) + '</h2>' +
+                (displayDesc ? '<p class="video-description">' + escapeHtml(displayDesc) + '</p>' : '') +
                 '<div class="video-meta">' +
                     '<span class="video-meta-item"><svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>' + (video.formatted_date || '') + '</span>' +
+                    (video.video_type === 'upload' ? '<span class="video-meta-item" style="color:#9f7aea;">&#9654; 原創影片</span>' : '') +
                 '</div>' +
             '</div>';
 
@@ -101,33 +110,94 @@
     // ===== Video Player =====
     function playVideo(card) {
         var videoId = card.dataset.videoId;
+        var videoType = card.dataset.videoType;
         var youtubeId = card.dataset.youtubeId;
+        var videoUrl = card.dataset.videoUrl;
+        var videoFile = card.dataset.videoFile;
         var wrapper = card.querySelector('.video-player-wrapper');
         var thumbnail = card.querySelector('.video-thumbnail');
         var playBtn = card.querySelector('.video-play-btn');
 
-        if (!youtubeId) return;
-
         // Stop any other playing video
         stopAllVideos();
 
-        // Create YouTube iframe
-        var iframe = document.createElement('iframe');
-        iframe.src = 'https://www.youtube.com/embed/' + youtubeId + '?autoplay=1&playsinline=1&rel=0&modestbranding=1&showinfo=0';
-        iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
-        iframe.setAttribute('allowfullscreen', '');
-        iframe.style.position = 'absolute';
-        iframe.style.top = '0';
-        iframe.style.left = '0';
-        iframe.style.width = '100%';
-        iframe.style.height = '100%';
-        iframe.style.zIndex = '1';
+        if (videoType === 'upload' && videoFile) {
+            // Play uploaded video file
+            var video = document.createElement('video');
+            video.src = videoFile;
+            video.autoplay = true;
+            video.controls = true;
+            video.playsInline = true;
+            video.loop = true;
+            video.muted = false;
+            video.style.position = 'absolute';
+            video.style.top = '0';
+            video.style.left = '0';
+            video.style.width = '100%';
+            video.style.height = '100%';
+            video.style.objectFit = 'contain';
+            video.style.background = '#000';
+            video.style.zIndex = '1';
+            
+            wrapper.appendChild(video);
+            thumbnail.classList.add('hidden');
+            playBtn.classList.add('hidden');
+            activePlayer = video;
+            activeVideoId = videoId;
+            
+            video.play().catch(function() {
+                // Autoplay blocked, try muted
+                video.muted = true;
+                video.play();
+            });
+        } else if (videoType === 'direct' && videoUrl) {
+            // Play direct video URL
+            var video = document.createElement('video');
+            video.src = videoUrl;
+            video.autoplay = true;
+            video.controls = true;
+            video.playsInline = true;
+            video.loop = true;
+            video.style.position = 'absolute';
+            video.style.top = '0';
+            video.style.left = '0';
+            video.style.width = '100%';
+            video.style.height = '100%';
+            video.style.objectFit = 'contain';
+            video.style.background = '#000';
+            video.style.zIndex = '1';
+            
+            wrapper.appendChild(video);
+            thumbnail.classList.add('hidden');
+            playBtn.classList.add('hidden');
+            activePlayer = video;
+            activeVideoId = videoId;
+            
+            video.play().catch(function() {
+                video.muted = true;
+                video.play();
+            });
+        } else if (youtubeId) {
+            // Play YouTube embed
+            var iframe = document.createElement('iframe');
+            iframe.src = 'https://www.youtube.com/embed/' + youtubeId + '?autoplay=1&playsinline=1&rel=0&modestbranding=1&showinfo=0';
+            iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+            iframe.setAttribute('allowfullscreen', '');
+            iframe.style.position = 'absolute';
+            iframe.style.top = '0';
+            iframe.style.left = '0';
+            iframe.style.width = '100%';
+            iframe.style.height = '100%';
+            iframe.style.zIndex = '1';
 
-        wrapper.appendChild(iframe);
-        thumbnail.classList.add('hidden');
-        playBtn.classList.add('hidden');
-        activePlayer = iframe;
-        activeVideoId = videoId;
+            wrapper.appendChild(iframe);
+            thumbnail.classList.add('hidden');
+            playBtn.classList.add('hidden');
+            activePlayer = iframe;
+            activeVideoId = videoId;
+        } else {
+            return;
+        }
 
         // Record view
         if (!viewedVideos.has(videoId)) {
@@ -137,8 +207,14 @@
     }
 
     function stopAllVideos() {
+        // Remove iframes (YouTube)
         document.querySelectorAll('.video-player-wrapper iframe').forEach(function(iframe) {
             iframe.remove();
+        });
+        // Remove/pause video elements (uploaded files)
+        document.querySelectorAll('.video-player-wrapper video').forEach(function(video) {
+            video.pause();
+            video.remove();
         });
         document.querySelectorAll('.video-thumbnail.hidden').forEach(function(thumb) {
             thumb.classList.remove('hidden');
@@ -174,9 +250,7 @@
         var title = btn.dataset.title;
         var url = window.location.origin + '/feed/#video-' + videoId;
         
-        // Record share analytics
         postAction('analytics', { video_id: parseInt(videoId), action_type: 'share' });
-        
         showShareModal(title, url);
     }
 
@@ -190,7 +264,6 @@
     function showShareModal(title, url) {
         var modal = document.getElementById('shareModal');
         if (!modal) return;
-        
         modal.dataset.shareTitle = title;
         modal.dataset.shareUrl = url;
         modal.classList.add('active');
@@ -249,7 +322,6 @@
                     var card = entry.target;
                     var videoId = card.dataset.videoId;
                     
-                    // Auto-record view when scrolled into view
                     if (!viewedVideos.has(videoId)) {
                         viewedVideos.add(videoId);
                         postAction('view', { video_id: parseInt(videoId) });
@@ -257,8 +329,17 @@
                 } else {
                     // Stop video when scrolled out
                     var iframe = entry.target.querySelector('iframe');
+                    var video = entry.target.querySelector('video');
                     if (iframe) {
                         iframe.remove();
+                        var thumb = entry.target.querySelector('.video-thumbnail');
+                        var btn = entry.target.querySelector('.video-play-btn');
+                        if (thumb) thumb.classList.remove('hidden');
+                        if (btn) btn.classList.remove('hidden');
+                    }
+                    if (video) {
+                        video.pause();
+                        video.remove();
                         var thumb = entry.target.querySelector('.video-thumbnail');
                         var btn = entry.target.querySelector('.video-play-btn');
                         if (thumb) thumb.classList.remove('hidden');
@@ -331,10 +412,8 @@
         var container = document.getElementById('feedContainer');
         if (!container) return;
 
-        // Show loading
         container.innerHTML = '<div class="feed-loading"><div class="feed-spinner"></div><div class="feed-loading-text">載入中...</div></div>';
 
-        // Fetch initial videos
         var result = await fetchVideos(1);
 
         if (!result || !result.success || result.data.length === 0) {
@@ -342,13 +421,9 @@
             return;
         }
 
-        // Clear loading
         container.innerHTML = '';
-
-        // Setup observer
         setupObserver();
 
-        // Render videos
         result.data.forEach(function(video) {
             var card = createVideoCard(video);
             container.appendChild(card);
@@ -357,13 +432,11 @@
 
         hasMore = result.pagination.has_more;
 
-        // Add load more sentinel
         var sentinel = document.createElement('div');
         sentinel.id = 'loadMore';
         sentinel.innerHTML = '<div id="loadingIndicator" class="feed-loading" style="display:none;height:auto;padding:40px 0;"><div class="feed-spinner"></div></div>';
         container.appendChild(sentinel);
 
-        // Setup infinite scroll
         setupInfiniteScroll();
         setupScrollIndicator();
 

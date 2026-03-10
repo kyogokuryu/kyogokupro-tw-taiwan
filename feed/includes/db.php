@@ -89,6 +89,20 @@ class Database {
     }
 
     /**
+     * Get videos linked to a specific product
+     */
+    public function getVideosByProductId($productId) {
+        $stmt = $this->pdo->prepare('
+            SELECT v.* FROM feed_videos v
+            JOIN feed_video_products vp ON v.id = vp.video_id
+            WHERE vp.product_id = :product_id AND v.is_published = 1
+            ORDER BY v.created_at DESC
+        ');
+        $stmt->execute([':product_id' => $productId]);
+        return $stmt->fetchAll();
+    }
+
+    /**
      * Increment view count
      */
     public function incrementViewCount($videoId) {
@@ -100,7 +114,6 @@ class Database {
      * Toggle like
      */
     public function toggleLike($videoId, $ip) {
-        // Check if already liked
         $stmt = $this->pdo->prepare('
             SELECT id FROM feed_video_analytics 
             WHERE video_id = :vid AND action_type = "like" AND ip_address = :ip
@@ -108,7 +121,6 @@ class Database {
         $stmt->execute([':vid' => $videoId, ':ip' => $ip]);
         
         if ($stmt->fetch()) {
-            // Unlike
             $stmt = $this->pdo->prepare('
                 DELETE FROM feed_video_analytics 
                 WHERE video_id = :vid AND action_type = "like" AND ip_address = :ip
@@ -116,9 +128,8 @@ class Database {
             $stmt->execute([':vid' => $videoId, ':ip' => $ip]);
             $this->pdo->prepare('UPDATE feed_videos SET like_count = GREATEST(like_count - 1, 0) WHERE id = :id')
                 ->execute([':id' => $videoId]);
-            return false; // unliked
+            return false;
         } else {
-            // Like
             $stmt = $this->pdo->prepare('
                 INSERT INTO feed_video_analytics (video_id, action_type, ip_address, user_agent)
                 VALUES (:vid, "like", :ip, :ua)
@@ -130,7 +141,7 @@ class Database {
             ]);
             $this->pdo->prepare('UPDATE feed_videos SET like_count = like_count + 1 WHERE id = :id')
                 ->execute([':id' => $videoId]);
-            return true; // liked
+            return true;
         }
     }
 
@@ -182,17 +193,18 @@ class Database {
     }
 
     /**
-     * Create video
+     * Create video (with upload support)
      */
     public function createVideo($data) {
         $stmt = $this->pdo->prepare('
-            INSERT INTO feed_videos (title, description, video_url, video_type, thumbnail_url, duration, sort_order, is_published, tags)
-            VALUES (:title, :desc, :url, :type, :thumb, :dur, :sort, :pub, :tags)
+            INSERT INTO feed_videos (title, description, video_url, video_file_path, video_type, thumbnail_url, duration, sort_order, is_published, tags)
+            VALUES (:title, :desc, :url, :file_path, :type, :thumb, :dur, :sort, :pub, :tags)
         ');
         $stmt->execute([
             ':title' => $data['title'],
             ':desc' => $data['description'] ?? '',
             ':url' => $data['video_url'],
+            ':file_path' => $data['video_file_path'] ?? null,
             ':type' => $data['video_type'] ?? 'youtube',
             ':thumb' => $data['thumbnail_url'] ?? null,
             ':dur' => $data['duration'] ?? null,
@@ -212,6 +224,7 @@ class Database {
                 title = :title,
                 description = :desc,
                 video_url = :url,
+                video_file_path = :file_path,
                 video_type = :type,
                 thumbnail_url = :thumb,
                 duration = :dur,
@@ -225,6 +238,7 @@ class Database {
             ':title' => $data['title'],
             ':desc' => $data['description'] ?? '',
             ':url' => $data['video_url'],
+            ':file_path' => $data['video_file_path'] ?? null,
             ':type' => $data['video_type'] ?? 'youtube',
             ':thumb' => $data['thumbnail_url'] ?? null,
             ':dur' => $data['duration'] ?? null,
@@ -235,9 +249,102 @@ class Database {
     }
 
     /**
+     * Update AI generated content
+     */
+    public function updateVideoAiContent($id, $data) {
+        $stmt = $this->pdo->prepare('
+            UPDATE feed_videos SET
+                ai_generated_title = :ai_title,
+                ai_generated_description = :ai_desc,
+                ai_seo_article = :seo_article,
+                seo_article_published = :seo_pub,
+                title_variant_a = :title_a,
+                title_variant_b = :title_b,
+                desc_variant_a = :desc_a,
+                desc_variant_b = :desc_b,
+                active_variant = :variant,
+                title = :display_title,
+                description = :display_desc
+            WHERE id = :id
+        ');
+        $stmt->execute([
+            ':id' => $id,
+            ':ai_title' => $data['title_variant_a'] ?? null,
+            ':ai_desc' => $data['desc_variant_a'] ?? null,
+            ':seo_article' => $data['seo_article'] ?? null,
+            ':seo_pub' => $data['seo_article_published'] ?? 1,
+            ':title_a' => $data['title_variant_a'] ?? null,
+            ':title_b' => $data['title_variant_b'] ?? null,
+            ':desc_a' => $data['desc_variant_a'] ?? null,
+            ':desc_b' => $data['desc_variant_b'] ?? null,
+            ':variant' => 'A',
+            ':display_title' => $data['title_variant_a'] ?? '',
+            ':display_desc' => $data['desc_variant_a'] ?? '',
+        ]);
+    }
+
+    /**
+     * Set active A/B variant
+     */
+    public function setActiveVariant($id, $variant) {
+        $video = $this->getVideo($id);
+        if (!$video) return;
+
+        $title = $variant === 'A' ? $video['title_variant_a'] : $video['title_variant_b'];
+        $desc = $variant === 'A' ? $video['desc_variant_a'] : $video['desc_variant_b'];
+
+        $stmt = $this->pdo->prepare('
+            UPDATE feed_videos SET 
+                active_variant = :variant,
+                title = :title,
+                description = :desc
+            WHERE id = :id
+        ');
+        $stmt->execute([
+            ':id' => $id,
+            ':variant' => $variant,
+            ':title' => $title ?: $video['title'],
+            ':desc' => $desc ?: $video['description'],
+        ]);
+    }
+
+    /**
+     * Toggle SEO article published
+     */
+    public function toggleSeoArticle($id) {
+        $stmt = $this->pdo->prepare('
+            UPDATE feed_videos SET seo_article_published = NOT seo_article_published WHERE id = :id
+        ');
+        $stmt->execute([':id' => $id]);
+    }
+
+    /**
+     * Increment A/B variant views
+     */
+    public function incrementVariantView($videoId, $variant) {
+        $col = $variant === 'B' ? 'variant_b_views' : 'variant_a_views';
+        $stmt = $this->pdo->prepare("UPDATE feed_videos SET {$col} = {$col} + 1 WHERE id = :id");
+        $stmt->execute([':id' => $videoId]);
+    }
+
+    /**
+     * Increment A/B variant clicks
+     */
+    public function incrementVariantClick($videoId, $variant) {
+        $col = $variant === 'B' ? 'variant_b_clicks' : 'variant_a_clicks';
+        $stmt = $this->pdo->prepare("UPDATE feed_videos SET {$col} = {$col} + 1 WHERE id = :id");
+        $stmt->execute([':id' => $videoId]);
+    }
+
+    /**
      * Delete video
      */
     public function deleteVideo($id) {
+        // Get video to delete file if uploaded
+        $video = $this->getVideo($id);
+        if ($video && $video['video_file_path'] && file_exists($video['video_file_path'])) {
+            unlink($video['video_file_path']);
+        }
         $stmt = $this->pdo->prepare('DELETE FROM feed_videos WHERE id = :id');
         $stmt->execute([':id' => $id]);
     }
@@ -246,11 +353,9 @@ class Database {
      * Set video products
      */
     public function setVideoProducts($videoId, $productIds) {
-        // Remove existing
         $stmt = $this->pdo->prepare('DELETE FROM feed_video_products WHERE video_id = :vid');
         $stmt->execute([':vid' => $videoId]);
         
-        // Add new
         if (!empty($productIds)) {
             $stmt = $this->pdo->prepare('
                 INSERT INTO feed_video_products (video_id, product_id, sort_order)
@@ -263,11 +368,22 @@ class Database {
     }
 
     /**
-     * Get all EC-CUBE products for admin dropdown
+     * Get product IDs linked to a video
+     */
+    public function getVideoProductIds($videoId) {
+        $stmt = $this->pdo->prepare('SELECT product_id FROM feed_video_products WHERE video_id = :vid ORDER BY sort_order');
+        $stmt->execute([':vid' => $videoId]);
+        return $stmt->fetchAll(PDO::FETCH_COLUMN);
+    }
+
+    /**
+     * Get all EC-CUBE products for admin
      */
     public function getEcCubeProducts() {
         $stmt = $this->pdo->query('
-            SELECT p.id, p.name 
+            SELECT p.id, p.name,
+                   (SELECT pi.file_name FROM dtb_product_image pi WHERE pi.product_id = p.id ORDER BY pi.sort_no ASC LIMIT 1) as image_file,
+                   (SELECT pc.price02 FROM dtb_product_class pc WHERE pc.product_id = p.id LIMIT 1) as price
             FROM dtb_product p 
             WHERE p.product_status_id = 1
             ORDER BY p.id DESC

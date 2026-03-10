@@ -1574,6 +1574,10 @@ file that was distributed with this source code.
                 </div>
             </div>
 
+            {# 商品関連動画ウィジェット - カート追加ボタンの下に配置 #}
+            <div id="kg-video-widget" data-product-id="{{ Product.id }}" style="padding: 0 15px; margin-top: 20px;"></div>
+            <script src="/feed/assets/js/widget.js" defer></script>
+
         
             {# 商品説明 #}
         
@@ -1604,7 +1608,7 @@ file that was distributed with this source code.
                      {{ include(template_from_string(Product.freearea)) }}
                 </div>
             {% endif %}
-        
+
         </div>
     </div>
     </section>
