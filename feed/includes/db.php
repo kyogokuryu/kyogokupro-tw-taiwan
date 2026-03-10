@@ -54,6 +54,39 @@ class Database {
     }
 
     /**
+     * Get random published videos, excluding specified IDs
+     */
+    public function getRandomVideos($limit = 10, $excludeIds = []) {
+        $where = 'WHERE v.is_published = 1';
+        $params = [];
+        if (!empty($excludeIds)) {
+            $placeholders = [];
+            foreach ($excludeIds as $i => $id) {
+                $key = ':ex' . $i;
+                $placeholders[] = $key;
+                $params[$key] = intval($id);
+            }
+            $where .= ' AND v.id NOT IN (' . implode(',', $placeholders) . ')';
+        }
+        $stmt = $this->pdo->prepare('
+            SELECT v.*, 
+                   GROUP_CONCAT(DISTINCT vp.product_id) as product_ids
+            FROM feed_videos v
+            LEFT JOIN feed_video_products vp ON v.id = vp.video_id
+            ' . $where . '
+            GROUP BY v.id
+            ORDER BY RAND()
+            LIMIT :limit
+        ');
+        foreach ($params as $k => $v) {
+            $stmt->bindValue($k, $v, PDO::PARAM_INT);
+        }
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    /**
      * Get total published video count
      */
     public function getVideoCount() {

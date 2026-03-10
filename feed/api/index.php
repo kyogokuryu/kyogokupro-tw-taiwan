@@ -282,6 +282,24 @@ try {
             jsonResponse(['success' => true, 'bookmarked' => $bookmarked, 'bookmark_count' => $count]);
             break;
 
+        case 'feed_videos':
+            // Get random videos for infinite scroll feed
+            // Optional: exclude_ids (comma-separated) to avoid duplicates
+            $excludeIdsStr = $_GET['exclude_ids'] ?? '';
+            $excludeIds = $excludeIdsStr ? array_map('intval', explode(',', $excludeIdsStr)) : [];
+            $limit = min(intval($_GET['limit'] ?? 10), 20);
+            $videos = $db->getRandomVideos($limit, $excludeIds);
+            $ip = getClientIp();
+            foreach ($videos as &$video) {
+                enrichVideoData($video, $db, $ip);
+            }
+            header('Access-Control-Allow-Origin: *');
+            jsonResponse([
+                'success' => true,
+                'data' => $videos,
+            ]);
+            break;
+
         case 'product_videos':
             // Get videos linked to a specific product
             $productId = intval($_GET['product_id'] ?? 0);

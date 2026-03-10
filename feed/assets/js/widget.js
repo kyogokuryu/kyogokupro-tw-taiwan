@@ -24,6 +24,9 @@
     var isCommentOpen = false;
     var isSearchOpen = false;
     var isMuted = false; // タップで開くので音声ON
+    var isLoadingMore = false;
+    var allVideoIds = new Set(); // Track loaded video IDs to avoid duplicates
+    var initialProductVideos = []; // Videos from the current product page
 
     // ===== Inject Styles =====
     function injectStyles() {
@@ -148,6 +151,7 @@
 /* Like animation */\
 @keyframes kg-like-pop{0%{transform:scale(1)}25%{transform:scale(1.3)}50%{transform:scale(.95)}100%{transform:scale(1)}}\
 .kg-like-anim{animation:kg-like-pop .4s ease}\
+@keyframes kg-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}\
 \
 /* Toast */\
 .kg-toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.92);color:#333;padding:10px 24px;border-radius:20px;font-size:13px;font-weight:600;z-index:1000001;opacity:0;transition:opacity .3s;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.2)}\
@@ -332,10 +336,37 @@
         });
     }
 
+    // Fetch more random videos for infinite scroll
+    function fetchMoreVideos(cb) {
+        if (isLoadingMore) return;
+        isLoadingMore = true;
+        var excludeIds = Array.from(allVideoIds).join(',');
+        apiGet(FEED_API + '?action=feed_videos&limit=10&exclude_ids=' + excludeIds, function(res) {
+            isLoadingMore = false;
+            if (res && res.success && res.data && res.data.length > 0) {
+                var newVideos = [];
+                res.data.forEach(function(v) {
+                    if (!allVideoIds.has(v.id)) {
+                        allVideoIds.add(v.id);
+                        allVideos.push(v);
+                        newVideos.push(v);
+                    }
+                });
+                if (cb) cb(newVideos);
+            } else {
+                if (cb) cb([]);
+            }
+        });
+    }
+
     // ===== Carousel Widget =====
     function renderCarousel(container, videos) {
         if (!videos || videos.length === 0) return;
         allVideos = videos;
+        initialProductVideos = videos.slice(); // Save original product videos
+        // Track all loaded video IDs
+        allVideoIds = new Set();
+        videos.forEach(function(v) { allVideoIds.add(v.id); });
 
         var html = '<div class="kg-widget">';
         html += '<div class="kg-widget-header">';
@@ -425,6 +456,11 @@
         loadSlide(currentIndex);
         bindFullscreenEvents(overlay);
         apiPost('view', { video_id: allVideos[currentIndex].id });
+
+        // Pre-fetch random videos for infinite scroll
+        fetchMoreVideos(function() {
+            // Videos loaded in background
+        });
 
         setTimeout(function() {
             var hint = document.getElementById('kg-fs-swipe-hint');
@@ -959,7 +995,8 @@
         // Product card
         if (video.products && video.products.length > 0) {
             var p = video.products[0];
-            var price = p.price02_inc_tax ? 'NT$' + Number(p.price02_inc_tax).toLocaleString() : '';
+            var priceVal = p.price02_inc_tax || p.price || 0;
+            var price = priceVal ? 'NT$' + Number(priceVal).toLocaleString() : '';
             var stars = '';
             var rating = parseFloat(p.avg_rating) || 4.5;
             for (var s = 0; s < 5; s++) {
@@ -1250,10 +1287,10 @@
             if (!isSwiping || isCommentOpen || isSearchOpen) return;
             isSwiping = false;
             if (Math.abs(touchDeltaY) > 60) {
-                if (touchDeltaY < 0 && currentIndex < allVideos.length - 1) {
-                    navigateVideo(1);
+                if (touchDeltaY < 0) {
+                    navigateVideo(1); // Swipe up = next (infinite)
                 } else if (touchDeltaY > 0 && currentIndex > 0) {
-                    navigateVideo(-1);
+                    navigateVideo(-1); // Swipe down = previous
                 }
             }
             touchDeltaY = 0;
@@ -1262,8 +1299,8 @@
         // Keyboard navigation
         overlay.addEventListener('keydown', function(e) {
             if (isCommentOpen || isSearchOpen) return;
-            if (e.key === 'ArrowDown' && currentIndex < allVideos.length - 1) {
-                navigateVideo(1);
+            if (e.key === 'ArrowDown') {
+                navigateVideo(1); // Infinite scroll
             } else if (e.key === 'ArrowUp' && currentIndex > 0) {
                 navigateVideo(-1);
             } else if (e.key === 'Escape') {
@@ -1286,7 +1323,36 @@
 
     function navigateVideo(direction) {
         var newIndex = currentIndex + direction;
-        if (newIndex < 0 || newIndex >= allVideos.length) return;
+        if (newIndex < 0) return;
+
+        // If we're at the end, try to load more
+        if (newIndex >= allVideos.length) {
+            if (!isLoadingMore) {
+                // Show loading indicator
+                showSwipeLoading(true);
+                fetchMoreVideos(function(newVids) {
+                    showSwipeLoading(false);
+                    if (newVids && newVids.length > 0) {
+                        // Now navigate to the new video
+                        doNavigate(newIndex);
+                    } else {
+                        showToast('\u5DF2\u770B\u5B8C\u6240\u6709\u5F71\u7247'); // 已看完所有影片
+                    }
+                });
+            }
+            return;
+        }
+
+        doNavigate(newIndex);
+
+        // Pre-fetch more when approaching the end (2 videos before)
+        if (newIndex >= allVideos.length - 2) {
+            fetchMoreVideos(function() {});
+        }
+    }
+
+    function doNavigate(newIndex) {
+        if (newIndex >= allVideos.length) return;
 
         var oldSlide = document.getElementById('kg-fs-slide-' + currentIndex);
         if (oldSlide) {
@@ -1299,6 +1365,20 @@
         apiPost('view', { video_id: allVideos[currentIndex].id });
 
         if (isCommentOpen) toggleCommentPanel(false);
+    }
+
+    function showSwipeLoading(show) {
+        var existing = document.getElementById('kg-fs-loading');
+        if (show && !existing) {
+            var el = document.createElement('div');
+            el.id = 'kg-fs-loading';
+            el.style.cssText = 'position:fixed;bottom:120px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.7);color:#fff;padding:10px 24px;border-radius:20px;font-size:14px;z-index:100002;display:flex;align-items:center;gap:8px;';
+            el.innerHTML = '<div style="width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:kg-spin 1s linear infinite;"></div> \u8F09\u5165\u4E2D...';
+            var overlay = document.getElementById('kg-fs-overlay');
+            if (overlay) overlay.appendChild(el);
+        } else if (!show && existing) {
+            existing.remove();
+        }
     }
 
     function closeFullscreen() {
