@@ -153,6 +153,13 @@
 .kg-like-anim{animation:kg-like-pop .4s ease}\
 @keyframes kg-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}\
 \
+/* 2x Speed indicator */\
+.kg-speed-indicator{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);background:rgba(0,0,0,.65);color:#fff;padding:10px 24px;border-radius:24px;font-size:18px;font-weight:700;z-index:25;pointer-events:none;transition:transform .2s cubic-bezier(.175,.885,.32,1.275);display:flex;align-items:center;gap:8px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}\
+.kg-speed-indicator.show{transform:translate(-50%,-50%) scale(1)}\
+.kg-speed-indicator svg{width:20px;height:20px;fill:#fff}\
+/* YouTube touch overlay */\
+.kg-yt-overlay{position:absolute;inset:0;z-index:5;cursor:pointer;background:transparent}\
+\
 /* Toast */\
 .kg-toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.92);color:#333;padding:10px 24px;border-radius:20px;font-size:13px;font-weight:600;z-index:1000001;opacity:0;transition:opacity .3s;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.2)}\
 .kg-toast.show{opacity:1}\
@@ -931,8 +938,15 @@
         if (video.is_uploaded && video.video_file_url) {
             slide.innerHTML = '<video class="kg-fs-video" src="' + escapeHtml(video.video_file_url) + '" playsinline loop ' + (isMuted ? 'muted' : '') + ' autoplay></video>';
         } else if (video.youtube_id) {
-            slide.innerHTML = '<iframe class="kg-fs-iframe" src="https://www.youtube.com/embed/' + video.youtube_id + '?autoplay=1&mute=' + (isMuted ? 1 : 0) + '&loop=1&playlist=' + video.youtube_id + '&playsinline=1&controls=0&rel=0&modestbranding=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
+            slide.innerHTML = '<div class="kg-yt-overlay" id="kg-yt-overlay"></div><iframe class="kg-fs-iframe" id="kg-yt-iframe" src="https://www.youtube.com/embed/' + video.youtube_id + '?autoplay=1&mute=' + (isMuted ? 1 : 0) + '&loop=1&playlist=' + video.youtube_id + '&playsinline=1&controls=0&rel=0&modestbranding=1&enablejsapi=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
         }
+
+        // Add 2x speed indicator
+        var speedEl = document.createElement('div');
+        speedEl.className = 'kg-speed-indicator';
+        speedEl.id = 'kg-speed-indicator';
+        speedEl.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> 2x';
+        slide.appendChild(speedEl);
 
         container.innerHTML = '';
         container.appendChild(slide);
@@ -1270,27 +1284,68 @@
         // Bind search events
         bindSearchEvents();
 
-        // Touch swipe for video navigation
+        // Touch swipe for video navigation + Long press 2x speed
         var container = document.getElementById('kg-fs-container');
+        var longPressTimer = null;
+        var isLongPress = false;
+        var touchStartX = 0;
+
+        function startSpeed2x() {
+            isLongPress = true;
+            var indicator = document.getElementById('kg-speed-indicator');
+            if (indicator) indicator.classList.add('show');
+            var vid = container.querySelector('video');
+            if (vid) vid.playbackRate = 2.0;
+            var iframe = container.querySelector('iframe');
+            if (iframe) {
+                try { iframe.contentWindow.postMessage(JSON.stringify({event:'command',func:'setPlaybackRate',args:[2]}), '*'); } catch(e) {}
+            }
+        }
+
+        function stopSpeed2x() {
+            isLongPress = false;
+            var indicator = document.getElementById('kg-speed-indicator');
+            if (indicator) indicator.classList.remove('show');
+            var vid = container.querySelector('video');
+            if (vid) vid.playbackRate = 1.0;
+            var iframe = container.querySelector('iframe');
+            if (iframe) {
+                try { iframe.contentWindow.postMessage(JSON.stringify({event:'command',func:'setPlaybackRate',args:[1]}), '*'); } catch(e) {}
+            }
+        }
+
         container.addEventListener('touchstart', function(e) {
             if (isCommentOpen || isSearchOpen) return;
             touchStartY = e.touches[0].clientY;
+            touchStartX = e.touches[0].clientX;
             isSwiping = true;
+            isLongPress = false;
+            longPressTimer = setTimeout(function() {
+                startSpeed2x();
+            }, 300);
         }, { passive: true });
 
         container.addEventListener('touchmove', function(e) {
-            if (!isSwiping || isCommentOpen || isSearchOpen) return;
+            if (isCommentOpen || isSearchOpen) return;
+            if (!isSwiping) return;
             touchDeltaY = e.touches[0].clientY - touchStartY;
+            var dx = e.touches[0].clientX - touchStartX;
+            if (Math.abs(touchDeltaY) > 10 || Math.abs(dx) > 10) {
+                if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
+                if (isLongPress) stopSpeed2x();
+            }
         }, { passive: true });
 
         container.addEventListener('touchend', function() {
+            if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
+            if (isLongPress) { stopSpeed2x(); return; }
             if (!isSwiping || isCommentOpen || isSearchOpen) return;
             isSwiping = false;
             if (Math.abs(touchDeltaY) > 60) {
                 if (touchDeltaY < 0) {
-                    navigateVideo(1); // Swipe up = next (infinite)
+                    navigateVideo(1);
                 } else if (touchDeltaY > 0 && currentIndex > 0) {
-                    navigateVideo(-1); // Swipe down = previous
+                    navigateVideo(-1);
                 }
             }
             touchDeltaY = 0;
@@ -1300,7 +1355,7 @@
         overlay.addEventListener('keydown', function(e) {
             if (isCommentOpen || isSearchOpen) return;
             if (e.key === 'ArrowDown') {
-                navigateVideo(1); // Infinite scroll
+                navigateVideo(1);
             } else if (e.key === 'ArrowUp' && currentIndex > 0) {
                 navigateVideo(-1);
             } else if (e.key === 'Escape') {
@@ -1310,9 +1365,9 @@
         overlay.setAttribute('tabindex', '0');
         overlay.focus();
 
-        // Click on video to toggle play/pause
+        // Click on video to toggle play/pause (not for long press or YouTube overlay)
         container.addEventListener('click', function(e) {
-            if (e.target.closest('.kg-fs-action, .kg-fs-product, .kg-fs-cart-btn, .kg-fs-search, .kg-search-panel')) return;
+            if (e.target.closest('.kg-fs-action, .kg-fs-product, .kg-fs-cart-btn, .kg-fs-search, .kg-search-panel, .kg-yt-overlay')) return;
             var vid = container.querySelector('video');
             if (vid) {
                 if (vid.paused) vid.play();
