@@ -391,6 +391,69 @@ class Database {
         return $stmt->fetchAll();
     }
 
+    // ===== Comment Methods =====
+
+    public function getComments($videoId, $limit = 50) {
+        $stmt = $this->pdo->prepare('
+            SELECT * FROM feed_comments
+            WHERE video_id = :vid
+            ORDER BY created_at DESC
+            LIMIT :limit
+        ');
+        $stmt->bindValue(':vid', $videoId, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    public function getCommentCount($videoId) {
+        $stmt = $this->pdo->prepare('SELECT COUNT(*) FROM feed_comments WHERE video_id = :vid');
+        $stmt->execute([':vid' => $videoId]);
+        return (int) $stmt->fetchColumn();
+    }
+
+    public function addComment($videoId, $nickname, $text, $ip) {
+        $stmt = $this->pdo->prepare('
+            INSERT INTO feed_comments (video_id, nickname, comment_text, ip_address)
+            VALUES (:vid, :nick, :text, :ip)
+        ');
+        $stmt->execute([
+            ':vid' => $videoId,
+            ':nick' => $nickname ?: '訪客',
+            ':text' => $text,
+            ':ip' => $ip
+        ]);
+        return $this->pdo->lastInsertId();
+    }
+
+    // ===== Bookmark Methods =====
+
+    public function toggleBookmark($videoId, $ip) {
+        $stmt = $this->pdo->prepare('SELECT id FROM feed_bookmarks WHERE video_id = :vid AND ip_address = :ip');
+        $stmt->execute([':vid' => $videoId, ':ip' => $ip]);
+        if ($stmt->fetch()) {
+            $this->pdo->prepare('DELETE FROM feed_bookmarks WHERE video_id = :vid AND ip_address = :ip')
+                ->execute([':vid' => $videoId, ':ip' => $ip]);
+            return false;
+        } else {
+            $this->pdo->prepare('INSERT INTO feed_bookmarks (video_id, ip_address) VALUES (:vid, :ip)')
+                ->execute([':vid' => $videoId, ':ip' => $ip]);
+            return true;
+        }
+    }
+
+    public function hasBookmarked($videoId, $ip) {
+        $stmt = $this->pdo->prepare('SELECT COUNT(*) FROM feed_bookmarks WHERE video_id = :vid AND ip_address = :ip');
+        $stmt->execute([':vid' => $videoId, ':ip' => $ip]);
+        return (int) $stmt->fetchColumn() > 0;
+    }
+
+    public function getBookmarkCount($videoId) {
+        $stmt = $this->pdo->prepare('SELECT COUNT(*) FROM feed_bookmarks WHERE video_id = :vid');
+        $stmt->execute([':vid' => $videoId]);
+        return (int) $stmt->fetchColumn();
+    }
+
     /**
      * Get analytics summary
      */

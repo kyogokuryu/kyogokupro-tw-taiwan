@@ -238,6 +238,50 @@ try {
             jsonResponse(['success' => true]);
             break;
 
+        case 'comments':
+            $videoId = intval($_GET['video_id'] ?? 0);
+            if ($videoId <= 0) {
+                jsonResponse(['error' => 'Invalid video ID'], 400);
+            }
+            $comments = $db->getComments($videoId);
+            jsonResponse(['success' => true, 'data' => $comments, 'count' => count($comments)]);
+            break;
+
+        case 'comment':
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                jsonResponse(['error' => 'Method not allowed'], 405);
+            }
+            $input = json_decode(file_get_contents('php://input'), true);
+            $videoId = intval($input['video_id'] ?? 0);
+            $nickname = trim($input['nickname'] ?? '');
+            $text = trim($input['comment_text'] ?? '');
+            if ($videoId <= 0 || empty($text)) {
+                jsonResponse(['error' => 'Invalid parameters'], 400);
+            }
+            if (mb_strlen($text) > 500) {
+                jsonResponse(['error' => 'Comment too long'], 400);
+            }
+            $ip = getClientIp();
+            $commentId = $db->addComment($videoId, $nickname, $text, $ip);
+            $count = $db->getCommentCount($videoId);
+            jsonResponse(['success' => true, 'comment_id' => $commentId, 'comment_count' => $count]);
+            break;
+
+        case 'bookmark':
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                jsonResponse(['error' => 'Method not allowed'], 405);
+            }
+            $input = json_decode(file_get_contents('php://input'), true);
+            $videoId = intval($input['video_id'] ?? 0);
+            if ($videoId <= 0) {
+                jsonResponse(['error' => 'Invalid video ID'], 400);
+            }
+            $ip = getClientIp();
+            $bookmarked = $db->toggleBookmark($videoId, $ip);
+            $count = $db->getBookmarkCount($videoId);
+            jsonResponse(['success' => true, 'bookmarked' => $bookmarked, 'bookmark_count' => $count]);
+            break;
+
         case 'product_videos':
             // Get videos linked to a specific product
             $productId = intval($_GET['product_id'] ?? 0);
@@ -290,6 +334,9 @@ function enrichVideoData(&$video, $db, $ip) {
     $video['youtube_id'] = extractYoutubeId($video['video_url']);
     $video['products'] = $db->getVideoProducts($video['id']);
     $video['has_liked'] = $db->hasLiked($video['id'], $ip);
+    $video['has_bookmarked'] = $db->hasBookmarked($video['id'], $ip);
+    $video['comment_count'] = $db->getCommentCount($video['id']);
+    $video['bookmark_count'] = $db->getBookmarkCount($video['id']);
     $video['formatted_date'] = formatDate($video['created_at']);
     $video['formatted_views'] = formatNumber($video['view_count']);
     $video['formatted_likes'] = formatNumber($video['like_count']);
