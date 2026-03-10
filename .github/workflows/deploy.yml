@@ -21,6 +21,73 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
 
+      - name: Pre-deploy backup (files + DB)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          command_timeout: 30m
+          script: |
+            BACKUP_DIR="/home/${{ secrets.SSH_USER }}/backups/tw"
+            SITE_DIR="/home/${{ secrets.SSH_USER }}/kyogokupro.com/public_html/tw"
+            TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+            MAX_GENERATIONS=5
+
+            echo "=== Pre-deploy Backup ==="
+            echo "Timestamp: ${TIMESTAMP}"
+            mkdir -p "${BACKUP_DIR}"
+
+            # --- File backup (exclude vendor, var, node_modules, upload) ---
+            echo "--- File backup ---"
+            tar czf "${BACKUP_DIR}/tw_files_${TIMESTAMP}.tar.gz" \
+              --exclude="vendor" \
+              --exclude="var" \
+              --exclude="node_modules" \
+              --exclude="html/upload" \
+              --exclude="note" \
+              --exclude="*.log" \
+              -C "$(dirname ${SITE_DIR})" \
+              "$(basename ${SITE_DIR})" 2>&1 || echo "WARNING: file backup had issues"
+
+            FILE_SIZE=$(du -sh "${BACKUP_DIR}/tw_files_${TIMESTAMP}.tar.gz" 2>/dev/null | awk '{print $1}')
+            echo "File backup: ${FILE_SIZE} -> tw_files_${TIMESTAMP}.tar.gz"
+
+            # --- DB backup ---
+            echo "--- DB backup ---"
+            mysqldump --single-transaction --quick \
+              -u xs679489_taiwan -pSZsnd7tDN7re \
+              xs679489_taiwan > "${BACKUP_DIR}/tw_db_${TIMESTAMP}.sql" 2>&1 || echo "WARNING: DB backup had issues"
+
+            if [ -f "${BACKUP_DIR}/tw_db_${TIMESTAMP}.sql" ]; then
+              gzip "${BACKUP_DIR}/tw_db_${TIMESTAMP}.sql"
+              DB_SIZE=$(du -sh "${BACKUP_DIR}/tw_db_${TIMESTAMP}.sql.gz" 2>/dev/null | awk '{print $1}')
+              echo "DB backup: ${DB_SIZE} -> tw_db_${TIMESTAMP}.sql.gz"
+            fi
+
+            # --- Generation management (keep latest N) ---
+            echo "--- Cleanup old backups (keep ${MAX_GENERATIONS}) ---"
+            cd "${BACKUP_DIR}"
+
+            # File backups
+            FILE_COUNT=$(ls -1t tw_files_*.tar.gz 2>/dev/null | wc -l)
+            if [ "$FILE_COUNT" -gt "$MAX_GENERATIONS" ]; then
+              ls -1t tw_files_*.tar.gz | tail -n +$((MAX_GENERATIONS + 1)) | xargs rm -f
+              echo "Removed $((FILE_COUNT - MAX_GENERATIONS)) old file backup(s)"
+            fi
+
+            # DB backups
+            DB_COUNT=$(ls -1t tw_db_*.sql.gz 2>/dev/null | wc -l)
+            if [ "$DB_COUNT" -gt "$MAX_GENERATIONS" ]; then
+              ls -1t tw_db_*.sql.gz | tail -n +$((MAX_GENERATIONS + 1)) | xargs rm -f
+              echo "Removed $((DB_COUNT - MAX_GENERATIONS)) old DB backup(s)"
+            fi
+
+            echo "--- Current backups ---"
+            ls -lh "${BACKUP_DIR}/" | grep -E "tw_(files|db)_"
+            echo "=== Backup complete ==="
+
       - name: Deploy via rsync
         run: |
           rsync -avz --delete \
