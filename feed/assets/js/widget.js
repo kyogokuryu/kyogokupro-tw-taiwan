@@ -22,7 +22,7 @@
     var touchDeltaY = 0;
     var isSwiping = false;
     var isCommentOpen = false;
-    var isMuted = true;
+    var isMuted = false; // タップで開くので音声ON
 
     // ===== Inject Styles =====
     function injectStyles() {
@@ -290,6 +290,7 @@
     // ===== Fullscreen Player =====
     function openFullscreen(index) {
         currentIndex = index;
+        isMuted = false; // ユーザータップ後なので音声ON
         var overlay = document.createElement('div');
         overlay.className = 'kg-fs-overlay';
         overlay.id = 'kg-fs-overlay';

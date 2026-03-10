@@ -1547,7 +1547,61 @@ file that was distributed with this source code.
                     
                 </div>{# product-bottom #}
 
+                <style>
+                /* === form_restが出力するQuantityの元のデザインをカスタム化 === */
+                .form-group{padding:16px 0;margin:8px 0 0}
+                .form-group label.required{font-size:15px;font-weight:600;color:#1a1a1a;letter-spacing:.5px;display:block;margin-bottom:10px}
+                .form-group label.required::after{content:none}
+                .form-group select.form-control{display:none!important}
+                /* カスタム数量コントロール */
+                .kg-quantity-control{display:flex;align-items:center;gap:0;border:1.5px solid #e0e0e0;border-radius:28px;overflow:hidden;background:#fafafa;width:fit-content}
+                .kg-qty-btn{width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:transparent;border:none;cursor:pointer;color:#333;transition:all .2s;-webkit-tap-highlight-color:transparent;font-size:18px;font-weight:300}
+                .kg-qty-btn:hover{background:#f0f0f0}
+                .kg-qty-btn:active{background:#e8e8e8;transform:scale(.92)}
+                .kg-qty-display{width:52px;height:44px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;color:#1a1a1a;background:transparent;border-left:1px solid #e8e8e8;border-right:1px solid #e8e8e8;user-select:none}
+                @media(max-width:768px){
+                    .kg-qty-btn{width:40px;height:40px}
+                    .kg-qty-display{width:46px;height:40px;font-size:16px}
+                }
+                </style>
                 {{ form_rest(form) }}
+                <script>
+                (function(){
+                    var fg = document.querySelector('.form-group');
+                    if(!fg) return;
+                    var sel = fg.querySelector('select#quantity');
+                    if(!sel) return;
+                    // ラベルを中文に変更
+                    var lbl = fg.querySelector('label');
+                    if(lbl) lbl.textContent = '数量';
+                    // カスタムコントロールを作成
+                    var ctrl = document.createElement('div');
+                    ctrl.className = 'kg-quantity-control';
+                    var minBtn = document.createElement('button');
+                    minBtn.type = 'button';
+                    minBtn.className = 'kg-qty-btn';
+                    minBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+                    var display = document.createElement('div');
+                    display.className = 'kg-qty-display';
+                    display.textContent = sel.value;
+                    var plusBtn = document.createElement('button');
+                    plusBtn.type = 'button';
+                    plusBtn.className = 'kg-qty-btn';
+                    plusBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+                    minBtn.onclick = function(){
+                        var idx = sel.selectedIndex;
+                        if(idx > 0){ sel.selectedIndex = idx - 1; display.textContent = sel.value; }
+                    };
+                    plusBtn.onclick = function(){
+                        var idx = sel.selectedIndex;
+                        if(idx < sel.options.length - 1){ sel.selectedIndex = idx + 1; display.textContent = sel.value; }
+                    };
+                    ctrl.appendChild(minBtn);
+                    ctrl.appendChild(display);
+                    ctrl.appendChild(plusBtn);
+                    fg.appendChild(ctrl);
+                })();
+                </script>
             </form>
 
             <form action="{{ url('product_add_favorite', {id:Product.id}) }}" method="post" id="favorite-form"></form>
@@ -1576,7 +1630,7 @@ file that was distributed with this source code.
 
             {# 商品関連動画ウィジェット - カート追加ボタンの下に配置 #}
             <div id="kg-video-widget" data-product-id="{{ Product.id }}" style="padding: 0 15px; margin-top: 20px;"></div>
-            <script src="/feed/assets/js/widget.js?v=20260310v2" defer></script>
+            <script src="/feed/assets/js/widget.js?v=20260311v3" defer></script>
 
         
             {# 商品説明 #}
