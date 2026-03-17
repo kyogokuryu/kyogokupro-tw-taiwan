@@ -53,6 +53,9 @@
 .kg-card-stats{display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.8);font-size:10px}\
 .kg-play-btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:40px;height:40px;background:rgba(255,255,255,.9);border-radius:50%;display:flex;align-items:center;justify-content:center;opacity:.85}\
 .kg-play-icon{width:0;height:0;border-style:solid;border-width:8px 0 8px 14px;border-color:transparent transparent transparent #1a1a1a;margin-left:2px}\
+.kg-card-video{width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0}\
+.kg-card.is-playing .kg-play-btn{opacity:0;pointer-events:none}\
+.kg-card .kg-play-btn{transition:opacity .3s}\
 .kg-card-more{flex:0 0 140px;scroll-snap-align:start;border-radius:12px;overflow:hidden;cursor:pointer;background:linear-gradient(135deg,#f8f8f8,#e8e8e8);aspect-ratio:9/16;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;transition:transform .3s;text-decoration:none}\
 .kg-card-more:hover{transform:translateY(-3px)}\
 .kg-card-more-icon{width:40px;height:40px;border-radius:50%;background:#e74c3c;display:flex;align-items:center;justify-content:center}\
@@ -384,8 +387,13 @@
 
         videos.forEach(function(v, i) {
             var thumb = v.thumbnail || '';
+            var hasMP4 = v.is_uploaded && v.video_file_url;
             html += '<div class="kg-card" data-index="' + i + '">';
-            html += '<img class="kg-card-thumb" src="' + escapeHtml(thumb) + '" alt="" loading="lazy">';
+            if (hasMP4) {
+                html += '<video class="kg-card-video" src="' + escapeHtml(v.video_file_url) + '" muted loop playsinline preload="metadata" poster="' + escapeHtml(thumb) + '"></video>';
+            } else {
+                html += '<img class="kg-card-thumb" src="' + escapeHtml(thumb) + '" alt="" loading="lazy">';
+            }
             html += '<div class="kg-play-btn"><div class="kg-play-icon"></div></div>';
             html += '<div class="kg-card-overlay">';
             html += '<div class="kg-card-title">' + escapeHtml(v.display_title || v.title) + '</div>';
@@ -408,6 +416,38 @@
                 var idx = parseInt(this.dataset.index);
                 openFullscreen(idx);
             });
+        });
+
+        // Intersection Observer for auto-play MP4 videos in carousel
+        setupCarouselAutoplay(container);
+    }
+
+    // ===== Carousel Autoplay with Intersection Observer =====
+    function setupCarouselAutoplay(container) {
+        var cards = container.querySelectorAll('.kg-card');
+        if (!cards.length) return;
+
+        var observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                var video = entry.target.querySelector('.kg-card-video');
+                if (!video) return;
+                if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+                    video.play().then(function() {
+                        entry.target.classList.add('is-playing');
+                    }).catch(function() {
+                        // Autoplay blocked, keep play button visible
+                    });
+                } else {
+                    video.pause();
+                    entry.target.classList.remove('is-playing');
+                }
+            });
+        }, { threshold: [0, 0.5, 1.0] });
+
+        cards.forEach(function(card) {
+            if (card.querySelector('.kg-card-video')) {
+                observer.observe(card);
+            }
         });
     }
 
