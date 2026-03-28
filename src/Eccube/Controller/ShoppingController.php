@@ -160,7 +160,7 @@ class ShoppingController extends AbstractShoppingController
 
 
         //初期会員登録状態の場合は会員情報編集ページでリダイレクト 20220225 kikuzawa
-        if($Customer['name01'] == 'ゲスト'){
+        if($Customer['name01'] == 'ゲスト' || $Customer['name01'] == '卡雅仕'){
             $_SESSION['back_to_shopping'] = true;
             return $this->redirectToRoute('mypage_change');
         }

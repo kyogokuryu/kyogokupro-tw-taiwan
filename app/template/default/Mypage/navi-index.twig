@@ -103,7 +103,7 @@ a.banner-go-video:hover ~ .banner-icon{
             
         <div class="row mypage-header-item">
             <div class="col-xs-10 col-md-8">
-            {% if app.user.name01 == '客人' %}
+            {% if app.user.name01 == '客人' or app.user.name01 == '卡雅仕' or app.user.name01 == 'ゲスト' %}
                 <div class="mypage-header-name"><b>{{  app.user.name01 }} </b></div>
             {% else %}
                 <div class="mypage-header-name"><b>{{ '%last_name% %first_name%'|trans({ '%last_name%': app.user.name01, '%first_name%': app.user.name02 }) }} </b>
