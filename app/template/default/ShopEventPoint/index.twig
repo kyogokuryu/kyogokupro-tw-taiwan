@@ -335,7 +335,7 @@ file that was distributed with this source code.
 						<div id="block-staff-price" style="margin:30px 0px 5px 0px; auto;max-width:400px;">
 							<div class="div_label"><span class="span_label">チャージ金額<span id="span_charge"></span></span> <span class="span_yen" id="buy-price">15,000 TWD</span></div>
 							<div class="div_label"><span class="span_label">商品代金<span id="span_pro"></span></span> <span  class="span_yen" id="buy-pro">0TWD</span></div>
-							<div class="div_label"><span class="span_label">残りポイント</span> <span  class="span_yen" id="buy-point">150 pt</span></div>
+							<div class="div_label"><span class="span_label">剩餘點數</span> <span  class="span_yen" id="buy-point">150 點數</span></div>
 						</div>
 
 						<p class="staff-msg">ポイントは「1pt = 1TWD」でKYOGOKU公式サイトでの<br>お買い物にご利用いただけます</p>
@@ -642,7 +642,7 @@ file that was distributed with this source code.
 				s_id = res.s_id
 				point = res.point
 				price = res.price
-				$('#buy-point').text(res.point_str + " pt")
+				$('#buy-point').text(res.point_str + " 點數")
 				$('#buy-price').text(res.point_price_val + " TWD")
 				$('#span_charge').text("（"+ res.ptype + "倍）")
 

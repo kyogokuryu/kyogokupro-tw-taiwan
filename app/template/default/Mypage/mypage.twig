@@ -52,7 +52,7 @@
                                         <div class="row">
                                             <div class="mypage-history-det-btn text-left">
                                                 <a class="ec-inlineBtn" target="_blank" href="{{ url('sheeb_dlc_download', {'order_item_id': Order.getOrderItemId( OrderItem.Product.id)}) }}" >
-                                                下载
+                                                下載
                                                 </a>
                                             </div>
                                         </div>
@@ -91,7 +91,7 @@
     {% for msg in app.session.flashBag.get('add_login_point_success') %}
         <div class="mypage-modal">
             <div id="modal-default" data-izimodal-title="報到">
-                <p class="mypage-modal-content"><span class="mypage-modal-point">恭喜你獲得{{ app.user.getLoginPoint() }}</span> pt</p>
+                <p class="mypage-modal-content"><span class="mypage-modal-point">恭喜你獲得 {{ app.user.getLoginPoint() }}</span> 點數</p>
             </div>
         </div>
         <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/izimodal/1.5.1/css/iziModal.min.css">

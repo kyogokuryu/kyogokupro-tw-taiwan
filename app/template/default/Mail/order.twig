@@ -25,8 +25,8 @@ file that was distributed with this source code.
 付款總額：TWD {{ Order.payment_total}}
 付款方式：{{ Order.payment_method }}
 {% if BaseInfo.isOptionPoint and Order.Customer is not null %}
-使用積分：{{ Order.usePoint|number_format }} pt
-新增積分：{{ Order.addPoint|number_format }} pt
+使用點數：{{ Order.usePoint|number_format }} 點數
+新增點數：{{ Order.addPoint|number_format }} 點數
 {% endif %}
 聯絡方式：{{ Order.message }}
 

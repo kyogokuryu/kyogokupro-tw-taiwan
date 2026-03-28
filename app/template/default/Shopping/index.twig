@@ -469,7 +469,7 @@ file that was distributed with this source code.
                                 <h2>{{ '使用點數'|trans }}</h2>
                             </div>
                             <div class="ec-input {{ has_errors(form.use_point) ? ' error' }}">
-                                <p>{{ '%point% pt 可用'|trans({ '%point%': Order.Customer.Point|number_format }) }}</p>
+                                <p>{{ '%point% 點數 可用'|trans({ '%point%': Order.Customer.Point|number_format }) }}</p>
                                 {{ form_widget(form.use_point, { 'attr': { 'type': 'text', 'class': 'form-control', 'data-trigger': 'change' }}) }}
                                 {{ form_errors(form.use_point) }}
                             </div>
@@ -545,23 +545,23 @@ file that was distributed with this source code.
                     <div class="ec-totalBox__pointBlock">
                         <dl class="ec-totalBox__spec">
                             <dt>{{ '使用點數'|trans }}</dt>
-                            <dd>{{ Order.UsePoint|number_format }} pt</dd>
+                            <dd>{{ Order.UsePoint|number_format }} 點數</dd>
                         </dl>
                         <dl class="ec-totalBox__spec">
-                            <dt><span class="ec-font-bold">{{ '额外积分'|trans }}</span></dt>
-                            <dd><span class="ec-font-bold">{{ Order.AddPoint|number_format }} pt</span></dd>
+                            <dt><span class="ec-font-bold">{{ '額外點數'|trans }}</span></dt>
+                            <dd><span class="ec-font-bold">{{ Order.AddPoint|number_format }} 點數</span></dd>
                         </dl>
                     </div>
                     {% endif %}
                     {% if app.user %}
-                    <div class="align-center" style="text-align:center;">會員積分回饋 {{ app.user.owner_point }}%</div>
+                    <div class="align-center" style="text-align:center;">會員點數回饋 {{ app.user.owner_point }}%</div>
                     {% endif %}
                     {% if app.user and app.user.prime_member > 0 %} 
                     <div class="ec-totalBox-prime-point">Taiwan家庭福利<br class="pc"> 第3点%UP</div>
                     {% endif %}
 
                     {% if app.user and app.user.pre_order_discount_price > 0 %}
-                        <div class="ec-totalBox-prime-point">运送 PT 返还福利: +{{ app.user.pre_order_discount_price }} pt</div>
+                        <div class="ec-totalBox-prime-point">運送點數回饋: +{{ app.user.pre_order_discount_price }} pt</div>
                     {% endif %}
                 </div>
             </div></div>

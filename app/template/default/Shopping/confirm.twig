@@ -126,7 +126,7 @@ file that was distributed with this source code.
                             <h2>{{ '使用點數'|trans }}</h2>
                         </div>
                         <div class="ec-blockRadio">
-                            {{ Order.use_point|number_format }} pt
+                            {{ Order.use_point|number_format }} 點數
                         </div>
                     </div>
                 {% endif %}
@@ -191,16 +191,16 @@ file that was distributed with this source code.
                 <div class="ec-totalBox__pointBlock">
                     <dl class="ec-totalBox__spec">
                         <dt>{{ '使用點數'|trans }}</dt>
-                        <dd>{{ Order.UsePoint|number_format }} pt</dd>
+                        <dd>{{ Order.UsePoint|number_format }} 點數</dd>
                     </dl>
                     <dl class="ec-totalBox__spec">
-                        <dt><span class="ec-font-bold">{{ '额外积分'|trans }}</span></dt>
-                        <dd><span class="ec-font-bold">{{ Order.AddPoint|number_format }} pt</span></dd>
+                        <dt><span class="ec-font-bold">{{ '額外點數'|trans }}</span></dt>
+                        <dd><span class="ec-font-bold">{{ Order.AddPoint|number_format }} 點數</span></dd>
                     </dl>
                 </div>
                 {% endif %}
                     {% if app.user and app.user.pre_order_discount_price > 0 %}
-                        <div class="ec-totalBox-prime-point">运送 PT 返还福利: +{{ app.user.pre_order_discount_price }} pt</div>
+                        <div class="ec-totalBox-prime-point">運送點數回饋: +{{ app.user.pre_order_discount_price }} pt</div>
                     {% endif %}
                
             </div>

@@ -1231,7 +1231,7 @@ file that was distributed with this source code.
 
                                 {% if Product.ViewData(2) %}
                                     <div class="ec-productRole__code add-point">
-                                        <p>通过购买本产品，您将获得可在本网站使用的积分。</p>
+                                        <p>購買此產品，您將獲得可在本網站使用的點數。</p>
                                         <p class="product-point">{{ Product.ViewData(2) }}<span>pt</span></p>
                                     </div>
                                 {% endif %}
@@ -1318,7 +1318,7 @@ file that was distributed with this source code.
                                     </div>
                                     <div class="add_cart_mobile">
                                         <div class="sp lower-cart-btn row">
-                                            <div class="col-xs-10" style="display: flex; gap: 5px; margin-bottom: 20px !important;">
+                                            <div class="col-xs-10" style="display: flex; gap: 8px; margin-bottom: 0 !important; padding: 10px 5px; align-items: center;">
                                                 {# <button type="submit" class="ec-blockBtn--action s1 add-cart">
                                                     <span class="add-cart-btn">{{ '新增到購物車'|trans }}</span>
                                                 </button> #}
@@ -1327,11 +1327,11 @@ file that was distributed with this source code.
                                                 {% else %}
                                                     <div style="width: 16.66666667% !important;" class="col-xs-2"><button type="button" form="favorite-form" class="favorite added"  id="favorite-footer" disabled="disabled"><a href="{{ url('mypage_favorite_delete', { id : Product.id }) }}" {{ csrf_token_for_anchor() }} data-method="delete">&nbsp;</a></button></div>
                                                 {% endif %}
-                                                <button type="submit" class="ec-blockBtn--action s1 add-cart add-to-cart" style="height: unset; line-height: unset; border: 1px solid #000; background-color: #ffffff; position: static !important; z-index: auto !important;">
-                                                    <span class="add-cart-btn" style="color: #000000; font-weight: 600;">加入購物車</span>
+                                                <button type="submit" class="ec-blockBtn--action s1 add-cart add-to-cart" style="height: 44px; line-height: 44px; border: 1px solid #000; background-color: #ffffff; position: static !important; z-index: auto !important; border-radius: 22px; flex: 1; min-width: 0; padding: 0 12px; box-shadow: none;">
+                                                    <span class="add-cart-btn" style="color: #000000; font-weight: 600; font-size: 13px;">加入購物車</span>
                                                 </button>
-                                                <span onclick="window.location.href='{{ path('cart') }}'" class="ec-blockBtn--action s1 add-cart one-touch-payment" style="height: unset; line-height: unset; position: static !important; z-index: auto !important; background: #FFE200; cursor: pointer;">
-                                                    <span class="add-cart-btn" style="color: #000000; font-weight: 600;">立即購買 !<br> 所剩無幾 ! </span>
+                                                <span onclick="window.location.href='{{ path('cart') }}'" class="ec-blockBtn--action s1 add-cart one-touch-payment" style="height: 44px; line-height: 44px; position: static !important; z-index: auto !important; background: #FF4757; cursor: pointer; border-radius: 22px; flex: 1; min-width: 0; padding: 0 12px; box-shadow: none; border-color: #FF4757; display: flex; align-items: center; justify-content: center;">
+                                                    <span class="add-cart-btn" style="color: #ffffff; font-weight: 600; font-size: 13px;">立即購買</span>
                                                 </span>
                                             </div>
                                         {# {% if is_favorite == false %}
@@ -1630,7 +1630,7 @@ file that was distributed with this source code.
 
             {# 商品関連動画ウィジェット - カート追加ボタンの下に配置 #}
             <div id="kg-video-widget" data-product-id="{{ Product.id }}" style="padding: 0 15px; margin-top: 20px;"></div>
-            <script src="/feed/assets/js/widget.js?v=20260311v7" defer></script>
+            <script src="/feed/assets/js/widget.js?v=4v1" defer></script>
 
         
             {# 商品説明 #}

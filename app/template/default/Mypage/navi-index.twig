@@ -11,7 +11,7 @@ file that was distributed with this source code.
 
 <!-- 会員情報にサロン(親ユーザー)と紐づける項目追加 20220510 kikuzawa -->
 {% set member = repository('Eccube\\Entity\\Customer').findBy({'Salon_id' : app.user.id}) %}
-{% set prime = ["", "高级会员", "轻成员"] %}
+{% set prime = ["", "高級會員", "輕會員"] %}
 
 <style>
 .ec-navlistRole__navlist.mypage-header-navlist .ec-navlistRole__item.icon-point:before{
@@ -112,7 +112,7 @@ a.banner-go-video:hover ~ .banner-icon{
             {% endif %}
                 
                 {% if BaseInfo.option_point %}
-                <div class="mypage-header-point" >積分累積<b><span my-cur-point>{{ app.user.point|number_format }}</span></b><span>PT</span></div>
+                <div class="mypage-header-point" >點數累積<b><span my-cur-point>{{ app.user.point|number_format }}</span></b><span>點數</span></div>
                 {% endif %}
                 {# <div class="mypage-header-af"><a data-url="{{ url('entry') }}?salon={{ app.user.id }}" class="copy">紹介特典ID: {{ app.user.id}}</a> <a href="https://kyogokupro.com/note/kyogoku-afi-manual/"><div style="display:inline-block;margin-left:1em;" class="mypage-checkin-rule">使い方 <div class="mark-circle">？</div></div></a></div> #}
                 {# <div>
@@ -126,7 +126,7 @@ a.banner-go-video:hover ~ .banner-icon{
                     {% if app.user.isLoginPoint() %}
                         <form action="/mypage/add_login_poiint" method="post"><button id="checkin" class="checkin-btn"><span class="checkin-text">报到</span><div class="checkin-star"><img loading="lazy"  src="/html/template/default/assets/icon/icon-star.png"></div></button></form>
                     {% else %}
-                        <button id="checkin" class="checkin-btn"><span class="checkin-text">报到</span><div class="checkin-star active"><img loading="lazy"  src="/html/template/default/assets/icon/icon-star-on.png"></div>{{ app.user.getLoginPoint() }}PT 获得</button>
+                        <button id="checkin" class="checkin-btn"><span class="checkin-text">報到</span><div class="checkin-star active"><img loading="lazy"  src="/html/template/default/assets/icon/icon-star-on.png"></div>獲得 {{ app.user.getLoginPoint() }}點數</button>
                     {% endif %}
                 </div>
                 #}
@@ -146,7 +146,7 @@ a.banner-go-video:hover ~ .banner-icon{
                     {% if app.user.isLoginPoint() %}
                         <form action="/mypage/add_login_poiint" method="post"><button id="checkin" class="checkin-btn"><span class="checkin-text">報到</span><div class="checkin-star"><img loading="lazy"  src="/html/template/default/assets/icon/icon-star.png"></div></button></form>
                     {% else %}
-                        <button id="checkin" class="checkin-btn"><span class="checkin-text">報到</span><div class="checkin-star active"><img loading="lazy"  src="/html/template/default/assets/icon/icon-star-on.png"></div> 獲得 {{ app.user.getLoginPoint() }}PT </button>
+                        <button id="checkin" class="checkin-btn"><span class="checkin-text">報到</span><div class="checkin-star active"><img loading="lazy"  src="/html/template/default/assets/icon/icon-star-on.png"></div> 獲得 {{ app.user.getLoginPoint() }}點數 </button>
                     {% endif %}
                 </div>
             </div>
@@ -175,7 +175,7 @@ a.banner-go-video:hover ~ .banner-icon{
     <div>
         <div class="tooltip2">
             <div class="mypage-checkin-rule">規則 <div class="mark-circle">？</div></div>
-            <div class="description2">每天签到即可赚取积分。连续签到将获得奖励积分。</div>
+            <div class="description2">每天簽到即可賺取點數。連續簽到將獲得獎勵點數。</div>
         </div>
     </div>
 
