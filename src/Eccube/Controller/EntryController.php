@@ -186,7 +186,7 @@ class EntryController extends AbstractController
                     $secretKey = $this->customerRepository->getUniqueSecretKey();
 
                     //紹介特典IDを登録の場合はポイント付与 20220801 kikuzawa
-                    $addPoint = 200;
+                    $addPoint = 500;
 
                     $Customer
                         ->setSalt($salt)
