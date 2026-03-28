@@ -470,6 +470,7 @@ file that was distributed with this source code.
                             </div>
                             <div class="ec-input {{ has_errors(form.use_point) ? ' error' }}">
                                 <p>{{ '%point% 點數 可用'|trans({ '%point%': Order.Customer.Point|number_format }) }}</p>
+                                <p style="color:#e74c3c;font-size:12px;">※ 訂單金額需達 NT$1,000 以上才可使用點數</p>
                                 {{ form_widget(form.use_point, { 'attr': { 'type': 'text', 'class': 'form-control', 'data-trigger': 'change' }}) }}
                                 {{ form_errors(form.use_point) }}
                             </div>
@@ -561,7 +562,7 @@ file that was distributed with this source code.
                     {% endif %}
 
                     {% if app.user and app.user.pre_order_discount_price > 0 %}
-                        <div class="ec-totalBox-prime-point">運送點數回饋: +{{ app.user.pre_order_discount_price }} pt</div>
+                        <div class="ec-totalBox-prime-point">運送點數回饋: +{{ app.user.pre_order_discount_price }} 點數</div>
                     {% endif %}
                 </div>
             </div></div>

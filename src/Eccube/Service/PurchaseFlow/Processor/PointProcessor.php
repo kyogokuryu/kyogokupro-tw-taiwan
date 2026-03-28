@@ -28,6 +28,11 @@ use Eccube\Service\PurchaseFlow\PurchaseProcessor;
 class PointProcessor implements DiscountProcessor, PurchaseProcessor
 {
     /**
+     * ポイント使用可能な最低注文金額 (TWD)
+     */
+    const MIN_ORDER_AMOUNT_FOR_POINT = 1000;
+
+    /**
      * @var EntityManagerInterface
      */
     protected $entityManager;
@@ -83,6 +88,13 @@ class PointProcessor implements DiscountProcessor, PurchaseProcessor
 
             // 購入フロー実行時
             if ($context->isShoppingFlow()) {
+                // 1000TWD最低金額チェック - ポイント適用前の商品合計が1000TWD未満の場合はポイント使用不可
+                $subtotal = $itemHolder->getTotal(); // ポイント割引前の合計
+                if ($subtotal < self::MIN_ORDER_AMOUNT_FOR_POINT) {
+                    $itemHolder->setUsePoint(0);
+                    return ProcessResult::warn('訂單金額需達 NT$' . number_format(self::MIN_ORDER_AMOUNT_FOR_POINT) . ' 以上才可使用點數', self::class);
+                }
+
                 // 支払い金額 < 利用ポイントによる値引き額.
                 if ($itemHolder->getTotal() + $discount < 0) {
                     $minus = $itemHolder->getTotal() + $discount;
@@ -92,7 +104,6 @@ class PointProcessor implements DiscountProcessor, PurchaseProcessor
                     $discount = $this->pointHelper->pointToDiscount($usePoint);
                     $result = ProcessResult::warn(trans('purchase_flow.over_payment_total'), self::class);
                 }
-
                 // 所有ポイント < 利用ポイント
                 $Customer = $itemHolder->getCustomer();
                 if ($Customer->getPoint() < $usePoint) {
@@ -101,6 +112,7 @@ class PointProcessor implements DiscountProcessor, PurchaseProcessor
                     $discount = $this->pointHelper->pointToDiscount($usePoint);
                     $result = ProcessResult::warn(trans('purchase_flow.over_customer_point'), self::class);
                 }
+
                 // 受注登録・編集実行時
             } else {
                 // 支払い金額 < 利用ポイントによる値引き額.
