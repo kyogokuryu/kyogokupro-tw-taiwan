@@ -1143,53 +1143,80 @@ file that was distributed with this source code.
 
                         <div class="upper">
                             <div class="price-box" style="position:relative;width:100%">
-                                {# 通常価格 #}
+                                {# 通常価格 - 取り消し線スタイル #}
                                 {% if Product.hasProductClass -%}
                                     <div class="ec-productRole__priceRegular">
                                         {% if Product.getPrice01Min is not null and Product.getPrice01IncTaxMin == Product.getPrice01IncTaxMax %}
-                                            <span class="ec-productRole__priceRegularPrice">{{ '正常價格'|trans }}：<span class="price01-default">{{ Product.getPrice01IncTaxMin|price }}</span></span>
-                                            <span class="ec-productRole__priceRegularTax">{{ '含税'|trans }}</span>
+                                            <span class="ec-productRole__priceRegularPrice" style="color: #999; font-size: 14px; font-weight: 400; text-decoration: line-through;"><span class="price01-default">{{ Product.getPrice01IncTaxMin|price }}</span></span>
+                                            <span class="ec-productRole__priceRegularTax" style="color: #999; font-size: 12px;">{{ '含税'|trans }}</span>
                                         {% elseif Product.getPrice01Min is not null and Product.getPrice01Max is not null %}
-                                            <span class="ec-productRole__priceRegularPrice">{{ '正常價格'|trans }}：<span class="price01-default">{{ Product.getPrice01IncTaxMin|price }}～ {{ Product.getPrice01IncTaxMax|price }}</span></span>
-                                            <span class="ec-productRole__priceRegularTax">{{ '含税'|trans }}</span>
+                                            <span class="ec-productRole__priceRegularPrice" style="color: #999; font-size: 14px; font-weight: 400; text-decoration: line-through;"><span class="price01-default">{{ Product.getPrice01IncTaxMin|price }}～ {{ Product.getPrice01IncTaxMax|price }}</span></span>
+                                            <span class="ec-productRole__priceRegularTax" style="color: #999; font-size: 12px;">{{ '含税'|trans }}</span>
                                         {% endif %}
                                     </div>
                                 {% else %}
                                     {% if Product.getPrice01Max is not null %}
-                                        <span class="ec-productRole__priceRegularPrice">{{ '正常價格'|trans }}：{{ Product.getPrice01IncTaxMin|price }}</span>
-                                        <span class="ec-productRole__priceRegularTax">{{ '含税'|trans }}</span>
+                                        <span class="ec-productRole__priceRegularPrice" style="color: #999; font-size: 14px; font-weight: 400; text-decoration: line-through;">{{ Product.getPrice01IncTaxMin|price }}</span>
+                                        <span class="ec-productRole__priceRegularTax" style="color: #999; font-size: 12px;">{{ '含税'|trans }}</span>
                                     {% endif %}
                                 {% endif %}
 
-                                {# 販売価格 #}
+                                {# 販売価格 - コンパクトデザイン #}
 
-                                <div class="ec-price" style="display: flex; align-items: end; justify-content: space-between; flex-wrap: wrap; gap: 5px;">
+                                <div class="ec-price" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 5px;">
                                     <div class="left" style="display: flex; flex-direction: column; gap: 4px;">
                                         {% set reg_rate = get_regular_discount(Product.id) %}
                                         {% set price = 0 %}
-                                        
+
                                         {% if reg_rate > 0 %}
                                             {% set reg_price = Product.getPrice02IncTaxMin %}
-                                            <span class="ec-price__price" style="color: #FF0000;"><span style="font-size:12px">即將售罄</span>{{ (reg_price - reg_price*reg_rate/100)|price }}</span>
-                                            <div class="ec-price__tax point" style="font-size:14px; color: #FF0000;">（Pt {{ get_point(reg_price) }}）</div>
+                                            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                                <span class="ec-price__price" style="color: #E8380D; font-size: 22px; font-weight: 700; line-height: 1.2; padding: 0;">{{ (reg_price - reg_price*reg_rate/100)|price }}</span>
+                                                <span style="display: inline-block; background: #FF6B35; color: #fff; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 3px; line-height: 1.4;">{{ reg_rate }}% OFF</span>
+                                                <span style="display: inline-block; background: #E8380D; color: #fff; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 3px; line-height: 1.4;">即將售罄</span>
+                                            </div>
+                                            <div class="ec-price__tax point" style="font-size: 12px; color: #E8380D; margin-top: 2px;">紅利點數: {{ get_point(reg_price) }}pt (1%)</div>
                                             {% set price = reg_price %}
                                         {% else %}
+                                            {# 割引率を計算（Price01とPrice02の差分） #}
+                                            {% set sale_price = Product.getPrice02IncTaxMin %}
+                                            {% set original_price = Product.getPrice01IncTaxMin %}
+                                            {% set discount_pct = 0 %}
+                                            {% if original_price is not null and original_price > 0 and sale_price < original_price %}
+                                                {% set discount_pct = (((original_price - sale_price) / original_price) * 100)|round %}
+                                            {% endif %}
+
                                             {% if Product.hasProductClass %}
                                                 {% if Product.getPrice02IncTaxMin == Product.getPrice02IncTaxMax %}
-                                                    <span class="ec-price__price price02-default"><span style="font-size:12px">即將售罄</span>{{ Product.getPrice02IncTaxMin|price }}</span>
+                                                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                                        <span class="ec-price__price price02-default" style="color: #E8380D; font-size: 22px; font-weight: 700; line-height: 1.2; padding: 0;">{{ Product.getPrice02IncTaxMin|price }}</span>
+                                                        {% if discount_pct > 0 %}
+                                                            <span style="display: inline-block; background: #FF6B35; color: #fff; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 3px; line-height: 1.4;">{{ discount_pct }}% OFF</span>
+                                                        {% endif %}
+                                                        <span style="display: inline-block; background: #E8380D; color: #fff; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 3px; line-height: 1.4;">即將售罄</span>
+                                                    </div>
                                                 {% else %}
-                                                    <span class="ec-price__price price02-default"><span style="font-size:12px">即將售罄</span>{{ Product.getPrice02IncTaxMin|price}} ～ {{ Product.getPrice02IncTaxMax|price }}</span>
+                                                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                                        <span class="ec-price__price price02-default" style="color: #E8380D; font-size: 22px; font-weight: 700; line-height: 1.2; padding: 0;">{{ Product.getPrice02IncTaxMin|price}} ～ {{ Product.getPrice02IncTaxMax|price }}</span>
+                                                        <span style="display: inline-block; background: #E8380D; color: #fff; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 3px; line-height: 1.4;">即將售罄</span>
+                                                    </div>
                                                 {% endif %}
                                             {% else %}
-                                                <span class="ec-price__price" style="color: #FF0000;"><span style="font-size:12px">即將售罄</span>{{ Product.getPrice02IncTaxMin|price }}</span>
+                                                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                                    <span class="ec-price__price" style="color: #E8380D; font-size: 22px; font-weight: 700; line-height: 1.2; padding: 0;">{{ Product.getPrice02IncTaxMin|price }}</span>
+                                                    {% if discount_pct > 0 %}
+                                                        <span style="display: inline-block; background: #FF6B35; color: #fff; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 3px; line-height: 1.4;">{{ discount_pct }}% OFF</span>
+                                                    {% endif %}
+                                                    <span style="display: inline-block; background: #E8380D; color: #fff; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 3px; line-height: 1.4;">即將售罄</span>
+                                                </div>
                                             {% endif %}
-                                            <div class="ec-price__tax point" style="font-size:12px; color: #FF0000;">
-                                                紅利點數: {{ get_point(Product.getPrice02IncTaxMin) }}pt　(1%)
+                                            <div class="ec-price__tax point" style="font-size: 12px; color: #E8380D; margin-top: 2px;">
+                                                紅利點數: {{ get_point(Product.getPrice02IncTaxMin) }}pt (1%)
                                             </div>
                                             {% set price = Product.getPrice02IncTaxMin %}
                                         {% endif %}
                                         {% if sale_time %}
-                                            <span class="regular-price">￥{{ regular_price }}</span>
+                                            <span class="regular-price" style="color: #999; font-size: 14px; text-decoration: line-through;">￥{{ regular_price }}</span>
                                         {% endif %}
                                     </div>
 
@@ -1318,28 +1345,19 @@ file that was distributed with this source code.
                                     </div>
                                     <div class="add_cart_mobile">
                                         <div class="sp lower-cart-btn row">
-                                            <div class="col-xs-10" style="display: flex; gap: 8px; margin-bottom: 0 !important; padding: 10px 5px; align-items: center;">
-                                                {# <button type="submit" class="ec-blockBtn--action s1 add-cart">
-                                                    <span class="add-cart-btn">{{ '新增到購物車'|trans }}</span>
-                                                </button> #}
+                                            <div class="col-xs-10" style="display: flex; gap: 8px; margin-bottom: 0 !important; padding: 8px 10px; align-items: center; background: #fff; box-shadow: 0 -2px 10px rgba(0,0,0,0.08);">
                                                 {% if is_favorite == false %}
-                                                    <div style="width: 16.66666667% !important;" class="col-xs-2"><button type="submit" form="favorite-form" class="favorite" id="favorite-footer" onclick="console.log('click')"></button></div>
+                                                    <div style="flex-shrink: 0;" class="col-xs-2"><button type="submit" form="favorite-form" class="favorite" id="favorite-footer" onclick="console.log('click')"></button></div>
                                                 {% else %}
-                                                    <div style="width: 16.66666667% !important;" class="col-xs-2"><button type="button" form="favorite-form" class="favorite added"  id="favorite-footer" disabled="disabled"><a href="{{ url('mypage_favorite_delete', { id : Product.id }) }}" {{ csrf_token_for_anchor() }} data-method="delete">&nbsp;</a></button></div>
+                                                    <div style="flex-shrink: 0;" class="col-xs-2"><button type="button" form="favorite-form" class="favorite added" id="favorite-footer" disabled="disabled"><a href="{{ url('mypage_favorite_delete', { id : Product.id }) }}" {{ csrf_token_for_anchor() }} data-method="delete">&nbsp;</a></button></div>
                                                 {% endif %}
-                                                <button type="submit" class="ec-blockBtn--action s1 add-cart add-to-cart" style="height: 44px; line-height: 44px; border: 1px solid #000; background-color: #ffffff; position: static !important; z-index: auto !important; border-radius: 22px; flex: 1; min-width: 0; padding: 0 12px; box-shadow: none;">
-                                                    <span class="add-cart-btn" style="color: #000000; font-weight: 600; font-size: 13px;">加入購物車</span>
+                                                <button type="submit" class="ec-blockBtn--action s1 add-cart add-to-cart" style="height: 48px; line-height: 48px; border: 2px solid #222; background-color: #ffffff; position: static !important; z-index: auto !important; border-radius: 24px; flex: 1; min-width: 0; padding: 0 16px; box-shadow: none;">
+                                                    <span class="add-cart-btn" style="color: #222; font-weight: 700; font-size: 14px; letter-spacing: 0.5px;">加入購物車</span>
                                                 </button>
-                                                <span onclick="window.location.href='{{ path('cart') }}'" class="ec-blockBtn--action s1 add-cart one-touch-payment" style="height: 44px; line-height: 44px; position: static !important; z-index: auto !important; background: #FF4757; cursor: pointer; border-radius: 22px; flex: 1; min-width: 0; padding: 0 12px; box-shadow: none; border-color: #FF4757; display: flex; align-items: center; justify-content: center;">
-                                                    <span class="add-cart-btn" style="color: #ffffff; font-weight: 600; font-size: 13px;">立即購買</span>
+                                                <span onclick="window.location.href='{{ path('cart') }}'" class="ec-blockBtn--action s1 add-cart one-touch-payment" style="height: 48px; line-height: 48px; position: static !important; z-index: auto !important; background: linear-gradient(135deg, #FF4757 0%, #FF6B81 100%); cursor: pointer; border-radius: 24px; flex: 1.2; min-width: 0; padding: 0 16px; box-shadow: 0 2px 8px rgba(255,71,87,0.3); border: none; display: flex; align-items: center; justify-content: center;">
+                                                    <span class="add-cart-btn" style="color: #ffffff; font-weight: 700; font-size: 14px; letter-spacing: 0.5px;">立即購買</span>
                                                 </span>
                                             </div>
-                                        {# {% if is_favorite == false %}
-                                            <div class="col-xs-2"><button type="submit" form="favorite-form" class="favorite" id="favorite-footer" onclick="console.log('click')"></button></div>
-                                        {% else %}
-                                            <div class="col-xs-2"><button type="button" form="favorite-form" class="favorite added"  id="favorite-footer" disabled="disabled"><a href="{{ url('mypage_favorite_delete', { id : Product.id }) }}" {{ csrf_token_for_anchor() }} data-method="delete">&nbsp;</a></button></div>
-                                        {% endif %} #}
-
                                         </div>
                                     </div>
                                 {% else %}
