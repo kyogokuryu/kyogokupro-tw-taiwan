@@ -10,7 +10,7 @@
  * cronで10分ごとに実行
  */
 
-date_default_timezone_set('Asia/Taipei');
+date_default_timezone_set('Asia/Tokyo');
 
 // DB接続設定
 $dbHost = 'localhost';
