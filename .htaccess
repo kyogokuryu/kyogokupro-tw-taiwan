@@ -50,6 +50,8 @@ DirectoryIndex index.php index.html .ht
     RewriteRule (?i)(.*)(\.jpe?g|\.png)$ %1$2\.webp [L,T=image/webp]
     # RewriteCond %{HTTP:x-sakura-forwarded-for} !^$
     # RewriteRule ^(.*) - [E=HTTPS:on]
+    # Redirect /note/ to main site WordPress blog
+    RewriteRule ^note(/.*)?$ https://kyogokupro.com/note$1 [R=301,L]
     RewriteRule ^personalcolor_diagnosis(/.*)?$ - [L]
     RewriteRule ^feed(/.*)?$ - [L]
     RewriteRule "^\.git" - [F]
