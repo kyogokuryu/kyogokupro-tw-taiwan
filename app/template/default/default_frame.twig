@@ -101,7 +101,7 @@ file that was distributed with this source code.
     {# プラグイン用styleseetやmetatagなど #}
     {% if plugin_assets is defined %}{{ include('@admin/snippet.twig', { snippets: plugin_assets }) }}{% endif %}
     <link rel="stylesheet" href="{{ asset('assets/css/customize.css', 'user_data') }}?v=202204011"><!-- test = -->
-    <link rel="stylesheet" href="{{ asset('assets/css/default.css') }}?v={{ "now"|date("Ymd") }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/default.css') }}?v={{ "now"|date("YmdHi") }}">
     <link rel="stylesheet" href="{{ asset('assets/css/page_countdown.css') }}?v=20220915">
     <link rel="stylesheet" href="{{ asset('assets/css/video_style.css') }}">
     {% if body_class is not defined %}
