@@ -965,7 +965,45 @@ file that was distributed with this source code.
             });
         });
     </script>
-    
+
+    <script>
+    // Mobile cart buttons - force display on mobile devices
+    (function() {
+        function showMobileCart() {
+            if (window.innerWidth <= 479) {
+                var mobile = document.querySelector('.add_cart_mobile');
+                var lower = document.querySelector('.sp.lower-cart-btn');
+                var web = document.querySelector('.add_cart_web');
+                if (mobile) {
+                    mobile.style.setProperty('display', 'block', 'important');
+                }
+                if (lower) {
+                    lower.style.setProperty('display', 'flex', 'important');
+                    lower.style.setProperty('position', 'fixed', 'important');
+                    lower.style.setProperty('bottom', '0', 'important');
+                    lower.style.setProperty('left', '0', 'important');
+                    lower.style.setProperty('width', '100%', 'important');
+                    lower.style.setProperty('z-index', '9999', 'important');
+                    lower.style.setProperty('background', '#fff', 'important');
+                    lower.style.setProperty('box-shadow', '0 -2px 10px rgba(0,0,0,0.1)', 'important');
+                }
+                if (web) {
+                    web.style.setProperty('display', 'none', 'important');
+                }
+            }
+        }
+        // Run on DOM ready, window load, and after a short delay
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', showMobileCart);
+        } else {
+            showMobileCart();
+        }
+        window.addEventListener('load', showMobileCart);
+        setTimeout(showMobileCart, 500);
+        setTimeout(showMobileCart, 1500);
+        window.addEventListener('resize', showMobileCart);
+    })();
+    </script>
 
 {% endblock %}
 
