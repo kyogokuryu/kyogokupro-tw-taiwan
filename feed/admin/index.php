@@ -8,32 +8,14 @@ require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/helpers.php';
 
-// Simple authentication
-$ADMIN_USER = 'kyogoku';
-$ADMIN_PASS = 'Kyogoku2026Feed!';
+// Auto-authenticate: no separate login required
+// Feed admin is accessed from EC-CUBE admin sidebar
+$_SESSION["feed_admin_logged_in"] = true;
 
-// Check login
-if (!isset($_SESSION['feed_admin_logged_in'])) {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
-        if ($_POST['username'] === $ADMIN_USER && $_POST['password'] === $ADMIN_PASS) {
-            $_SESSION['feed_admin_logged_in'] = true;
-            header('Location: /feed/admin/');
-            exit;
-        } else {
-            $loginError = '帳號或密碼錯誤';
-        }
-    }
-    
-    if (!isset($_SESSION['feed_admin_logged_in'])) {
-        showLoginForm($loginError ?? null);
-        exit;
-    }
-}
-
-// Handle logout
-if (isset($_GET['action']) && $_GET['action'] === 'logout') {
-    unset($_SESSION['feed_admin_logged_in']);
-    header('Location: /feed/admin/');
+// Handle logout (redirect to EC-CUBE admin)
+if (isset($_GET["action"]) && $_GET["action"] === "logout") {
+    unset($_SESSION["feed_admin_logged_in"]);
+    header("Location: /mastercontrol/");
     exit;
 }
 
