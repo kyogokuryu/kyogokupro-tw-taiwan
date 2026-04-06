@@ -1,5 +1,6 @@
 # Dependencies
 /vendor/
+!/html/template/admin/assets/js/vendor/
 /node_modules/
 
 # Environment
