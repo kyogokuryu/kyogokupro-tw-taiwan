@@ -968,43 +968,78 @@ file that was distributed with this source code.
     </script>
 
     <script>
-    // Mobile cart bar - fix v5 (removed MutationObserver infinite loop)
+    // Mobile cart bar - fix v6 (move bar to body to isolate from parent CSS)
     (function() {
         var mobileUA = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        var fixing = false;
+        var done = false;
         function fixMobileCart() {
-            if (fixing) return;
-            fixing = true;
-            try {
-                var w = window.innerWidth || document.documentElement.clientWidth || screen.width;
-                if (w <= 768 || (mobileUA && screen.width <= 768)) {
-                    var mobile = document.querySelector('.add_cart_mobile');
-                    var bar = document.getElementById('mobile-cart-bar');
-                    var web = document.querySelector('.add_cart_web');
-                    if (mobile) mobile.style.cssText = 'display:block!important;visibility:visible!important;opacity:1!important;height:auto!important;overflow:visible!important;';
-                    if (bar) {
-                        bar.className = '';
-                        bar.id = 'mobile-cart-bar';
-                        bar.style.cssText = 'display:-webkit-box!important;display:flex!important;-webkit-box-orient:horizontal!important;flex-direction:row!important;flex-wrap:nowrap!important;-webkit-box-align:center!important;align-items:center!important;position:fixed!important;left:0!important;bottom:0!important;width:100%!important;z-index:99999!important;background:#fff!important;box-shadow:0 -2px 10px rgba(0,0,0,0.08)!important;padding:10px 12px!important;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))!important;margin:0!important;gap:8px!important;box-sizing:border-box!important;height:auto!important;overflow:visible!important;';
-                        var heart = document.getElementById('favorite-footer');
-                        var cart = document.getElementById('mobile-cart-btn');
-                        var buy = document.getElementById('mobile-buy-btn');
-                        if (heart) { heart.className = ''; heart.style.cssText = 'width:44px!important;height:44px!important;min-width:44px!important;max-width:44px!important;-webkit-box-flex:0!important;flex:0 0 44px!important;border-radius:50%!important;border:2px solid #E12121!important;background:#fff!important;display:-webkit-box!important;display:flex!important;-webkit-box-align:center!important;align-items:center!important;-webkit-box-pack:center!important;justify-content:center!important;padding:0!important;margin:0!important;cursor:pointer!important;box-sizing:border-box!important;float:none!important;position:static!important;'; }
-                        if (cart) { cart.className = ''; cart.style.cssText = 'height:44px!important;line-height:44px!important;border:2px solid #222!important;background-color:#fff!important;border-radius:22px!important;-webkit-box-flex:1!important;flex:1 1 0%!important;min-width:0!important;padding:0 12px!important;box-shadow:none!important;margin:0!important;display:-webkit-box!important;display:flex!important;-webkit-box-align:center!important;align-items:center!important;-webkit-box-pack:center!important;justify-content:center!important;font-size:14px!important;font-weight:bold!important;text-align:center!important;cursor:pointer!important;box-sizing:border-box!important;width:auto!important;max-width:none!important;float:none!important;'; }
-                        if (buy) { buy.className = ''; buy.style.cssText = 'height:44px!important;line-height:44px!important;background:linear-gradient(135deg,#FF4757 0%,#FF6B81 100%)!important;cursor:pointer!important;border-radius:22px!important;-webkit-box-flex:1!important;flex:1.2 1 0%!important;min-width:0!important;padding:0 12px!important;box-shadow:0 2px 8px rgba(255,71,87,0.3)!important;border:none!important;display:-webkit-box!important;display:flex!important;-webkit-box-align:center!important;align-items:center!important;-webkit-box-pack:center!important;justify-content:center!important;margin:0!important;font-size:14px!important;font-weight:bold!important;text-align:center!important;box-sizing:border-box!important;width:auto!important;max-width:none!important;float:none!important;'; }
-                    }
-                    if (web) web.style.cssText = 'display:none!important;';
-                }
-            } finally { fixing = false; }
+            if (done) return;
+            var w = window.innerWidth || document.documentElement.clientWidth || screen.width;
+            if (!(w <= 768 || (mobileUA && screen.width <= 768))) return;
+            done = true;
+            var web = document.querySelector('.add_cart_web');
+            if (web) web.style.cssText = 'display:none!important;';
+            // Hide original add_cart_mobile (we'll create a new bar on body)
+            var mobile = document.querySelector('.add_cart_mobile');
+            if (mobile) mobile.style.cssText = 'display:none!important;';
+            // Create a brand new bar directly on document.body
+            var bar = document.createElement('div');
+            bar.id = 'mobile-cart-bar-v6';
+            bar.setAttribute('style', [
+                'display:flex',
+                'flex-direction:row',
+                'flex-wrap:nowrap',
+                'align-items:center',
+                'justify-content:flex-start',
+                'position:fixed',
+                'left:0',
+                'bottom:0',
+                'width:100%',
+                'z-index:99999',
+                'background:#fff',
+                'box-shadow:0 -2px 10px rgba(0,0,0,0.08)',
+                'padding:10px 12px',
+                'padding-bottom:calc(10px + env(safe-area-inset-bottom, 0px))',
+                'margin:0',
+                'gap:8px',
+                'box-sizing:border-box',
+                'height:auto',
+                'overflow:visible',
+                '-webkit-appearance:none'
+            ].join('!important;') + '!important;');
+            // Heart button
+            var oldHeart = document.getElementById('favorite-footer');
+            var heartHtml = '';
+            if (oldHeart) {
+                heartHtml = oldHeart.outerHTML;
+            }
+            // Build inner HTML with table-like structure for maximum compatibility
+            bar.innerHTML = '<div style="display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;align-items:center!important;width:100%!important;gap:8px!important;box-sizing:border-box!important;margin:0!important;padding:0!important;">'
+                + '<div id="v6-heart" style="width:44px!important;min-width:44px!important;max-width:44px!important;height:44px!important;flex-shrink:0!important;flex-grow:0!important;">' + heartHtml + '</div>'
+                + '<div id="v6-cart" style="flex:1 1 0%!important;min-width:0!important;height:44px!important;"><button type="submit" form="cart-form" style="-webkit-appearance:none!important;appearance:none!important;width:100%!important;height:44px!important;line-height:44px!important;border:2px solid #222!important;background:#fff!important;border-radius:22px!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:0 8px!important;margin:0!important;font-size:13px!important;font-weight:700!important;color:#222!important;cursor:pointer!important;box-sizing:border-box!important;text-align:center!important;white-space:nowrap!important;">加入購物車</button></div>'
+                + '<div id="v6-buy" style="flex:1.2 1 0%!important;min-width:0!important;height:44px!important;"><button type="button" onclick="window.location.href=\'/cart\'" style="-webkit-appearance:none!important;appearance:none!important;width:100%!important;height:44px!important;line-height:44px!important;background:linear-gradient(135deg,#FF4757 0%,#FF6B81 100%)!important;border:none!important;border-radius:22px!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:0 8px!important;margin:0!important;font-size:13px!important;font-weight:700!important;color:#fff!important;cursor:pointer!important;box-sizing:border-box!important;text-align:center!important;white-space:nowrap!important;box-shadow:0 2px 8px rgba(255,71,87,0.3)!important;">立即購買</button></div>'
+                + '</div>';
+            document.body.appendChild(bar);
+            // Fix the heart button inside the new bar
+            var newHeart = bar.querySelector('#favorite-footer');
+            if (newHeart) {
+                newHeart.setAttribute('style', '-webkit-appearance:none!important;appearance:none!important;width:44px!important;height:44px!important;min-width:44px!important;max-width:44px!important;border-radius:50%!important;border:2px solid #E12121!important;background:#fff!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:0!important;margin:0!important;cursor:pointer!important;box-sizing:border-box!important;');
+            }
+            // Connect the cart button to the actual form
+            var cartBtn = bar.querySelector('#v6-cart button');
+            if (cartBtn) {
+                cartBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    var form = document.querySelector('form[name="form1"]') || document.querySelector('.ec-productRole__btn form') || document.querySelector('form[action*="cart"]');
+                    if (form) form.submit();
+                });
+            }
         }
         if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', fixMobileCart); }
         else { fixMobileCart(); }
         window.addEventListener('load', fixMobileCart);
         setTimeout(fixMobileCart, 100);
         setTimeout(fixMobileCart, 500);
-        setTimeout(fixMobileCart, 2000);
-        window.addEventListener('resize', function() { setTimeout(fixMobileCart, 50); });
-        // NO MutationObserver - it caused infinite loops and page freezes
     })();
     </script>
 
