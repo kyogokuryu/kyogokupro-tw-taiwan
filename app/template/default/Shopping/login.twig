@@ -72,7 +72,8 @@ file that was distributed with this source code.
                 </form>
             </div>
 
-            {% if is_granted('IS_AUTHENTICATED_REMEMBERED') == false %}
+            {# 訪客購買（ゲスト購入）を無効化 - 2026-04-08 #}
+            {# {% if is_granted('IS_AUTHENTICATED_REMEMBERED') == false %}
                 <div class="ec-off2Grid__cell">
                     <div class="ec-guest">
                         <div class="ec-guest__inner">
@@ -82,7 +83,7 @@ file that was distributed with this source code.
                         </div>
                     </div>
                 </div>
-            {% endif %}
+            {% endif %} #}
 
         </div>
     </div>
