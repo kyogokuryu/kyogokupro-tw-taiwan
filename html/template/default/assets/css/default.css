@@ -6678,8 +6678,16 @@ html.no-scroll {
   .add_cart_web {
     display: none !important;
   }
-  .sp.lower-cart-btn {
+  /* Mobile cart bar v3 - ID-based, no external class dependencies */
+  #mobile-cart-bar {
+    display: -webkit-flex !important;
     display: flex !important;
+    -webkit-flex-direction: row !important;
+    flex-direction: row !important;
+    -webkit-flex-wrap: nowrap !important;
+    flex-wrap: nowrap !important;
+    -webkit-align-items: center !important;
+    align-items: center !important;
     visibility: visible !important;
     opacity: 1 !important;
     position: fixed !important;
@@ -6688,55 +6696,50 @@ html.no-scroll {
     width: 100% !important;
     height: auto !important;
     z-index: 99999 !important;
-    padding: 0 !important;
+    padding: 10px 12px !important;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)) !important;
     margin: 0 !important;
     background: #fff !important;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.1) !important;
-    flex-wrap: nowrap !important;
-    /* Override Bootstrap .row */
-    margin-right: 0 !important;
-    margin-left: 0 !important;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.08) !important;
+    gap: 8px !important;
+    box-sizing: border-box !important;
   }
-  .sp.lower-cart-btn::before,
-  .sp.lower-cart-btn::after {
+  #mobile-cart-bar::before,
+  #mobile-cart-bar::after {
     display: none !important;
     content: none !important;
   }
-  /* Inner flex container - override Bootstrap col-xs-10 */
-  .sp.lower-cart-btn > div {
-    display: flex !important;
-    gap: 8px !important;
-    width: 100% !important;
-    padding: 10px 12px !important;
-    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)) !important;
-    align-items: center !important;
-    margin: 0 !important;
-    flex-wrap: nowrap !important;
-    box-sizing: border-box !important;
-    float: none !important;
-  }
-  /* Heart button wrapper - override Bootstrap col-xs-2 */
-  .sp.lower-cart-btn > div > div:first-child {
+  /* Heart button */
+  #mobile-cart-bar #favorite-footer {
     width: 44px !important;
     min-width: 44px !important;
     max-width: 44px !important;
+    height: 44px !important;
+    -webkit-flex-shrink: 0 !important;
     flex-shrink: 0 !important;
+    -webkit-flex-grow: 0 !important;
     flex-grow: 0 !important;
     padding: 0 !important;
     margin: 0 !important;
     float: none !important;
   }
   /* Cart button */
-  .sp.lower-cart-btn .add-to-cart {
-    flex: 1 !important;
+  #mobile-cart-bar .add-to-cart {
+    -webkit-flex: 1 1 0% !important;
+    flex: 1 1 0% !important;
     min-width: 0 !important;
+    width: auto !important;
+    max-width: none !important;
     margin: 0 !important;
     float: none !important;
   }
   /* Buy now button */
-  .sp.lower-cart-btn .one-touch-payment {
-    flex: 1.2 !important;
+  #mobile-cart-bar .one-touch-payment {
+    -webkit-flex: 1.2 1 0% !important;
+    flex: 1.2 1 0% !important;
     min-width: 0 !important;
+    width: auto !important;
+    max-width: none !important;
     margin: 0 !important;
     float: none !important;
   }

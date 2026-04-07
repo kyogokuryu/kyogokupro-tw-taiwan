@@ -174,7 +174,8 @@ file that was distributed with this source code.
     .add_cart_web{
         display: none;
     }
-    .sp.lower-cart-btn {
+    #mobile-cart-bar {
+        display: -webkit-flex !important;
         display: flex !important;
     }
     .notes-on-purchase .title {
@@ -967,82 +968,77 @@ file that was distributed with this source code.
     </script>
 
     <script>
-    // Mobile cart buttons - force display on mobile devices
-    // Root cause fix: Bootstrap grid classes (row, col-xs-*) conflict with flexbox layout
-    // Solution: Force all inline styles via JS to override any CSS cascade issues
+    // Mobile cart bar - nuclear fix v3
+    // Removed "sp" class to avoid customize.css conflict (.sp { display: inline !important })
+    // Removed "ec-blockBtn--action" class to avoid style.css conflict (width: 100%, display: block)
+    // All styles are inline with -webkit- prefixes for Safari compatibility
+    // Flat structure: no inner div wrapper, all items are direct children of #mobile-cart-bar
     (function() {
         var mobileUA = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        function showMobileCart() {
+        function fixMobileCart() {
             var w = window.innerWidth;
             if (w <= 768 || (mobileUA && screen.width <= 768)) {
                 var mobile = document.querySelector('.add_cart_mobile');
-                var lower = document.querySelector('.sp.lower-cart-btn');
+                var bar = document.getElementById('mobile-cart-bar');
                 var web = document.querySelector('.add_cart_web');
                 if (mobile) {
-                    mobile.style.setProperty('display', 'block', 'important');
-                    mobile.style.setProperty('visibility', 'visible', 'important');
-                    mobile.style.setProperty('opacity', '1', 'important');
-                    mobile.style.setProperty('height', 'auto', 'important');
-                    mobile.style.setProperty('overflow', 'visible', 'important');
+                    mobile.style.cssText = 'display:block!important;visibility:visible!important;opacity:1!important;height:auto!important;overflow:visible!important;';
                 }
-                if (lower) {
-                    lower.style.setProperty('display', 'flex', 'important');
-                    lower.style.setProperty('visibility', 'visible', 'important');
-                    lower.style.setProperty('opacity', '1', 'important');
-                    lower.style.setProperty('position', 'fixed', 'important');
-                    lower.style.setProperty('bottom', '0', 'important');
-                    lower.style.setProperty('left', '0', 'important');
-                    lower.style.setProperty('width', '100%', 'important');
-                    lower.style.setProperty('height', 'auto', 'important');
-                    lower.style.setProperty('z-index', '99999', 'important');
-                    lower.style.setProperty('background', '#fff', 'important');
-                    lower.style.setProperty('box-shadow', '0 -2px 10px rgba(0,0,0,0.1)', 'important');
-                    lower.style.setProperty('padding', '0', 'important');
-                    lower.style.setProperty('margin', '0', 'important');
-                    lower.style.setProperty('flex-wrap', 'nowrap', 'important');
-                    // Fix inner container
-                    var inner = lower.firstElementChild;
-                    if (inner) {
-                        inner.style.setProperty('display', 'flex', 'important');
-                        inner.style.setProperty('gap', '8px', 'important');
-                        inner.style.setProperty('width', '100%', 'important');
-                        inner.style.setProperty('padding', '10px 12px', 'important');
-                        inner.style.setProperty('padding-bottom', 'calc(10px + env(safe-area-inset-bottom, 0px))', 'important');
-                        inner.style.setProperty('align-items', 'center', 'important');
-                        inner.style.setProperty('margin', '0', 'important');
-                        inner.style.setProperty('flex-wrap', 'nowrap', 'important');
-                        inner.style.setProperty('box-sizing', 'border-box', 'important');
-                        // Fix heart button wrapper (first child)
-                        var heartWrap = inner.firstElementChild;
-                        if (heartWrap && heartWrap.tagName === 'DIV') {
-                            heartWrap.style.setProperty('width', '44px', 'important');
-                            heartWrap.style.setProperty('min-width', '44px', 'important');
-                            heartWrap.style.setProperty('max-width', '44px', 'important');
-                            heartWrap.style.setProperty('flex-shrink', '0', 'important');
-                            heartWrap.style.setProperty('flex-grow', '0', 'important');
-                            heartWrap.style.setProperty('padding', '0', 'important');
-                            heartWrap.style.setProperty('margin', '0', 'important');
-                            heartWrap.style.setProperty('float', 'none', 'important');
+                if (bar) {
+                    bar.style.cssText = 'display:-webkit-flex!important;display:flex!important;-webkit-flex-direction:row!important;flex-direction:row!important;-webkit-flex-wrap:nowrap!important;flex-wrap:nowrap!important;-webkit-align-items:center!important;align-items:center!important;position:fixed!important;left:0!important;bottom:0!important;width:100%!important;z-index:99999!important;background:#fff!important;box-shadow:0 -2px 10px rgba(0,0,0,0.08)!important;padding:10px 12px!important;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))!important;margin:0!important;gap:8px!important;box-sizing:border-box!important;height:auto!important;';
+                    // Force fix ALL direct children
+                    var children = bar.children;
+                    for (var i = 0; i < children.length; i++) {
+                        var child = children[i];
+                        child.style.setProperty('float', 'none', 'important');
+                        child.style.setProperty('box-sizing', 'border-box', 'important');
+                        if (child.id === 'favorite-footer') {
+                            // Heart button
+                            child.style.setProperty('width', '44px', 'important');
+                            child.style.setProperty('min-width', '44px', 'important');
+                            child.style.setProperty('max-width', '44px', 'important');
+                            child.style.setProperty('height', '44px', 'important');
+                            child.style.setProperty('-webkit-flex-shrink', '0', 'important');
+                            child.style.setProperty('flex-shrink', '0', 'important');
+                            child.style.setProperty('-webkit-flex-grow', '0', 'important');
+                            child.style.setProperty('flex-grow', '0', 'important');
+                            child.style.setProperty('padding', '0', 'important');
+                            child.style.setProperty('margin', '0', 'important');
+                        } else if (child.classList.contains('add-to-cart')) {
+                            // Cart button
+                            child.style.setProperty('-webkit-flex', '1 1 0%', 'important');
+                            child.style.setProperty('flex', '1 1 0%', 'important');
+                            child.style.setProperty('min-width', '0', 'important');
+                            child.style.setProperty('width', 'auto', 'important');
+                            child.style.setProperty('max-width', 'none', 'important');
+                            child.style.setProperty('margin', '0', 'important');
+                        } else if (child.classList.contains('one-touch-payment')) {
+                            // Buy now button
+                            child.style.setProperty('-webkit-flex', '1.2 1 0%', 'important');
+                            child.style.setProperty('flex', '1.2 1 0%', 'important');
+                            child.style.setProperty('min-width', '0', 'important');
+                            child.style.setProperty('width', 'auto', 'important');
+                            child.style.setProperty('max-width', 'none', 'important');
+                            child.style.setProperty('margin', '0', 'important');
                         }
                     }
                 }
                 if (web) {
-                    web.style.setProperty('display', 'none', 'important');
+                    web.style.cssText = 'display:none!important;';
                 }
             }
         }
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', showMobileCart);
+            document.addEventListener('DOMContentLoaded', fixMobileCart);
         } else {
-            showMobileCart();
+            fixMobileCart();
         }
-        window.addEventListener('load', showMobileCart);
-        setTimeout(showMobileCart, 300);
-        setTimeout(showMobileCart, 1000);
-        setTimeout(showMobileCart, 3000);
-        window.addEventListener('resize', showMobileCart);
-        // MutationObserver to re-apply if any script changes the display
-        var observer = new MutationObserver(function() { showMobileCart(); });
+        window.addEventListener('load', fixMobileCart);
+        setTimeout(fixMobileCart, 100);
+        setTimeout(fixMobileCart, 500);
+        setTimeout(fixMobileCart, 2000);
+        window.addEventListener('resize', fixMobileCart);
+        var observer = new MutationObserver(function() { fixMobileCart(); });
         var target = document.querySelector('.add_cart_mobile');
         if (target) observer.observe(target, { attributes: true, attributeFilter: ['style', 'class'] });
     })();
@@ -1428,20 +1424,18 @@ file that was distributed with this source code.
                                     </button>
                                     </div>
                                     <div class="add_cart_mobile">
-                                        <div class="sp lower-cart-btn" style="display: flex; position: fixed; left: 0; bottom: 0; width: 100%; z-index: 99999; background: #fff; box-shadow: 0 -2px 10px rgba(0,0,0,0.08); padding: 0; margin: 0;">
-                                            <div style="display: flex; gap: 8px; width: 100%; padding: 10px 12px; padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); align-items: center; margin: 0;">
+                                        <div id="mobile-cart-bar" class="lower-cart-btn" style="display: -webkit-flex; display: flex; -webkit-flex-direction: row; flex-direction: row; -webkit-flex-wrap: nowrap; flex-wrap: nowrap; -webkit-align-items: center; align-items: center; position: fixed; left: 0; bottom: 0; width: 100%; z-index: 99999; background: #fff; box-shadow: 0 -2px 10px rgba(0,0,0,0.08); padding: 10px 12px; padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); margin: 0; gap: 8px; box-sizing: border-box;">
                                                 {% if is_favorite == false %}
-                                                    <div style="width: 44px; min-width: 44px; max-width: 44px; flex-shrink: 0;"><button type="submit" form="favorite-form" class="favorite" id="favorite-footer" onclick="console.log('click')" style="width: 44px; height: 44px; min-width: 44px; max-width: 44px; border-radius: 50%; border: 2px solid #E12121; background: #fff; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; cursor: pointer; position: relative;"><span style="display: block; width: 22px; height: 22px; background: url(/html/template/default/assets/img/icon/icon-heart-red.svg) no-repeat center center; background-size: contain;"></span></button></div>
+                                                    <button type="submit" form="favorite-form" id="favorite-footer" onclick="console.log('click')" style="width: 44px; height: 44px; min-width: 44px; max-width: 44px; -webkit-flex-shrink: 0; flex-shrink: 0; -webkit-flex-grow: 0; flex-grow: 0; border-radius: 50%; border: 2px solid #E12121; background: #fff; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center; padding: 0; margin: 0; cursor: pointer; box-sizing: border-box;"><span style="display: block; width: 22px; height: 22px; background: url(/html/template/default/assets/img/icon/icon-heart-red.svg) no-repeat center center; background-size: contain;"></span></button>
                                                 {% else %}
-                                                    <div style="width: 44px; min-width: 44px; max-width: 44px; flex-shrink: 0;"><button type="button" form="favorite-form" class="favorite added" id="favorite-footer" disabled="disabled" style="width: 44px; height: 44px; min-width: 44px; max-width: 44px; border-radius: 50%; border: 2px solid #E12121; background: #fff; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; position: relative;"><a href="{{ url('mypage_favorite_delete', { id : Product.id }) }}" {{ csrf_token_for_anchor() }} data-method="delete" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">&nbsp;</a><span style="display: block; width: 22px; height: 22px; background: url(/html/template/default/assets/img/icon/icon-heart-red-fill.svg) no-repeat center center; background-size: contain;"></span></button></div>
+                                                    <button type="button" form="favorite-form" id="favorite-footer" disabled="disabled" style="width: 44px; height: 44px; min-width: 44px; max-width: 44px; -webkit-flex-shrink: 0; flex-shrink: 0; -webkit-flex-grow: 0; flex-grow: 0; border-radius: 50%; border: 2px solid #E12121; background: #fff; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center; padding: 0; margin: 0; position: relative; box-sizing: border-box;"><a href="{{ url('mypage_favorite_delete', { id : Product.id }) }}" {{ csrf_token_for_anchor() }} data-method="delete" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">&nbsp;</a><span style="display: block; width: 22px; height: 22px; background: url(/html/template/default/assets/img/icon/icon-heart-red-fill.svg) no-repeat center center; background-size: contain;"></span></button>
                                                 {% endif %}
-                                                <button type="submit" class="ec-blockBtn--action s1 add-cart add-to-cart" style="height: 44px; line-height: 44px; border: 2px solid #222; background-color: #ffffff; border-radius: 22px; flex: 1; min-width: 0; padding: 0 12px; box-shadow: none; margin: 0; display: flex; align-items: center; justify-content: center;">
-                                                    <span class="add-cart-btn" style="color: #222; font-weight: 700; font-size: 13px; white-space: nowrap;">加入購物車</span>
+                                                <button type="submit" class="add-cart add-to-cart" style="height: 44px; line-height: 44px; border: 2px solid #222; background-color: #ffffff; border-radius: 22px; -webkit-flex: 1 1 0%; flex: 1 1 0%; min-width: 0; padding: 0 12px; box-shadow: none; margin: 0; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center; font-size: 14px; font-weight: bold; text-align: center; cursor: pointer; box-sizing: border-box; width: auto;">
+                                                    <span style="color: #222; font-weight: 700; font-size: 13px; white-space: nowrap;">加入購物車</span>
                                                 </button>
-                                                <span onclick="window.location.href='{{ path('cart') }}'" class="ec-blockBtn--action s1 add-cart one-touch-payment" style="height: 44px; line-height: 44px; background: linear-gradient(135deg, #FF4757 0%, #FF6B81 100%); cursor: pointer; border-radius: 22px; flex: 1.2; min-width: 0; padding: 0 12px; box-shadow: 0 2px 8px rgba(255,71,87,0.3); border: none; display: flex; align-items: center; justify-content: center; margin: 0;">
-                                                    <span class="add-cart-btn" style="color: #ffffff; font-weight: 700; font-size: 13px; white-space: nowrap;">立即購買</span>
+                                                <span onclick="window.location.href='{{ path('cart') }}'" class="add-cart one-touch-payment" style="height: 44px; line-height: 44px; background: linear-gradient(135deg, #FF4757 0%, #FF6B81 100%); cursor: pointer; border-radius: 22px; -webkit-flex: 1.2 1 0%; flex: 1.2 1 0%; min-width: 0; padding: 0 12px; box-shadow: 0 2px 8px rgba(255,71,87,0.3); border: none; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center; margin: 0; font-size: 14px; font-weight: bold; text-align: center; box-sizing: border-box; width: auto;">
+                                                    <span style="color: #ffffff; font-weight: 700; font-size: 13px; white-space: nowrap;">立即購買</span>
                                                 </span>
-                                            </div>
                                         </div>
                                     </div>
                                 {% else %}
