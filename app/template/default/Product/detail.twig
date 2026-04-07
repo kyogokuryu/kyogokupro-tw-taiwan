@@ -968,11 +968,11 @@ file that was distributed with this source code.
     </script>
 
     <script>
-    // Mobile cart bar - nuclear fix v3
-    // Removed "sp" class to avoid customize.css conflict (.sp { display: inline !important })
-    // Removed "ec-blockBtn--action" class to avoid style.css conflict (width: 100%, display: block)
-    // All styles are inline with -webkit- prefixes for Safari compatibility
-    // Flat structure: no inner div wrapper, all items are direct children of #mobile-cart-bar
+    // Mobile cart bar - nuclear fix v4
+    // ALL classes removed (no lower-cart-btn, no add-cart, no add-to-cart, no one-touch-payment)
+    // ALL elements use IDs only
+    // ALL inline styles use !important
+    // Uses -webkit-box (oldest Safari), -ms-flexbox (IE), and flex (modern) for max compatibility
     (function() {
         var mobileUA = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         function fixMobileCart() {
@@ -985,42 +985,25 @@ file that was distributed with this source code.
                     mobile.style.cssText = 'display:block!important;visibility:visible!important;opacity:1!important;height:auto!important;overflow:visible!important;';
                 }
                 if (bar) {
-                    bar.style.cssText = 'display:-webkit-flex!important;display:flex!important;-webkit-flex-direction:row!important;flex-direction:row!important;-webkit-flex-wrap:nowrap!important;flex-wrap:nowrap!important;-webkit-align-items:center!important;align-items:center!important;position:fixed!important;left:0!important;bottom:0!important;width:100%!important;z-index:99999!important;background:#fff!important;box-shadow:0 -2px 10px rgba(0,0,0,0.08)!important;padding:10px 12px!important;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))!important;margin:0!important;gap:8px!important;box-sizing:border-box!important;height:auto!important;';
-                    // Force fix ALL direct children
-                    var children = bar.children;
-                    for (var i = 0; i < children.length; i++) {
-                        var child = children[i];
-                        child.style.setProperty('float', 'none', 'important');
-                        child.style.setProperty('box-sizing', 'border-box', 'important');
-                        if (child.id === 'favorite-footer') {
-                            // Heart button
-                            child.style.setProperty('width', '44px', 'important');
-                            child.style.setProperty('min-width', '44px', 'important');
-                            child.style.setProperty('max-width', '44px', 'important');
-                            child.style.setProperty('height', '44px', 'important');
-                            child.style.setProperty('-webkit-flex-shrink', '0', 'important');
-                            child.style.setProperty('flex-shrink', '0', 'important');
-                            child.style.setProperty('-webkit-flex-grow', '0', 'important');
-                            child.style.setProperty('flex-grow', '0', 'important');
-                            child.style.setProperty('padding', '0', 'important');
-                            child.style.setProperty('margin', '0', 'important');
-                        } else if (child.classList.contains('add-to-cart')) {
-                            // Cart button
-                            child.style.setProperty('-webkit-flex', '1 1 0%', 'important');
-                            child.style.setProperty('flex', '1 1 0%', 'important');
-                            child.style.setProperty('min-width', '0', 'important');
-                            child.style.setProperty('width', 'auto', 'important');
-                            child.style.setProperty('max-width', 'none', 'important');
-                            child.style.setProperty('margin', '0', 'important');
-                        } else if (child.classList.contains('one-touch-payment')) {
-                            // Buy now button
-                            child.style.setProperty('-webkit-flex', '1.2 1 0%', 'important');
-                            child.style.setProperty('flex', '1.2 1 0%', 'important');
-                            child.style.setProperty('min-width', '0', 'important');
-                            child.style.setProperty('width', 'auto', 'important');
-                            child.style.setProperty('max-width', 'none', 'important');
-                            child.style.setProperty('margin', '0', 'important');
-                        }
+                    // Remove any class that might cause CSS conflicts
+                    bar.className = '';
+                    bar.id = 'mobile-cart-bar';
+                    bar.style.cssText = 'display:-webkit-box!important;display:-ms-flexbox!important;display:flex!important;-webkit-box-orient:horizontal!important;-webkit-box-direction:normal!important;flex-direction:row!important;flex-wrap:nowrap!important;-webkit-box-align:center!important;-ms-flex-align:center!important;align-items:center!important;position:fixed!important;left:0!important;bottom:0!important;width:100%!important;z-index:99999!important;background:#fff!important;box-shadow:0 -2px 10px rgba(0,0,0,0.08)!important;padding:10px 12px!important;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))!important;margin:0!important;gap:8px!important;box-sizing:border-box!important;height:auto!important;overflow:visible!important;';
+                    // Force fix ALL direct children by ID
+                    var heart = document.getElementById('favorite-footer');
+                    var cart = document.getElementById('mobile-cart-btn');
+                    var buy = document.getElementById('mobile-buy-btn');
+                    if (heart) {
+                        heart.className = '';
+                        heart.style.cssText = 'width:44px!important;height:44px!important;min-width:44px!important;max-width:44px!important;-webkit-box-flex:0!important;-ms-flex:0 0 44px!important;flex:0 0 44px!important;border-radius:50%!important;border:2px solid #E12121!important;background:#fff!important;display:-webkit-box!important;display:-ms-flexbox!important;display:flex!important;-webkit-box-align:center!important;-ms-flex-align:center!important;align-items:center!important;-webkit-box-pack:center!important;-ms-flex-pack:center!important;justify-content:center!important;padding:0!important;margin:0!important;cursor:pointer!important;box-sizing:border-box!important;float:none!important;position:static!important;';
+                    }
+                    if (cart) {
+                        cart.className = '';
+                        cart.style.cssText = 'height:44px!important;line-height:44px!important;border:2px solid #222!important;background-color:#ffffff!important;border-radius:22px!important;-webkit-box-flex:1!important;-ms-flex:1 1 0%!important;flex:1 1 0%!important;min-width:0!important;padding:0 12px!important;box-shadow:none!important;margin:0!important;display:-webkit-box!important;display:-ms-flexbox!important;display:flex!important;-webkit-box-align:center!important;-ms-flex-align:center!important;align-items:center!important;-webkit-box-pack:center!important;-ms-flex-pack:center!important;justify-content:center!important;font-size:14px!important;font-weight:bold!important;text-align:center!important;cursor:pointer!important;box-sizing:border-box!important;width:auto!important;max-width:none!important;float:none!important;';
+                    }
+                    if (buy) {
+                        buy.className = '';
+                        buy.style.cssText = 'height:44px!important;line-height:44px!important;background:linear-gradient(135deg,#FF4757 0%,#FF6B81 100%)!important;cursor:pointer!important;border-radius:22px!important;-webkit-box-flex:1.2!important;-ms-flex:1.2 1 0%!important;flex:1.2 1 0%!important;min-width:0!important;padding:0 12px!important;box-shadow:0 2px 8px rgba(255,71,87,0.3)!important;border:none!important;display:-webkit-box!important;display:-ms-flexbox!important;display:flex!important;-webkit-box-align:center!important;-ms-flex-align:center!important;align-items:center!important;-webkit-box-pack:center!important;-ms-flex-pack:center!important;justify-content:center!important;margin:0!important;font-size:14px!important;font-weight:bold!important;text-align:center!important;box-sizing:border-box!important;width:auto!important;max-width:none!important;float:none!important;';
                     }
                 }
                 if (web) {
@@ -1424,17 +1407,17 @@ file that was distributed with this source code.
                                     </button>
                                     </div>
                                     <div class="add_cart_mobile">
-                                        <div id="mobile-cart-bar" class="lower-cart-btn" style="display: -webkit-flex; display: flex; -webkit-flex-direction: row; flex-direction: row; -webkit-flex-wrap: nowrap; flex-wrap: nowrap; -webkit-align-items: center; align-items: center; position: fixed; left: 0; bottom: 0; width: 100%; z-index: 99999; background: #fff; box-shadow: 0 -2px 10px rgba(0,0,0,0.08); padding: 10px 12px; padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); margin: 0; gap: 8px; box-sizing: border-box;">
+                                        <div id="mobile-cart-bar" style="display:-webkit-box !important;display:-ms-flexbox !important;display:flex !important;-webkit-box-orient:horizontal !important;-webkit-box-direction:normal !important;flex-direction:row !important;flex-wrap:nowrap !important;-webkit-box-align:center !important;-ms-flex-align:center !important;align-items:center !important;position:fixed !important;left:0 !important;bottom:0 !important;width:100% !important;z-index:99999 !important;background:#fff !important;box-shadow:0 -2px 10px rgba(0,0,0,0.08) !important;padding:10px 12px !important;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px)) !important;margin:0 !important;gap:8px !important;box-sizing:border-box !important;height:auto !important;overflow:visible !important;">
                                                 {% if is_favorite == false %}
-                                                    <button type="submit" form="favorite-form" id="favorite-footer" onclick="console.log('click')" style="width: 44px; height: 44px; min-width: 44px; max-width: 44px; -webkit-flex-shrink: 0; flex-shrink: 0; -webkit-flex-grow: 0; flex-grow: 0; border-radius: 50%; border: 2px solid #E12121; background: #fff; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center; padding: 0; margin: 0; cursor: pointer; box-sizing: border-box;"><span style="display: block; width: 22px; height: 22px; background: url(/html/template/default/assets/img/icon/icon-heart-red.svg) no-repeat center center; background-size: contain;"></span></button>
+                                                    <button type="submit" form="favorite-form" id="favorite-footer" onclick="console.log('click')" style="width:44px !important;height:44px !important;min-width:44px !important;max-width:44px !important;-webkit-box-flex:0 !important;-ms-flex:0 0 44px !important;flex:0 0 44px !important;border-radius:50% !important;border:2px solid #E12121 !important;background:#fff !important;display:-webkit-box !important;display:-ms-flexbox !important;display:flex !important;-webkit-box-align:center !important;-ms-flex-align:center !important;align-items:center !important;-webkit-box-pack:center !important;-ms-flex-pack:center !important;justify-content:center !important;padding:0 !important;margin:0 !important;cursor:pointer !important;box-sizing:border-box !important;float:none !important;"><span style="display:block !important;width:22px !important;height:22px !important;background:url(/html/template/default/assets/img/icon/icon-heart-red.svg) no-repeat center center !important;background-size:contain !important;"></span></button>
                                                 {% else %}
-                                                    <button type="button" form="favorite-form" id="favorite-footer" disabled="disabled" style="width: 44px; height: 44px; min-width: 44px; max-width: 44px; -webkit-flex-shrink: 0; flex-shrink: 0; -webkit-flex-grow: 0; flex-grow: 0; border-radius: 50%; border: 2px solid #E12121; background: #fff; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center; padding: 0; margin: 0; position: relative; box-sizing: border-box;"><a href="{{ url('mypage_favorite_delete', { id : Product.id }) }}" {{ csrf_token_for_anchor() }} data-method="delete" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">&nbsp;</a><span style="display: block; width: 22px; height: 22px; background: url(/html/template/default/assets/img/icon/icon-heart-red-fill.svg) no-repeat center center; background-size: contain;"></span></button>
+                                                    <button type="button" form="favorite-form" id="favorite-footer" disabled="disabled" style="width:44px !important;height:44px !important;min-width:44px !important;max-width:44px !important;-webkit-box-flex:0 !important;-ms-flex:0 0 44px !important;flex:0 0 44px !important;border-radius:50% !important;border:2px solid #E12121 !important;background:#fff !important;display:-webkit-box !important;display:-ms-flexbox !important;display:flex !important;-webkit-box-align:center !important;-ms-flex-align:center !important;align-items:center !important;-webkit-box-pack:center !important;-ms-flex-pack:center !important;justify-content:center !important;padding:0 !important;margin:0 !important;position:relative !important;box-sizing:border-box !important;float:none !important;"><a href="{{ url('mypage_favorite_delete', { id : Product.id }) }}" {{ csrf_token_for_anchor() }} data-method="delete" style="position:absolute !important;top:0 !important;left:0 !important;width:100% !important;height:100% !important;">&nbsp;</a><span style="display:block !important;width:22px !important;height:22px !important;background:url(/html/template/default/assets/img/icon/icon-heart-red-fill.svg) no-repeat center center !important;background-size:contain !important;"></span></button>
                                                 {% endif %}
-                                                <button type="submit" class="add-cart add-to-cart" style="height: 44px; line-height: 44px; border: 2px solid #222; background-color: #ffffff; border-radius: 22px; -webkit-flex: 1 1 0%; flex: 1 1 0%; min-width: 0; padding: 0 12px; box-shadow: none; margin: 0; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center; font-size: 14px; font-weight: bold; text-align: center; cursor: pointer; box-sizing: border-box; width: auto;">
-                                                    <span style="color: #222; font-weight: 700; font-size: 13px; white-space: nowrap;">加入購物車</span>
+                                                <button type="submit" id="mobile-cart-btn" style="height:44px !important;line-height:44px !important;border:2px solid #222 !important;background-color:#ffffff !important;border-radius:22px !important;-webkit-box-flex:1 !important;-ms-flex:1 1 0% !important;flex:1 1 0% !important;min-width:0 !important;padding:0 12px !important;box-shadow:none !important;margin:0 !important;display:-webkit-box !important;display:-ms-flexbox !important;display:flex !important;-webkit-box-align:center !important;-ms-flex-align:center !important;align-items:center !important;-webkit-box-pack:center !important;-ms-flex-pack:center !important;justify-content:center !important;font-size:14px !important;font-weight:bold !important;text-align:center !important;cursor:pointer !important;box-sizing:border-box !important;width:auto !important;max-width:none !important;float:none !important;">
+                                                    <span style="color:#222 !important;font-weight:700 !important;font-size:13px !important;white-space:nowrap !important;">加入購物車</span>
                                                 </button>
-                                                <span onclick="window.location.href='{{ path('cart') }}'" class="add-cart one-touch-payment" style="height: 44px; line-height: 44px; background: linear-gradient(135deg, #FF4757 0%, #FF6B81 100%); cursor: pointer; border-radius: 22px; -webkit-flex: 1.2 1 0%; flex: 1.2 1 0%; min-width: 0; padding: 0 12px; box-shadow: 0 2px 8px rgba(255,71,87,0.3); border: none; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center; margin: 0; font-size: 14px; font-weight: bold; text-align: center; box-sizing: border-box; width: auto;">
-                                                    <span style="color: #ffffff; font-weight: 700; font-size: 13px; white-space: nowrap;">立即購買</span>
+                                                <span onclick="window.location.href='{{ path('cart') }}'" id="mobile-buy-btn" style="height:44px !important;line-height:44px !important;background:linear-gradient(135deg,#FF4757 0%,#FF6B81 100%) !important;cursor:pointer !important;border-radius:22px !important;-webkit-box-flex:1.2 !important;-ms-flex:1.2 1 0% !important;flex:1.2 1 0% !important;min-width:0 !important;padding:0 12px !important;box-shadow:0 2px 8px rgba(255,71,87,0.3) !important;border:none !important;display:-webkit-box !important;display:-ms-flexbox !important;display:flex !important;-webkit-box-align:center !important;-ms-flex-align:center !important;align-items:center !important;-webkit-box-pack:center !important;-ms-flex-pack:center !important;justify-content:center !important;margin:0 !important;font-size:14px !important;font-weight:bold !important;text-align:center !important;box-sizing:border-box !important;width:auto !important;max-width:none !important;float:none !important;">
+                                                    <span style="color:#ffffff !important;font-weight:700 !important;font-size:13px !important;white-space:nowrap !important;">立即購買</span>
                                                 </span>
                                         </div>
                                     </div>
