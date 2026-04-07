@@ -969,10 +969,10 @@ file that was distributed with this source code.
     <script>
     // Mobile cart buttons - force display on mobile devices
     (function() {
-        var isMobile = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (screen.width <= 768) || (window.innerWidth <= 768) || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        var mobileUA = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         function showMobileCart() {
-            var w = Math.min(window.innerWidth, screen.width);
-            if (w <= 768 || isMobile) {
+            var w = window.innerWidth;
+            if (w <= 768 || (mobileUA && screen.width <= 768)) {
                 var mobile = document.querySelector('.add_cart_mobile');
                 var lower = document.querySelector('.sp.lower-cart-btn');
                 var web = document.querySelector('.add_cart_web');
