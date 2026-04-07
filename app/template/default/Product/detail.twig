@@ -968,6 +968,8 @@ file that was distributed with this source code.
 
     <script>
     // Mobile cart buttons - force display on mobile devices
+    // Root cause fix: Bootstrap grid classes (row, col-xs-*) conflict with flexbox layout
+    // Solution: Force all inline styles via JS to override any CSS cascade issues
     (function() {
         var mobileUA = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         function showMobileCart() {
@@ -995,6 +997,34 @@ file that was distributed with this source code.
                     lower.style.setProperty('z-index', '99999', 'important');
                     lower.style.setProperty('background', '#fff', 'important');
                     lower.style.setProperty('box-shadow', '0 -2px 10px rgba(0,0,0,0.1)', 'important');
+                    lower.style.setProperty('padding', '0', 'important');
+                    lower.style.setProperty('margin', '0', 'important');
+                    lower.style.setProperty('flex-wrap', 'nowrap', 'important');
+                    // Fix inner container
+                    var inner = lower.firstElementChild;
+                    if (inner) {
+                        inner.style.setProperty('display', 'flex', 'important');
+                        inner.style.setProperty('gap', '8px', 'important');
+                        inner.style.setProperty('width', '100%', 'important');
+                        inner.style.setProperty('padding', '10px 12px', 'important');
+                        inner.style.setProperty('padding-bottom', 'calc(10px + env(safe-area-inset-bottom, 0px))', 'important');
+                        inner.style.setProperty('align-items', 'center', 'important');
+                        inner.style.setProperty('margin', '0', 'important');
+                        inner.style.setProperty('flex-wrap', 'nowrap', 'important');
+                        inner.style.setProperty('box-sizing', 'border-box', 'important');
+                        // Fix heart button wrapper (first child)
+                        var heartWrap = inner.firstElementChild;
+                        if (heartWrap && heartWrap.tagName === 'DIV') {
+                            heartWrap.style.setProperty('width', '44px', 'important');
+                            heartWrap.style.setProperty('min-width', '44px', 'important');
+                            heartWrap.style.setProperty('max-width', '44px', 'important');
+                            heartWrap.style.setProperty('flex-shrink', '0', 'important');
+                            heartWrap.style.setProperty('flex-grow', '0', 'important');
+                            heartWrap.style.setProperty('padding', '0', 'important');
+                            heartWrap.style.setProperty('margin', '0', 'important');
+                            heartWrap.style.setProperty('float', 'none', 'important');
+                        }
+                    }
                 }
                 if (web) {
                     web.style.setProperty('display', 'none', 'important');
@@ -1398,18 +1428,18 @@ file that was distributed with this source code.
                                     </button>
                                     </div>
                                     <div class="add_cart_mobile">
-                                        <div class="sp lower-cart-btn row" style="background: #fff; box-shadow: 0 -2px 10px rgba(0,0,0,0.08);">
-                                            <div class="col-xs-10" style="display: flex; gap: 8px; margin-bottom: 0 !important; padding: 10px 8px; padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); align-items: center;">
+                                        <div class="sp lower-cart-btn" style="display: flex; position: fixed; left: 0; bottom: 0; width: 100%; z-index: 99999; background: #fff; box-shadow: 0 -2px 10px rgba(0,0,0,0.08); padding: 0; margin: 0;">
+                                            <div style="display: flex; gap: 8px; width: 100%; padding: 10px 12px; padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); align-items: center; margin: 0;">
                                                 {% if is_favorite == false %}
-                                                    <div style="width: 44px; flex-shrink: 0;" class="col-xs-2"><button type="submit" form="favorite-form" class="favorite" id="favorite-footer" onclick="console.log('click')"></button></div>
+                                                    <div style="width: 44px; min-width: 44px; max-width: 44px; flex-shrink: 0;"><button type="submit" form="favorite-form" class="favorite" id="favorite-footer" onclick="console.log('click')" style="width: 44px; height: 44px; min-width: 44px; max-width: 44px; border-radius: 50%; border: 2px solid #E12121; background: #fff; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; cursor: pointer; position: relative;"><span style="display: block; width: 22px; height: 22px; background: url(/html/template/default/assets/img/icon/icon-heart-red.svg) no-repeat center center; background-size: contain;"></span></button></div>
                                                 {% else %}
-                                                    <div style="width: 44px; flex-shrink: 0;" class="col-xs-2"><button type="button" form="favorite-form" class="favorite added" id="favorite-footer" disabled="disabled"><a href="{{ url('mypage_favorite_delete', { id : Product.id }) }}" {{ csrf_token_for_anchor() }} data-method="delete">&nbsp;</a></button></div>
+                                                    <div style="width: 44px; min-width: 44px; max-width: 44px; flex-shrink: 0;"><button type="button" form="favorite-form" class="favorite added" id="favorite-footer" disabled="disabled" style="width: 44px; height: 44px; min-width: 44px; max-width: 44px; border-radius: 50%; border: 2px solid #E12121; background: #fff; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; position: relative;"><a href="{{ url('mypage_favorite_delete', { id : Product.id }) }}" {{ csrf_token_for_anchor() }} data-method="delete" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">&nbsp;</a><span style="display: block; width: 22px; height: 22px; background: url(/html/template/default/assets/img/icon/icon-heart-red-fill.svg) no-repeat center center; background-size: contain;"></span></button></div>
                                                 {% endif %}
-                                                <button type="submit" class="ec-blockBtn--action s1 add-cart add-to-cart" style="height: 44px; line-height: 44px; border: 2px solid #222; background-color: #ffffff; border-radius: 22px; flex: 1; min-width: 0; padding: 0 12px; box-shadow: none;">
-                                                    <span class="add-cart-btn" style="color: #222; font-weight: 700; font-size: 13px;">加入購物車</span>
+                                                <button type="submit" class="ec-blockBtn--action s1 add-cart add-to-cart" style="height: 44px; line-height: 44px; border: 2px solid #222; background-color: #ffffff; border-radius: 22px; flex: 1; min-width: 0; padding: 0 12px; box-shadow: none; margin: 0; display: flex; align-items: center; justify-content: center;">
+                                                    <span class="add-cart-btn" style="color: #222; font-weight: 700; font-size: 13px; white-space: nowrap;">加入購物車</span>
                                                 </button>
-                                                <span onclick="window.location.href='{{ path('cart') }}'" class="ec-blockBtn--action s1 add-cart one-touch-payment" style="height: 44px; line-height: 44px; background: linear-gradient(135deg, #FF4757 0%, #FF6B81 100%); cursor: pointer; border-radius: 22px; flex: 1.2; min-width: 0; padding: 0 12px; box-shadow: 0 2px 8px rgba(255,71,87,0.3); border: none; display: flex; align-items: center; justify-content: center;">
-                                                    <span class="add-cart-btn" style="color: #ffffff; font-weight: 700; font-size: 13px;">立即購買</span>
+                                                <span onclick="window.location.href='{{ path('cart') }}'" class="ec-blockBtn--action s1 add-cart one-touch-payment" style="height: 44px; line-height: 44px; background: linear-gradient(135deg, #FF4757 0%, #FF6B81 100%); cursor: pointer; border-radius: 22px; flex: 1.2; min-width: 0; padding: 0 12px; box-shadow: 0 2px 8px rgba(255,71,87,0.3); border: none; display: flex; align-items: center; justify-content: center; margin: 0;">
+                                                    <span class="add-cart-btn" style="color: #ffffff; font-weight: 700; font-size: 13px; white-space: nowrap;">立即購買</span>
                                                 </span>
                                             </div>
                                         </div>
