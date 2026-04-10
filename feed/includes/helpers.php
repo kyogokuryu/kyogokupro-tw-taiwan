@@ -3,6 +3,11 @@
  * Helper Functions
  */
 
+// === Fallback defaults: ensure critical constants are defined ===
+if (!defined('SITE_URL'))  define('SITE_URL', 'https://tw.kyogokupro.com');
+if (!defined('FEED_URL'))  define('FEED_URL', SITE_URL . '/feed');
+if (!defined('FEED_PATH')) define('FEED_PATH', __DIR__ . '/..');
+
 /**
  * Extract YouTube video ID from URL
  */
