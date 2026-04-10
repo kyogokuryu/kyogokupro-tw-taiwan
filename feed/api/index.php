@@ -12,9 +12,28 @@
  * GET  /feed/api/?action=seo_article&id=1 - Get SEO article for video
  */
 
+// Suppress PHP warnings/notices from corrupting JSON output
+error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_WARNING);
+ini_set('display_errors', 0);
+ob_start(); // Buffer any unexpected output
+
 require_once __DIR__ . '/../includes/config.php';
+
+// === Fallback defaults: ensure critical constants are ALWAYS defined ===
+// This prevents video widget from disappearing if config.php is incomplete
+if (!defined('SITE_URL'))    define('SITE_URL', 'https://tw.kyogokupro.com');
+if (!defined('FEED_URL'))    define('FEED_URL', SITE_URL . '/feed');
+if (!defined('FEED_PATH'))   define('FEED_PATH', __DIR__ . '/..');
+if (!defined('ECCUBE_URL'))  define('ECCUBE_URL', SITE_URL);
+if (!defined('UPLOAD_DIR'))  define('UPLOAD_DIR', FEED_PATH . '/uploads/videos/');
+if (!defined('UPLOAD_URL'))  define('UPLOAD_URL', FEED_URL . '/uploads/videos/');
+if (!defined('VIDEOS_PER_PAGE')) define('VIDEOS_PER_PAGE', 10);
+
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/helpers.php';
+
+// Discard any buffered PHP warnings before sending JSON
+ob_end_clean();
 
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: ' . SITE_URL);
