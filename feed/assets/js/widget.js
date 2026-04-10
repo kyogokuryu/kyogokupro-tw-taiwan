@@ -326,7 +326,19 @@
     function apiGet(url, cb) {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', url);
-        xhr.onload = function() { try { cb(JSON.parse(xhr.responseText)); } catch(e) { cb(null); } };
+        xhr.onload = function() {
+            var text = xhr.responseText;
+            try {
+                cb(JSON.parse(text));
+            } catch(e) {
+                // Fallback: try to extract JSON from response (handles PHP warnings mixed in)
+                var jsonStart = text.indexOf('{');
+                if (jsonStart > 0) {
+                    try { cb(JSON.parse(text.substring(jsonStart))); return; } catch(e2) {}
+                }
+                cb(null);
+            }
+        };
         xhr.onerror = function() { cb(null); };
         xhr.send();
     }
@@ -335,7 +347,19 @@
         var xhr = new XMLHttpRequest();
         xhr.open('POST', FEED_API + '?action=' + action);
         xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.onload = function() { try { var r = JSON.parse(xhr.responseText); cb && cb(r); } catch(e) { cb && cb(null); } };
+        xhr.onload = function() {
+            var text = xhr.responseText;
+            try {
+                cb && cb(JSON.parse(text));
+            } catch(e) {
+                // Fallback: try to extract JSON from response (handles PHP warnings mixed in)
+                var jsonStart = text.indexOf('{');
+                if (jsonStart > 0) {
+                    try { cb && cb(JSON.parse(text.substring(jsonStart))); return; } catch(e2) {}
+                }
+                cb && cb(null);
+            }
+        };
         xhr.onerror = function() { cb && cb(null); };
         xhr.send(JSON.stringify(data));
     }
@@ -381,7 +405,7 @@
         var html = '<div class="kg-widget">';
         html += '<div class="kg-widget-header">';
         html += '<div class="kg-widget-title"><span class="kg-widget-title-icon">&#9654;</span> \u76F8\u95DC\u5F71\u7247</div>';
-        html += '<a href="' + FEED_URL + '" class="kg-widget-more">\u67E5\u770B\u66F4\u591A &#8250;</a>';
+        // Removed "查看更多" link - all videos shown in scrollable carousel
         html += '</div>';
         html += '<div class="kg-carousel-wrap"><div class="kg-carousel">';
 
@@ -403,9 +427,7 @@
             html += '</div></div></div>';
         });
 
-        html += '<a href="' + FEED_URL + '" class="kg-card-more">';
-        html += '<div class="kg-card-more-icon"><span class="kg-card-more-arrow">&#8250;</span></div>';
-        html += '<div class="kg-card-more-text">\u66F4\u591A\u5F71\u7247</div></a>';
+        // Removed "更多影片" button - all videos displayed in scrollable carousel
         html += '</div></div></div>';
 
         container.innerHTML = html;
@@ -419,6 +441,43 @@
         });
 
         // Intersection Observer for auto-play MP4 videos in carousel
+        setupCarouselAutoplay(container);
+    }
+
+    // ===== Append more videos to existing carousel =====
+    function appendToCarousel(container, videos) {
+        var carousel = container.querySelector('.kg-carousel');
+        if (!carousel || !videos || videos.length === 0) return;
+
+        var startIndex = allVideos.length - videos.length;
+        videos.forEach(function(v, i) {
+            var idx = startIndex + i;
+            var thumb = v.thumbnail || '';
+            var hasMP4 = v.is_uploaded && v.video_file_url;
+            var card = document.createElement('div');
+            card.className = 'kg-card';
+            card.dataset.index = idx;
+            var cardHtml = '';
+            if (hasMP4) {
+                cardHtml += '<video class="kg-card-video" src="' + escapeHtml(v.video_file_url) + '" muted loop playsinline preload="metadata" poster="' + escapeHtml(thumb) + '"></video>';
+            } else {
+                cardHtml += '<img class="kg-card-thumb" src="' + escapeHtml(thumb) + '" alt="" loading="lazy">';
+            }
+            cardHtml += '<div class="kg-play-btn"><div class="kg-play-icon"></div></div>';
+            cardHtml += '<div class="kg-card-overlay">';
+            cardHtml += '<div class="kg-card-title">' + escapeHtml(v.display_title || v.title) + '</div>';
+            cardHtml += '<div class="kg-card-stats">';
+            cardHtml += '<span>&#128065; ' + (v.formatted_views || '0') + '</span>';
+            cardHtml += '<span>&#10084; ' + (v.formatted_likes || '0') + '</span>';
+            cardHtml += '</div></div>';
+            card.innerHTML = cardHtml;
+            card.addEventListener('click', function() {
+                openFullscreen(parseInt(this.dataset.index));
+            });
+            carousel.appendChild(card);
+        });
+
+        // Re-setup autoplay for new cards
         setupCarouselAutoplay(container);
     }
 
@@ -1514,9 +1573,23 @@
         }
         if (!container) return;
 
+        // Fetch product-specific videos first, then load all remaining videos
         fetchProductVideos(productId, function(videos) {
             if (videos.length > 0) {
                 renderCarousel(container, videos);
+                // Also load additional videos and append to carousel
+                fetchMoreVideos(function(moreVids) {
+                    if (moreVids && moreVids.length > 0) {
+                        appendToCarousel(container, moreVids);
+                    }
+                });
+            } else {
+                // No product-specific videos, try loading all feed videos
+                fetchMoreVideos(function(allVids) {
+                    if (allVids && allVids.length > 0) {
+                        renderCarousel(container, allVids);
+                    }
+                });
             }
         });
     }
