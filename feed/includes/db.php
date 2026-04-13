@@ -15,9 +15,25 @@ class Database {
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                 PDO::ATTR_EMULATE_PREPARES => false,
             ]);
+            $this->runMigrations();
         } catch (PDOException $e) {
             error_log('Database connection failed: ' . $e->getMessage());
             die(json_encode(['error' => 'Database connection failed']));
+        }
+    }
+
+    /**
+     * Run auto-migrations to ensure schema is up to date
+     */
+    private function runMigrations() {
+        try {
+            // Add download_count column if not exists
+            $stmt = $this->pdo->query("SHOW COLUMNS FROM feed_videos LIKE 'download_count'");
+            if ($stmt->rowCount() === 0) {
+                $this->pdo->exec('ALTER TABLE feed_videos ADD COLUMN download_count INT UNSIGNED NOT NULL DEFAULT 0 AFTER like_count');
+            }
+        } catch (PDOException $e) {
+            error_log('Migration error: ' . $e->getMessage());
         }
     }
 
@@ -366,6 +382,14 @@ class Database {
     public function incrementVariantClick($videoId, $variant) {
         $col = $variant === 'B' ? 'variant_b_clicks' : 'variant_a_clicks';
         $stmt = $this->pdo->prepare("UPDATE feed_videos SET {$col} = {$col} + 1 WHERE id = :id");
+        $stmt->execute([':id' => $videoId]);
+    }
+
+    /**
+     * Increment download count
+     */
+    public function incrementDownloadCount($videoId) {
+        $stmt = $this->pdo->prepare('UPDATE feed_videos SET download_count = download_count + 1 WHERE id = :id');
         $stmt->execute([':id' => $videoId]);
     }
 
