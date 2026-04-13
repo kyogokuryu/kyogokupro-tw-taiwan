@@ -44,12 +44,14 @@ $analytics = $db->getAnalyticsSummary(30);
 
 $totalViews = 0;
 $totalLikes = 0;
+$totalDownloads = 0;
 foreach ($videos as $v) {
     $totalViews += $v['view_count'];
     $totalLikes += $v['like_count'];
+    $totalDownloads += ($v['download_count'] ?? 0);
 }
 
-showAdminPage($videos, $products, $totalViews, $totalLikes, $message, $messageType);
+showAdminPage($videos, $products, $totalViews, $totalLikes, $totalDownloads, $message, $messageType);
 
 // ===== View Functions =====
 
@@ -99,7 +101,7 @@ function showLoginForm($error = null) {
 <?php exit;
 }
 
-function showAdminPage($videos, $products, $totalViews, $totalLikes, $message, $messageType) {
+function showAdminPage($videos, $products, $totalViews, $totalLikes, $totalDownloads, $message, $messageType) {
 ?>
 <!DOCTYPE html>
 <html lang="zh-TW">
@@ -297,6 +299,10 @@ function showAdminPage($videos, $products, $totalViews, $totalLikes, $message, $
             <div class="value"><?= number_format($totalLikes) ?></div>
         </div>
         <div class="stat-card">
+            <div class="label">總下載次數</div>
+            <div class="value"><?= number_format($totalDownloads) ?></div>
+        </div>
+        <div class="stat-card">
             <div class="label">AI已生成</div>
             <div class="value"><?= count(array_filter($videos, function($v) { return !empty($v['title_variant_a']); })) ?> <small>/ <?= count($videos) ?></small></div>
         </div>
@@ -313,6 +319,7 @@ function showAdminPage($videos, $products, $totalViews, $totalLikes, $message, $
                     <th>類型</th>
                     <th>觀看</th>
                     <th>按讚</th>
+                    <th>下載</th>
                     <th>AI狀態</th>
                     <th>公開</th>
                     <th>操作</th>
@@ -349,6 +356,18 @@ function showAdminPage($videos, $products, $totalViews, $totalLikes, $message, $
                     <td><?= formatNumber($video['view_count']) ?></td>
                     <td><?= formatNumber($video['like_count']) ?></td>
                     <td>
+                        <?php if ($video['video_type'] === 'upload' && !empty($video['video_file_path'])): ?>
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <span><?= formatNumber($video['download_count'] ?? 0) ?></span>
+                                <a href="/feed/api/?action=download&id=<?= $video['id'] ?>" class="btn btn-outline btn-sm" style="color:#48bb78;border-color:#48bb78;" title="下載影片">
+                                    &#8681;
+                                </a>
+                            </div>
+                        <?php else: ?>
+                            <span style="color:#555;">-</span>
+                        <?php endif; ?>
+                    </td>
+                    <td>
                         <div class="ai-status">
                             <?php if (!empty($video['title_variant_a'])): ?>
                                 <span class="badge badge-green">A/B</span>
@@ -382,7 +401,7 @@ function showAdminPage($videos, $products, $totalViews, $totalLikes, $message, $
                 </tr>
                 <?php endforeach; ?>
                 <?php if (empty($videos)): ?>
-                <tr><td colspan="7" style="text-align:center;padding:40px;color:#555;">尚無影片，點擊「+ 新增影片」開始</td></tr>
+                <tr><td colspan="8" style="text-align:center;padding:40px;color:#555;">尚無影片，點擊「+ 新增影片」開始</td></tr>
                 <?php endif; ?>
             </tbody>
         </table>
