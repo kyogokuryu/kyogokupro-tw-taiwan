@@ -163,6 +163,8 @@ try {
                 'description' => $input['description'] ?? '',
                 'video_url' => $input['video_url'] ?? '',
                 'video_file_path' => $input['video_file_path'] ?? null,
+                'video_resolution' => $input['video_resolution'] ?? null,
+                'file_size_bytes' => $input['file_size_bytes'] ?? null,
                 'video_type' => $input['video_type'] ?? 'youtube',
                 'thumbnail_url' => $input['thumbnail_url'] ?? null,
                 'duration' => $input['duration'] ?? null,
@@ -493,6 +495,18 @@ function handleVideoUpload() {
         jsonResponse(['error' => '檔案儲存失敗'], 500);
     }
 
+    // Get video resolution using ffprobe if available
+    $resolution = null;
+    $ffprobe = trim(shell_exec('which ffprobe 2>/dev/null'));
+    if ($ffprobe) {
+        $cmd = escapeshellcmd($ffprobe) . ' -v error -select_streams v:0 -show_entries stream=width,height -of csv=p=0 ' . escapeshellarg($filepath) . ' 2>/dev/null';
+        $output = trim(shell_exec($cmd));
+        if ($output && strpos($output, ',') !== false) {
+            list($w, $h) = explode(',', $output);
+            $resolution = intval($w) . 'x' . intval($h);
+        }
+    }
+
     jsonResponse([
         'success' => true,
         'data' => [
@@ -501,6 +515,7 @@ function handleVideoUpload() {
             'url' => UPLOAD_URL . $filename,
             'size' => $file['size'],
             'original_name' => $file['name'],
+            'resolution' => $resolution,
         ]
     ]);
 }
