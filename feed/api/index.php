@@ -8,6 +8,7 @@
  * POST /feed/api/?action=analytics        - Record analytics event
  * POST /feed/api/?action=upload           - Upload video file (admin)
  * POST /feed/api/?action=ai_generate      - AI generate content (admin)
+ * GET  /feed/api/?action=download&id=1    - Download video file (admin)
  * GET  /feed/api/?action=products         - Get EC-CUBE products (admin)
  * GET  /feed/api/?action=seo_article&id=1 - Get SEO article for video
  */
@@ -338,6 +339,47 @@ try {
                 'product_id' => $productId
             ]);
             break;
+
+        case 'download':
+            $id = intval($_GET['id'] ?? 0);
+            if ($id <= 0) {
+                jsonResponse(['error' => 'Invalid video ID'], 400);
+            }
+            
+            $video = $db->getVideo($id);
+            if (!$video) {
+                jsonResponse(['error' => 'Video not found'], 404);
+            }
+            
+            if ($video['video_type'] !== 'upload' || empty($video['video_file_path'])) {
+                jsonResponse(['error' => 'This video is not downloadable'], 400);
+            }
+            
+            $filePath = $video['video_file_path'];
+            // Try absolute path first, then relative to uploads dir
+            if (!file_exists($filePath)) {
+                $filePath = UPLOAD_DIR . basename($video['video_file_path']);
+            }
+            
+            if (!file_exists($filePath)) {
+                jsonResponse(['error' => 'Video file not found on server'], 404);
+            }
+            
+            // Increment download count
+            $db->incrementDownloadCount($id);
+            
+            // Serve the file for download
+            $filename = basename($video['video_file_path']);
+            $mimeType = mime_content_type($filePath) ?: 'video/mp4';
+            
+            header('Content-Type: ' . $mimeType);
+            header('Content-Disposition: attachment; filename="' . $filename . '"');
+            header('Content-Length: ' . filesize($filePath));
+            header('Cache-Control: no-cache, must-revalidate');
+            header('Pragma: no-cache');
+            
+            readfile($filePath);
+            exit;
 
         default:
             jsonResponse(['error' => 'Unknown action'], 400);
