@@ -150,6 +150,7 @@ function showAdminPage($videos, $products, $totalViews, $totalLikes, $totalDownl
         .badge-gray { background: rgba(160,174,192,0.15); color: #a0aec0; }
         .badge-purple { background: rgba(159,122,234,0.15); color: #9f7aea; }
         .badge-red { background: rgba(245,101,101,0.15); color: #f56565; }
+        .badge-yellow { background: rgba(236,201,75,0.15); color: #ecc94b; }
         .ai-status { display: flex; gap: 4px; flex-wrap: wrap; }
         .actions-cell { display: flex; gap: 6px; }
         
@@ -253,6 +254,8 @@ function showAdminPage($videos, $products, $totalViews, $totalLikes, $totalDownl
         .toast { position: fixed; top: 20px; right: 20px; padding: 12px 20px; border-radius: 8px; font-size: 14px; z-index: 2000; animation: slideIn 0.3s ease; }
         .toast-success { background: #48bb78; color: #fff; }
         .toast-error { background: #e53e3e; color: #fff; }
+        .toast-warning { background: #ecc94b; color: #1a1a2e; }
+        .toast-info { background: #4299e1; color: #fff; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         
         .message { padding: 12px 20px; border-radius: 8px; margin: 24px 24px 0; font-size: 14px; }
@@ -317,6 +320,8 @@ function showAdminPage($videos, $products, $totalViews, $totalLikes, $totalDownl
                 <tr>
                     <th>影片</th>
                     <th>類型</th>
+                    <th>畫質</th>
+                    <th>大小</th>
                     <th>觀看</th>
                     <th>按讚</th>
                     <th>下載</th>
@@ -351,6 +356,43 @@ function showAdminPage($videos, $products, $totalViews, $totalLikes, $totalDownl
                             <span class="badge badge-purple">上傳</span>
                         <?php else: ?>
                             <span class="badge badge-gray"><?= h($video['video_type'] ?: 'youtube') ?></span>
+                        <?php endif; ?>
+                    </td>
+                    <td>
+                        <?php if ($video['video_type'] === 'upload'): ?>
+                            <?php
+                            $res = $video['video_resolution'] ?? null;
+                            $resClass = 'badge-gray';
+                            $resLabel = $res ?: '-';
+                            if ($res) {
+                                $parts = explode('x', $res);
+                                if (count($parts) === 2) {
+                                    $longSide = max(intval($parts[0]), intval($parts[1]));
+                                    $shortSide = min(intval($parts[0]), intval($parts[1]));
+                                    if ($longSide >= 2560) { $resLabel = '2K'; $resClass = 'badge-green'; }
+                                    elseif ($longSide >= 1920) { $resLabel = '1080p'; $resClass = 'badge-green'; }
+                                    elseif ($longSide >= 1280) { $resLabel = '720p'; $resClass = 'badge-yellow'; }
+                                    else { $resLabel = '360p'; $resClass = 'badge-red'; }
+                                }
+                            }
+                            ?>
+                            <span class="badge <?= $resClass ?>" title="<?= h($res ?: '') ?>"><?= h($resLabel) ?></span>
+                        <?php else: ?>
+                            <span style="color:#555;">-</span>
+                        <?php endif; ?>
+                    </td>
+                    <td>
+                        <?php if ($video['video_type'] === 'upload' && !empty($video['file_size_bytes'])): ?>
+                            <?php
+                            $bytes = intval($video['file_size_bytes']);
+                            if ($bytes >= 1073741824) $sizeLabel = round($bytes / 1073741824, 1) . 'GB';
+                            elseif ($bytes >= 1048576) $sizeLabel = round($bytes / 1048576, 1) . 'MB';
+                            elseif ($bytes >= 1024) $sizeLabel = round($bytes / 1024, 1) . 'KB';
+                            else $sizeLabel = $bytes . 'B';
+                            ?>
+                            <span style="color:#aaa;font-size:12px;"><?= $sizeLabel ?></span>
+                        <?php else: ?>
+                            <span style="color:#555;">-</span>
                         <?php endif; ?>
                     </td>
                     <td><?= formatNumber($video['view_count']) ?></td>
@@ -709,10 +751,45 @@ function showAdminPage($videos, $products, $totalViews, $totalLikes, $totalDownl
     function handleFileSelect(input) {
         var file = input.files[0];
         if (!file) return;
-        if (file.size > 100*1024*1024) { showToast('檔案大小超過100MB限制', 'error'); return; }
+        if (file.size > 500*1024*1024) { showToast('檔案大小超過500MB限制', 'error'); return; }
         var allowed = ['video/mp4','video/webm','video/quicktime'];
         if (allowed.indexOf(file.type) === -1) { showToast('不支援的檔案格式', 'error'); return; }
         
+        // Resolution check: warn if below 1080p
+        var checkVideo = document.createElement('video');
+        checkVideo.preload = 'metadata';
+        checkVideo.onloadedmetadata = function() {
+            var w = checkVideo.videoWidth;
+            var h = checkVideo.videoHeight;
+            var shortSide = Math.min(w, h);
+            var longSide = Math.max(w, h);
+            URL.revokeObjectURL(checkVideo.src);
+            
+            var resLabel = shortSide + 'x' + longSide;
+            if (longSide < 1920 || shortSide < 1080) {
+                var warningMsg = '⚠️ 影片解析度偏低 (' + resLabel + ')\n\n建議上傳 1080p (1080x1920) 以上的影片以確保最佳畫質。\n\n目前影片為 ' + resLabel + '，下載後畫質可能不佳。\n\n確定要繼續上傳嗎？';
+                if (!confirm(warningMsg)) {
+                    input.value = '';
+                    showToast('已取消上傳，請選擇更高解析度的影片', 'info');
+                    return;
+                }
+                showToast('⚠️ 低解析度影片 (' + resLabel + ')，建議使用1080p以上', 'warning');
+            } else {
+                showToast('✓ 影片解析度: ' + resLabel + ' (高畫質)', 'success');
+            }
+            
+            // Proceed with upload
+            proceedUpload(file);
+        };
+        checkVideo.onerror = function() {
+            URL.revokeObjectURL(checkVideo.src);
+            // If we can't check resolution, proceed anyway
+            proceedUpload(file);
+        };
+        checkVideo.src = URL.createObjectURL(file);
+    }
+    
+    function proceedUpload(file) {
         // Generate thumbnail from video
         generateThumbnail(file, function(thumbBlob, thumbDataUrl) {
             if (thumbDataUrl) {
@@ -873,6 +950,8 @@ function showAdminPage($videos, $products, $totalViews, $totalLikes, $totalDownl
                 description: '',
                 video_url: finalUrl,
                 video_file_path: filePath,
+                video_resolution: uploadedFileData ? (uploadedFileData.resolution || null) : null,
+                file_size_bytes: uploadedFileData ? (uploadedFileData.size || null) : null,
                 video_type: videoType,
                 thumbnail_url: thumbnailUrl,
                 is_published: isPublished,
