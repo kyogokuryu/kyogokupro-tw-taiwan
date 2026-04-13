@@ -32,6 +32,47 @@ class Database {
             if ($stmt->rowCount() === 0) {
                 $this->pdo->exec('ALTER TABLE feed_videos ADD COLUMN download_count INT UNSIGNED NOT NULL DEFAULT 0 AFTER like_count');
             }
+            
+            // Add video_resolution column if not exists
+            $stmt = $this->pdo->query("SHOW COLUMNS FROM feed_videos LIKE 'video_resolution'");
+            if ($stmt->rowCount() === 0) {
+                $this->pdo->exec("ALTER TABLE feed_videos ADD COLUMN video_resolution VARCHAR(20) DEFAULT NULL AFTER video_file_path");
+            }
+            
+            // Add file_size_bytes column if not exists
+            $stmt = $this->pdo->query("SHOW COLUMNS FROM feed_videos LIKE 'file_size_bytes'");
+            if ($stmt->rowCount() === 0) {
+                $this->pdo->exec("ALTER TABLE feed_videos ADD COLUMN file_size_bytes BIGINT UNSIGNED DEFAULT NULL AFTER video_resolution");
+            }
+            
+            // Backfill resolution and file size for existing uploaded videos
+            $stmt = $this->pdo->query("SELECT id, video_file_path FROM feed_videos WHERE video_type='upload' AND (video_resolution IS NULL OR file_size_bytes IS NULL) AND video_file_path IS NOT NULL AND video_file_path != '' LIMIT 20");
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($rows as $row) {
+                $fp = $row['video_file_path'];
+                if (!file_exists($fp)) continue;
+                $size = filesize($fp);
+                $res = null;
+                // Try to get resolution using ffprobe if available
+                $ffprobe = trim(shell_exec('which ffprobe 2>/dev/null'));
+                if ($ffprobe && file_exists($fp)) {
+                    $cmd = escapeshellcmd($ffprobe) . ' -v error -select_streams v:0 -show_entries stream=width,height -of csv=p=0 ' . escapeshellarg($fp) . ' 2>/dev/null';
+                    $output = trim(shell_exec($cmd));
+                    if ($output && strpos($output, ',') !== false) {
+                        list($w, $h) = explode(',', $output);
+                        $res = intval($w) . 'x' . intval($h);
+                    }
+                }
+                // Fallback: estimate from file size
+                if (!$res) {
+                    $sizeMB = $size / (1024 * 1024);
+                    if ($sizeMB > 15) $res = 'HD+';
+                    elseif ($sizeMB > 5) $res = '~720p';
+                    else $res = '~360p';
+                }
+                $update = $this->pdo->prepare('UPDATE feed_videos SET video_resolution = :res, file_size_bytes = :size WHERE id = :id');
+                $update->execute([':res' => $res, ':size' => $size, ':id' => $row['id']]);
+            }
         } catch (PDOException $e) {
             error_log('Migration error: ' . $e->getMessage());
         }
@@ -246,14 +287,16 @@ class Database {
      */
     public function createVideo($data) {
         $stmt = $this->pdo->prepare('
-            INSERT INTO feed_videos (title, description, video_url, video_file_path, video_type, thumbnail_url, duration, sort_order, is_published, tags)
-            VALUES (:title, :desc, :url, :file_path, :type, :thumb, :dur, :sort, :pub, :tags)
+            INSERT INTO feed_videos (title, description, video_url, video_file_path, video_resolution, file_size_bytes, video_type, thumbnail_url, duration, sort_order, is_published, tags)
+            VALUES (:title, :desc, :url, :file_path, :resolution, :file_size, :type, :thumb, :dur, :sort, :pub, :tags)
         ');
         $stmt->execute([
             ':title' => $data['title'],
             ':desc' => $data['description'] ?? '',
             ':url' => $data['video_url'],
             ':file_path' => $data['video_file_path'] ?? null,
+            ':resolution' => $data['video_resolution'] ?? null,
+            ':file_size' => $data['file_size_bytes'] ?? null,
             ':type' => $data['video_type'] ?? 'youtube',
             ':thumb' => $data['thumbnail_url'] ?? null,
             ':dur' => $data['duration'] ?? null,
