@@ -46,7 +46,7 @@ class Database {
             }
             
             // Backfill resolution and file size for existing uploaded videos
-            $stmt = $this->pdo->query("SELECT id, video_file_path FROM feed_videos WHERE video_type='upload' AND (video_resolution IS NULL OR file_size_bytes IS NULL) AND video_file_path IS NOT NULL AND video_file_path != '' LIMIT 20");
+            $stmt = $this->pdo->query("SELECT id, video_file_path FROM feed_videos WHERE video_type='upload' AND (video_resolution IS NULL OR file_size_bytes IS NULL) AND video_file_path IS NOT NULL AND video_file_path != '' LIMIT 100");
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
             foreach ($rows as $row) {
                 $fp = $row['video_file_path'];
