@@ -9,13 +9,16 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 use Eccube\Controller\AbstractController;
 use Eccube\Entity\Master\CustomerStatus;
 use Eccube\Repository\CustomerRepository;
+use Eccube\Repository\Master\CustomerStatusRepository;
 use Plugin\ECCUBE4LineIntegration\Entity\LineIntegration;
 use Plugin\ECCUBE4LineIntegration\Controller\Admin\LineIntegrationAdminController;
 use Plugin\ECCUBE4LineIntegration\Repository\LineIntegrationSettingRepository;
 use Plugin\ECCUBE4LineIntegration\Repository\LineIntegrationRepository;
+use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 use Symfony\Component\Security\Http\SecurityEvents;
 use Symfony\Component\Routing\Annotation\Route;
+use Eccube\Service\CartService;
 
 class LineIntegrationController extends AbstractController
 {
@@ -25,7 +28,10 @@ class LineIntegrationController extends AbstractController
     private $lineIntegrationSettingRepository;
     private $lineIntegrationRepository;
     private $customerRepository;
+    private $customerStatusRepository;
     private $tokenStorage;
+    private $encoderFactory;
+    private $cartService;
     protected $apiUrl;
 
     const PLUGIN_LINE_INTEGRATION_SSO_USERID = 'plugin.line_integration.sso.userid';
@@ -35,7 +41,10 @@ class LineIntegrationController extends AbstractController
         LineIntegrationSettingRepository $lineIntegrationSettingRepository,
         LineIntegrationRepository $lineIntegrationRepository,
         CustomerRepository $customerRepository,
+        CustomerStatusRepository $customerStatusRepository,
         TokenStorageInterface $tokenStorage,
+        EncoderFactoryInterface $encoderFactory,
+        CartService $cartService,
         ApiUrl $apiUrl
     ) {
         $this->lineIntegrationSettingRepository = $lineIntegrationSettingRepository;
@@ -44,7 +53,10 @@ class LineIntegrationController extends AbstractController
         $this->lineChannelId = $lineIntegrationSetting->getLineChannelId();
         $this->lineChannelSecret = $lineIntegrationSetting->getLineChannelSecret();
         $this->customerRepository = $customerRepository;
+        $this->customerStatusRepository = $customerStatusRepository;
         $this->tokenStorage = $tokenStorage;
+        $this->encoderFactory = $encoderFactory;
+        $this->cartService = $cartService;
         $this->apiUrl = $apiUrl;
     }
 
@@ -69,7 +81,8 @@ class LineIntegrationController extends AbstractController
         // bot_prompt
         // bot_prompt=normal or aggressive
         // https://developers.line.me/ja/docs/line-login/web/link-a-bot/
-        $lineAuthUrl = $this->apiUrl->getAccessUrl() . '/oauth2/v2.1/authorize?response_type=code&client_id=' . $this->lineChannelId . '&redirect_uri=' . rawurlencode($url) . '&state=' . $state . '&scope=profile&bot_prompt=aggressive';
+        // scope に openid%20email を追加してメールアドレス取得を試みる
+        $lineAuthUrl = $this->apiUrl->getAccessUrl() . '/oauth2/v2.1/authorize?response_type=code&client_id=' . $this->lineChannelId . '&redirect_uri=' . rawurlencode($url) . '&state=' . $state . '&scope=profile%20openid%20email&bot_prompt=aggressive';
 
         return $this->redirect($lineAuthUrl);
     }
@@ -136,6 +149,12 @@ class LineIntegrationController extends AbstractController
         }
         $lineUserId = $profile['userId'];
 
+        // id_tokenからメールアドレスを取得（LINE Login v2.1 OpenID Connect）
+        $lineEmail = null;
+        if (isset($tokenJson['id_token'])) {
+            $lineEmail = $this->extractEmailFromIdToken($tokenJson['id_token']);
+        }
+
         $session->set(self::PLUGIN_LINE_INTEGRATION_SSO_USERID, $lineUserId);
         $this->setSession($session);
 
@@ -197,19 +216,81 @@ class LineIntegrationController extends AbstractController
         else {
             log_info('LINEコールバック: 未ログイン');
 
-            // LINE連携レコードがなかったら、会員登録へ
-            log_info('未ログイン');
-            if (is_null($lineIntegration)) {
-                log_info('LINE連携レコードなし');
+            // ===== 自動会員登録: LINE連携レコードがない or 顧客レコードがない場合 =====
+            if (is_null($lineIntegration) || is_null($customer)) {
+                log_info('LINE自動会員登録開始: lineUserId=' . $lineUserId);
 
-                return $this->redirectToRoute('entry');
-            }
+                // LINEプロフィールから名前を取得
+                $displayName = isset($profile['displayName']) ? $profile['displayName'] : 'LINE會員';
 
-            // LINE連携レコードがあっても、顧客レコードがない場合は会員登録へ
-            if (is_null($customer)) {
-                log_info('顧客レコードが取得できなかった為、会員登録へ');
+                // メールアドレスの決定
+                // 1. LINEから取得できた場合はそれを使用
+                // 2. 取得できない場合はLINE IDベースのユニークメールを生成
+                if (!empty($lineEmail)) {
+                    // 既に同じメールで登録済みの顧客がいないかチェック
+                    $existingCustomer = $this->customerRepository->findOneBy(['email' => $lineEmail]);
+                    if (!is_null($existingCustomer)) {
+                        // 既存顧客とLINE連携して自動ログイン
+                        log_info('LINE自動登録: 既存メール一致 customer_id=' . $existingCustomer->getId());
+                        $customer = $existingCustomer;
+                        // LINE連携レコードを作成
+                        $this->createLineAssociation($lineUserId, $customer->getId());
+                        return $this->autoLoginAndRedirect($request, $customer, $session);
+                    }
+                    $email = $lineEmail;
+                } else {
+                    // LINEからメール取得できない場合、ユニークなダミーメールを生成
+                    $email = 'line_' . substr($lineUserId, 1, 16) . '@line.user';
+                    // 既に同じダミーメールで登録済みかチェック
+                    $existingCustomer = $this->customerRepository->findOneBy(['email' => $email]);
+                    if (!is_null($existingCustomer)) {
+                        log_info('LINE自動登録: 既存ダミーメール一致 customer_id=' . $existingCustomer->getId());
+                        $customer = $existingCustomer;
+                        $this->createLineAssociation($lineUserId, $customer->getId());
+                        return $this->autoLoginAndRedirect($request, $customer, $session);
+                    }
+                }
 
-                return $this->redirectToRoute('entry');
+                // 新規顧客を作成
+                $Customer = new \Eccube\Entity\Customer();
+                $CustomerStatus = $this->customerStatusRepository->find(CustomerStatus::REGULAR);
+
+                // パスワード生成（ランダム）
+                $encoder = $this->encoderFactory->getEncoder($Customer);
+                $salt = $encoder->createSalt();
+                $randomPassword = bin2hex(random_bytes(16));
+                $password = $encoder->encodePassword($randomPassword, $salt);
+                $secretKey = $this->customerRepository->getUniqueSecretKey();
+
+                // 500ポイント付与（通常の新規登録と同じ）
+                $addPoint = 500;
+
+                $now = new \DateTime();
+                $Customer
+                    ->setName01($displayName)
+                    ->setName02('')
+                    ->setEmail($email)
+                    ->setSalt($salt)
+                    ->setPassword($password)
+                    ->setSecretKey($secretKey)
+                    ->setPoint($addPoint)
+                    ->setStatus($CustomerStatus)
+                    ->setCreateDate($now)
+                    ->setUpdateDate($now);
+
+                $this->entityManager->persist($Customer);
+                $this->entityManager->flush();
+
+                log_info('LINE自動会員登録完了: customer_id=' . $Customer->getId() . ', email=' . $email);
+
+                // LINE連携レコードを作成
+                $this->createLineAssociation($lineUserId, $Customer->getId());
+
+                // ポイント履歴を記録
+                $this->recordPointLog($Customer->getId(), 0, $addPoint, 'LINE登入新會員500點贈送');
+
+                // 自動ログインしてマイページへ
+                return $this->autoLoginAndRedirect($request, $Customer, $session);
             }
 
             // 仮会員の場合ログインへ
@@ -225,31 +306,99 @@ class LineIntegrationController extends AbstractController
 
             // 本会員かつ、LINE連携レコード・顧客レコードが存在するのでログイン処理
             if ($customer->getStatus()->getId() == 2) {
-                $token = new UsernamePasswordToken($customer, null, 'customer',
-                    array('ROLE_USER'));
-                $this->tokenStorage->setToken($token);
-                log_info('ログイン済に変更。dtb_customer.id:'.$this->getUser()->getId());
-
-                // カートのマージなどの処理
-                $loginEvent = new InteractiveLoginEvent($request, $token);
-                $this->eventDispatcher->dispatch(
-                    SecurityEvents::INTERACTIVE_LOGIN, $loginEvent);
-
-                // 遷移元がカート経由のログインだった場合、購入画面へ
-                if (substr($session->get('$previousUrl'), -15) == '/shopping/login') {
-                    return $this->redirectToRoute('shopping');
-                }
-                // かご落ちメッセージ経由のログインだった場合、カート画面（セッションに保存されているURL）へ
-                if ($session->get('dropped-cart-notifier-redirect') !== null) {
-                    return $this->redirect($session->get('dropped-cart-notifier-redirect'));
-                }
-                // そうでない場合マイページへ遷移
-                return $this->redirectToRoute('mypage');
+                return $this->autoLoginAndRedirect($request, $customer, $session);
             }
 
             // 例外としてログインページに戻す
             return $this->redirectToRoute('login');
         }
+    }
+
+    /**
+     * 自動ログインしてリダイレクト
+     */
+    private function autoLoginAndRedirect(Request $request, $customer, $session)
+    {
+        $token = new UsernamePasswordToken($customer, null, 'customer',
+            array('ROLE_USER'));
+        $this->tokenStorage->setToken($token);
+        log_info('ログイン済に変更。dtb_customer.id:'.$this->getUser()->getId());
+
+        // カートのマージなどの処理
+        $loginEvent = new InteractiveLoginEvent($request, $token);
+        $this->eventDispatcher->dispatch(
+            SecurityEvents::INTERACTIVE_LOGIN, $loginEvent);
+
+        // 遷移元がカート経由のログインだった場合、購入画面へ
+        if (substr($session->get('$previousUrl'), -15) == '/shopping/login') {
+            return $this->redirectToRoute('shopping');
+        }
+        // かご落ちメッセージ経由のログインだった場合、カート画面（セッションに保存されているURL）へ
+        if ($session->get('dropped-cart-notifier-redirect') !== null) {
+            return $this->redirect($session->get('dropped-cart-notifier-redirect'));
+        }
+        // そうでない場合マイページへ遷移
+        return $this->redirectToRoute('mypage');
+    }
+
+    /**
+     * LINE連携レコードを作成
+     */
+    private function createLineAssociation($lineUserId, $customerId)
+    {
+        // 既存の連携レコードがないか確認
+        $existing = $this->lineIntegrationRepository->findOneBy(['line_user_id' => $lineUserId]);
+        if (!is_null($existing)) {
+            log_info('LINE連携レコード既存: line_user_id=' . $lineUserId);
+            return;
+        }
+
+        $lineIntegration = new LineIntegration();
+        $lineIntegration->setLineUserId($lineUserId);
+        $lineIntegration->setCustomerId($customerId);
+        $lineIntegration->setLineNotificationFlg(1);
+        $lineIntegration->setDelFlg(0);
+        $this->entityManager->persist($lineIntegration);
+        $this->entityManager->flush();
+        log_info('LINE連携レコード作成完了: customer_id=' . $customerId);
+    }
+
+    /**
+     * ポイント履歴を記録
+     */
+    private function recordPointLog($customerId, $pointBefore, $pointAfter, $memo)
+    {
+        try {
+            $conn = $this->entityManager->getConnection();
+            $now = (new \DateTime())->format('Y-m-d H:i:s');
+            $conn->executeUpdate(
+                "INSERT INTO dtb_point_log (point1, point2, memo, create_date, update_date, discriminator_type) VALUES (?, ?, ?, ?, ?, 'pointlog')",
+                [$pointBefore, $pointAfter, $memo, $now, $now]
+            );
+            log_info('ポイント履歴記録完了: customer_id=' . $customerId . ', point=' . $pointAfter);
+        } catch (\Exception $e) {
+            log_error('ポイント履歴記録失敗: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * id_tokenからメールアドレスを抽出（JWT decode without verification）
+     */
+    private function extractEmailFromIdToken($idToken)
+    {
+        try {
+            $parts = explode('.', $idToken);
+            if (count($parts) !== 3) {
+                return null;
+            }
+            $payload = json_decode(base64_decode(strtr($parts[1], '-_', '+/')), true);
+            if (isset($payload['email'])) {
+                return $payload['email'];
+            }
+        } catch (\Exception $e) {
+            log_error('id_tokenからのメール取得失敗: ' . $e->getMessage());
+        }
+        return null;
     }
 
     /**
