@@ -372,8 +372,8 @@ class LineIntegrationController extends AbstractController
             $conn = $this->entityManager->getConnection();
             $now = (new \DateTime())->format('Y-m-d H:i:s');
             $conn->executeUpdate(
-                "INSERT INTO dtb_point_log (point1, point2, memo, create_date, update_date, discriminator_type) VALUES (?, ?, ?, ?, ?, 'pointlog')",
-                [$pointBefore, $pointAfter, $memo, $now, $now]
+                "INSERT INTO dtb_point_log (customer_id, point1, point2, memo, create_date, update_date, discriminator_type) VALUES (?, ?, ?, ?, ?, ?, 'pointlog')",
+                [$customerId, $pointBefore, $pointAfter, $memo, $now, $now]
             );
             log_info('ポイント履歴記録完了: customer_id=' . $customerId . ', point=' . $pointAfter);
         } catch (\Exception $e) {
