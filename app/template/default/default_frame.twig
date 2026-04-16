@@ -245,6 +245,8 @@ file that was distributed with this source code.
     <!-- KYOGOKU 台湾ポップアップ（salesdash配信） -->
     {% if is_granted('ROLE_USER') %}
     <script>window.__KYG_USER_EMAIL="{{ app.user.email }}";</script>
+    <!-- SalesDash購物車自動同步：將customer_id寫入SalesDash域的localStorage -->
+    <iframe src="https://salesdash.buzzdrop.co.jp/tw/cart-bridge?customer_id={{ app.user.id }}&email={{ app.user.email|url_encode }}" style="display:none;width:0;height:0;border:0;" aria-hidden="true"></iframe>
     {% endif %}
     <script src="https://salesdash.buzzdrop.co.jp/api/tw-popup/popup.js" defer></script>
 </body>
