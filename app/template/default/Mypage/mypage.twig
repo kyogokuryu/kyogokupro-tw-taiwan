@@ -86,10 +86,112 @@
 	</section>
 </article>
 
-{# ── 姓名未填寫：帳號服務ページへリダイレクト ── #}
+{# ── 姓名未填寫ポップアップ（專屬好禮 +50點） ── #}
 {% if app.user and (app.user.name01 is empty or app.user.name01 == '') %}
+<style>
+.np-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.55);z-index:10000;display:flex;align-items:center;justify-content:center;animation:np-fadeIn .3s ease}
+@keyframes np-fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes np-slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.np-card{width:90%;max-width:360px;border-radius:20px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,0.25);animation:np-slideUp .4s ease .1s both}
+.np-header{background:linear-gradient(135deg,#4A1A6B 0%,#7B2D8E 40%,#C94B7C 100%);padding:28px 24px 20px;text-align:center;position:relative}
+.np-badge{display:inline-block;background:rgba(255,255,255,0.2);color:#fff;font-size:12px;font-weight:600;padding:4px 14px;border-radius:20px;margin-bottom:10px;letter-spacing:1px}
+.np-header h3{color:#fff;font-size:20px;font-weight:700;margin:0 0 4px}
+.np-header h3 span{background:rgba(255,255,255,0.25);padding:2px 8px;border-radius:6px}
+.np-header p{color:rgba(255,255,255,0.8);font-size:13px;margin:0}
+.np-close{position:absolute;top:12px;right:14px;color:rgba(255,255,255,0.6);font-size:22px;cursor:pointer;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:all .2s}
+.np-close:hover{background:rgba(255,255,255,0.15);color:#fff}
+.np-body{background:#fff;padding:24px}
+.np-bonus{text-align:center;margin-bottom:20px}
+.np-bonus .np-num{font-size:48px;font-weight:800;color:#D4382A;line-height:1}
+.np-bonus .np-label{font-size:14px;color:#666;margin-top:4px}
+.np-field{margin-bottom:14px}
+.np-field label{display:block;font-size:13px;font-weight:600;color:#444;margin-bottom:5px;padding-left:2px}
+.np-field input{width:100%;padding:12px 14px;border:1.5px solid #e0e0e0;border-radius:10px;font-size:15px;outline:none;transition:border-color .2s;box-sizing:border-box}
+.np-field input:focus{border-color:#7B2D8E}
+.np-error{color:#D4382A;font-size:13px;text-align:center;margin-bottom:8px;display:none}
+.np-submit{width:100%;padding:14px;background:#D4382A;color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;transition:opacity .2s;margin-top:4px}
+.np-submit:hover{opacity:0.9}
+.np-submit:disabled{opacity:0.6;cursor:not-allowed}
+.np-later{display:block;width:100%;padding:12px;background:#f0f0f0;color:#666;border:none;border-radius:12px;font-size:14px;cursor:pointer;margin-top:8px;transition:background .2s}
+.np-later:hover{background:#e5e5e5}
+</style>
+<div class="np-overlay" id="namePopupOverlay">
+    <div class="np-card">
+        <div class="np-header">
+            <div class="np-close" id="namePopupClose">&times;</div>
+            <div class="np-badge">專屬好禮</div>
+            <h3>完善您的<span>姓名</span></h3>
+            <p>立即獲得紅利點數獎勵</p>
+        </div>
+        <div class="np-body">
+            <div class="np-bonus">
+                <div class="np-num">+50</div>
+                <div class="np-label">紅利點數</div>
+            </div>
+            <div style="background:#FFF3E0;border-radius:8px;padding:8px 12px;margin-bottom:16px;text-align:center;font-size:12px;color:#E65100;line-height:1.5;">
+                ⚡ 新會員專屬 500 點數將於註冊後 <strong>4 小時內到期</strong>，請先完善姓名再盡快完成購物！
+            </div>
+            <div class="np-field">
+                <label>姓氏</label>
+                <input id="npName01" type="text" placeholder="例：王">
+            </div>
+            <div class="np-field">
+                <label>名字</label>
+                <input id="npName02" type="text" placeholder="例：小明">
+            </div>
+            <div class="np-error" id="npError"></div>
+            <button class="np-submit" id="npSubmit">確認並領取 50 點數</button>
+            <button class="np-later" id="npLater">稍後再說</button>
+        </div>
+    </div>
+</div>
 <script>
-    window.location.href = '{{ url('mypage_change') }}';
+(function(){
+    var overlay = document.getElementById('namePopupOverlay');
+    var closeBtn = document.getElementById('namePopupClose');
+    var laterBtn = document.getElementById('npLater');
+    var submitBtn = document.getElementById('npSubmit');
+    var errEl = document.getElementById('npError');
+
+    function hidePopup(){ overlay.style.display = 'none'; }
+    closeBtn.addEventListener('click', hidePopup);
+    laterBtn.addEventListener('click', hidePopup);
+
+    submitBtn.addEventListener('click', function(){
+        var name01 = document.getElementById('npName01').value.trim();
+        var name02 = document.getElementById('npName02').value.trim();
+        errEl.style.display = 'none';
+        if(!name01 || !name02){
+            errEl.textContent = '請填寫姓氏和名字';
+            errEl.style.display = 'block';
+            return;
+        }
+        submitBtn.textContent = '處理中...';
+        submitBtn.disabled = true;
+        var fd = new FormData();
+        fd.append('name01', name01);
+        fd.append('name02', name02);
+        fetch('/mypage/cm_update_name', { method:'POST', body: fd })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if(data.success){
+                hidePopup();
+                location.reload();
+            } else {
+                errEl.textContent = data.message || '發生錯誤，請稍後再試';
+                errEl.style.display = 'block';
+                submitBtn.textContent = '確認並領取 50 點數';
+                submitBtn.disabled = false;
+            }
+        })
+        .catch(function(){
+            errEl.textContent = '網路錯誤，請稍後再試';
+            errEl.style.display = 'block';
+            submitBtn.textContent = '確認並領取 50 點數';
+            submitBtn.disabled = false;
+        });
+    });
+})();
 </script>
 {% endif %}
 

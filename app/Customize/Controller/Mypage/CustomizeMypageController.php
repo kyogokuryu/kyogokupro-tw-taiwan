@@ -519,12 +519,25 @@ class CustomizeMypageController extends MypageController
 
         $Customer->setName01($name01);
         $Customer->setName02($name02);
+
+        // 姓名入力ボーナス: 50ポイント付与
+        $bonusPoint = 50;
+        $currentPoint = (int) $Customer->getPoint();
+        $Customer->setPoint($currentPoint + $bonusPoint);
+
         $this->entityManager->persist($Customer);
         $this->entityManager->flush();
 
-        log_info('姓名簡易更新完了', [$Customer->getId(), $name01, $name02]);
+        // ポイントログ記録 (point1=変更前, point2=変更後)
+        $conn = $this->entityManager->getConnection();
+        $conn->executeStatement(
+            'INSERT INTO dtb_point_log (customer_id, point1, point2, memo, create_date, update_date, discriminator_type) VALUES (?, ?, ?, ?, NOW(), NOW(), ?)',
+            [$Customer->getId(), $currentPoint, $currentPoint + $bonusPoint, '完善姓名獎勵 +50點', 'pointlog']
+        );
 
-        return $this->json(['success' => true, 'message' => '更新成功']);
+        log_info('姓名簡易更新完了 +50pt', [$Customer->getId(), $name01, $name02]);
+
+        return $this->json(['success' => true, 'message' => '更新成功', 'bonus_point' => $bonusPoint]);
     }
 
     private function set_pre_soryo($request, $order_no){
