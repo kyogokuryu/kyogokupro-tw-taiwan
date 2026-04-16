@@ -55,7 +55,7 @@ class AutoLoginController extends AbstractController
     /**
      * 一次性 token 自動登入
      * 
-     * @Route("/auto_login", name="auto_login")
+     * @Route("/cm_auto_login", name="auto_login")
      */
     public function autoLogin(Request $request)
     {
