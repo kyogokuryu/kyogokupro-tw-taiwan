@@ -2,7 +2,9 @@
  * Feed - TikTok-style Video Feed
  * tw.kyogokupro.com/feed/
  * 
- * v3: Mute button, seamless preload, no play-button flash
+ * v4: iOS autoplay fix — pre-create <video> elements in DOM with autoplay+muted+playsinline
+ *     so iOS Safari treats them as eligible for autoplay.
+ *     Instead of creating/destroying videos on scroll, we pause/resume existing ones.
  */
 
 (function() {
@@ -13,31 +15,25 @@
     var isLoading = false;
     var hasMore = true;
     var activeVideoId = null;
-    var activePlayer = null;       // <video> or <iframe>
     var viewedVideos = new Set();
     var isMuted = true;
     var scrollTimer = null;
-
-    // ===== Global Mute Button =====
     var muteBtn = null;
 
+    // ===== Global Mute Button =====
     function createMuteButton() {
         muteBtn = document.createElement('button');
         muteBtn.className = 'feed-mute-btn';
         muteBtn.setAttribute('aria-label', '音量切換');
         updateMuteIcon();
         document.body.appendChild(muteBtn);
-
         muteBtn.addEventListener('click', function(e) {
             e.stopPropagation();
             isMuted = !isMuted;
             updateMuteIcon();
-            // Apply to active native video
-            if (activePlayer && activePlayer.tagName === 'VIDEO') {
-                activePlayer.muted = isMuted;
-            }
-            // For YouTube, we can't easily toggle mute on existing iframe,
-            // but next video will respect the new state
+            // Apply to currently playing video
+            var activeVid = getActiveVideo();
+            if (activeVid) activeVid.muted = isMuted;
         });
     }
 
@@ -50,6 +46,13 @@
             muteBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>';
             muteBtn.classList.remove('muted');
         }
+    }
+
+    function getActiveVideo() {
+        if (!activeVideoId) return null;
+        var card = document.querySelector('.video-card[data-video-id="' + activeVideoId + '"]');
+        if (!card) return null;
+        return card.querySelector('video');
     }
 
     // ===== API Functions =====
@@ -66,9 +69,7 @@
                 body: JSON.stringify(data)
             });
             return await res.json();
-        } catch (e) {
-            return null;
-        }
+        } catch (e) { return null; }
     }
 
     // ===== Render Functions =====
@@ -82,17 +83,37 @@
         card.dataset.videoFile = video.video_file_url || '';
 
         var thumbnailUrl = video.thumbnail || '';
-        var productsHtml = (video.products && video.products.length > 0) 
-            ? createProductsHtml(video.products, video.id) 
-            : '';
+        var productsHtml = (video.products && video.products.length > 0)
+            ? createProductsHtml(video.products, video.id) : '';
 
         var displayTitle = video.display_title || video.title;
         var displayDesc = video.display_description || video.description;
 
-        // No play button in the initial HTML — autoplay handles it.
-        // Thumbnail covers the card until video is ready.
-        card.innerHTML = 
+        // Determine the native video source
+        var nativeSrc = '';
+        if (video.video_type === 'upload' && video.video_file_url) {
+            nativeSrc = video.video_file_url;
+        } else if (video.video_type === 'direct' && video.video_url) {
+            nativeSrc = video.video_url;
+        }
+
+        // Build HTML — for native videos, pre-create <video> element in DOM
+        // with autoplay + muted + playsinline so iOS treats it as autoplay-eligible.
+        // The video starts paused (no src yet for non-first cards, or paused via JS).
+        var videoHtml = '';
+        if (nativeSrc) {
+            // Pre-create video element. We'll set src lazily when near viewport.
+            videoHtml = '<video class="feed-video" ' +
+                'playsinline webkit-playsinline ' +
+                'muted loop preload="none" ' +
+                'data-src="' + escapeHtml(nativeSrc) + '" ' +
+                'style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;background:#000;z-index:1;">' +
+                '</video>';
+        }
+
+        card.innerHTML =
             '<div class="video-player-wrapper" data-video-id="' + video.id + '">' +
+                videoHtml +
                 '<img class="video-thumbnail" src="' + escapeHtml(thumbnailUrl) + '" alt="' + escapeHtml(displayTitle) + '" loading="lazy">' +
             '</div>' +
             '<div class="video-actions">' +
@@ -125,149 +146,124 @@
     function createProductsHtml(products, videoId) {
         return products.map(function(p) {
             var priceText = p.price ? 'NT$' + Number(p.price).toLocaleString() : '';
-            var imgHtml = p.image_url && !p.image_url.includes('no-image') 
+            var imgHtml = p.image_url && !p.image_url.includes('no-image')
                 ? '<img class="product-card-img" src="' + escapeHtml(p.image_url) + '" alt="' + escapeHtml(p.name) + '" loading="lazy">'
                 : '<div class="no-image-placeholder"><svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg></div>';
-            
             return '<a href="' + escapeHtml(p.product_url) + '" class="product-card" target="_blank" rel="noopener" data-video-id="' + videoId + '" data-product-id="' + p.id + '">' +
                 imgHtml +
-                '<div class="product-card-info">' +
-                    '<div class="product-card-name">' + escapeHtml(p.name) + '</div>' +
-                    (priceText ? '<div class="product-card-price">' + priceText + '</div>' : '') +
-                '</div>' +
-                '<svg class="product-card-arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>' +
-            '</a>';
+                '<div class="product-card-info"><div class="product-card-name">' + escapeHtml(p.name) + '</div>' +
+                (priceText ? '<div class="product-card-price">' + priceText + '</div>' : '') +
+                '</div><svg class="product-card-arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></a>';
         }).join('');
     }
 
-    // ===== Video Player =====
-    function playVideo(card, fromAutoplay) {
+    // ===== Video Playback =====
+    // Core idea: for native videos, the <video> element is pre-created in DOM.
+    // We lazily set src, then call play(). For YouTube, we create iframe on demand.
+
+    function activateCard(card) {
         var videoId = card.dataset.videoId;
+        if (activeVideoId === videoId) return;
+
+        // Pause all other videos first
+        pauseAllExcept(videoId);
+
         var videoType = card.dataset.videoType;
         var youtubeId = card.dataset.youtubeId;
-        var videoUrl = card.dataset.videoUrl;
-        var videoFile = card.dataset.videoFile;
         var wrapper = card.querySelector('.video-player-wrapper');
         var thumbnail = card.querySelector('.video-thumbnail');
+        var video = card.querySelector('video.feed-video');
 
-        if (activeVideoId === videoId) return;
-        stopAllVideos();
+        if (video) {
+            // Native video — already in DOM
+            var dataSrc = video.dataset.src;
+            if (dataSrc && !video.src) {
+                // First time: set src and play
+                video.src = dataSrc;
+                video.muted = true; // Must be muted for autoplay
+                video.load();
+            }
 
-        if (videoType === 'upload' && videoFile) {
-            playNativeVideo(wrapper, thumbnail, videoFile, videoId);
-        } else if (videoType === 'direct' && videoUrl) {
-            playNativeVideo(wrapper, thumbnail, videoUrl, videoId);
+            // Listen for ready state
+            function onReady() {
+                video.removeEventListener('canplay', onReady);
+                video.removeEventListener('playing', onReady);
+                requestAnimationFrame(function() {
+                    thumbnail.classList.add('hidden');
+                    if (!isMuted) video.muted = false;
+                });
+            }
+
+            if (video.readyState >= 3) {
+                // Already have enough data
+                var playP = video.play();
+                if (playP) playP.catch(function(){});
+                requestAnimationFrame(function() {
+                    thumbnail.classList.add('hidden');
+                    if (!isMuted) video.muted = false;
+                });
+            } else {
+                video.addEventListener('canplay', onReady);
+                video.addEventListener('playing', onReady);
+                var playP2 = video.play();
+                if (playP2) {
+                    playP2.catch(function() {
+                        // Retry muted
+                        video.muted = true;
+                        var retry = video.play();
+                        if (retry) retry.catch(function(){});
+                    });
+                }
+            }
+
+            activeVideoId = videoId;
+
         } else if (youtubeId) {
-            playYouTubeVideo(wrapper, thumbnail, youtubeId, videoId);
+            // YouTube — create iframe
+            removeAllIframes();
+            var muteParam = isMuted ? '&mute=1' : '&mute=0';
+            var iframe = document.createElement('iframe');
+            iframe.src = 'https://www.youtube.com/embed/' + youtubeId + '?autoplay=1&playsinline=1&rel=0&modestbranding=1&showinfo=0&loop=1&playlist=' + youtubeId + muteParam;
+            iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+            iframe.setAttribute('allowfullscreen', '');
+            iframe.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:1;border:none;';
+            wrapper.insertBefore(iframe, thumbnail);
+            activeVideoId = videoId;
+
+            iframe.addEventListener('load', function() {
+                setTimeout(function() { thumbnail.classList.add('hidden'); }, 400);
+            });
         }
 
+        // Record view
         if (!viewedVideos.has(videoId)) {
             viewedVideos.add(videoId);
             postAction('view', { video_id: parseInt(videoId) });
         }
     }
 
-    function playNativeVideo(wrapper, thumbnail, src, videoId) {
-        var video = document.createElement('video');
-        video.src = src;
-        video.autoplay = true;
-        video.playsInline = true;
-        video.setAttribute('playsinline', '');
-        video.setAttribute('webkit-playsinline', '');
-        video.loop = true;
-        video.preload = 'auto';
-        video.muted = true;  // Always start muted for autoplay compliance
-        video.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;background:#000;z-index:1;';
-        video.controls = false;
-
-        // Insert video BEHIND thumbnail — thumbnail stays visible until video is ready
-        wrapper.insertBefore(video, thumbnail);
-        activePlayer = video;
-        activeVideoId = videoId;
-
-        // When video has enough data to play, fade out thumbnail smoothly
-        function onCanPlay() {
-            video.removeEventListener('canplay', onCanPlay);
-            video.removeEventListener('playing', onCanPlay);
-            // Small delay to ensure at least 1 frame is rendered
-            requestAnimationFrame(function() {
-                thumbnail.classList.add('hidden');
-                // After autoplay starts, apply user's mute preference
-                if (!isMuted) {
-                    video.muted = false;
-                }
-            });
-        }
-        video.addEventListener('canplay', onCanPlay);
-        video.addEventListener('playing', onCanPlay);
-
-        // Try to play
-        var playPromise = video.play();
-        if (playPromise !== undefined) {
-            playPromise.catch(function() {
-                video.muted = true;
-                var retry = video.play();
-                if (retry !== undefined) {
-                    retry.catch(function() {
-                        // Autoplay completely blocked — show a small tap hint
-                        thumbnail.classList.remove('hidden');
-                        showTapHint(wrapper);
-                        activePlayer = null;
-                        activeVideoId = null;
-                    });
-                }
-            });
-        }
-
-        // Tap on video: toggle play/pause
-        video.addEventListener('click', function(e) {
-            e.stopPropagation();
-            if (video.paused) {
-                video.play();
-            } else {
-                video.pause();
-                showPauseIndicator(wrapper);
+    function pauseAllExcept(keepVideoId) {
+        // Pause all native videos except the one we want to play
+        document.querySelectorAll('.video-card').forEach(function(card) {
+            if (card.dataset.videoId === keepVideoId) return;
+            var vid = card.querySelector('video.feed-video');
+            if (vid && !vid.paused) {
+                vid.pause();
             }
+            // Show thumbnail again for paused cards
+            var thumb = card.querySelector('.video-thumbnail');
+            if (thumb) thumb.classList.remove('hidden');
         });
+        // Remove YouTube iframes (can't pause them easily)
+        if (keepVideoId) removeAllIframes(keepVideoId);
+        activeVideoId = null;
     }
 
-    function playYouTubeVideo(wrapper, thumbnail, youtubeId, videoId) {
-        var muteParam = isMuted ? '&mute=1' : '&mute=0';
-        var iframe = document.createElement('iframe');
-        iframe.src = 'https://www.youtube.com/embed/' + youtubeId + '?autoplay=1&playsinline=1&rel=0&modestbranding=1&showinfo=0&loop=1&playlist=' + youtubeId + muteParam;
-        iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
-        iframe.setAttribute('allowfullscreen', '');
-        iframe.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:1;border:none;';
-
-        wrapper.insertBefore(iframe, thumbnail);
-        activePlayer = iframe;
-        activeVideoId = videoId;
-
-        // Fade out thumbnail after iframe loads
-        iframe.addEventListener('load', function() {
-            setTimeout(function() {
-                thumbnail.classList.add('hidden');
-            }, 500);
-        });
-    }
-
-    function showTapHint(wrapper) {
-        var hint = document.createElement('div');
-        hint.className = 'feed-tap-hint';
-        hint.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="#fff"/></svg>';
-        wrapper.appendChild(hint);
-        hint.addEventListener('click', function(e) {
-            e.stopPropagation();
-            var video = wrapper.querySelector('video');
-            if (video) {
-                video.muted = true;
-                video.play().then(function() {
-                    hint.remove();
-                    wrapper.querySelector('.video-thumbnail').classList.add('hidden');
-                    activePlayer = video;
-                    activeVideoId = wrapper.dataset.videoId;
-                }).catch(function() {});
-            }
+    function removeAllIframes(exceptVideoId) {
+        document.querySelectorAll('.video-card').forEach(function(card) {
+            if (exceptVideoId && card.dataset.videoId === exceptVideoId) return;
+            var iframe = card.querySelector('iframe');
+            if (iframe) iframe.remove();
         });
     }
 
@@ -282,22 +278,27 @@
         setTimeout(function() { ind.remove(); }, 600);
     }
 
-    function stopAllVideos() {
-        document.querySelectorAll('.video-player-wrapper iframe').forEach(function(iframe) {
-            iframe.remove();
+    // ===== Preload nearby videos =====
+    // Set src on videos that are within 1 card of the current viewport
+    function preloadNearby() {
+        var container = document.getElementById('feedContainer');
+        if (!container) return;
+        var cards = container.querySelectorAll('.video-card');
+        var containerRect = container.getBoundingClientRect();
+        var viewH = containerRect.height;
+
+        cards.forEach(function(card) {
+            var rect = card.getBoundingClientRect();
+            // If card is within 1.5x viewport distance
+            if (rect.bottom > containerRect.top - viewH && rect.top < containerRect.bottom + viewH) {
+                var vid = card.querySelector('video.feed-video');
+                if (vid && vid.dataset.src && !vid.src) {
+                    vid.src = vid.dataset.src;
+                    vid.preload = 'metadata';
+                    vid.load();
+                }
+            }
         });
-        document.querySelectorAll('.video-player-wrapper video').forEach(function(video) {
-            video.pause();
-            video.removeAttribute('src');
-            video.load();
-            video.remove();
-        });
-        document.querySelectorAll('.video-thumbnail.hidden').forEach(function(thumb) {
-            thumb.classList.remove('hidden');
-        });
-        document.querySelectorAll('.feed-tap-hint').forEach(function(h) { h.remove(); });
-        activePlayer = null;
-        activeVideoId = null;
     }
 
     // ===== Scroll-based auto-play detection =====
@@ -322,14 +323,17 @@
             }
         });
 
-        if (bestCard && activeVideoId !== bestCard.dataset.videoId) {
-            playVideo(bestCard, true);
+        if (bestCard) {
+            activateCard(bestCard);
         }
+
+        // Also preload nearby videos
+        preloadNearby();
     }
 
     function onScrollEnd() {
         clearTimeout(scrollTimer);
-        scrollTimer = setTimeout(detectCurrentCard, 100);
+        scrollTimer = setTimeout(detectCurrentCard, 80);
     }
 
     // ===== Event Handlers =====
@@ -450,9 +454,7 @@
         sentinel.innerHTML = '<div id="loadingIndicator" class="feed-loading" style="display:none;height:auto;padding:40px 0;"><div class="feed-spinner"></div></div>';
         container.appendChild(sentinel);
 
-        // Create mute button
         createMuteButton();
-
         setupInfiniteScroll();
         setupScrollIndicator();
 
@@ -462,36 +464,44 @@
             container.addEventListener('scrollend', detectCurrentCard, { passive: true });
         }
 
-        // Auto-play first video quickly
+        // Auto-play first video immediately
         setTimeout(function() {
             var first = container.querySelector('.video-card');
-            if (first) playVideo(first, true);
-        }, 300);
+            if (first) activateCard(first);
+        }, 200);
 
         // Event delegation
         container.addEventListener('click', function(e) {
             var likeBtn = e.target.closest('.like-btn');
             var shareBtn = e.target.closest('.share-btn');
             var productCard = e.target.closest('.product-card');
-            var tapHint = e.target.closest('.feed-tap-hint');
 
             if (likeBtn) { e.preventDefault(); handleLike(likeBtn); }
             else if (shareBtn) { e.preventDefault(); handleShare(shareBtn); }
             else if (productCard) { handleProductClick(productCard); }
-            // Tap on thumbnail = unmute + play
-            else if (e.target.closest('.video-thumbnail')) {
-                e.preventDefault();
-                isMuted = false;
-                updateMuteIcon();
+            else {
+                // Tap on video area: toggle play/pause + unmute
                 var card = e.target.closest('.video-card');
                 if (card) {
-                    var vid = card.querySelector('video');
-                    if (vid) {
-                        vid.muted = false;
-                        if (vid.paused) vid.play();
-                        card.querySelector('.video-thumbnail').classList.add('hidden');
+                    var vid = card.querySelector('video.feed-video');
+                    if (vid && vid.src) {
+                        if (vid.paused) {
+                            // Resume
+                            isMuted = false;
+                            updateMuteIcon();
+                            vid.muted = false;
+                            vid.play().catch(function(){});
+                            card.querySelector('.video-thumbnail').classList.add('hidden');
+                        } else {
+                            // Pause
+                            vid.pause();
+                            showPauseIndicator(card.querySelector('.video-player-wrapper'));
+                        }
                     } else {
-                        playVideo(card, false);
+                        // YouTube or no video yet — activate
+                        isMuted = false;
+                        updateMuteIcon();
+                        activateCard(card);
                     }
                 }
             }
