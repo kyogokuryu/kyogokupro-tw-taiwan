@@ -37,6 +37,10 @@ file that was distributed with this source code.
         <li class="ec-navlistRole__item static {% if mypageno|default('') == 'delivery' %}active{% endif %}">
             <div class="mypage-link-btn"><a href="{{ url('mypage_delivery') }}">{{ '送貨地址清單'|trans }}</a></div>
         </li>
+        {# VIP訂閱管理（SalesDash經由） #}
+        <li class="ec-navlistRole__item static">
+            <div class="mypage-link-btn"><a href="https://salesdash.buzzdrop.co.jp/tw/subscription?email={{ app.user.email }}" target="_blank">{{ 'VIP訂閱管理'|trans }}</a></div>
+        </li>
 {#
         <li class="ec-navlistRole__item static {% if mypageno|default('') == 'gmo_card_edit' %}active{% endif %}">
             <div class="mypage-link-btn"><a href="{{ url('gmo_mypage_card_edit') }}">{{ '编辑卡信息'|trans }}</a></div>
