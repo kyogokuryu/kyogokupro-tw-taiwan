@@ -14,26 +14,26 @@
 (function() {
     'use strict';
 
-    const API_BASE = '/feed/api/';
-    let currentPage = 1;
-    let isLoading = false;
-    let hasMore = true;
-    let activeVideoId = null;
-    let activePlayer = null;
-    let observer = null;
-    let viewedVideos = new Set();
-    let isMuted = true; // Start muted for autoplay policy
-    let userHasInteracted = false;
+    var API_BASE = '/feed/api/';
+    var currentPage = 1;
+    var isLoading = false;
+    var hasMore = true;
+    var activeVideoId = null;
+    var activePlayer = null;
+    var viewedVideos = new Set();
+    var isMuted = true;
+    var userHasInteracted = false;
+    var scrollTimer = null;
 
     // ===== API Functions =====
     async function fetchVideos(page) {
-        const res = await fetch(API_BASE + '?action=videos&page=' + page);
+        var res = await fetch(API_BASE + '?action=videos&page=' + page);
         return await res.json();
     }
 
     async function postAction(action, data) {
         try {
-            const res = await fetch(API_BASE + '?action=' + action, {
+            var res = await fetch(API_BASE + '?action=' + action, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
@@ -47,7 +47,7 @@
 
     // ===== Render Functions =====
     function createVideoCard(video) {
-        const card = document.createElement('div');
+        var card = document.createElement('div');
         card.className = 'video-card';
         card.dataset.videoId = video.id;
         card.dataset.youtubeId = video.youtube_id || '';
@@ -55,13 +55,13 @@
         card.dataset.videoUrl = video.video_url || '';
         card.dataset.videoFile = video.video_file_url || '';
 
-        const thumbnailUrl = video.thumbnail || '';
-        const productsHtml = (video.products && video.products.length > 0) 
+        var thumbnailUrl = video.thumbnail || '';
+        var productsHtml = (video.products && video.products.length > 0) 
             ? createProductsHtml(video.products, video.id) 
             : '';
 
-        const displayTitle = video.display_title || video.title;
-        const displayDesc = video.display_description || video.description;
+        var displayTitle = video.display_title || video.title;
+        var displayDesc = video.display_description || video.description;
 
         card.innerHTML = 
             '<div class="video-player-wrapper" data-video-id="' + video.id + '">' +
@@ -154,13 +154,12 @@
         video.src = src;
         video.autoplay = true;
         video.playsInline = true;
+        video.setAttribute('playsinline', '');
+        video.setAttribute('webkit-playsinline', '');
         video.loop = true;
         video.preload = 'auto';
-        // Autoplay requires muted on most browsers
         video.muted = fromAutoplay ? true : isMuted;
         video.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;background:#000;z-index:1;';
-        
-        // No controls — tap to toggle play/pause/mute
         video.controls = false;
         
         wrapper.appendChild(video);
@@ -169,16 +168,28 @@
         activePlayer = video;
         activeVideoId = videoId;
 
-        video.play().catch(function() {
-            // Autoplay blocked even muted — show play button
-            video.muted = true;
-            video.play().catch(function() {
-                thumbnail.classList.remove('hidden');
-                playBtn.classList.remove('hidden');
+        // Try to play — with fallback chain
+        var playPromise = video.play();
+        if (playPromise !== undefined) {
+            playPromise.then(function() {
+                // Playing successfully
+            }).catch(function() {
+                // First attempt failed — force muted and retry
+                video.muted = true;
+                var retryPromise = video.play();
+                if (retryPromise !== undefined) {
+                    retryPromise.catch(function() {
+                        // Even muted autoplay failed — show play button for manual tap
+                        thumbnail.classList.remove('hidden');
+                        playBtn.classList.remove('hidden');
+                        activePlayer = null;
+                        activeVideoId = null;
+                    });
+                }
             });
-        });
+        }
 
-        // Tap on video to toggle mute (first tap unmutes, subsequent toggles play/pause)
+        // Tap on video to toggle mute / play-pause
         video.addEventListener('click', function(e) {
             e.stopPropagation();
             userHasInteracted = true;
@@ -218,6 +229,8 @@
         // Remove/pause video elements (uploaded files)
         document.querySelectorAll('.video-player-wrapper video').forEach(function(video) {
             video.pause();
+            video.removeAttribute('src');
+            video.load();
             video.remove();
         });
         document.querySelectorAll('.video-thumbnail.hidden').forEach(function(thumb) {
@@ -228,6 +241,50 @@
         });
         activePlayer = null;
         activeVideoId = null;
+    }
+
+    // ===== Scroll-based auto-play detection =====
+    // This is the PRIMARY method — more reliable than IntersectionObserver on iOS Safari
+    function detectCurrentCard() {
+        var container = document.getElementById('feedContainer');
+        if (!container) return;
+
+        var cards = container.querySelectorAll('.video-card');
+        if (!cards.length) return;
+
+        var containerRect = container.getBoundingClientRect();
+        var containerCenter = containerRect.top + containerRect.height / 2;
+        var bestCard = null;
+        var bestDistance = Infinity;
+
+        cards.forEach(function(card) {
+            var rect = card.getBoundingClientRect();
+            var cardCenter = rect.top + rect.height / 2;
+            var distance = Math.abs(cardCenter - containerCenter);
+            if (distance < bestDistance) {
+                bestDistance = distance;
+                bestCard = card;
+            }
+        });
+
+        if (bestCard) {
+            var videoId = bestCard.dataset.videoId;
+            if (activeVideoId !== videoId) {
+                playVideo(bestCard, true);
+            }
+            // Record view
+            if (!viewedVideos.has(videoId)) {
+                viewedVideos.add(videoId);
+                postAction('view', { video_id: parseInt(videoId) });
+            }
+        }
+    }
+
+    function onScrollEnd() {
+        clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(function() {
+            detectCurrentCard();
+        }, 150);
     }
 
     // ===== Event Handlers =====
@@ -318,60 +375,7 @@
         setTimeout(function() { toast.classList.remove('show'); }, 2000);
     }
 
-    // ===== Intersection Observer for Auto-play =====
-    function setupObserver() {
-        observer = new IntersectionObserver(function(entries) {
-            entries.forEach(function(entry) {
-                var card = entry.target;
-                var videoId = card.dataset.videoId;
-
-                if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
-                    // This card is now dominant — auto-play it
-                    if (activeVideoId !== videoId) {
-                        playVideo(card, true);
-                    }
-
-                    // Record view
-                    if (!viewedVideos.has(videoId)) {
-                        viewedVideos.add(videoId);
-                        postAction('view', { video_id: parseInt(videoId) });
-                    }
-                } else if (!entry.isIntersecting) {
-                    // Card left viewport — stop its video
-                    var iframe = card.querySelector('.video-player-wrapper iframe');
-                    var video = card.querySelector('.video-player-wrapper video');
-                    if (iframe) {
-                        iframe.remove();
-                        var thumb = card.querySelector('.video-thumbnail');
-                        var btn = card.querySelector('.video-play-btn');
-                        if (thumb) thumb.classList.remove('hidden');
-                        if (btn) btn.classList.remove('hidden');
-                        if (activeVideoId === videoId) {
-                            activePlayer = null;
-                            activeVideoId = null;
-                        }
-                    }
-                    if (video) {
-                        video.pause();
-                        video.remove();
-                        var thumb = card.querySelector('.video-thumbnail');
-                        var btn = card.querySelector('.video-play-btn');
-                        if (thumb) thumb.classList.remove('hidden');
-                        if (btn) btn.classList.remove('hidden');
-                        if (activeVideoId === videoId) {
-                            activePlayer = null;
-                            activeVideoId = null;
-                        }
-                    }
-                }
-            });
-        }, {
-            root: document.getElementById('feedContainer'),
-            threshold: [0, 0.6]
-        });
-    }
-
-    // ===== Infinite Scroll =====
+    // ===== Infinite Scroll (IntersectionObserver — viewport-based) =====
     function setupInfiniteScroll() {
         var sentinel = document.getElementById('loadMore');
         if (!sentinel) return;
@@ -405,7 +409,6 @@
             result.data.forEach(function(video) {
                 var card = createVideoCard(video);
                 container.insertBefore(card, sentinel);
-                observer.observe(card);
             });
 
             hasMore = result.pagination.has_more;
@@ -449,12 +452,10 @@
         }
 
         container.innerHTML = '';
-        setupObserver();
 
         result.data.forEach(function(video) {
             var card = createVideoCard(video);
             container.appendChild(card);
-            observer.observe(card);
         });
 
         hasMore = result.pagination.has_more;
@@ -467,13 +468,24 @@
         setupInfiniteScroll();
         setupScrollIndicator();
 
+        // === PRIMARY: Scroll-based auto-play detection ===
+        // Fires after scroll settles (snap completes)
+        container.addEventListener('scroll', onScrollEnd, { passive: true });
+
+        // Also listen for scrollend event (supported in modern browsers)
+        if ('onscrollend' in window) {
+            container.addEventListener('scrollend', function() {
+                detectCurrentCard();
+            }, { passive: true });
+        }
+
         // Auto-play first video after a brief delay
         setTimeout(function() {
             var firstCard = container.querySelector('.video-card');
             if (firstCard) {
                 playVideo(firstCard, true);
             }
-        }, 500);
+        }, 800);
 
         // Event delegation
         container.addEventListener('click', function(e) {
@@ -486,7 +498,7 @@
             if (playBtn || thumbnail) {
                 e.preventDefault();
                 userHasInteracted = true;
-                isMuted = false; // User clicked play — unmute
+                isMuted = false;
                 var card = e.target.closest('.video-card');
                 if (card) playVideo(card, false);
             } else if (likeBtn) {
