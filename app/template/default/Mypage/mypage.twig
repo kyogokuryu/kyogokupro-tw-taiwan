@@ -86,6 +86,65 @@
 	</section>
 </article>
 
+{# ── 姓名未填寫ポップアップ ── #}
+{% if app.user and (app.user.name01 is empty or app.user.name01 == '') %}
+<div id="name-popup-overlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;">
+    <div style="background:#fff;border-radius:16px;padding:28px 24px;max-width:380px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,0.18);text-align:center;">
+        <div style="font-size:36px;margin-bottom:8px;">📝</div>
+        <h3 style="font-size:18px;font-weight:bold;margin:0 0 6px;">請填寫您的姓名</h3>
+        <p style="font-size:13px;color:#666;margin:0 0 18px;line-height:1.5;">為了讓您能順利購買商品及使用點數，<br>請先填寫您的姓名。</p>
+        <div style="display:flex;gap:10px;margin-bottom:14px;">
+            <input id="popup-name01" type="text" placeholder="姓（例：王）" style="flex:1;padding:10px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:15px;outline:none;transition:border-color .2s;" onfocus="this.style.borderColor='#E8A0B4'" onblur="this.style.borderColor='#ddd'">
+            <input id="popup-name02" type="text" placeholder="名（例：小明）" style="flex:1;padding:10px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:15px;outline:none;transition:border-color .2s;" onfocus="this.style.borderColor='#E8A0B4'" onblur="this.style.borderColor='#ddd'">
+        </div>
+        <div id="popup-name-error" style="color:#e74c3c;font-size:13px;margin-bottom:10px;display:none;"></div>
+        <button id="popup-name-submit" style="width:100%;padding:12px;background:linear-gradient(135deg,#E8A0B4,#D4849B);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:bold;cursor:pointer;transition:opacity .2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+            確認送出
+        </button>
+        <p style="font-size:11px;color:#999;margin:12px 0 0;">此資訊僅用於訂單處理與出貨</p>
+    </div>
+</div>
+<script>
+document.getElementById('popup-name-submit').addEventListener('click', function(){
+    var name01 = document.getElementById('popup-name01').value.trim();
+    var name02 = document.getElementById('popup-name02').value.trim();
+    var errEl = document.getElementById('popup-name-error');
+    if(!name01 || !name02){
+        errEl.textContent = '請填寫姓和名';
+        errEl.style.display = 'block';
+        return;
+    }
+    var btn = this;
+    btn.textContent = '送出中...';
+    btn.disabled = true;
+    var fd = new FormData();
+    fd.append('name01', name01);
+    fd.append('name02', name02);
+    fetch('/mypage/cm_update_name', { method:'POST', body: fd })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+        if(data.success){
+            document.getElementById('name-popup-overlay').style.display = 'none';
+            // Update displayed name
+            var nameEl = document.querySelector('.mypage-header-name b');
+            if(nameEl) nameEl.textContent = name01 + ' ' + name02;
+        } else {
+            errEl.textContent = data.message || '發生錯誤，請稍後再試';
+            errEl.style.display = 'block';
+            btn.textContent = '確認送出';
+            btn.disabled = false;
+        }
+    })
+    .catch(function(){
+        errEl.textContent = '網路錯誤，請稍後再試';
+        errEl.style.display = 'block';
+        btn.textContent = '確認送出';
+        btn.disabled = false;
+    });
+});
+</script>
+{% endif %}
+
 {% if app.session.flashBag.has('add_login_point_success') %}
 
     {% for msg in app.session.flashBag.get('add_login_point_success') %}

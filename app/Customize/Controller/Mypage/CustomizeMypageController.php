@@ -498,6 +498,35 @@ class CustomizeMypageController extends MypageController
     }
 
 
+    /**
+     * AJAX: 姓名を簡易更新する（マイページポップアップ用）
+     *
+     * @Route("/mypage/cm_update_name", name="mypage_update_name", methods={"POST"})
+     */
+    public function updateName(Request $request)
+    {
+        $Customer = $this->getUser();
+        if (!$Customer) {
+            return $this->json(['success' => false, 'message' => '未登入'], 401);
+        }
+
+        $name01 = trim($request->request->get('name01', ''));
+        $name02 = trim($request->request->get('name02', ''));
+
+        if (empty($name01) || empty($name02)) {
+            return $this->json(['success' => false, 'message' => '請填寫姓名']);
+        }
+
+        $Customer->setName01($name01);
+        $Customer->setName02($name02);
+        $this->entityManager->persist($Customer);
+        $this->entityManager->flush();
+
+        log_info('姓名簡易更新完了', [$Customer->getId(), $name01, $name02]);
+
+        return $this->json(['success' => true, 'message' => '更新成功']);
+    }
+
     private function set_pre_soryo($request, $order_no){
 
         $Customer = $this->getUser();
