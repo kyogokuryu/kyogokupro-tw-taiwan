@@ -173,39 +173,99 @@ body {
     pointer-events: none;
 }
 
-.video-play-btn {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 3;
-    width: 72px;
-    height: 72px;
-    background: rgba(255, 255, 255, 0.2);
-    border: 2px solid rgba(255, 255, 255, 0.5);
+/* Global Mute Button (fixed, top-right area) */
+.feed-mute-btn {
+    position: fixed;
+    top: 68px;
+    right: 20px;
+    z-index: 110;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.25);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
     transition: var(--feed-transition);
+}
+
+.feed-mute-btn:active {
+    transform: scale(0.9);
+}
+
+.feed-mute-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: #fff;
+}
+
+.feed-mute-btn.muted {
+    background: rgba(255,60,60,0.25);
+    border-color: rgba(255,60,60,0.4);
+}
+
+/* Tap hint (fallback when autoplay is blocked) */
+.feed-tap-hint {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    border: 2px solid rgba(255,255,255,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
     backdrop-filter: blur(4px);
+    animation: tapPulse 2s ease infinite;
 }
 
-.video-play-btn:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: translate(-50%, -50%) scale(1.1);
+.feed-tap-hint svg {
+    width: 26px;
+    height: 26px;
+    margin-left: 3px;
 }
 
-.video-play-btn svg {
+@keyframes tapPulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+    50% { transform: translate(-50%, -50%) scale(1.08); opacity: 1; }
+}
+
+/* Pause indicator (brief flash on tap-to-pause) */
+.feed-pause-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1);
+    z-index: 5;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.feed-pause-indicator.fade-out {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.5);
+}
+
+.feed-pause-indicator svg {
     width: 28px;
     height: 28px;
-    fill: #fff;
-    margin-left: 4px;
-}
-
-.video-play-btn.hidden {
-    display: none;
 }
 
 /* Video Info Overlay */
@@ -655,6 +715,11 @@ body {
     .video-products { bottom: 70px; }
     .video-actions { bottom: 120px; gap: 12px; }
     .action-btn-icon { width: 36px; height: 36px; }
+}
+
+/* Thumbnail fade transition — faster for smoother feel */
+.video-thumbnail {
+    transition: opacity 0.2s ease;
 }
 
 /* No-image placeholder */

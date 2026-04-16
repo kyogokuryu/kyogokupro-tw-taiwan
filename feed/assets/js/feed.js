@@ -2,13 +2,7 @@
  * Feed - TikTok-style Video Feed
  * tw.kyogokupro.com/feed/
  * 
- * Features:
- * - Auto-play: videos play automatically when scrolled into view
- * - Snap scroll: one swipe = exactly one video (scroll-snap + scroll-snap-stop)
- * - Auto-stop: videos stop when scrolled out of view
- * - Muted autoplay with tap-to-unmute (browser policy compliance)
- * 
- * Supports: YouTube, uploaded video files (MP4/WebM/MOV)
+ * v3: Mute button, seamless preload, no play-button flash
  */
 
 (function() {
@@ -19,11 +13,44 @@
     var isLoading = false;
     var hasMore = true;
     var activeVideoId = null;
-    var activePlayer = null;
+    var activePlayer = null;       // <video> or <iframe>
     var viewedVideos = new Set();
     var isMuted = true;
-    var userHasInteracted = false;
     var scrollTimer = null;
+
+    // ===== Global Mute Button =====
+    var muteBtn = null;
+
+    function createMuteButton() {
+        muteBtn = document.createElement('button');
+        muteBtn.className = 'feed-mute-btn';
+        muteBtn.setAttribute('aria-label', '音量切換');
+        updateMuteIcon();
+        document.body.appendChild(muteBtn);
+
+        muteBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            isMuted = !isMuted;
+            updateMuteIcon();
+            // Apply to active native video
+            if (activePlayer && activePlayer.tagName === 'VIDEO') {
+                activePlayer.muted = isMuted;
+            }
+            // For YouTube, we can't easily toggle mute on existing iframe,
+            // but next video will respect the new state
+        });
+    }
+
+    function updateMuteIcon() {
+        if (!muteBtn) return;
+        if (isMuted) {
+            muteBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>';
+            muteBtn.classList.add('muted');
+        } else {
+            muteBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>';
+            muteBtn.classList.remove('muted');
+        }
+    }
 
     // ===== API Functions =====
     async function fetchVideos(page) {
@@ -40,7 +67,6 @@
             });
             return await res.json();
         } catch (e) {
-            console.error('API error:', e);
             return null;
         }
     }
@@ -63,12 +89,11 @@
         var displayTitle = video.display_title || video.title;
         var displayDesc = video.display_description || video.description;
 
+        // No play button in the initial HTML — autoplay handles it.
+        // Thumbnail covers the card until video is ready.
         card.innerHTML = 
             '<div class="video-player-wrapper" data-video-id="' + video.id + '">' +
                 '<img class="video-thumbnail" src="' + escapeHtml(thumbnailUrl) + '" alt="' + escapeHtml(displayTitle) + '" loading="lazy">' +
-                '<div class="video-play-btn" role="button" aria-label="播放影片">' +
-                    '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>' +
-                '</div>' +
             '</div>' +
             '<div class="video-actions">' +
                 '<button class="action-btn like-btn' + (video.has_liked ? ' liked' : '') + '" data-video-id="' + video.id + '" aria-label="喜歡">' +
@@ -124,32 +149,25 @@
         var videoFile = card.dataset.videoFile;
         var wrapper = card.querySelector('.video-player-wrapper');
         var thumbnail = card.querySelector('.video-thumbnail');
-        var playBtn = card.querySelector('.video-play-btn');
 
-        // Already playing this video
         if (activeVideoId === videoId) return;
-
-        // Stop any other playing video
         stopAllVideos();
 
         if (videoType === 'upload' && videoFile) {
-            playNativeVideo(wrapper, thumbnail, playBtn, videoFile, videoId, fromAutoplay);
+            playNativeVideo(wrapper, thumbnail, videoFile, videoId);
         } else if (videoType === 'direct' && videoUrl) {
-            playNativeVideo(wrapper, thumbnail, playBtn, videoUrl, videoId, fromAutoplay);
+            playNativeVideo(wrapper, thumbnail, videoUrl, videoId);
         } else if (youtubeId) {
-            playYouTubeVideo(wrapper, thumbnail, playBtn, youtubeId, videoId, fromAutoplay);
-        } else {
-            return;
+            playYouTubeVideo(wrapper, thumbnail, youtubeId, videoId);
         }
 
-        // Record view
         if (!viewedVideos.has(videoId)) {
             viewedVideos.add(videoId);
             postAction('view', { video_id: parseInt(videoId) });
         }
     }
 
-    function playNativeVideo(wrapper, thumbnail, playBtn, src, videoId, fromAutoplay) {
+    function playNativeVideo(wrapper, thumbnail, src, videoId) {
         var video = document.createElement('video');
         video.src = src;
         video.autoplay = true;
@@ -158,30 +176,42 @@
         video.setAttribute('webkit-playsinline', '');
         video.loop = true;
         video.preload = 'auto';
-        video.muted = fromAutoplay ? true : isMuted;
+        video.muted = true;  // Always start muted for autoplay compliance
         video.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;background:#000;z-index:1;';
         video.controls = false;
-        
-        wrapper.appendChild(video);
-        thumbnail.classList.add('hidden');
-        playBtn.classList.add('hidden');
+
+        // Insert video BEHIND thumbnail — thumbnail stays visible until video is ready
+        wrapper.insertBefore(video, thumbnail);
         activePlayer = video;
         activeVideoId = videoId;
 
-        // Try to play — with fallback chain
+        // When video has enough data to play, fade out thumbnail smoothly
+        function onCanPlay() {
+            video.removeEventListener('canplay', onCanPlay);
+            video.removeEventListener('playing', onCanPlay);
+            // Small delay to ensure at least 1 frame is rendered
+            requestAnimationFrame(function() {
+                thumbnail.classList.add('hidden');
+                // After autoplay starts, apply user's mute preference
+                if (!isMuted) {
+                    video.muted = false;
+                }
+            });
+        }
+        video.addEventListener('canplay', onCanPlay);
+        video.addEventListener('playing', onCanPlay);
+
+        // Try to play
         var playPromise = video.play();
         if (playPromise !== undefined) {
-            playPromise.then(function() {
-                // Playing successfully
-            }).catch(function() {
-                // First attempt failed — force muted and retry
+            playPromise.catch(function() {
                 video.muted = true;
-                var retryPromise = video.play();
-                if (retryPromise !== undefined) {
-                    retryPromise.catch(function() {
-                        // Even muted autoplay failed — show play button for manual tap
+                var retry = video.play();
+                if (retry !== undefined) {
+                    retry.catch(function() {
+                        // Autoplay completely blocked — show a small tap hint
                         thumbnail.classList.remove('hidden');
-                        playBtn.classList.remove('hidden');
+                        showTapHint(wrapper);
                         activePlayer = null;
                         activeVideoId = null;
                     });
@@ -189,44 +219,73 @@
             });
         }
 
-        // Tap on video to toggle mute / play-pause
+        // Tap on video: toggle play/pause
         video.addEventListener('click', function(e) {
             e.stopPropagation();
-            userHasInteracted = true;
-            if (video.muted) {
-                video.muted = false;
-                isMuted = false;
+            if (video.paused) {
+                video.play();
             } else {
-                if (video.paused) {
-                    video.play();
-                } else {
-                    video.pause();
-                }
+                video.pause();
+                showPauseIndicator(wrapper);
             }
         });
     }
 
-    function playYouTubeVideo(wrapper, thumbnail, playBtn, youtubeId, videoId, fromAutoplay) {
-        var muteParam = (fromAutoplay || isMuted) ? '&mute=1' : '&mute=0';
+    function playYouTubeVideo(wrapper, thumbnail, youtubeId, videoId) {
+        var muteParam = isMuted ? '&mute=1' : '&mute=0';
         var iframe = document.createElement('iframe');
         iframe.src = 'https://www.youtube.com/embed/' + youtubeId + '?autoplay=1&playsinline=1&rel=0&modestbranding=1&showinfo=0&loop=1&playlist=' + youtubeId + muteParam;
         iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
         iframe.setAttribute('allowfullscreen', '');
         iframe.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:1;border:none;';
 
-        wrapper.appendChild(iframe);
-        thumbnail.classList.add('hidden');
-        playBtn.classList.add('hidden');
+        wrapper.insertBefore(iframe, thumbnail);
         activePlayer = iframe;
         activeVideoId = videoId;
+
+        // Fade out thumbnail after iframe loads
+        iframe.addEventListener('load', function() {
+            setTimeout(function() {
+                thumbnail.classList.add('hidden');
+            }, 500);
+        });
+    }
+
+    function showTapHint(wrapper) {
+        var hint = document.createElement('div');
+        hint.className = 'feed-tap-hint';
+        hint.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="#fff"/></svg>';
+        wrapper.appendChild(hint);
+        hint.addEventListener('click', function(e) {
+            e.stopPropagation();
+            var video = wrapper.querySelector('video');
+            if (video) {
+                video.muted = true;
+                video.play().then(function() {
+                    hint.remove();
+                    wrapper.querySelector('.video-thumbnail').classList.add('hidden');
+                    activePlayer = video;
+                    activeVideoId = wrapper.dataset.videoId;
+                }).catch(function() {});
+            }
+        });
+    }
+
+    function showPauseIndicator(wrapper) {
+        var existing = wrapper.querySelector('.feed-pause-indicator');
+        if (existing) existing.remove();
+        var ind = document.createElement('div');
+        ind.className = 'feed-pause-indicator';
+        ind.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" fill="#fff"/></svg>';
+        wrapper.appendChild(ind);
+        setTimeout(function() { ind.classList.add('fade-out'); }, 100);
+        setTimeout(function() { ind.remove(); }, 600);
     }
 
     function stopAllVideos() {
-        // Remove iframes (YouTube)
         document.querySelectorAll('.video-player-wrapper iframe').forEach(function(iframe) {
             iframe.remove();
         });
-        // Remove/pause video elements (uploaded files)
         document.querySelectorAll('.video-player-wrapper video').forEach(function(video) {
             video.pause();
             video.removeAttribute('src');
@@ -236,19 +295,15 @@
         document.querySelectorAll('.video-thumbnail.hidden').forEach(function(thumb) {
             thumb.classList.remove('hidden');
         });
-        document.querySelectorAll('.video-play-btn.hidden').forEach(function(btn) {
-            btn.classList.remove('hidden');
-        });
+        document.querySelectorAll('.feed-tap-hint').forEach(function(h) { h.remove(); });
         activePlayer = null;
         activeVideoId = null;
     }
 
     // ===== Scroll-based auto-play detection =====
-    // This is the PRIMARY method — more reliable than IntersectionObserver on iOS Safari
     function detectCurrentCard() {
         var container = document.getElementById('feedContainer');
         if (!container) return;
-
         var cards = container.querySelectorAll('.video-card');
         if (!cards.length) return;
 
@@ -267,40 +322,24 @@
             }
         });
 
-        if (bestCard) {
-            var videoId = bestCard.dataset.videoId;
-            if (activeVideoId !== videoId) {
-                playVideo(bestCard, true);
-            }
-            // Record view
-            if (!viewedVideos.has(videoId)) {
-                viewedVideos.add(videoId);
-                postAction('view', { video_id: parseInt(videoId) });
-            }
+        if (bestCard && activeVideoId !== bestCard.dataset.videoId) {
+            playVideo(bestCard, true);
         }
     }
 
     function onScrollEnd() {
         clearTimeout(scrollTimer);
-        scrollTimer = setTimeout(function() {
-            detectCurrentCard();
-        }, 150);
+        scrollTimer = setTimeout(detectCurrentCard, 100);
     }
 
     // ===== Event Handlers =====
     function handleLike(btn) {
         var videoId = parseInt(btn.dataset.videoId);
         var label = btn.querySelector('.action-btn-label');
-        
         btn.classList.toggle('liked');
-        
         postAction('like', { video_id: videoId }).then(function(res) {
             if (res && res.success) {
-                if (res.liked) {
-                    btn.classList.add('liked');
-                } else {
-                    btn.classList.remove('liked');
-                }
+                btn.classList[res.liked ? 'add' : 'remove']('liked');
                 label.textContent = res.formatted_likes;
             }
         });
@@ -310,15 +349,12 @@
         var videoId = btn.dataset.videoId;
         var title = btn.dataset.title;
         var url = window.location.origin + '/feed/#video-' + videoId;
-        
         postAction('analytics', { video_id: parseInt(videoId), action_type: 'share' });
         showShareModal(title, url);
     }
 
     function handleProductClick(link) {
-        var videoId = parseInt(link.dataset.videoId);
-        var productId = parseInt(link.dataset.productId);
-        postAction('analytics', { video_id: videoId, action_type: 'product_click' });
+        postAction('analytics', { video_id: parseInt(link.dataset.videoId), action_type: 'product_click' });
     }
 
     // ===== Share Modal =====
@@ -335,106 +371,61 @@
         if (modal) modal.classList.remove('active');
     }
 
-    function shareToLine(title, url) {
-        window.open('https://social-plugins.line.me/lineit/share?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(title), '_blank');
-        hideShareModal();
-    }
-
-    function shareToFacebook(url) {
-        window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url), '_blank');
-        hideShareModal();
-    }
-
-    function shareToTwitter(title, url) {
-        window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(title) + '&url=' + encodeURIComponent(url), '_blank');
-        hideShareModal();
-    }
-
-    function copyLink(url) {
+    function shareToLine(t, u) { window.open('https://social-plugins.line.me/lineit/share?url=' + encodeURIComponent(u) + '&text=' + encodeURIComponent(t), '_blank'); hideShareModal(); }
+    function shareToFacebook(u) { window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(u), '_blank'); hideShareModal(); }
+    function shareToTwitter(t, u) { window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(t) + '&url=' + encodeURIComponent(u), '_blank'); hideShareModal(); }
+    function copyLink(u) {
         if (navigator.clipboard) {
-            navigator.clipboard.writeText(url).then(function() {
-                showToast('已複製連結');
-            });
+            navigator.clipboard.writeText(u).then(function() { showToast('已複製連結'); });
         } else {
-            var input = document.createElement('input');
-            input.value = url;
-            document.body.appendChild(input);
-            input.select();
-            document.execCommand('copy');
-            document.body.removeChild(input);
-            showToast('已複製連結');
+            var inp = document.createElement('input'); inp.value = u; document.body.appendChild(inp); inp.select(); document.execCommand('copy'); document.body.removeChild(inp); showToast('已複製連結');
         }
         hideShareModal();
     }
 
-    function showToast(message) {
-        var toast = document.getElementById('toast');
-        if (!toast) return;
-        toast.textContent = message;
-        toast.classList.add('show');
-        setTimeout(function() { toast.classList.remove('show'); }, 2000);
+    function showToast(msg) {
+        var t = document.getElementById('toast'); if (!t) return;
+        t.textContent = msg; t.classList.add('show');
+        setTimeout(function() { t.classList.remove('show'); }, 2000);
     }
 
-    // ===== Infinite Scroll (IntersectionObserver — viewport-based) =====
+    // ===== Infinite Scroll =====
     function setupInfiniteScroll() {
         var sentinel = document.getElementById('loadMore');
         if (!sentinel) return;
-
-        var scrollObserver = new IntersectionObserver(function(entries) {
-            if (entries[0].isIntersecting && !isLoading && hasMore) {
-                loadMoreVideos();
-            }
-        }, {
-            root: document.getElementById('feedContainer'),
-            rootMargin: '200px'
-        });
-
-        scrollObserver.observe(sentinel);
+        var obs = new IntersectionObserver(function(entries) {
+            if (entries[0].isIntersecting && !isLoading && hasMore) loadMoreVideos();
+        }, { root: document.getElementById('feedContainer'), rootMargin: '200px' });
+        obs.observe(sentinel);
     }
 
     async function loadMoreVideos() {
         if (isLoading || !hasMore) return;
         isLoading = true;
-        
-        var loadingEl = document.getElementById('loadingIndicator');
-        if (loadingEl) loadingEl.style.display = 'flex';
-
+        var el = document.getElementById('loadingIndicator');
+        if (el) el.style.display = 'flex';
         currentPage++;
         var result = await fetchVideos(currentPage);
-
         if (result && result.success && result.data.length > 0) {
             var container = document.getElementById('feedContainer');
             var sentinel = document.getElementById('loadMore');
-            
-            result.data.forEach(function(video) {
-                var card = createVideoCard(video);
-                container.insertBefore(card, sentinel);
-            });
-
+            result.data.forEach(function(v) { container.insertBefore(createVideoCard(v), sentinel); });
             hasMore = result.pagination.has_more;
-        } else {
-            hasMore = false;
-        }
-
-        if (loadingEl) loadingEl.style.display = 'none';
+        } else { hasMore = false; }
+        if (el) el.style.display = 'none';
         isLoading = false;
     }
 
     // ===== Scroll Indicator =====
     function setupScrollIndicator() {
-        var indicator = document.querySelector('.scroll-indicator');
-        if (!indicator) return;
-
+        var ind = document.querySelector('.scroll-indicator');
+        if (!ind) return;
         var container = document.getElementById('feedContainer');
         if (!container) return;
-
-        var scrollHandler = function() {
-            if (container.scrollTop > 100) {
-                indicator.classList.add('hidden');
-                container.removeEventListener('scroll', scrollHandler);
-            }
+        var handler = function() {
+            if (container.scrollTop > 100) { ind.classList.add('hidden'); container.removeEventListener('scroll', handler); }
         };
-        container.addEventListener('scroll', scrollHandler, { passive: true });
+        container.addEventListener('scroll', handler, { passive: true });
     }
 
     // ===== Initialize =====
@@ -445,19 +436,13 @@
         container.innerHTML = '<div class="feed-loading"><div class="feed-spinner"></div><div class="feed-loading-text">載入中...</div></div>';
 
         var result = await fetchVideos(1);
-
         if (!result || !result.success || result.data.length === 0) {
             container.innerHTML = '<div class="feed-empty"><svg viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg><div class="feed-empty-title">目前沒有影片</div><div class="feed-empty-text">敬請期待更多精彩內容</div></div>';
             return;
         }
 
         container.innerHTML = '';
-
-        result.data.forEach(function(video) {
-            var card = createVideoCard(video);
-            container.appendChild(card);
-        });
-
+        result.data.forEach(function(v) { container.appendChild(createVideoCard(v)); });
         hasMore = result.pagination.has_more;
 
         var sentinel = document.createElement('div');
@@ -465,103 +450,84 @@
         sentinel.innerHTML = '<div id="loadingIndicator" class="feed-loading" style="display:none;height:auto;padding:40px 0;"><div class="feed-spinner"></div></div>';
         container.appendChild(sentinel);
 
+        // Create mute button
+        createMuteButton();
+
         setupInfiniteScroll();
         setupScrollIndicator();
 
-        // === PRIMARY: Scroll-based auto-play detection ===
-        // Fires after scroll settles (snap completes)
+        // Scroll-based auto-play
         container.addEventListener('scroll', onScrollEnd, { passive: true });
-
-        // Also listen for scrollend event (supported in modern browsers)
         if ('onscrollend' in window) {
-            container.addEventListener('scrollend', function() {
-                detectCurrentCard();
-            }, { passive: true });
+            container.addEventListener('scrollend', detectCurrentCard, { passive: true });
         }
 
-        // Auto-play first video after a brief delay
+        // Auto-play first video quickly
         setTimeout(function() {
-            var firstCard = container.querySelector('.video-card');
-            if (firstCard) {
-                playVideo(firstCard, true);
-            }
-        }, 800);
+            var first = container.querySelector('.video-card');
+            if (first) playVideo(first, true);
+        }, 300);
 
         // Event delegation
         container.addEventListener('click', function(e) {
-            var playBtn = e.target.closest('.video-play-btn');
-            var thumbnail = e.target.closest('.video-thumbnail');
             var likeBtn = e.target.closest('.like-btn');
             var shareBtn = e.target.closest('.share-btn');
             var productCard = e.target.closest('.product-card');
+            var tapHint = e.target.closest('.feed-tap-hint');
 
-            if (playBtn || thumbnail) {
+            if (likeBtn) { e.preventDefault(); handleLike(likeBtn); }
+            else if (shareBtn) { e.preventDefault(); handleShare(shareBtn); }
+            else if (productCard) { handleProductClick(productCard); }
+            // Tap on thumbnail = unmute + play
+            else if (e.target.closest('.video-thumbnail')) {
                 e.preventDefault();
-                userHasInteracted = true;
                 isMuted = false;
+                updateMuteIcon();
                 var card = e.target.closest('.video-card');
-                if (card) playVideo(card, false);
-            } else if (likeBtn) {
-                e.preventDefault();
-                handleLike(likeBtn);
-            } else if (shareBtn) {
-                e.preventDefault();
-                handleShare(shareBtn);
-            } else if (productCard) {
-                handleProductClick(productCard);
+                if (card) {
+                    var vid = card.querySelector('video');
+                    if (vid) {
+                        vid.muted = false;
+                        if (vid.paused) vid.play();
+                        card.querySelector('.video-thumbnail').classList.add('hidden');
+                    } else {
+                        playVideo(card, false);
+                    }
+                }
             }
         });
 
-        // Share modal events
+        // Share modal
         var shareModal = document.getElementById('shareModal');
         if (shareModal) {
             shareModal.addEventListener('click', function(e) {
-                var option = e.target.closest('.share-option');
-                var closeBtn = e.target.closest('.share-modal-close');
-                
-                if (option) {
-                    var type = option.dataset.type;
-                    var title = shareModal.dataset.shareTitle;
-                    var url = shareModal.dataset.shareUrl;
-                    
-                    switch (type) {
-                        case 'line': shareToLine(title, url); break;
-                        case 'facebook': shareToFacebook(url); break;
-                        case 'twitter': shareToTwitter(title, url); break;
-                        case 'copy': copyLink(url); break;
-                    }
-                } else if (closeBtn || e.target === shareModal) {
-                    hideShareModal();
-                }
+                var opt = e.target.closest('.share-option');
+                var cls = e.target.closest('.share-modal-close');
+                if (opt) {
+                    var t = opt.dataset.type, title = shareModal.dataset.shareTitle, url = shareModal.dataset.shareUrl;
+                    if (t === 'line') shareToLine(title, url);
+                    else if (t === 'facebook') shareToFacebook(url);
+                    else if (t === 'twitter') shareToTwitter(title, url);
+                    else if (t === 'copy') copyLink(url);
+                } else if (cls || e.target === shareModal) { hideShareModal(); }
             });
         }
 
-        // Handle hash navigation
+        // Hash navigation
         if (window.location.hash) {
-            var match = window.location.hash.match(/video-(\d+)/);
-            if (match) {
-                var targetCard = container.querySelector('.video-card[data-video-id="' + match[1] + '"]');
-                if (targetCard) {
-                    setTimeout(function() {
-                        targetCard.scrollIntoView({ behavior: 'smooth' });
-                    }, 300);
-                }
+            var m = window.location.hash.match(/video-(\d+)/);
+            if (m) {
+                var tc = container.querySelector('.video-card[data-video-id="' + m[1] + '"]');
+                if (tc) setTimeout(function() { tc.scrollIntoView({ behavior: 'smooth' }); }, 300);
             }
         }
     }
 
-    // ===== Utility =====
-    function escapeHtml(str) {
-        if (!str) return '';
-        var div = document.createElement('div');
-        div.textContent = str;
-        return div.innerHTML;
+    function escapeHtml(s) {
+        if (!s) return '';
+        var d = document.createElement('div'); d.textContent = s; return d.innerHTML;
     }
 
-    // Start
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
-    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
 })();
