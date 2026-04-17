@@ -30,6 +30,13 @@ class EccubeAuthenticationSuccessHandler extends DefaultAuthenticationSuccessHan
             $response->setTargetUrl($request->getUriForPath('/'));
         }
 
+        // デフォルトのリダイレクト先がトップページ("/") またはマイページの場合、/feed/ にリダイレクト
+        $targetUrl = $response->getTargetUrl();
+        $path = parse_url($targetUrl, PHP_URL_PATH);
+        if ($path === '/' || $path === '/mypage' || $path === '/mypage/') {
+            $response->setTargetUrl($request->getUriForPath('/feed/'));
+        }
+
         return $response;
     }
 }

@@ -29,9 +29,13 @@ file that was distributed with this source code.
 '|trans|nl2br }}</p>
                 <div class="ec-off4Grid">
                     <div class="ec-off4Grid__cell">
-                        <a class="ec-blockBtn--cancel" href="{{ url('homepage') }}">{{ '首页'|trans }}</a>
+                        <a class="ec-blockBtn--cancel" href="/feed/">{{ '前往影片動態'|trans }}</a>
                     </div>
                 </div>
+                <p class="ec-reportDescription" style="margin-top:10px;color:#888;">3秒後自動跳轉...</p>
+                <script>
+                    setTimeout(function() { window.location.href = '/feed/'; }, 3000);
+                </script>
             </div>
         </div>
     </div>

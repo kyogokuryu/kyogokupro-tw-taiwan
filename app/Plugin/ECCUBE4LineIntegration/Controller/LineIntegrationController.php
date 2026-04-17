@@ -337,8 +337,8 @@ class LineIntegrationController extends AbstractController
         if ($session->get('dropped-cart-notifier-redirect') !== null) {
             return $this->redirect($session->get('dropped-cart-notifier-redirect'));
         }
-        // そうでない場合マイページへ遷移
-        return $this->redirectToRoute('mypage');
+        // そうでない場合 feed ページへ遷移
+        return $this->redirect('/feed/');
     }
 
     /**
