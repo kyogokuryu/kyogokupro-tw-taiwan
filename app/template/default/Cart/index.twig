@@ -1,7 +1,11 @@
 {#
- 購物車 - SalesDash TwCart (iframe埋め込み)
+ 購物車 - SalesDash TwCart (リダイレクト方式)
  2026-04-17 実装
  元のテンプレートは Cart/index_original.twig にバックアップ
+ 
+ EC-CUBEの app.user でログイン状態を判定し、
+ SalesDashのTwCartに直接リダイレクトする。
+ iframeの二重読み込みを排除して高速化。
 #}
 <!DOCTYPE html>
 <html lang="zh-TW">
@@ -9,26 +13,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>購物車 | KYOGOKU</title>
+    <link rel="preconnect" href="https://salesdash.buzzdrop.co.jp">
+    <link rel="dns-prefetch" href="https://salesdash.buzzdrop.co.jp">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { width: 100%; height: 100%; overflow: hidden; background: #f5f5f5; }
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-        }
-        /* Loading spinner while iframe loads */
+        html, body { width: 100%; height: 100%; background: #f5f5f5; font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif; }
         .loading {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
-            z-index: 1;
-            transition: opacity 0.3s;
         }
-        .loading.hidden { opacity: 0; pointer-events: none; }
         .loading-spinner {
             width: 36px;
             height: 36px;
@@ -39,7 +35,6 @@
             margin: 0 auto 12px;
         }
         .loading-text {
-            font-family: 'Noto Sans TC', sans-serif;
             font-size: 13px;
             color: #999;
             letter-spacing: 1px;
@@ -48,31 +43,23 @@
             to { transform: rotate(360deg); }
         }
     </style>
-    <link rel="preconnect" href="https://salesdash.buzzdrop.co.jp">
 </head>
 <body>
-    <div class="loading" id="loading">
+    <div class="loading">
         <div class="loading-spinner"></div>
         <div class="loading-text">載入中...</div>
     </div>
-    {% if app.user %}
-        {# ログイン済み: emailとcustomer_idをパラメータとして渡す #}
-        <iframe
-            id="cart-frame"
-            src="https://salesdash.buzzdrop.co.jp/tw/cart?email={{ app.user.email|url_encode }}&customer_id={{ app.user.id }}&embed=1"
-            allow="clipboard-write; payment"
-            loading="eager"
-            onload="document.getElementById('loading').classList.add('hidden')"
-        ></iframe>
-    {% else %}
-        {# 未ログイン: メール入力フォームを表示 #}
-        <iframe
-            id="cart-frame"
-            src="https://salesdash.buzzdrop.co.jp/tw/cart?no_session=1&embed=1"
-            allow="clipboard-write; payment"
-            loading="eager"
-            onload="document.getElementById('loading').classList.add('hidden')"
-        ></iframe>
-    {% endif %}
+    <script>
+        (function() {
+            var baseUrl = 'https://salesdash.buzzdrop.co.jp/tw/cart';
+            {% if app.user %}
+                var email = '{{ app.user.email|e('js') }}';
+                var customerId = '{{ app.user.id }}';
+                window.location.replace(baseUrl + '?email=' + encodeURIComponent(email) + '&customer_id=' + encodeURIComponent(customerId));
+            {% else %}
+                window.location.replace(baseUrl + '?no_session=1');
+            {% endif %}
+        })();
+    </script>
 </body>
 </html>
