@@ -105,10 +105,18 @@ class LineIntegrationController extends AbstractController
         $originalState = $session->get(self::PLUGIN_LINE_INTEGRATION_SSO_STATE);
         $session->remove(self::PLUGIN_LINE_INTEGRATION_SSO_STATE);
 
-        // APIアクセスの為のパラメータ検証
-        $results = $this->validateParameter($code, $state, $originalState);
-        if($results !== null) {
-            return $results;
+        // LIFF経由（LINEアプリ内ブラウザ）の場合、セッションが引き継がれないことがある
+        // liffClientIdパラメータが存在する場合はLIFF経由のログインと判断し、
+        // セッションが空でもstateバリデーションをスキップして処理を続行する
+        $isLiffLogin = !empty($request->get('liffClientId'));
+        if ($isLiffLogin && empty($originalState) && !empty($code) && !empty($state)) {
+            log_info('LINE LIFF経由ログイン: セッション未引継ぎのためstateバリデーションをスキップ (state=' . $state . ')');
+        } else {
+            // 通常のAPIアクセスの為のパラメータ検証
+            $results = $this->validateParameter($code, $state, $originalState);
+            if($results !== null) {
+                return $results;
+            }
         }
 
         // アクセストークン発行
@@ -337,8 +345,8 @@ class LineIntegrationController extends AbstractController
         if ($session->get('dropped-cart-notifier-redirect') !== null) {
             return $this->redirect($session->get('dropped-cart-notifier-redirect'));
         }
-        // そうでない場合マイページへ遷移
-        return $this->redirectToRoute('mypage');
+        // そうでない場合 feed ページへ遷移
+        return $this->redirect('/feed/');
     }
 
     /**
