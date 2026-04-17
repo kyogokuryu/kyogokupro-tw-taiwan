@@ -1,333 +1,78 @@
 {#
-This file is part of EC-CUBE
-
-Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
-
-http://www.ec-cube.co.jp/
-
-For the full copyright and license information, please view the LICENSE
-file that was distributed with this source code.
+ 購物車 - SalesDash TwCart (iframe埋め込み)
+ 2026-04-17 実装
+ 元のテンプレートは Cart/index_original.twig にバックアップ
 #}
-{% extends 'default_frame.twig' %}
-
-{% set body_class = 'cart_page' %}
-
-{% block javascript %}
-<script src="{{ asset('assets/js/eccube.js') }}"></script>
-<script>
-    eccube.productsClassCategories = {
-        {% for Product in Products %}
-        "{{ Product.id|escape('js') }}": {{ class_categories_as_json(Product)|raw }}{% if loop.last == false %}, {% endif %}
-        {% endfor %}
-    };
-
-    $('.add-cart').on('click',function(){
-        let cid = $(this).data('cartid');
-        let form = $('form#productForm'+cid);
-        var txt = "";
-        let elm = $(this).closest('li').find('input').each(function(){
-            txt += '<input type="hidden" name="'+ $(this).attr('name')+'" value="'+ $(this).val()+'">'
-        });
-
-        let sel = $(this).closest('li').find('select').val()
-        txt += '<input type="hidden" name="quantity" value="'+sel+'">'
-        form.html(txt);
-
-   //     console.log(elm)
-       form.submit();
-    });
-</script>
-{% endblock %}
-
-{% block main %}
-
-<article id="cart">
-	<section>
-
-    <!--p style="margin:0 0 30px;text-align:center;color:#f00;font-size:30px;">9/20 6:00〜7:30 メンテナンス中 購入はお控えください</p-->
-
-    
-    <div class="ec-cartRole">
-        <div class="ec-cartRole__progress"></div>
-        {% set productStr = app.session.flashbag.get('eccube.front.request.product') %}
-        {% for error in app.session.flashbag.get('eccube.front.request.error') %}
-            {% set idx = loop.index0 %}
-            <div class="ec-cartRole__error">
-                <div class="ec-alert-warning">
-                    <div class="ec-alert-warning__icon"><img src="{{ asset('assets/icon/exclamation-white.svg') }}"></div>
-                    <div class="ec-alert-warning__text">
-                        {% if productStr[idx] is defined %}
-                            {{ error|trans({'%product%':productStr[idx]})|nl2br }}
-                        {% else %}
-                            {{ error|trans|nl2br }}
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        {% endfor %}
-        {% for error in app.session.flashbag.get('eccube.front.cart.error') %}
-            <div class="ec-cartRole__error">
-                <div class="ec-alert-warning">
-                    <div class="ec-alert-warning__icon"><img src="{{ asset('assets/icon/exclamation-white.svg') }}"></div>
-                    <div class="ec-alert-warning__text">
-                        {{ error|trans|nl2br }}
-                    </div>
-                </div>
-            </div>
-        {% endfor %}
-
-        {% if totalQuantity > 0 %}
-            <!-- <p style="width:50%;" class="total-text">{{ '合計金額 <strong>%price%</strong>'|trans({ '%price%': totalPrice|price })|raw }}</p> -->
-            <p><a class="ec-blockBtn--action s2" href="{{ path('cart_buystep', {'cart_key':Carts[0].cart_key}) }}"><span>{{ '結算金額'|trans }}</span></a></p>
-
-            {% if Carts|length > 1 %}
-                <div class="ec-cartRole__error">
-                    <div class="ec-alert-warning">
-                        <div class="ec-alert-warning__text">
-                            {{ '您的购物车包含不能一起购买的商品。'|trans|nl2br }}
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-
-            <form name="form" id="form_cart" class="ec-cartRole" method="post" action="{{ url('cart') }}">
-
-                {% for CartIndex,Cart in Carts %}
-                    {% set cartKey = Cart.cart_key %}
-                    
-                    {% for error in app.session.flashbag.get('eccube.front.cart.' ~ cartKey ~ '.request.error') %}
-                        <div class="ec-cartRole__error">
-                            <div class="ec-alert-warning">
-                                <div class="ec-alert-warning__icon"><img src="{{ asset('assets/icon/exclamation-white.svg') }}"></div>
-                                <div class="ec-alert-warning__text">
-                                    {{ error|trans|nl2br }}
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-
-                    <div class="ec-cartRole__cart">
-                        <div class="ec-cartTable">
-                            <ol class="ec-cartHeader">
-                                <li class="ec-cartHeader__label">{{ '刪除'|trans }}</li>
-                                <li class="ec-cartHeader__label">{{ '商品内容'|trans }}</li>
-                                <li class="ec-cartHeader__label">{{ '數量'|trans }}</li>
-                                <li class="ec-cartHeader__label">{{ '小計'|trans }}</li>
-                            </ol>
-                            
-                            {% set isFree = false %}
-
-                            {% for CartItem in Cart.CartItems %}
-                                {% set ProductClass = CartItem.ProductClass %}
-                                {% set Product = ProductClass.Product %}
-                                <ul class="ec-cartRow">
-                                    <li class="ec-cartRow__delColumn">
-                                        <a href="{{ url('cart_handle_item', {'operation': 'remove', 'productClassId': ProductClass.id }) }}" {{ csrf_token_for_anchor() }} class="ec-icon" data-method="put" data-message="您确定要从购物车中删除该商品吗？?">
-                                            <img src="{{ asset('assets/icon/cross.svg') }}" alt="delete">
-                                        </a>
-                                    </li>
-                                    <li class="ec-cartRow__contentColumn">
-                                        <div class="ec-cartRow__img">
-                                            <a target="_blank" href="{{ url('product_detail', {id : Product.id} ) }}">
-                                                <img src="{{ asset(Product.MainListImage|no_image_product, 'save_image') }}" alt="{{ Product.name }}"/>
-                                            </a>
-                                        </div>
-                                        <div class="ec-cartRow__summary">
-                                            <div class="ec-cartRow__name">
-                                                <a target="_blank" href="{{ url('product_detail', {id : Product.id} ) }}">{{ Product.name }}</a>
-                                                {% if ProductClass.ClassCategory1 and ProductClass.ClassCategory1.id %}
-                                                    <br>{{ ProductClass.ClassCategory1.ClassName.name }}：{{ ProductClass.ClassCategory1 }}
-                                                {% endif %}
-                                                {% if ProductClass.ClassCategory2 and ProductClass.ClassCategory2.id %}
-                                                    <br>{{ ProductClass.ClassCategory2.ClassName.name }}：{{ ProductClass.ClassCategory2 }}
-                                                {% endif %}
-                                            </div>
-                                            <div class="ec-cartRow__unitPrice">{{ CartItem.price|price }}</div>
-                                            <!-- <div class="ec-cartRow__sutbtotalSP">{{ '小計：'|trans }}{{ CartItem.total_price|price }}</div> -->
-                                        </div>
-                                    </li>
-                                    <li class="ec-cartRow__amountColumn">
-                                        <div class="ec-cartRow__amount">{{ CartItem.quantity|number_format }}</div>
-                                        <div class="ec-cartRow__amountSP">{{ '數量'|trans }}{{ CartItem.quantity|number_format }}</div>
-                                        <div class="ec-cartRow__amountUpDown">
-                                            {% if CartItem.quantity > 1 %}
-                                                <a href="{{ url('cart_handle_item', {'operation': 'down', 'productClassId': ProductClass.id}) }}" {{ csrf_token_for_anchor() }} class="ec-cartRow__amountDownButton load-overlay" data-method="put" data-confirm="false">
-                                                    <span class="ec-cartRow__amountDownButton__icon"><img src="{{ asset('assets/icon/minus-dark.svg') }}" alt="reduce"></span>
-                                                </a>
-                                            {% else %}
-                                                <div class="ec-cartRow__amountDownButtonDisabled">
-                                                    <span class="ec-cartRow__amountDownButton__icon"><img src="{{ asset('assets/icon/minus.svg') }}" alt="reduce"></span>
-                                                </div>
-                                            {% endif %}
-                                            <a href="{{ url('cart_handle_item', {'operation': 'up', 'productClassId': ProductClass.id}) }}" {{ csrf_token_for_anchor() }} class="ec-cartRow__amountUpButton load-overlay" data-method="put" data-confirm="false">
-                                                <span class="ec-cartRow__amountUpButton__icon"><img src="{{ asset('assets/icon/plus-dark.svg') }}" alt="increase"></span>
-                                            </a>
-                                        </div>
-                                    </li>
-                                    <li class="ec-cartRow__subtotalColumn">
-                                        <div class="ec-cartRow__sutbtotal">{{ CartItem.total_price|price }}</div>
-                                    </li>
-                                </ul>
-
-                                {% if get_prime_product_id() == Product.id %}
-                                {% set isFree = true %}
-                                {% endif %}
-
-
-                            {% endfor %}
-                        </div>
-                    </div>
-            </form>
-
-                    <div class="ec-cartRole__progress">
-
-                    {% if app.user and app.user.prime_member > 0 %} 
-
-                    {% elseif isFree  %}
-                    {% else %}
-                        {% if BaseInfo.delivery_free_amount and BaseInfo.delivery_free_quantity %}
-                            <br/>
-                            {% if is_delivery_free[cartKey] %}
-                                {{ '目前免運費'|trans }}
-                            {% else %}
-                            {{ '再購買「<strong>%price%</strong>」或者「<strong>%quantity%個</strong>」即可享有<strong class="ec-color-red">免運費</strong>'|trans({ '%price%': least[cartKey]|price, '%quantity%': quantity[cartKey]|number_format })|raw }}
-                            {% endif %}
-                        {% elseif BaseInfo.delivery_free_amount %}
-                            <br/>
-                            {% if is_delivery_free[cartKey] %}
-                                {{ '目前免運費'|trans }}
-                            {% else %}
-                                {{ '再購買「<strong>%price%</strong>」即可享有<strong class="ec-color-red">免運費</strong>'|trans({ '%price%': least[cartKey]|price })|raw }}
-                            {% endif %}
-                        {% elseif BaseInfo.delivery_free_quantity %}
-                            <br/>
-                            {% if is_delivery_free[cartKey] %}
-                                {{ '目前免運費'|trans }}
-                            {% else %}
-                                {{ '再購買「<strong>%quantity%個</strong>」即可享有<strong class="ec-color-red">免運費</strong>'|trans({ '%quantity%': quantity[cartKey]|number_format })|raw }}
-                            {% endif %}
-                        {% endif %}
-                    {% endif %}
-                    </div>
-
-                    <!-- 手提げ商品表示フラグ -->
-                    {% set show_flg = false %}
-                    {% if Cart.CartItems[0].ProductClass.SaleType.id == 1 %}
-                        {% set show_flg = true %}
-                    {% endif %}
-
-                    {% if Products is not null and show_flg %}
-
-                        <div id="page_product_list">
-                            <div class="ec-shelfRole">
-                                <ul class="ec-shelfGrid">
-                                {% for Product in Products %}
-                                    <li class="ec-shelfGrid__item">
-                                        <a href="{{ url('product_detail', {'id': Product.id}) }}">
-                                            <p class="ec-shelfGrid__item-image">
-                                                <img src="{{ asset(Product.main_list_image|no_image_product, 'save_image') }}">
-                                            </p>
-                                            <p class="name">{{ Product.name }}</p>
-                                            <p class="price02-default">
-                                                {% if Product.hasProductClass %}
-                                                    {% if Product.getPrice02Min == Product.getPrice02Max %}
-                                                        {{ Product.getPrice02IncTaxMin|price }}
-                                                    {% else %}
-                                                        {{ Product.getPrice02IncTaxMin|price }} ～ {{ Product.getPrice02IncTaxMax|price }}
-                                                    {% endif %}
-                                                {% else %}
-                                                    {{ Product.getPrice02IncTaxMin|price }}
-                                                {% endif %}
-                                            </p>
-                                        </a>
-                                        {% if Product.stock_find %}
-                                            {% set form = forms[Product.id] %}
-                                            <div class="ec-productRole__actions">
-                                                {% if form.classcategory_id1 is defined %}
-                                                    <div class="ec-select">
-                                                        {{ form_widget(form.classcategory_id1) }}
-                                                        {{ form_errors(form.classcategory_id1) }}
-                                                    </div>
-                                                    {% if form.classcategory_id2 is defined %}
-                                                        <div class="ec-select">
-                                                            {{ form_widget(form.classcategory_id2) }}
-                                                            {{ form_errors(form.classcategory_id2) }}
-                                                        </div>
-                                                    {% endif %}
-                                                {% endif %}
-                                                <div class="ec-numberInput"><span>{{ '數量'|trans }}</span>
-                                                    {{ form_widget(form.quantity, {'attr': {'class': 'quantity'}}) }}
-                                                    {{ form_errors(form.quantity) }}
-                                                </div>
-                                            </div>
-                                            {{ form_rest(form) }}
-                                            <div class="ec-productRole__btn">
-                                                <button type="button" class="ec-blockBtn--action add-cart" data-cartid="{{ Product.id }}">
-                                                    {{ '新增'|trans }}
-                                                </button>
-                                            </div>
-                                        {% else %}
-                                            <div class="ec-productRole__btn">
-                                                <button type="button" class="ec-blockBtn--action" disabled="disabled">
-                                                    {{ '缺货'|trans }}
-                                                </button>
-                                            </div>
-                                        {% endif %}
-                                    </li>
-                                {% endfor %}
-                                </ul>
-                            </div>
-                        </div>
-                    {% endif %}
-
-
-                    
-                    <div class="ec-cartRole__actions">
-                        <div class="ec-cartRole__total">{{ '總共：'|trans }}<span class="ec-cartRole__totalAmount">{{ Cart.totalPrice|price }}</span>
-                        </div>
-                        <!--
-                        <a class="ec-blockBtn--action s2" href="{{ path('cart_buystep', {'cart_key':cartKey}) }}"><span>{{ '結算金額'|trans }}</span></a>
-                        -->
-                        {% if loop.last %}
-                            <a class="ec-blockBtn--cancel s2" href="{{ path('homepage') }}"><span>{{ '繼續選購'|trans }}</span></a>
-                        {% endif %}
-                    </div>
-                {% endfor %}
-        {% else %}
-            {% for CartIndex,Cart in Carts %}
-                {% set cartKey = Cart.cart_key %}
-                {% for error in app.session.flashbag.get('eccube.front.cart.' ~ cartKey ~ '.request.error') %}
-                    <div class="ec-cartRole__error">
-                        <div class="ec-alert-warning">
-                            <div class="ec-alert-warning__icon"><img src="{{ asset('assets/icon/exclamation-white.svg') }}"></div>
-                            <div class="ec-alert-warning__text">
-                                {{ error|trans|nl2br }}
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-            {% endfor %}
-            <div class="ec-role">
-                <div class="ec-off3Grid">
-                    <div class="ec-off3Grid__cell">
-                        <div class="ec-alert-warning">
-                            <div class="ec-alert-warning__icon"><img src="{{ asset('assets/icon/exclamation-white.svg') }}"></div>
-                            <div class="ec-alert-warning__text">{{ '您的購物車裡目前沒有產品'|trans }}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% endif %}
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>購物車 | KYOGOKU</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; overflow: hidden; background: #f5f5f5; }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+        /* Loading spinner while iframe loads */
+        .loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 1;
+            transition: opacity 0.3s;
+        }
+        .loading.hidden { opacity: 0; pointer-events: none; }
+        .loading-spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid #e0e0e0;
+            border-top-color: #1a1a5e;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 12px;
+        }
+        .loading-text {
+            font-family: 'Noto Sans TC', sans-serif;
+            font-size: 13px;
+            color: #999;
+            letter-spacing: 1px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+    <link rel="preconnect" href="https://salesdash.buzzdrop.co.jp">
+</head>
+<body>
+    <div class="loading" id="loading">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">載入中...</div>
     </div>
-
-    {% if Products is not null %}
-        {% for Product in Products %}
-            {% if Product.stock_find %}
-                <form name="form{{ Product.id }}" id="productForm{{ Product.id }}" action="{{ url('product_add_cart', {id:Product.id}) }}" method="post"></form>
-            {% endif %}
-        {% endfor %}
+    {% if app.user %}
+        {# ログイン済み: emailとcustomer_idをパラメータとして渡す #}
+        <iframe
+            id="cart-frame"
+            src="https://salesdash.buzzdrop.co.jp/tw/cart?email={{ app.user.email|url_encode }}&customer_id={{ app.user.id }}&embed=1"
+            allow="clipboard-write; payment"
+            loading="eager"
+            onload="document.getElementById('loading').classList.add('hidden')"
+        ></iframe>
+    {% else %}
+        {# 未ログイン: メール入力フォームを表示 #}
+        <iframe
+            id="cart-frame"
+            src="https://salesdash.buzzdrop.co.jp/tw/cart?no_session=1&embed=1"
+            allow="clipboard-write; payment"
+            loading="eager"
+            onload="document.getElementById('loading').classList.add('hidden')"
+        ></iframe>
     {% endif %}
-
-	</section>
-</article>
-{% endblock %}
+</body>
+</html>
