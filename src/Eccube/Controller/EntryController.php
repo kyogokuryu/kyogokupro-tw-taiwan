@@ -124,8 +124,7 @@ class EntryController extends AbstractController
 
         }
 
-        // リダイレクト: SalesDashのチャット式登録ページへ (2026-04-17)
-        return $this->redirect('https://salesdash.buzzdrop.co.jp/tw/register');
+        // リダイレクト削除: Entry/index.twigでiframe表示に変更 (2026-04-17)
 
         //サロンIDに該当するユーザーの判定 20220510 kikuzawa
         if ($request->isXmlHttpRequest()) {
