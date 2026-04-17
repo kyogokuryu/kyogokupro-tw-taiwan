@@ -32,7 +32,7 @@
 error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
 
 // デバッグモード（本番では false にする）
-define('DEBUG_MODE', true);
+define('DEBUG_MODE', false);
 
 // HMAC署名用の秘密鍵
 define('BRIDGE_SECRET', 'kg_tw_session_bridge_2026');
