@@ -184,7 +184,7 @@ file that was distributed with this source code.
     {% set cartKey = Cart.cartKey %}
     {% set totalQuantity = get_carts_total_quantity() %}
     {% if app.user and is_delivery_free[cartKey] is defined and is_delivery_free[cartKey] %}
-        <div id="FixedLineBtn">
+        <a href="{{ path('cart') }}" id="FixedLineBtn" style="text-decoration:none;">
             <div id="FixedLineDiv">
                 <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <g filter="url(#filter0_d_1877_4608)">
@@ -212,7 +212,7 @@ file that was distributed with this source code.
                     </defs>
                 </svg>
             </div>
-        </div>
+        </a>
     {% endif %}
 {% endfor %}
  <style>
