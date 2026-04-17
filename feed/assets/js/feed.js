@@ -2,9 +2,12 @@
  * Feed - TikTok-style Video Feed
  * tw.kyogokupro.com/feed/
  * 
- * v4: iOS autoplay fix — pre-create <video> elements in DOM with autoplay+muted+playsinline
- *     so iOS Safari treats them as eligible for autoplay.
- *     Instead of creating/destroying videos on scroll, we pause/resume existing ones.
+ * v5: Speed optimization — aggressive preloading for instant playback
+ *   - First video: preload="auto" + immediate play
+ *   - Next 2 videos: preload="auto" (buffer while watching current)
+ *   - Preload window moves with scroll
+ *   - Reduced transition delay
+ *   - Thumbnail hidden as soon as first frame is decoded
  */
 
 (function() {
@@ -19,6 +22,7 @@
     var isMuted = true;
     var scrollTimer = null;
     var muteBtn = null;
+    var PRELOAD_AHEAD = 3; // Number of videos to preload ahead
 
     // ===== Global Mute Button =====
     function createMuteButton() {
@@ -31,7 +35,6 @@
             e.stopPropagation();
             isMuted = !isMuted;
             updateMuteIcon();
-            // Apply to currently playing video
             var activeVid = getActiveVideo();
             if (activeVid) activeVid.muted = isMuted;
         });
@@ -73,7 +76,7 @@
     }
 
     // ===== Render Functions =====
-    function createVideoCard(video) {
+    function createVideoCard(video, index) {
         var card = document.createElement('div');
         card.className = 'video-card';
         card.dataset.videoId = video.id;
@@ -97,18 +100,30 @@
             nativeSrc = video.video_url;
         }
 
-        // Build HTML — for native videos, pre-create <video> element in DOM
-        // with autoplay + muted + playsinline so iOS treats it as autoplay-eligible.
-        // The video starts paused (no src yet for non-first cards, or paused via JS).
+        // Build video HTML with aggressive preloading strategy:
+        // - First video (index 0): preload="auto" + src set immediately
+        // - Next PRELOAD_AHEAD videos: preload="auto" + src set immediately
+        // - Rest: preload="none" + data-src (lazy load on scroll)
         var videoHtml = '';
         if (nativeSrc) {
-            // Pre-create video element. We'll set src lazily when near viewport.
-            videoHtml = '<video class="feed-video" ' +
-                'playsinline webkit-playsinline ' +
-                'muted loop preload="none" ' +
-                'data-src="' + escapeHtml(nativeSrc) + '" ' +
-                'style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;background:#000;z-index:1;">' +
-                '</video>';
+            var isEager = (typeof index === 'number' && index < PRELOAD_AHEAD + 1);
+            if (isEager) {
+                // Eager: set src immediately, preload=auto for full buffering
+                videoHtml = '<video class="feed-video" ' +
+                    'playsinline webkit-playsinline ' +
+                    'muted loop preload="auto" ' +
+                    'src="' + escapeHtml(nativeSrc) + '" ' +
+                    'style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;background:#000;z-index:1;">' +
+                    '</video>';
+            } else {
+                // Lazy: defer loading until near viewport
+                videoHtml = '<video class="feed-video" ' +
+                    'playsinline webkit-playsinline ' +
+                    'muted loop preload="none" ' +
+                    'data-src="' + escapeHtml(nativeSrc) + '" ' +
+                    'style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;background:#000;z-index:1;">' +
+                    '</video>';
+            }
         }
 
         card.innerHTML =
@@ -158,9 +173,6 @@
     }
 
     // ===== Video Playback =====
-    // Core idea: for native videos, the <video> element is pre-created in DOM.
-    // We lazily set src, then call play(). For YouTube, we create iframe on demand.
-
     function activateCard(card) {
         var videoId = card.dataset.videoId;
         if (activeVideoId === videoId) return;
@@ -175,40 +187,37 @@
         var video = card.querySelector('video.feed-video');
 
         if (video) {
-            // Native video — already in DOM
+            // Native video — ensure src is set
             var dataSrc = video.dataset.src;
             if (dataSrc && !video.src) {
-                // First time: set src and play
                 video.src = dataSrc;
-                video.muted = true; // Must be muted for autoplay
+                video.preload = 'auto';
                 video.load();
             }
 
-            // Listen for ready state
-            function onReady() {
-                video.removeEventListener('canplay', onReady);
-                video.removeEventListener('playing', onReady);
-                requestAnimationFrame(function() {
-                    thumbnail.classList.add('hidden');
-                    if (!isMuted) video.muted = false;
-                });
+            video.muted = true; // Must be muted for autoplay
+
+            // Use 'loadeddata' event — fires when first frame is available
+            // This is faster than 'canplay' which waits for more buffering
+            function onFirstFrame() {
+                video.removeEventListener('loadeddata', onFirstFrame);
+                video.removeEventListener('playing', onFirstFrame);
+                thumbnail.classList.add('hidden');
+                if (!isMuted) video.muted = false;
             }
 
-            if (video.readyState >= 3) {
-                // Already have enough data
+            if (video.readyState >= 2) {
+                // Already have first frame data — play immediately
                 var playP = video.play();
                 if (playP) playP.catch(function(){});
-                requestAnimationFrame(function() {
-                    thumbnail.classList.add('hidden');
-                    if (!isMuted) video.muted = false;
-                });
+                thumbnail.classList.add('hidden');
+                if (!isMuted) video.muted = false;
             } else {
-                video.addEventListener('canplay', onReady);
-                video.addEventListener('playing', onReady);
+                video.addEventListener('loadeddata', onFirstFrame);
+                video.addEventListener('playing', onFirstFrame);
                 var playP2 = video.play();
                 if (playP2) {
                     playP2.catch(function() {
-                        // Retry muted
                         video.muted = true;
                         var retry = video.play();
                         if (retry) retry.catch(function(){});
@@ -217,6 +226,9 @@
             }
 
             activeVideoId = videoId;
+
+            // Aggressively preload next videos
+            preloadAhead(card);
 
         } else if (youtubeId) {
             // YouTube — create iframe
@@ -231,7 +243,7 @@
             activeVideoId = videoId;
 
             iframe.addEventListener('load', function() {
-                setTimeout(function() { thumbnail.classList.add('hidden'); }, 400);
+                setTimeout(function() { thumbnail.classList.add('hidden'); }, 300);
             });
         }
 
@@ -242,19 +254,61 @@
         }
     }
 
+    // Preload the next N videos ahead of the current card
+    function preloadAhead(currentCard) {
+        var cards = Array.from(document.querySelectorAll('.video-card'));
+        var currentIdx = cards.indexOf(currentCard);
+        if (currentIdx === -1) return;
+
+        for (var i = 1; i <= PRELOAD_AHEAD; i++) {
+            var nextCard = cards[currentIdx + i];
+            if (!nextCard) break;
+            var vid = nextCard.querySelector('video.feed-video');
+            if (vid) {
+                var dataSrc = vid.dataset.src;
+                if (dataSrc && !vid.src) {
+                    vid.src = dataSrc;
+                    vid.preload = 'auto';
+                    vid.load();
+                }
+                // If src is already set but preload is metadata/none, upgrade to auto
+                if (vid.src && vid.preload !== 'auto') {
+                    vid.preload = 'auto';
+                }
+            }
+        }
+
+        // Also unload videos that are far behind to save memory
+        for (var j = 0; j < currentIdx - 2; j++) {
+            var oldCard = cards[j];
+            var oldVid = oldCard.querySelector('video.feed-video');
+            if (oldVid && oldVid.src && !oldVid.paused) {
+                // Don't unload if still playing somehow
+            } else if (oldVid && oldVid.src && oldVid.readyState > 0) {
+                // Save src to data-src and remove src to free memory
+                if (!oldVid.dataset.src) {
+                    oldVid.dataset.src = oldVid.src;
+                }
+                oldVid.removeAttribute('src');
+                oldVid.load(); // Reset the video element
+                oldVid.preload = 'none';
+                // Show thumbnail again
+                var thumb = oldCard.querySelector('.video-thumbnail');
+                if (thumb) thumb.classList.remove('hidden');
+            }
+        }
+    }
+
     function pauseAllExcept(keepVideoId) {
-        // Pause all native videos except the one we want to play
         document.querySelectorAll('.video-card').forEach(function(card) {
             if (card.dataset.videoId === keepVideoId) return;
             var vid = card.querySelector('video.feed-video');
             if (vid && !vid.paused) {
                 vid.pause();
             }
-            // Show thumbnail again for paused cards
             var thumb = card.querySelector('.video-thumbnail');
             if (thumb) thumb.classList.remove('hidden');
         });
-        // Remove YouTube iframes (can't pause them easily)
         if (keepVideoId) removeAllIframes(keepVideoId);
         activeVideoId = null;
     }
@@ -276,29 +330,6 @@
         wrapper.appendChild(ind);
         setTimeout(function() { ind.classList.add('fade-out'); }, 100);
         setTimeout(function() { ind.remove(); }, 600);
-    }
-
-    // ===== Preload nearby videos =====
-    // Set src on videos that are within 1 card of the current viewport
-    function preloadNearby() {
-        var container = document.getElementById('feedContainer');
-        if (!container) return;
-        var cards = container.querySelectorAll('.video-card');
-        var containerRect = container.getBoundingClientRect();
-        var viewH = containerRect.height;
-
-        cards.forEach(function(card) {
-            var rect = card.getBoundingClientRect();
-            // If card is within 1.5x viewport distance
-            if (rect.bottom > containerRect.top - viewH && rect.top < containerRect.bottom + viewH) {
-                var vid = card.querySelector('video.feed-video');
-                if (vid && vid.dataset.src && !vid.src) {
-                    vid.src = vid.dataset.src;
-                    vid.preload = 'metadata';
-                    vid.load();
-                }
-            }
-        });
     }
 
     // ===== Scroll-based auto-play detection =====
@@ -326,14 +357,11 @@
         if (bestCard) {
             activateCard(bestCard);
         }
-
-        // Also preload nearby videos
-        preloadNearby();
     }
 
     function onScrollEnd() {
         clearTimeout(scrollTimer);
-        scrollTimer = setTimeout(detectCurrentCard, 80);
+        scrollTimer = setTimeout(detectCurrentCard, 60);
     }
 
     // ===== Event Handlers =====
@@ -399,7 +427,7 @@
         if (!sentinel) return;
         var obs = new IntersectionObserver(function(entries) {
             if (entries[0].isIntersecting && !isLoading && hasMore) loadMoreVideos();
-        }, { root: document.getElementById('feedContainer'), rootMargin: '200px' });
+        }, { root: document.getElementById('feedContainer'), rootMargin: '400px' });
         obs.observe(sentinel);
     }
 
@@ -413,7 +441,10 @@
         if (result && result.success && result.data.length > 0) {
             var container = document.getElementById('feedContainer');
             var sentinel = document.getElementById('loadMore');
-            result.data.forEach(function(v) { container.insertBefore(createVideoCard(v), sentinel); });
+            var existingCount = container.querySelectorAll('.video-card').length;
+            result.data.forEach(function(v, i) {
+                container.insertBefore(createVideoCard(v, existingCount + i), sentinel);
+            });
             hasMore = result.pagination.has_more;
         } else { hasMore = false; }
         if (el) el.style.display = 'none';
@@ -446,7 +477,7 @@
         }
 
         container.innerHTML = '';
-        result.data.forEach(function(v) { container.appendChild(createVideoCard(v)); });
+        result.data.forEach(function(v, i) { container.appendChild(createVideoCard(v, i)); });
         hasMore = result.pagination.has_more;
 
         var sentinel = document.createElement('div');
@@ -464,41 +495,34 @@
             container.addEventListener('scrollend', detectCurrentCard, { passive: true });
         }
 
-        // Auto-play first video immediately
-        setTimeout(function() {
-            var first = container.querySelector('.video-card');
-            if (first) activateCard(first);
-        }, 200);
+        // Auto-play first video immediately (no delay)
+        var first = container.querySelector('.video-card');
+        if (first) activateCard(first);
 
         // Event delegation
         container.addEventListener('click', function(e) {
             var likeBtn = e.target.closest('.like-btn');
             var shareBtn = e.target.closest('.share-btn');
             var productCard = e.target.closest('.product-card');
-
             if (likeBtn) { e.preventDefault(); handleLike(likeBtn); }
             else if (shareBtn) { e.preventDefault(); handleShare(shareBtn); }
             else if (productCard) { handleProductClick(productCard); }
             else {
-                // Tap on video area: toggle play/pause + unmute
                 var card = e.target.closest('.video-card');
                 if (card) {
                     var vid = card.querySelector('video.feed-video');
                     if (vid && vid.src) {
                         if (vid.paused) {
-                            // Resume
                             isMuted = false;
                             updateMuteIcon();
                             vid.muted = false;
                             vid.play().catch(function(){});
                             card.querySelector('.video-thumbnail').classList.add('hidden');
                         } else {
-                            // Pause
                             vid.pause();
                             showPauseIndicator(card.querySelector('.video-player-wrapper'));
                         }
                     } else {
-                        // YouTube or no video yet — activate
                         isMuted = false;
                         updateMuteIcon();
                         activateCard(card);

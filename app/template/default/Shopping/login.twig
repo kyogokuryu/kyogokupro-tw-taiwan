@@ -1,28 +1,17 @@
 {#
 This file is part of EC-CUBE
-
 Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
-
 http://www.ec-cube.co.jp/
-
 For the full copyright and license information, please view the LICENSE
 file that was distributed with this source code.
 #}
 {% extends 'default_frame.twig' %}
-
 {% set body_class = 'cart_page' %}
-
 {% block main %}
 		<article id="regist" class="regist_login">
 			<section>
-
     <div class="ec-role">
-        {# <div class="ec-pageHeader">
-            <h1>外部サイトアカウントでログイン</h1>
-        </div> #}
-
         <div class="ec-off2Grid">
-
             <div class="ec-off2Grid__cell">
                 <form name="shopping_login" id="shopping_login" method="post" action="{{ url('mypage_login') }}">
                     <input type="hidden" name="_target_path" value="shopping" />
@@ -54,7 +43,6 @@ file that was distributed with this source code.
                         {% if error %}
                             <p class="ec-errorMessage">{{ error.messageKey|trans(error.messageData, 'validators')|nl2br }}</p>
                         {% endif %}
-
                         <div class="ec-grid2">
                             <div class="ec-grid2__cell">
                                 <div class="ec-login__actions">
@@ -71,7 +59,6 @@ file that was distributed with this source code.
                     </div>
                 </form>
             </div>
-
             {# 訪客購買（ゲスト購入）を無効化 - 2026-04-08 #}
             {# {% if is_granted('IS_AUTHENTICATED_REMEMBERED') == false %}
                 <div class="ec-off2Grid__cell">
@@ -84,9 +71,42 @@ file that was distributed with this source code.
                     </div>
                 </div>
             {% endif %} #}
-
         </div>
     </div>
 			</section>
 		</article>
+<script>
+(function() {
+    var STORAGE_KEY = 'kg_login_email';
+    var emailInput = document.getElementById('login_email');
+    var passInput  = document.getElementById('login_pass');
+    var form       = document.getElementById('shopping_login');
+    var rememberCb = document.getElementById('login_memory');
+
+    if (!emailInput) return;
+
+    // ── Restore saved email on page load ──
+    var saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+        emailInput.value = saved;
+        // Auto-check "下次自動登入"
+        if (rememberCb) rememberCb.checked = true;
+        // Focus on password field instead (email already filled)
+        if (passInput) {
+            emailInput.removeAttribute('autofocus');
+            passInput.focus();
+        }
+    }
+
+    // ── Save email on form submit ──
+    if (form) {
+        form.addEventListener('submit', function() {
+            var val = emailInput.value.trim();
+            if (val) {
+                localStorage.setItem(STORAGE_KEY, val);
+            }
+        });
+    }
+})();
+</script>
 {% endblock %}

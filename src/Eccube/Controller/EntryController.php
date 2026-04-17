@@ -120,7 +120,11 @@ class EntryController extends AbstractController
             log_info('認証済のためログイン処理をスキップ');
 
             return $this->redirectToRoute('mypage');
+
+
         }
+
+        // リダイレクト削除: Entry/index.twigでiframe表示に変更 (2026-04-17)
 
         //サロンIDに該当するユーザーの判定 20220510 kikuzawa
         if ($request->isXmlHttpRequest()) {

@@ -1,24 +1,16 @@
 {#
 This file is part of EC-CUBE
-
 Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
-
 http://www.ec-cube.co.jp/
-
 For the full copyright and license information, please view the LICENSE
 file that was distributed with this source code.
 #}
 {% extends 'default_frame.twig' %}
-
 {% set body_class = 'mypage' %}
-
 {% block main %}
 <article id="login">
 	<section>
     <div class="ec-role">
-        {# <div class="ec-pageHeader">
-            <h1>使用外部站点帐户登录</h1>
-        </div> #}
         <div class="ec-off2Grid">
             <div class="ec-off2Grid__cell">
                 <form name="login_mypage" id="login_mypage" method="post" action="{{ url('mypage_login') }}">
@@ -78,10 +70,41 @@ file that was distributed with this source code.
     </div>
     </section>
 </article>
+<script>
+(function() {
+    var STORAGE_KEY = 'kg_login_email';
+    var emailInput = document.getElementById('login_email');
+    var passInput  = document.getElementById('login_pass');
+    var form       = document.getElementById('login_mypage');
+    var rememberCb = document.getElementById('login_memory');
 
-    <script>
-        window.addEventListener('load',function(){
-            $('#login_email').attr('type','text');
+    if (!emailInput) return;
+
+    // Force type to text (allow phone/ID input)
+    emailInput.setAttribute('type', 'text');
+
+    // ── Restore saved email on page load ──
+    var saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+        emailInput.value = saved;
+        // Auto-check "下次自動登入"
+        if (rememberCb) rememberCb.checked = true;
+        // Focus on password field instead (email already filled)
+        if (passInput) {
+            emailInput.removeAttribute('autofocus');
+            passInput.focus();
+        }
+    }
+
+    // ── Save email on form submit ──
+    if (form) {
+        form.addEventListener('submit', function() {
+            var val = emailInput.value.trim();
+            if (val) {
+                localStorage.setItem(STORAGE_KEY, val);
+            }
         });
-    </script>
+    }
+})();
+</script>
 {% endblock %}

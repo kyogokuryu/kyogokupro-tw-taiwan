@@ -25,7 +25,7 @@ foreach ($videos as $video) {
 $pageTitle = 'Kyogoku Professional 影片動態 | 台灣官方';
 $pageDescription = 'Kyogoku Professional 台灣官方影片動態。觀看最新的美髮產品介紹、使用教學和造型技巧影片。';
 $pageUrl = FEED_URL;
-$ogImage = !empty($videos) ? (getYoutubeThumbnail($videos[0]['video_url'], 'maxresdefault') ?: '') : '';
+$ogImage = 'https://tw.kyogokupro.com/html/template/default/assets/img/kyogoku_ogp.jpg';
 ?>
 <!DOCTYPE html>
 <html lang="zh-TW">
@@ -56,17 +56,15 @@ $ogImage = !empty($videos) ? (getYoutubeThumbnail($videos[0]['video_url'], 'maxr
     <meta property="og:url" content="<?php echo h($pageUrl); ?>">
     <meta property="og:site_name" content="Kyogoku Professional Taiwan">
     <meta property="og:locale" content="zh_TW">
-    <?php if ($ogImage): ?>
     <meta property="og:image" content="<?php echo h($ogImage); ?>">
-    <?php endif; ?>
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
     
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="<?php echo h($pageTitle); ?>">
     <meta name="twitter:description" content="<?php echo h($pageDescription); ?>">
-    <?php if ($ogImage): ?>
     <meta name="twitter:image" content="<?php echo h($ogImage); ?>">
-    <?php endif; ?>
     
     <!-- Favicon -->
     <link rel="icon" href="/favicon.ico">

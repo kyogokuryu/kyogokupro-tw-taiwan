@@ -36,10 +36,31 @@ DirectoryIndex index.php
     ExpiresByType image/png "access plus 30 days"
     ExpiresByType image/webp "access plus 30 days"
     ExpiresByType image/svg+xml "access plus 30 days"
+    # Video files — long cache (content-addressed filenames)
+    ExpiresByType video/mp4 "access plus 30 days"
+    ExpiresByType video/quicktime "access plus 30 days"
+    ExpiresByType video/webm "access plus 30 days"
 </IfModule>
 
-# Gzip
+# Video-specific headers for fast streaming
+<IfModule mod_headers.c>
+    <FilesMatch "\.(mp4|mov|webm)$">
+        # Allow byte-range requests for progressive download
+        Header set Accept-Ranges bytes
+        # CORS for video preloading
+        Header set Access-Control-Allow-Origin "*"
+        # Cache control — immutable since filenames are unique
+        Header set Cache-Control "public, max-age=2592000, immutable"
+    </FilesMatch>
+</IfModule>
+
+# Gzip (do NOT compress video files)
 <IfModule mod_deflate.c>
     AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json
 </IfModule>
+
+# Correct MIME types for video
+AddType video/mp4 .mp4
+AddType video/quicktime .mov
+AddType video/webm .webm
 
