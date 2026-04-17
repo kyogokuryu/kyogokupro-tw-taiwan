@@ -120,7 +120,12 @@ class EntryController extends AbstractController
             log_info('認証済のためログイン処理をスキップ');
 
             return $this->redirectToRoute('mypage');
+
+
         }
+
+        // リダイレクト: SalesDashのチャット式登録ページへ (2026-04-17)
+        return $this->redirect('https://salesdash.buzzdrop.co.jp/tw/register');
 
         //サロンIDに該当するユーザーの判定 20220510 kikuzawa
         if ($request->isXmlHttpRequest()) {
