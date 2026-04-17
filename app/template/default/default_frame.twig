@@ -252,8 +252,27 @@ file that was distributed with this source code.
     <!-- KYOGOKU 台湾ポップアップ（salesdash配信） -->
     {% if is_granted('ROLE_USER') %}
     <script>window.__KYG_USER_EMAIL="{{ app.user.email }}";</script>
-    <!-- SalesDash購物車自動同步：將customer_id寫入SalesDash域的localStorage -->
-    <iframe src="https://salesdash.buzzdrop.co.jp/tw/cart-bridge?customer_id={{ app.user.id }}&email={{ app.user.email|url_encode }}" style="display:none;width:0;height:0;border:0;" aria-hidden="true"></iframe>
+    <!-- SalesDash購物車自動識別：ログイン済みユーザーのemail/customer_idをSalesDashリンクに自動付与 -->
+    <script>
+    (function(){
+      var userEmail = '{{ app.user.email|e('js') }}';
+      var userId = '{{ app.user.id }}';
+      if (!userEmail) return;
+      // SalesDashカート/チェックアウトへのリンクにemail+customer_idパラメータを自動付与
+      document.addEventListener('click', function(e) {
+        var link = e.target.closest ? e.target.closest('a') : null;
+        if (!link || !link.href) return;
+        try {
+          var url = new URL(link.href);
+          if (url.hostname === 'salesdash.buzzdrop.co.jp' && (url.pathname.indexOf('/tw/cart') === 0 || url.pathname.indexOf('/tw/checkout') === 0)) {
+            if (!url.searchParams.has('email')) url.searchParams.set('email', userEmail);
+            if (!url.searchParams.has('customer_id')) url.searchParams.set('customer_id', userId);
+            link.href = url.toString();
+          }
+        } catch(err) {}
+      }, true);
+    })();
+    </script>
     {% endif %}
     <script src="https://salesdash.buzzdrop.co.jp/api/tw-popup/popup.js" defer></script>
 </body>
