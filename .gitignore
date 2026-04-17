@@ -16,7 +16,14 @@
 /html/upload/
 
 # WordPress (note)
-/note/
+/note/*
+!/note/wp-content/
+/note/wp-content/*
+!/note/wp-content/themes/
+/note/wp-content/themes/*
+!/note/wp-content/themes/swell_child/
+/note/wp-content/themes/swell_child/*
+!/note/wp-content/themes/swell_child/functions.php
 
 # IDE
 .idea/
