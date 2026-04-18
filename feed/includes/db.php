@@ -450,6 +450,15 @@ class Database {
     }
 
     /**
+     * Unpublish a video (set is_published = 0)
+     * Used automatically when a video's source file is missing.
+     */
+    public function unpublishVideo($id) {
+        $stmt = $this->pdo->prepare('UPDATE feed_videos SET is_published = 0 WHERE id = :id');
+        $stmt->execute([':id' => $id]);
+    }
+
+    /**
      * Set video products
      */
     public function setVideoProducts($videoId, $productIds) {

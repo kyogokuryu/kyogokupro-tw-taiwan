@@ -57,19 +57,28 @@ try {
             $total = $db->getVideoCount();
             $ip = getClientIp();
             
+            // Filter out videos with missing files and enrich remaining
+            $validVideos = [];
             foreach ($videos as &$video) {
+                if (!isVideoFileAccessible($video)) {
+                    // Auto-unpublish videos with missing files
+                    $db->unpublishVideo($video['id']);
+                    $total--;
+                    continue;
+                }
                 enrichVideoData($video, $db, $ip);
+                $validVideos[] = $video;
             }
             
             jsonResponse([
                 'success' => true,
-                'data' => $videos,
+                'data' => $validVideos,
                 'pagination' => [
                     'page' => $page,
                     'per_page' => VIDEOS_PER_PAGE,
-                    'total' => $total,
-                    'total_pages' => ceil($total / VIDEOS_PER_PAGE),
-                    'has_more' => ($page * VIDEOS_PER_PAGE) < $total
+                    'total' => max(0, $total),
+                    'total_pages' => ceil(max(0, $total) / VIDEOS_PER_PAGE),
+                    'has_more' => ($page * VIDEOS_PER_PAGE) < max(0, $total)
                 ]
             ]);
             break;
@@ -83,6 +92,12 @@ try {
             $video = $db->getVideo($id);
             if (!$video) {
                 jsonResponse(['error' => 'Video not found'], 404);
+            }
+            
+            // Check if video file is accessible; auto-unpublish if missing
+            if (!isVideoFileAccessible($video)) {
+                $db->unpublishVideo($video['id']);
+                jsonResponse(['error' => 'Video file unavailable'], 410);
             }
             
             enrichVideoData($video, $db, getClientIp());
@@ -312,13 +327,19 @@ try {
             $limit = min(intval($_GET['limit'] ?? 10), 20);
             $videos = $db->getRandomVideos($limit, $excludeIds);
             $ip = getClientIp();
+            $validVideos = [];
             foreach ($videos as &$video) {
+                if (!isVideoFileAccessible($video)) {
+                    $db->unpublishVideo($video['id']);
+                    continue;
+                }
                 enrichVideoData($video, $db, $ip);
+                $validVideos[] = $video;
             }
             header('Access-Control-Allow-Origin: *');
             jsonResponse([
                 'success' => true,
-                'data' => $videos,
+                'data' => $validVideos,
             ]);
             break;
 
@@ -330,14 +351,20 @@ try {
             }
             $videos = $db->getVideosByProductId($productId);
             $ip = getClientIp();
+            $validVideos = [];
             foreach ($videos as &$video) {
+                if (!isVideoFileAccessible($video)) {
+                    $db->unpublishVideo($video['id']);
+                    continue;
+                }
                 enrichVideoData($video, $db, $ip);
+                $validVideos[] = $video;
             }
             // Allow cross-origin for widget
             header('Access-Control-Allow-Origin: *');
             jsonResponse([
                 'success' => true,
-                'data' => $videos,
+                'data' => $validVideos,
                 'product_id' => $productId
             ]);
             break;
@@ -392,6 +419,30 @@ try {
 }
 
 // ===== Helper Functions =====
+
+/**
+ * Check if a video's source file is accessible.
+ * For uploaded videos: checks if the file exists on disk.
+ * For YouTube/external videos: always returns true (external availability not checked).
+ */
+function isVideoFileAccessible($video) {
+    if ($video['video_type'] === 'upload') {
+        // Check if the actual file exists on disk
+        if (!empty($video['video_file_path'])) {
+            $filePath = $video['video_file_path'];
+            // Handle relative paths stored in DB
+            if (!file_exists($filePath)) {
+                // Try with UPLOAD_DIR + basename as fallback
+                $filePath = UPLOAD_DIR . basename($video['video_file_path']);
+            }
+            return file_exists($filePath);
+        }
+        // Upload type but no file path — broken record
+        return false;
+    }
+    // YouTube or external URL — assume accessible
+    return true;
+}
 
 function enrichVideoData(&$video, $db, $ip) {
     // Determine video source
