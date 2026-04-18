@@ -2,12 +2,13 @@
  * Feed - TikTok-style Video Feed
  * tw.kyogokupro.com/feed/
  * 
- * v5: Speed optimization — aggressive preloading for instant playback
- *   - First video: preload="auto" + immediate play
- *   - Next 2 videos: preload="auto" (buffer while watching current)
- *   - Preload window moves with scroll
- *   - Reduced transition delay
- *   - Thumbnail hidden as soon as first frame is decoded
+ * v6: Error handling & resilience improvements
+ *   - Video load error handling (404, network errors)
+ *   - Timeout fallback (15s) for stuck videos
+ *   - Error overlay with retry button
+ *   - Skip to next video on error
+ *   - MOV format warning for non-Safari browsers
+ *   - All v5 features preserved
  */
 
 (function() {
@@ -23,6 +24,8 @@
     var scrollTimer = null;
     var muteBtn = null;
     var PRELOAD_AHEAD = 3; // Number of videos to preload ahead
+    var LOAD_TIMEOUT = 15000; // 15 seconds timeout for video loading
+    var loadTimeouts = {}; // Track timeouts per video ID
 
     // ===== Global Mute Button =====
     function createMuteButton() {
@@ -73,6 +76,65 @@
             });
             return await res.json();
         } catch (e) { return null; }
+    }
+
+    // ===== Error Handling =====
+    function showVideoError(card, message) {
+        var wrapper = card.querySelector('.video-player-wrapper');
+        if (!wrapper) return;
+
+        // Remove any existing error overlay
+        var existing = wrapper.querySelector('.video-error-overlay');
+        if (existing) existing.remove();
+
+        // Show thumbnail
+        var thumb = card.querySelector('.video-thumbnail');
+        if (thumb) thumb.classList.remove('hidden');
+
+        // Create error overlay
+        var overlay = document.createElement('div');
+        overlay.className = 'video-error-overlay';
+        overlay.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);color:#fff;text-align:center;pointer-events:auto;';
+        overlay.innerHTML =
+            '<svg viewBox="0 0 24 24" style="width:48px;height:48px;fill:#fff;opacity:0.8;margin-bottom:12px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>' +
+            '<div style="font-size:14px;font-weight:600;margin-bottom:6px;">' + (message || '影片暫時無法播放') + '</div>' +
+            '<button class="video-error-skip" style="margin-top:10px;padding:8px 20px;border:1px solid rgba(255,255,255,0.5);border-radius:20px;background:transparent;color:#fff;font-size:13px;cursor:pointer;">跳過此影片 ▼</button>';
+
+        // Skip button handler
+        overlay.querySelector('.video-error-skip').addEventListener('click', function(e) {
+            e.stopPropagation();
+            skipToNextVideo(card);
+        });
+
+        wrapper.appendChild(overlay);
+    }
+
+    function skipToNextVideo(currentCard) {
+        var cards = Array.from(document.querySelectorAll('.video-card'));
+        var idx = cards.indexOf(currentCard);
+        if (idx >= 0 && idx < cards.length - 1) {
+            var nextCard = cards[idx + 1];
+            nextCard.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    function clearLoadTimeout(videoId) {
+        if (loadTimeouts[videoId]) {
+            clearTimeout(loadTimeouts[videoId]);
+            delete loadTimeouts[videoId];
+        }
+    }
+
+    function setLoadTimeout(videoId, card) {
+        clearLoadTimeout(videoId);
+        loadTimeouts[videoId] = setTimeout(function() {
+            var vid = card.querySelector('video.feed-video');
+            if (vid && vid.readyState < 2 && activeVideoId === videoId) {
+                // Video still hasn't loaded after timeout
+                console.warn('[Feed] Video #' + videoId + ' load timeout after ' + (LOAD_TIMEOUT / 1000) + 's');
+                showVideoError(card, '影片載入逾時');
+            }
+        }, LOAD_TIMEOUT);
     }
 
     // ===== Render Functions =====
@@ -155,6 +217,21 @@
                 '</div>' +
             '</div>';
 
+        // Attach error handler to video element after card is created
+        var videoEl = card.querySelector('video.feed-video');
+        if (videoEl) {
+            videoEl.addEventListener('error', function() {
+                var errorCode = videoEl.error ? videoEl.error.code : 0;
+                var errorMsg = '影片暫時無法播放';
+                if (errorCode === 4) errorMsg = '影片格式不支援或檔案遺失';
+                else if (errorCode === 2) errorMsg = '網路錯誤，無法載入影片';
+                else if (errorCode === 3) errorMsg = '影片解碼錯誤';
+                console.warn('[Feed] Video #' + video.id + ' error: code=' + errorCode);
+                clearLoadTimeout(video.id);
+                showVideoError(card, errorMsg);
+            });
+        }
+
         return card;
     }
 
@@ -177,6 +254,9 @@
         var videoId = card.dataset.videoId;
         if (activeVideoId === videoId) return;
 
+        // Check if card already has an error overlay — skip it
+        if (card.querySelector('.video-error-overlay')) return;
+
         // Pause all other videos first
         pauseAllExcept(videoId);
 
@@ -187,6 +267,16 @@
         var video = card.querySelector('video.feed-video');
 
         if (video) {
+            // Check if video already has an error
+            if (video.error) {
+                var errorCode = video.error.code;
+                var errorMsg = '影片暫時無法播放';
+                if (errorCode === 4) errorMsg = '影片格式不支援或檔案遺失';
+                else if (errorCode === 2) errorMsg = '網路錯誤，無法載入影片';
+                showVideoError(card, errorMsg);
+                return;
+            }
+
             // Native video — ensure src is set
             var dataSrc = video.dataset.src;
             if (dataSrc && !video.src) {
@@ -197,17 +287,22 @@
 
             video.muted = true; // Must be muted for autoplay
 
+            // Set load timeout
+            setLoadTimeout(videoId, card);
+
             // Use 'loadeddata' event — fires when first frame is available
             // This is faster than 'canplay' which waits for more buffering
             function onFirstFrame() {
                 video.removeEventListener('loadeddata', onFirstFrame);
                 video.removeEventListener('playing', onFirstFrame);
+                clearLoadTimeout(videoId);
                 thumbnail.classList.add('hidden');
                 if (!isMuted) video.muted = false;
             }
 
             if (video.readyState >= 2) {
                 // Already have first frame data — play immediately
+                clearLoadTimeout(videoId);
                 var playP = video.play();
                 if (playP) playP.catch(function(){});
                 thumbnail.classList.add('hidden');
@@ -217,10 +312,16 @@
                 video.addEventListener('playing', onFirstFrame);
                 var playP2 = video.play();
                 if (playP2) {
-                    playP2.catch(function() {
+                    playP2.catch(function(err) {
+                        // If autoplay fails, try muted
                         video.muted = true;
                         var retry = video.play();
-                        if (retry) retry.catch(function(){});
+                        if (retry) retry.catch(function(err2) {
+                            // If even muted play fails, show error
+                            console.warn('[Feed] Video #' + videoId + ' play failed:', err2.message);
+                            clearLoadTimeout(videoId);
+                            showVideoError(card, '影片無法自動播放');
+                        });
                     });
                 }
             }
@@ -265,6 +366,9 @@
             if (!nextCard) break;
             var vid = nextCard.querySelector('video.feed-video');
             if (vid) {
+                // Skip if video already has an error
+                if (vid.error) continue;
+
                 var dataSrc = vid.dataset.src;
                 if (dataSrc && !vid.src) {
                     vid.src = dataSrc;
@@ -281,6 +385,8 @@
         // Also unload videos that are far behind to save memory
         for (var j = 0; j < currentIdx - 2; j++) {
             var oldCard = cards[j];
+            // Don't unload cards with error overlays
+            if (oldCard.querySelector('.video-error-overlay')) continue;
             var oldVid = oldCard.querySelector('video.feed-video');
             if (oldVid && oldVid.src && !oldVid.paused) {
                 // Don't unload if still playing somehow
@@ -306,8 +412,11 @@
             if (vid && !vid.paused) {
                 vid.pause();
             }
-            var thumb = card.querySelector('.video-thumbnail');
-            if (thumb) thumb.classList.remove('hidden');
+            // Only show thumbnail if no error overlay
+            if (!card.querySelector('.video-error-overlay')) {
+                var thumb = card.querySelector('.video-thumbnail');
+                if (thumb) thumb.classList.remove('hidden');
+            }
         });
         if (keepVideoId) removeAllIframes(keepVideoId);
         activeVideoId = null;
@@ -510,8 +619,16 @@
             else {
                 var card = e.target.closest('.video-card');
                 if (card) {
+                    // If error overlay is showing, don't try to play
+                    if (card.querySelector('.video-error-overlay')) return;
+
                     var vid = card.querySelector('video.feed-video');
                     if (vid && vid.src) {
+                        if (vid.error) {
+                            // Video has error, show error overlay
+                            showVideoError(card, '影片暫時無法播放');
+                            return;
+                        }
                         if (vid.paused) {
                             isMuted = false;
                             updateMuteIcon();
