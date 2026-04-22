@@ -230,6 +230,8 @@ class CustomizeMypageController extends MypageController
         $next_day = $day;
         // $next_point = self::POINT_DAY_LIST[$day % 7];
 
+        // DBから最新のポイント値を取得（SalesDash等の外部更新を反映）
+        $this->entityManager->refresh($Customer);
         $Customer->setLastLoginDate( new \DateTime('now') );
         $Customer->setLoginPointDay($next_day);
         $Customer->setPoint($Customer->getPoint() + $point);
